@@ -146,5 +146,6 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
         }
         this.addStat(StatList.DEATHS);
         this.closeScreen();
+
     }
 }

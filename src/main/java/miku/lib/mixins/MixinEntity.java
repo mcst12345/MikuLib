@@ -1,6 +1,8 @@
 package miku.lib.mixins;
 
 import miku.lib.api.*;
+import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.ExitGame;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -262,6 +264,7 @@ public abstract class MixinEntity implements iEntity {
                 world.playerEntities.remove(this);
                 if(((Entity)(Object)this) instanceof EntityPlayerMP){
                     EntityPlayerMP playerMP = ((EntityPlayerMP)(Object)this);
+                    NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
                     playerMP.connection.disconnect(new TextComponentString("Goodbye!"));
                 }
             }

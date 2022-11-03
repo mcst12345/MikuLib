@@ -1,5 +1,6 @@
 package miku.lib.core;
 
+import miku.lib.config.MikuConfig;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -12,8 +13,10 @@ import java.util.Map;
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.Name("MikuLib")
 public class MikuCore implements IFMLLoadingPlugin {
+    public static boolean TileEntityUpdateBlocked=false;
 
     public MikuCore(){
+        MikuConfig.init();
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.mikulib.json");
     }

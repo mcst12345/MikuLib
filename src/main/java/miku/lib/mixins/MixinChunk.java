@@ -38,4 +38,9 @@ public class MixinChunk implements iChunk {
         entityLists[ entityIn.chunkCoordY].remove(entityIn);
         ((Chunk) (Object) this).markDirty(); // Forge - ensure chunks are marked to save after entity removals
     }
+
+    @Inject(at=@At("HEAD"),method = "addEntity", cancellable = true)
+    public void addEntity(Entity entityIn, CallbackInfo ci){
+        if(EntityUtil.isDEAD(entityIn))ci.cancel();
+    }
 }
