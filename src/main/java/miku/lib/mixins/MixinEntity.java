@@ -1,9 +1,6 @@
 package miku.lib.mixins;
 
-import miku.lib.api.iEntity;
-import miku.lib.api.iEntityLiving;
-import miku.lib.api.iEntityLivingBase;
-import miku.lib.api.iEntityPlayer;
+import miku.lib.api.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -269,7 +266,7 @@ public abstract class MixinEntity implements iEntity {
                 }
             }
         }
-        world.loadedEntityList.remove(this);
+        ((iWorld)world).remove(((Entity)(Object)this));
     }
 
     @Override
