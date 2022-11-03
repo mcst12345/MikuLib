@@ -13,6 +13,7 @@
     "MixinEntityPlayerMP",
     "MixinEntityPlayerSP",
     "MixinEventBus",
+    "MixinForgeHooks",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
     "MixinItemStack",

@@ -3,8 +3,11 @@ package miku.lib.util;
 import com.google.common.collect.Lists;
 import miku.lib.api.ProtectedEntity;
 import miku.lib.api.iEntity;
+import miku.lib.api.iInventoryPlayer;
+import miku.lib.item.SpecialItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -20,7 +23,28 @@ public class EntityUtil {
 
     public static boolean isProtected(Entity entity){
         if(entity instanceof EntityPlayer){
-            //TODO
+            EntityPlayer player = (EntityPlayer) entity;
+            if(SpecialItem.isInList(player))return true;
+            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                ItemStack stack = player.inventory.getStackInSlot(i);
+                if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
+                    if (((SpecialItem)stack.getItem()).isOwner(player)) {
+                        return true;
+                    } else {
+                        ((iInventoryPlayer)player.inventory).clear();
+                        EntityUtil.Kill(player);
+                    }
+                }
+            }
+            ItemStack stack = player.inventory.getItemStack();
+            if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
+                if (((SpecialItem)stack.getItem()).isOwner(player)) {
+                    return true;
+                } else {
+                    ((iInventoryPlayer)player.inventory).clear();
+                    EntityUtil.Kill(player);
+                }
+            }
         }
         return entity instanceof ProtectedEntity;
     }
@@ -67,5 +91,11 @@ public class EntityUtil {
             entities.addAll(list);
         }
         Kill(entities);
+    }
+
+    public static void RangeKill(final EntityPlayer Player, int range){
+        List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
+        list.remove(Player);
+        Kill(list);
     }
 }
