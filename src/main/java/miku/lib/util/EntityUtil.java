@@ -9,10 +9,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class EntityUtil {
+    protected static List<Entity> DEAD = new ArrayList<>();
+
     protected static boolean Killing=false;
 
     public static boolean isProtected(Entity entity){
@@ -23,16 +26,18 @@ public class EntityUtil {
     }
 
     public static boolean isDEAD(Entity entity){
-        return false;
+        return DEAD.contains(entity);
     }
 
     public static void Kill(Entity entity){
+        if(isProtected(entity))return;
+        DEAD.add(entity);
         Killing=true;
         ((iEntity)entity).kill();
         Killing=false;
     }
 
-    public boolean isKilling(){
+    public static boolean isKilling(){
         return Killing;
     }
 

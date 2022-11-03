@@ -3,6 +3,8 @@
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins",
   "mixins": [
+    "MixinBanIP",
+    "MixinChunk",
     "MixinEnderInventory",
     "MixinEntity",
     "MixinEntityLiving",
@@ -10,10 +12,18 @@
     "MixinEntityPlayer",
     "MixinEntityPlayerMP",
     "MixinEntityPlayerSP",
+    "MixinEventBus",
     "MixinInventoryBasic",
-    "MixinInventoryPlayer"
+    "MixinInventoryPlayer",
+    "MixinItemStack",
+    "MixinNetHandlerPlayServer",
+    "MixinPlayerList",
+    "MixinSimpleChannelHandlerWrapper",
+    "MixinWorld",
+    "MixinWorldServer"
   ],
   "client": [
+    "MixinMinecraft"
   ],
   "server": [],
   "required": false,
