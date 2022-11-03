@@ -19,7 +19,6 @@ import java.util.Map;
 @IFMLLoadingPlugin.Name("MikuLib")
 public class MikuCore implements IFMLLoadingPlugin {
     public static boolean TileEntityUpdateBlocked=false;
-    public static final ForgeRegistry<DataSerializerEntry> serializerRegistry = null;
 
     public MikuCore(){
         MikuConfig.init();

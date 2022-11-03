@@ -87,7 +87,7 @@ public abstract class MixinWorld implements iWorld {
 
     @Shadow @Final public boolean isRemote;
 
-    @Shadow public abstract ImmutableSetMultimap<ChunkPos, ForgeChunkManager.Ticket> getPersistentChunks();
+    @Shadow(remap = false) public abstract ImmutableSetMultimap<ChunkPos, ForgeChunkManager.Ticket> getPersistentChunks();
 
     @Shadow protected abstract boolean isAreaLoaded(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, boolean allowEmpty);
 

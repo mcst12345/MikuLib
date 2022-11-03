@@ -12,6 +12,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -21,28 +22,31 @@ public class EntityUtil {
 
     protected static boolean Killing=false;
 
-    public static boolean isProtected(Entity entity){
+    public static boolean isProtected(@Nullable Entity entity){
+        if(entity == null)return false;
         if(entity instanceof EntityPlayer){
             EntityPlayer player = (EntityPlayer) entity;
             if(SpecialItem.isInList(player))return true;
-            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                ItemStack stack = player.inventory.getStackInSlot(i);
-                if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
-                    if (((SpecialItem)stack.getItem()).isOwner(player)) {
-                        return true;
-                    } else {
-                        ((iInventoryPlayer)player.inventory).clear();
-                        EntityUtil.Kill(player);
+            if (player.inventory != null) {
+                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                    ItemStack stack = player.inventory.getStackInSlot(i);
+                    if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
+                        if (((SpecialItem) stack.getItem()).isOwner(player)) {
+                            return true;
+                        } else {
+                            ((iInventoryPlayer) player.inventory).clear();
+                            EntityUtil.Kill(player);
+                        }
                     }
                 }
-            }
-            ItemStack stack = player.inventory.getItemStack();
-            if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
-                if (((SpecialItem)stack.getItem()).isOwner(player)) {
-                    return true;
-                } else {
-                    ((iInventoryPlayer)player.inventory).clear();
-                    EntityUtil.Kill(player);
+                ItemStack stack = player.inventory.getItemStack();
+                if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
+                    if (((SpecialItem) stack.getItem()).isOwner(player)) {
+                        return true;
+                    } else {
+                        ((iInventoryPlayer) player.inventory).clear();
+                        EntityUtil.Kill(player);
+                    }
                 }
             }
         }
@@ -53,7 +57,8 @@ public class EntityUtil {
         return DEAD.contains(entity);
     }
 
-    public static void Kill(Entity entity){
+    public static void Kill(@Nullable Entity entity){
+        if(entity == null)return;
         if(isProtected(entity))return;
         DEAD.add(entity);
         Killing=true;
