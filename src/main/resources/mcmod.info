@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "lib",
+    "name": "MikuLib",
+    "description": "Miku Library by mcst12345",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://www.mcst12345.top:8443",
+    "updateUrl": "",
+    "authorList": [
+      "mcst12345"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
