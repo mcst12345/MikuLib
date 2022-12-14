@@ -23,8 +23,9 @@
     "MixinWorldServer"
   ],
   "client": [
+    "MixinForgeCommandHandler",
     "MixinMinecraft",
-    "MixinForgeCommandHandler"
+    "MixinWorldClient"
   ],
   "server": [],
   "required": false,

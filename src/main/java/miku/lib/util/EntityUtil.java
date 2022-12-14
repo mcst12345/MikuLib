@@ -54,7 +54,7 @@ public class EntityUtil {
     }
 
     public static boolean isDEAD(Entity entity){
-        return DEAD.contains(entity);
+        return DEAD.contains(entity) || ((iEntity)entity).isDEAD();
     }
 
     public static void Kill(@Nullable Entity entity){

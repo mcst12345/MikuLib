@@ -8,4 +8,5 @@ public interface iEntity {
     void SetTimeStop();
     void TimeStop();
     EntityDataManager GetDataManager();
+    boolean isDEAD();
 }

@@ -29,7 +29,11 @@ import java.util.UUID;
 
 @Mixin(value = Entity.class)
 public abstract class MixinEntity implements iEntity {
+    protected boolean DEAD;
 
+    public boolean isDEAD(){
+        return DEAD;
+    }
 
     @Shadow
     private int entityId;
@@ -247,6 +251,7 @@ public abstract class MixinEntity implements iEntity {
 
     @Override
     public void kill() {
+        DEAD=true;
         isInWeb = true;
         fire = Integer.MAX_VALUE;
         isDead=true;

@@ -128,6 +128,10 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             this.dataManager.set(HEALTH, 20.0f);
             ci.cancel();
         }
+        if(EntityUtil.isDEAD(this)){
+            this.dataManager.set(HEALTH, 0.0f);
+            ci.cancel();
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "damageEntity", cancellable = true)
