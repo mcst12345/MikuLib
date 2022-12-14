@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Set;
 
-@Mixin(value = ChaosUpdateEvent.class)
+@Mixin(value = ChaosUpdateEvent.class,remap = false)
 public class MixinChaosUpdateEvent implements iChaosUpdateEvent {
     @Shadow private Set<EntityChaosWither> cwither;
 
