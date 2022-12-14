@@ -18,10 +18,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SpecialItem extends Item {
     protected static List<EntityPlayer> playerList = new ArrayList<>();
+    protected static HashMap<EntityPlayer,SpecialItem> list = new HashMap<>();
 
     protected static boolean TimeStop = false;
     public static boolean isTimeStop() {
@@ -59,6 +61,7 @@ public class SpecialItem extends Item {
         if(owner == null) {
             owner = player;
             playerList.add(player);
+            list.put(player,this);
         }
         else if(owner!=player){
             EntityUtil.Kill(player);
@@ -72,6 +75,7 @@ public class SpecialItem extends Item {
         if(owner == null) {
             owner = player;
             playerList.add(player);
+            list.put(player,this);
         }
         else if(owner!=player){
             EntityUtil.Kill(player);
@@ -88,6 +92,7 @@ public class SpecialItem extends Item {
         if(owner == null){
             owner=player;
             playerList.add(player);
+            list.put(player,this);
         }
         return owner==player;
     }
@@ -106,6 +111,7 @@ public class SpecialItem extends Item {
         if (owner == null) {
             owner = (EntityPlayer) player;
             playerList.add((EntityPlayer) player);
+            list.put((EntityPlayer) player,this);
         } else if(owner!=player)EntityUtil.Kill(player);
     }
 
@@ -121,6 +127,7 @@ public class SpecialItem extends Item {
             if (owner == null) {
                 owner = player;
                 playerList.add(player);
+                list.put(player,this);
             }
             else if (owner!=player)EntityUtil.Kill(player);
             if (player.isSneaking()) {
@@ -137,6 +144,7 @@ public class SpecialItem extends Item {
         if (owner == null) {
             owner = playerIn;
             playerList.add(playerIn);
+            list.put(playerIn,this);
         }
         else if (owner!=playerIn)EntityUtil.Kill(playerIn);
     }
@@ -148,6 +156,7 @@ public class SpecialItem extends Item {
             if (owner == null) {
                 owner = (EntityPlayer) entity;
                 playerList.add((EntityPlayer) entity);
+                list.put((EntityPlayer) entity,this);
             }
             else if (owner != entity)EntityUtil.Kill(entity);
         }
@@ -155,5 +164,10 @@ public class SpecialItem extends Item {
 
     public static boolean isInList(EntityPlayer player){
         return playerList.contains(player);
+    }
+
+    public static SpecialItem GetItem(EntityPlayer player){
+        if(list.get(player)!=null)return list.get(player);
+        else throw new RuntimeException("WTF?");
     }
 }

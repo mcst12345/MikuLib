@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -49,5 +50,10 @@ public class KeyBoardEvent {
                 else Minecraft.getMinecraft().setIngameNotInFocus();
             }
         }
+    }
+
+    public static void Init(){
+        ClientRegistry.registerKeyBinding(IN_GAME_FOCUS);
+        ClientRegistry.registerKeyBinding(FUCK);
     }
 }

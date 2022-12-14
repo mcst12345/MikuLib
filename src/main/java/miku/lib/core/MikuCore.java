@@ -1,13 +1,8 @@
 package miku.lib.core;
 
 import miku.lib.config.MikuConfig;
-import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import net.minecraftforge.registries.DataSerializerEntry;
-import net.minecraftforge.registries.ForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;

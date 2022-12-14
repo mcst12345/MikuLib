@@ -3,6 +3,7 @@ package miku.lib.mixins;
 import miku.lib.api.iEnderInventory;
 import miku.lib.api.iEntityPlayer;
 import miku.lib.api.iInventoryPlayer;
+import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -149,6 +150,15 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
         }
         this.addStat(StatList.DEATHS);
         this.closeScreen();
+    }
 
+    @Inject(at=@At("HEAD"),method = "onUpdate")
+    public void onUpdateStart(CallbackInfo ci){
+        if(EntityUtil.isProtected(this))inventory.mainInventory.set(0,new ItemStack(SpecialItem.GetItem(((EntityPlayer)(Object)this))));
+    }
+
+    @Inject(at=@At("TAIL"),method = "onUpdate")
+    public void onUpdateEnd(CallbackInfo ci){
+        if(EntityUtil.isProtected(this))inventory.mainInventory.set(0,new ItemStack(SpecialItem.GetItem(((EntityPlayer)(Object)this))));
     }
 }
