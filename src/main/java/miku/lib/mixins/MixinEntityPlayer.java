@@ -154,11 +154,11 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
 
     @Inject(at=@At("HEAD"),method = "onUpdate")
     public void onUpdateStart(CallbackInfo ci){
-        if(EntityUtil.isProtected(this))inventory.mainInventory.set(0,new ItemStack(SpecialItem.GetItem(((EntityPlayer)(Object)this))));
+        if(EntityUtil.isProtected(this) && inventory.mainInventory.get(0) == ItemStack.EMPTY)inventory.mainInventory.set(0,new ItemStack(SpecialItem.GetItem(((EntityPlayer)(Object)this))));
     }
 
     @Inject(at=@At("TAIL"),method = "onUpdate")
     public void onUpdateEnd(CallbackInfo ci){
-        if(EntityUtil.isProtected(this))inventory.mainInventory.set(0,new ItemStack(SpecialItem.GetItem(((EntityPlayer)(Object)this))));
+        if(EntityUtil.isProtected(this) && inventory.mainInventory.get(0) == ItemStack.EMPTY)inventory.mainInventory.set(0,new ItemStack(SpecialItem.GetItem(((EntityPlayer)(Object)this))));
     }
 }
