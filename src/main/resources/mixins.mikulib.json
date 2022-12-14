@@ -19,6 +19,7 @@
     "MixinNetHandlerPlayServer",
     "MixinPlayerList",
     "MixinSimpleChannelHandlerWrapper",
+    "MixinSimpleNetworkWrapper",
     "MixinWorld",
     "MixinWorldServer"
   ],

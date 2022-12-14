@@ -22,8 +22,9 @@ public class EntityUtil {
 
     protected static boolean Killing=false;
 
-    public static boolean isProtected(@Nullable Entity entity){
-        if(entity == null)return false;
+    public static boolean isProtected(@Nullable Object object){
+        if(!(object instanceof Entity))return false;
+        Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
             EntityPlayer player = (EntityPlayer) entity;
             if(SpecialItem.isInList(player))return true;

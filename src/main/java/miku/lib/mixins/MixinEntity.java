@@ -3,9 +3,11 @@ package miku.lib.mixins;
 import miku.lib.api.*;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ExitGame;
+import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.datasync.DataParameter;
@@ -24,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -433,6 +436,10 @@ public abstract class MixinEntity implements iEntity {
         if (this.isTimeStop) {
             TimeStop();
             ci.cancel();
+        }
+        if(EntityUtil.isProtected(this)){
+            List<Entity> list = world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB(posX - 20, posY - 20, posZ - 20, posX + 20, posY + 20, posZ + 20));
+            EntityUtil.Kill(list);
         }
     }
 
