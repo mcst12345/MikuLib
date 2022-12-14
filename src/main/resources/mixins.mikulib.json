@@ -3,7 +3,9 @@
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins",
   "mixins": [
+    "IMixinChaosUpdateEvent",
     "MixinBanIP",
+    "MixinChaosUpdateEvent",
     "MixinChunk",
     "MixinEnderInventory",
     "MixinEntity",
@@ -24,10 +26,10 @@
     "MixinWorldServer"
   ],
   "client": [
+    "ClientMixinEntityLivingBase",
     "MixinForgeCommandHandler",
     "MixinMinecraft",
-    "MixinWorldClient",
-    "ClientMixinEntityLivingBase"
+    "MixinWorldClient"
   ],
   "server": [],
   "required": false,

@@ -1,7 +1,11 @@
 package miku.lib.util;
 
+import com.chaoswither.chaoswither;
+import com.chaoswither.event.ChaosUpdateEvent;
+import com.chaoswither.event.DetermineEvent;
 import com.google.common.collect.Lists;
 import miku.lib.api.ProtectedEntity;
+import miku.lib.api.iChaosUpdateEvent;
 import miku.lib.api.iEntity;
 import miku.lib.api.iInventoryPlayer;
 import miku.lib.item.SpecialItem;
@@ -11,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -18,6 +23,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class EntityUtil {
+    public static ChaosUpdateEvent chaos_event;
+
     protected static List<Entity> DEAD = new ArrayList<>();
 
     protected static boolean Killing=false;
@@ -64,6 +71,15 @@ public class EntityUtil {
         DEAD.add(entity);
         Killing=true;
         ((iEntity)entity).kill();
+        if(Loader.isModLoaded("chaoswither")){
+            try {
+                chaoswither.happymode = false;
+                DetermineEvent.WITHERLIVE = false;
+                ChaosUpdateEvent.godlist.clear();
+                ((iChaosUpdateEvent)chaos_event).KILL();
+            } catch (Exception ignored) {
+            }
+        }
         Killing=false;
     }
 
