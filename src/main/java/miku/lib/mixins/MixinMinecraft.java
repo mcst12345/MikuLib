@@ -1,10 +1,12 @@
 package miku.lib.mixins;
 
+import miku.lib.api.iMinecraft;
 import miku.lib.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.block.model.ModelManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,8 +14,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Minecraft.class)
-public class MixinMinecraft {
+public class MixinMinecraft implements iMinecraft {
     @Shadow public EntityPlayerSP player;
+
+    @Shadow private ModelManager modelManager;
 
     @Inject(at = @At("HEAD"), method = "displayGuiScreen", cancellable = true)
     public void displayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
@@ -30,5 +34,10 @@ public class MixinMinecraft {
                 }
             }
         }
+    }
+
+    @Override
+    public ModelManager GetModelManager() {
+        return modelManager;
     }
 }
