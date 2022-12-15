@@ -3,7 +3,6 @@
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins",
   "mixins": [
-    "IMixinChaosUpdateEvent",
     "MixinBanIP",
     "MixinChaosUpdateEvent",
     "MixinChunk",
