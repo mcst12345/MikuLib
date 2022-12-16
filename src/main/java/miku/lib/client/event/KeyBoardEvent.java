@@ -62,8 +62,10 @@ public class KeyBoardEvent {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public static void Init(){
         ClientRegistry.registerKeyBinding(IN_GAME_FOCUS);
         ClientRegistry.registerKeyBinding(FUCK);
+        ClientRegistry.registerKeyBinding(TIME_STOP);
     }
 }
