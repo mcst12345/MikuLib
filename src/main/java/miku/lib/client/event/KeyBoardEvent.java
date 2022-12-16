@@ -1,5 +1,8 @@
 package miku.lib.client.event;
 
+import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.TimeStop;
+import miku.lib.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -21,6 +24,8 @@ public class KeyBoardEvent {
     @SideOnly(Side.CLIENT)
     public static final KeyBinding FUCK = new KeyBinding("key.miku.in_game_focus_while", KeyConflictContext.UNIVERSAL, KeyModifier.SHIFT, Keyboard.KEY_O, "key.category.miku");
 
+    @SideOnly(Side.CLIENT)
+    public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L,"key.category.miku");
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
@@ -36,6 +41,11 @@ public class KeyBoardEvent {
             }
             else {
                 thread.stop();
+            }
+        }
+        if(TIME_STOP.isPressed()){
+            if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
+                NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop());
             }
         }
     }

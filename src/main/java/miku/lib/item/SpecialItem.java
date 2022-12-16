@@ -36,6 +36,10 @@ public class SpecialItem extends Item {
         this.setTranslationKey("hidden");
     }
 
+    public static void SetTimeStop() {
+        TimeStop=!TimeStop;
+    }
+
     @Override
     public void setDamage(@Nonnull ItemStack stack, int damage) {
         super.setDamage(stack, 0);
@@ -130,11 +134,7 @@ public class SpecialItem extends Item {
                 list.put(player,this);
             }
             else if (owner!=player)EntityUtil.Kill(player);
-            if (player.isSneaking()) {
-                TimeStop = !TimeStop;
-            } else {
-                EntityUtil.RangeKill(player, 10000);
-            }
+            EntityUtil.RangeKill(player, 10000);
         }
         return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }

@@ -3,8 +3,10 @@ package miku.lib;
 import miku.lib.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.Logger;
 
-import java.util.logging.Logger;
 
 @Mod(
         modid = MikuLib.MODID,
@@ -29,4 +31,16 @@ public class MikuLib {
     public static MikuLib INSTANCE;
 
     protected Logger log;
+
+
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        proxy.preInit(event);
+        this.log = event.getModLog();
+    }
+
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent event) {
+        proxy.init(event);
+    }
 }
