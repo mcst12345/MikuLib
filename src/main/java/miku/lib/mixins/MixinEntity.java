@@ -250,7 +250,7 @@ public abstract class MixinEntity implements iEntity {
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
 
-    protected boolean isTimeStop;
+    protected boolean isTimeStop=false;
 
     @Override
     public void kill() {
