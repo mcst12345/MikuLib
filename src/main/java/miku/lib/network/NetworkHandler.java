@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public enum NetworkHandler {
     INSTANCE;
-    public final SimpleNetworkWrapper channel = NetworkRegistry.INSTANCE.newSimpleChannel("miku");
+    public final SimpleNetworkWrapper channel = NetworkRegistry.INSTANCE.newSimpleChannel("mikulib");
 
     NetworkHandler(){
         int index = 0;
