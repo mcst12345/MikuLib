@@ -136,6 +136,7 @@ public abstract class MixinWorld implements iWorld {
     @Overwrite
     public void updateEntities()
     {
+        EntityUtil.REMOVE((World)(Object)this);
         this.profiler.startSection("entities");
         this.profiler.startSection("global");
 
@@ -345,6 +346,7 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
         this.profiler.endSection();
+        EntityUtil.REMOVE((World)(Object)this);
     }
 
     /**

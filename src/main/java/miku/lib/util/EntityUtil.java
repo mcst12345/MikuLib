@@ -121,5 +121,7 @@ public class EntityUtil {
         Kill(list);
     }
 
-
+    public static void REMOVE(World world){
+        world.loadedEntityList.removeAll(DEAD);
+    }
 }
