@@ -107,12 +107,12 @@ public abstract class MixinWorld implements iWorld {
 
     @Inject(at=@At("HEAD"),method = "spawnEntity", cancellable = true)
     public void spawnEntity(Entity entityIn, CallbackInfoReturnable<Boolean> cir){
-        if(EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn))cir.setReturnValue(false);
+        if(EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))cir.setReturnValue(false);
     }
 
     @Inject(at=@At("HEAD"),method = "onEntityAdded", cancellable = true)
     public void onEntityAdded(Entity entityIn, CallbackInfo ci){
-        if(EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn))ci.cancel();
+        if(EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))ci.cancel();
     }
 
     @Inject(at=@At("HEAD"),method = "onEntityRemoved", cancellable = true)
