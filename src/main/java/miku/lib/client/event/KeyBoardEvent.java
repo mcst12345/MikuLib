@@ -40,7 +40,7 @@ public class KeyBoardEvent {
                 thread.start();
             }
             else {
-                thread.stop();
+                thread.enabled = ! thread.enabled;
             }
         }
         if(TIME_STOP.isPressed()){
@@ -52,12 +52,15 @@ public class KeyBoardEvent {
 
     static class fuck extends Thread{
         public boolean flag;
+        public boolean enabled = true;
 
         @Override
         public void run(){
             while(true){
-                if(flag)Minecraft.getMinecraft().setIngameFocus();
-                else Minecraft.getMinecraft().setIngameNotInFocus();
+                if(enabled){
+                    if (flag) Minecraft.getMinecraft().setIngameFocus();
+                    else Minecraft.getMinecraft().setIngameNotInFocus();
+                }
             }
         }
     }
