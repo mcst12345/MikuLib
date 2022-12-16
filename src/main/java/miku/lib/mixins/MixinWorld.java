@@ -5,6 +5,7 @@ import miku.lib.api.iChunk;
 import miku.lib.api.iEntity;
 import miku.lib.api.iWorld;
 import miku.lib.core.MikuCore;
+import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
@@ -146,7 +147,7 @@ public abstract class MixinWorld implements iWorld {
 
             try
             {
-                if(entity.updateBlocked || ((iEntity)entity).isTimeStop()) continue;
+                if(entity.updateBlocked || ((iEntity)entity).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity))) continue;
                 ++entity.ticksExisted;
                 entity.onUpdate();
             }
@@ -173,16 +174,16 @@ public abstract class MixinWorld implements iWorld {
                     throw new ReportedException(crashreport);
             }
 
-            if (entity.isDead && !EntityUtil.isProtected(entity))
+            if (entity.isDead && !EntityUtil.isProtected(entity) && !SpecialItem.isTimeStop())
             {
                 this.weatherEffects.remove(i--);
             }
         }
 
         this.profiler.endStartSection("remove");
-        this.loadedEntityList.removeAll(this.unloadedEntityList);
+        if(!SpecialItem.isTimeStop())this.loadedEntityList.removeAll(this.unloadedEntityList);
 
-        for (Entity entity1 : this.unloadedEntityList) {
+        if(!SpecialItem.isTimeStop())for (Entity entity1 : this.unloadedEntityList) {
             int j = entity1.chunkCoordX;
             int k1 = entity1.chunkCoordZ;
 
@@ -191,17 +192,18 @@ public abstract class MixinWorld implements iWorld {
             }
         }
 
-        for (Entity entity : this.unloadedEntityList) {
+        if(!SpecialItem.isTimeStop())for (Entity entity : this.unloadedEntityList) {
             this.onEntityRemoved(entity);
         }
 
-        this.unloadedEntityList.clear();
+        if(!SpecialItem.isTimeStop())this.unloadedEntityList.clear();
         this.tickPlayers();
         this.profiler.endStartSection("regular");
 
         for (int i1 = 0; i1 < this.loadedEntityList.size(); ++i1)
         {
             Entity entity2 = this.loadedEntityList.get(i1);
+            if(SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity2))continue;
             Entity entity3 = entity2.getRidingEntity();
 
             if (entity3 != null)
@@ -259,7 +261,7 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
 
-        if(!MikuCore.TileEntityUpdateBlocked){
+        if(!SpecialItem.isTimeStop()){
             this.profiler.endStartSection("blockEntities");
 
             this.processingLoadedTiles = true; //FML Move above remove to prevent CMEs

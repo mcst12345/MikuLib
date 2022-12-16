@@ -1,3 +1,9 @@
 #PARSE_ESCAPES
+
+#物品
 item.hidden.name=开发者物品
 itemGroup.miku=miku
+
+#按键
+key.miku.in_game_focus=In Game Focus
+key.miku.in_game_focus_while=Force In Game Focus

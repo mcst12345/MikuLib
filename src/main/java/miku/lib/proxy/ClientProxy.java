@@ -11,6 +11,7 @@ public class ClientProxy extends CommonProxy{
     @Override
     public void preInit(FMLPreInitializationEvent event){
         super.preInit(event);
+        System.out.println("Register Keys");
         KeyBoardEvent.Init();
         MinecraftForge.EVENT_BUS.register(new KeyBoardEvent());
     }

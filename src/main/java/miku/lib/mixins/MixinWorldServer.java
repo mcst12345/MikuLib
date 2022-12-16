@@ -1,5 +1,6 @@
 package miku.lib.mixins;
 
+import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -36,6 +37,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
         this.profiler.endStartSection("players");
 
         for (Entity entity : this.playerEntities) {
+            if(SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity))continue;
             Entity entity1 = entity.getRidingEntity();
 
             if (entity1 != null) {
