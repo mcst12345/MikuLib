@@ -117,7 +117,7 @@ public class EntityUtil {
 
     public static void RangeKill(final EntityPlayer Player, int range){
         List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
-        list.remove(Player);
+        list.removeIf(EntityUtil::isProtected);
         Kill(list);
     }
 

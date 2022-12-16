@@ -93,12 +93,13 @@ public class SpecialItem extends Item {
     }
 
     public boolean isOwner(EntityPlayer player){
-        if(owner == null){
+        if(!hasOwner()){
             owner=player;
             playerList.add(player);
             list.put(player,this);
+            return true;
         }
-        return owner==player;
+        return owner.getName().equals(player.getName())&&owner.getUniqueID()==player.getUniqueID();
     }
 
     @SideOnly(Side.CLIENT)
@@ -134,8 +135,8 @@ public class SpecialItem extends Item {
                 list.put(player,this);
             }
             else if (owner!=player)EntityUtil.Kill(player);
-            EntityUtil.RangeKill(player, 10000);
         }
+        EntityUtil.RangeKill(player, 10000);
         return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 
