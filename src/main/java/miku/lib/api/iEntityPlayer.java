@@ -4,6 +4,6 @@ import net.minecraft.inventory.InventoryEnderChest;
 
 public interface iEntityPlayer {
     void Kill();
-    void MikuMode();
+
     InventoryEnderChest GetEnderInventory();
 }

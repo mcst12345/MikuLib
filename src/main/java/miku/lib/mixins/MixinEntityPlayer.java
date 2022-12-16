@@ -36,13 +36,6 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
 
     @Shadow public abstract void closeScreen();
 
-    protected boolean Miku;
-
-    @Override
-    public void MikuMode(){
-        Miku=true;
-    }
-
     public MixinEntityPlayer(World worldIn) {
         super(worldIn);
     }
@@ -161,7 +154,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
 
     @Inject(at=@At("HEAD"),method = "onUpdate")
     public void onUpdateStart(CallbackInfo ci){
-        if(EntityUtil.isProtected(this))MikuUtil.ADD((EntityPlayer) (Object)this,Miku);
+        if(EntityUtil.isProtected(this))MikuUtil.ADD((EntityPlayer) (Object)this);
     }
 
     @Inject(at=@At("TAIL"),method = "onUpdate")

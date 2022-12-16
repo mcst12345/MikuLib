@@ -5,7 +5,6 @@ package miku.lib.config;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.File;
@@ -20,6 +19,14 @@ public class MikuConfig {
     public static final List<String> guiFlags = Lists.newArrayList();
     public static final Map<String, ConfigField> flagAnnotations = Maps.newHashMap();
     public static final Map<String, Field> flagFields = Maps.newHashMap();
+
+    @ConfigField(
+            type = {ConfigField.ConfigType.CONFIG},
+            comment = "",
+            valueType = ConfigField.ValurType.BOOLEAN,
+            booleanDefaultValue = true
+    )
+    public static boolean UseMikuInsteadOfDevItemIfPossible;
 
     static {
         try {

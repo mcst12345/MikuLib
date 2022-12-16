@@ -43,7 +43,7 @@ public class EntityUtil {
                             return true;
                         } else {
                             ((iInventoryPlayer) player.inventory).clear();
-                            EntityUtil.Kill(player);
+                            return false;
                         }
                     }
                 }
@@ -53,7 +53,7 @@ public class EntityUtil {
                         return true;
                     } else {
                         ((iInventoryPlayer) player.inventory).clear();
-                        EntityUtil.Kill(player);
+                        return false;
                     }
                 }
             }
