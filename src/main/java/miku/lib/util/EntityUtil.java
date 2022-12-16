@@ -39,7 +39,7 @@ public class EntityUtil {
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                     ItemStack stack = player.inventory.getStackInSlot(i);
                     if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
-                        if (((SpecialItem) stack.getItem()).isOwner(player)) {
+                        if (((SpecialItem) stack.getItem()).isOwner(stack,player)) {
                             return true;
                         } else {
                             ((iInventoryPlayer) player.inventory).clear();
@@ -49,7 +49,7 @@ public class EntityUtil {
                 }
                 ItemStack stack = player.inventory.getItemStack();
                 if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
-                    if (((SpecialItem) stack.getItem()).isOwner(player)) {
+                    if (((SpecialItem) stack.getItem()).isOwner(stack,player)) {
                         return true;
                     } else {
                         ((iInventoryPlayer) player.inventory).clear();

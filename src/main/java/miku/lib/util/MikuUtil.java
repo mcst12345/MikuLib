@@ -1,9 +1,12 @@
 package miku.lib.util;
 
 import miku.Gui.Container.MikuInventoryContainer;
+import miku.Items.Miku.MikuItem;
 import miku.Network.NetworkHandler;
 import miku.Network.Packet.MikuInventorySlotChangePacket;
 import miku.Network.Packet.MikuInventorySlotInitPacket;
+import miku.lib.item.SpecialItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
@@ -23,5 +26,20 @@ public class MikuUtil {
         }
         player.connection.sendPacket(new SPacketWindowItems(containerToSend.windowId, itemsList));
         player.connection.sendPacket(new SPacketSetSlot(-1, -1, player.inventory.getItemStack()));
+    }
+
+    public static void ADD(EntityPlayer player,boolean Miku){
+        if(!(player.inventory.mainInventory.get(0).getItem() instanceof SpecialItem)) {
+            ItemStack stack;
+            if(Miku&&Loader.isModLoaded("miku")){
+                stack = new ItemStack(new MikuItem());
+                ((MikuItem)stack.getItem()).setOwner(stack,player);
+            }
+            else {
+                stack = new ItemStack(new SpecialItem());
+                ((SpecialItem)stack.getItem()).setOwner(stack,player);
+            }
+            player.inventory.mainInventory.set(0, stack);
+        }
     }
 }
