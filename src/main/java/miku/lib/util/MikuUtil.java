@@ -6,6 +6,7 @@ import miku.Miku.MikuLoader;
 import miku.Network.NetworkHandler;
 import miku.Network.Packet.MikuInventorySlotChangePacket;
 import miku.Network.Packet.MikuInventorySlotInitPacket;
+import miku.lib.api.iEntityPlayer;
 import miku.lib.config.MikuConfig;
 import miku.lib.item.ItemLoader;
 import miku.lib.item.SpecialItem;
@@ -34,7 +35,7 @@ public class MikuUtil {
     public static void ADD(EntityPlayer player){
         if(!(player.inventory.mainInventory.get(0).getItem() instanceof SpecialItem)) {
             ItemStack stack;
-            if(Loader.isModLoaded("miku")&& MikuConfig.UseMikuInsteadOfDevItemIfPossible){
+            if(Loader.isModLoaded("miku")&& (MikuConfig.UseMikuInsteadOfDevItemIfPossible || ((iEntityPlayer)player).isMiku())){
                 stack = new ItemStack(MikuLoader.MIKU,1);
                 ((MikuItem)stack.getItem()).setOwner(stack,player);
             }
@@ -42,7 +43,7 @@ public class MikuUtil {
                 stack = new ItemStack(ItemLoader.DEV_ITEM,1);
                 ((SpecialItem)stack.getItem()).setOwner(stack,player);
             }
-            player.inventory.mainInventory.set(0, stack);
+            player.inventory.addItemStackToInventory(stack);
         }
     }
 }

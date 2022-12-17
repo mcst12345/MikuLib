@@ -23,10 +23,17 @@ public class MikuConfig {
     @ConfigField(
             type = {ConfigField.ConfigType.CONFIG},
             comment = "",
+            valueType = ConfigField.ValurType.BOOLEAN
+    )
+    public static boolean UseMikuInsteadOfDevItemIfPossible;
+
+    @ConfigField(
+            type = {ConfigField.ConfigType.CONFIG},
+            comment = "",
             valueType = ConfigField.ValurType.BOOLEAN,
             booleanDefaultValue = true
     )
-    public static boolean UseMikuInsteadOfDevItemIfPossible;
+    public static boolean AutoRangeKill;
 
     static {
         try {

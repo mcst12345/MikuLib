@@ -6,4 +6,8 @@ public interface iEntityPlayer {
     void Kill();
 
     InventoryEnderChest GetEnderInventory();
+
+    boolean isMiku();
+
+    void setMiku();
 }

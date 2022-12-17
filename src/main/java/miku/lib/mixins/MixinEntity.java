@@ -1,6 +1,7 @@
 package miku.lib.mixins;
 
 import miku.lib.api.*;
+import miku.lib.config.MikuConfig;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ExitGame;
 import miku.lib.util.EntityUtil;
@@ -437,7 +438,7 @@ public abstract class MixinEntity implements iEntity {
             TimeStop();
             ci.cancel();
         }
-        if(EntityUtil.isProtected(this)){
+        if(EntityUtil.isProtected(this) && MikuConfig.AutoRangeKill){
             List<Entity> list = world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB(posX - 20, posY - 20, posZ - 20, posX + 20, posY + 20, posZ + 20));
             EntityUtil.Kill(list);
         }
