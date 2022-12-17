@@ -45,7 +45,7 @@ public class KeyBoardEvent {
         }
         if(TIME_STOP.isPressed()){
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
-                NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop());
+                NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension));
             }
         }
     }
