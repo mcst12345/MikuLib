@@ -4,10 +4,7 @@ import com.chaoswither.chaoswither;
 import com.chaoswither.event.ChaosUpdateEvent;
 import com.chaoswither.event.DetermineEvent;
 import com.google.common.collect.Lists;
-import miku.lib.api.ProtectedEntity;
-import miku.lib.api.iChaosUpdateEvent;
-import miku.lib.api.iEntity;
-import miku.lib.api.iInventoryPlayer;
+import miku.lib.api.*;
 import miku.lib.item.SpecialItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,6 +31,7 @@ public class EntityUtil {
         Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
             EntityPlayer player = (EntityPlayer) entity;
+            if(((iEntityPlayer)player).isMiku() && Loader.isModLoaded("miku"))return true;
             if(SpecialItem.isInList(player))return true;
             if (player.inventory != null) {
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
@@ -115,7 +113,7 @@ public class EntityUtil {
         Kill(entities);
     }
 
-    public static void RangeKill(final EntityPlayer Player, int range){
+    public static void RangeKill(final Entity Player, int range){
         List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
         list.removeIf(EntityUtil::isProtected);
         Kill(list);
