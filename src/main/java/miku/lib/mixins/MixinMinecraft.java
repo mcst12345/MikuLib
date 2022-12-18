@@ -40,6 +40,18 @@ import java.io.IOException;
 
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
+    protected boolean protect = false;
+
+    @Override
+    public boolean protect(){
+        return protect;
+    }
+
+    @Override
+    public void SetProtected(){
+        protect=true;
+    }
+
     @Override
     public void SetTimeStop(){
         TimeStop=!TimeStop;

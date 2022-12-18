@@ -6,4 +6,8 @@ public interface iMinecraft {
     ModelManager GetModelManager();
 
     void SetTimeStop();
+
+    void SetProtected();
+
+    boolean protect();
 }

@@ -33,6 +33,7 @@ public class KeyBoardEvent {
         if(IN_GAME_FOCUS.isPressed()){
             if(Minecraft.getMinecraft().inGameHasFocus)Minecraft.getMinecraft().setIngameNotInFocus();
             else Minecraft.getMinecraft().setIngameFocus();
+            thread.flag = !thread.flag;
         }
         if(FUCK.isPressed()){
             if(!thread.isAlive()) {

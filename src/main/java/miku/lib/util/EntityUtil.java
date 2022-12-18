@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import miku.lib.api.*;
 import miku.lib.core.MikuCore;
 import miku.lib.item.SpecialItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -34,14 +35,24 @@ public class EntityUtil {
         Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
             if(MikuCore.RescueMode)return true;
+            if(entity.world.isRemote){
+                if(((iMinecraft) Minecraft.getMinecraft()).protect())return true;
+            }
             EntityPlayer player = (EntityPlayer) entity;
-            if(((iEntityPlayer)player).isMiku() && Loader.isModLoaded("miku"))return true;
-            if(SpecialItem.isInList(player))return true;
+            if(((iEntityPlayer)player).isMiku() && Loader.isModLoaded("miku")) {
+                if(entity.world.isRemote)((iMinecraft) Minecraft.getMinecraft()).SetProtected();
+                return true;
+            }
+            if(SpecialItem.isInList(player)) {
+                if(entity.world.isRemote)((iMinecraft) Minecraft.getMinecraft()).SetProtected();
+                return true;
+            }
             if (player.inventory != null) {
                 for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
                     ItemStack stack = player.inventory.getStackInSlot(i);
                     if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
                         if (((SpecialItem) stack.getItem()).isOwner(stack,player)) {
+                            if(entity.world.isRemote)((iMinecraft) Minecraft.getMinecraft()).SetProtected();
                             return true;
                         } else {
                             ((iInventoryPlayer) player.inventory).clear();
@@ -52,6 +63,7 @@ public class EntityUtil {
                 ItemStack stack = player.inventory.getItemStack();
                 if (!stack.isEmpty() && stack.getItem() instanceof SpecialItem) {
                     if (((SpecialItem) stack.getItem()).isOwner(stack,player)) {
+                        if(entity.world.isRemote)((iMinecraft) Minecraft.getMinecraft()).SetProtected();
                         return true;
                     } else {
                         ((iInventoryPlayer) player.inventory).clear();
