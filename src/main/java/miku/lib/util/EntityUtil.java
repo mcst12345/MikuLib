@@ -5,6 +5,7 @@ import com.chaoswither.event.ChaosUpdateEvent;
 import com.chaoswither.event.DetermineEvent;
 import com.google.common.collect.Lists;
 import miku.lib.api.*;
+import miku.lib.core.MikuCore;
 import miku.lib.item.SpecialItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,6 +31,7 @@ public class EntityUtil {
         if(!(object instanceof Entity))return false;
         Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
+            if(MikuCore.RescueMod)return true;
             EntityPlayer player = (EntityPlayer) entity;
             if(((iEntityPlayer)player).isMiku() && Loader.isModLoaded("miku"))return true;
             if(SpecialItem.isInList(player))return true;
