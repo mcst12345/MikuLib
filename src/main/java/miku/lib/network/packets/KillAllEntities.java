@@ -9,7 +9,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class KillAllEntities implements IMessage {
     public KillAllEntities(){}
@@ -36,7 +37,7 @@ public class KillAllEntities implements IMessage {
         public IMessage onMessage(KillAllEntities message, MessageContext ctx) {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
             World world = server.getWorld(message.getWorldID());
-            Collection<Entity> entities = world.loadedEntityList;
+            List<Entity> entities = new ArrayList<>(world.loadedEntityList);
             EntityUtil.Kill(entities);
             return null;
         }
