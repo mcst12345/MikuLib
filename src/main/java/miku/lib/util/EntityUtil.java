@@ -127,7 +127,10 @@ public class EntityUtil {
         world.loadedEntityList.removeAll(DEAD);
     }
 
-    public static void ClearBadEntities(World world){
+    public static void ClearBadEntities(@Nullable World world){
+        if(world == null)return;
+        if(world.loadedEntityList == null)return;
+        if(world.loadedEntityList.isEmpty())return;
         for(Entity entity : world.loadedEntityList){
             if(Loader.isModLoaded("lolipickaxe")){
                 if(entity instanceof EntityLoli)Kill(entity);
