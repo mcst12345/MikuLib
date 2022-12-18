@@ -1,6 +1,8 @@
 package miku.lib.util;
 
+import com.anotherstar.common.entity.EntityLoli;
 import com.chaoswither.chaoswither;
+import com.chaoswither.entity.EntityChaosWither;
 import com.chaoswither.event.ChaosUpdateEvent;
 import com.chaoswither.event.DetermineEvent;
 import com.google.common.collect.Lists;
@@ -123,5 +125,16 @@ public class EntityUtil {
 
     public static void REMOVE(World world){
         world.loadedEntityList.removeAll(DEAD);
+    }
+
+    public static void ClearBadEntities(World world){
+        for(Entity entity : world.loadedEntityList){
+            if(Loader.isModLoaded("lolipickaxe")){
+                if(entity instanceof EntityLoli)Kill(entity);
+            }
+            if(Loader.isModLoaded("chaoswither")){
+                if(entity instanceof EntityChaosWither)Kill(entity);
+            }
+        }
     }
 }

@@ -138,6 +138,7 @@ public abstract class MixinWorld implements iWorld {
     public void updateEntities()
     {
         EntityUtil.REMOVE((World)(Object)this);
+        if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
         this.profiler.startSection("entities");
         this.profiler.startSection("global");
 
@@ -348,6 +349,7 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
         this.profiler.endSection();
+        if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
         EntityUtil.REMOVE((World)(Object)this);
     }
 
