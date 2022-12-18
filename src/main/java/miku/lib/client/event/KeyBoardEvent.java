@@ -1,6 +1,7 @@
 package miku.lib.client.event;
 
 import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.KillAllEntities;
 import miku.lib.network.packets.TimeStop;
 import miku.lib.util.EntityUtil;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,10 @@ public class KeyBoardEvent {
     @SideOnly(Side.CLIENT)
     public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L,"key.category.miku");
 
+    public static final KeyBinding KILL_ALL = new KeyBinding("key.miku.kill_all",KeyConflictContext.UNIVERSAL,KeyModifier.ALT,Keyboard.KEY_K,"key.category.miku");
+
+
+
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onKeyPressed(InputEvent.KeyInputEvent event){
@@ -47,6 +52,11 @@ public class KeyBoardEvent {
         if(TIME_STOP.isPressed()){
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
                 NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension));
+            }
+        }
+        if(KILL_ALL.isPressed()){
+            if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
+                NetworkHandler.INSTANCE.sendMessageToServer(new KillAllEntities(Minecraft.getMinecraft().player.dimension));
             }
         }
     }
