@@ -31,7 +31,7 @@ public class EntityUtil {
         if(!(object instanceof Entity))return false;
         Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
-            if(MikuCore.RescueMod)return true;
+            if(MikuCore.RescueMode)return true;
             EntityPlayer player = (EntityPlayer) entity;
             if(((iEntityPlayer)player).isMiku() && Loader.isModLoaded("miku"))return true;
             if(SpecialItem.isInList(player))return true;

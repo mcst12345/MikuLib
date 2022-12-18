@@ -13,7 +13,7 @@ import java.util.Map;
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.Name("MikuLib")
 public class MikuCore implements IFMLLoadingPlugin {
-    public static boolean RescueMod=false;
+    public static boolean RescueMode=false;
 
     public MikuCore(){
         MikuConfig.init();
