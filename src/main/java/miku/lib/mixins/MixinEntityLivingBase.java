@@ -30,6 +30,46 @@ import java.util.Map;
 
 @Mixin(value = EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements iEntityLivingBase {
+    @Override
+    public int idleTime(){
+        return idleTime;
+    }
+
+    @Override
+    public void SetIdleTime(int value){
+        idleTime = value;
+    }
+
+    @Override
+    public int recentlyHit(){
+        return recentlyHit;
+    }
+
+    @Override
+    public void SetRecentlyHit(int value){
+        recentlyHit = value;
+    }
+
+    @Override
+    public int revengeTimer(){
+        return revengeTimer;
+    }
+
+    @Override
+    public void SetRevengeTimer(int value){
+        revengeTimer = value;
+    }
+
+    @Override
+    public float landMovementFactor(){
+        return landMovementFactor;
+    }
+
+    @Override
+    public void SetLandMovementFactor(int value){
+        landMovementFactor = value;
+    }
+
     @Shadow protected int recentlyHit;
 
     @Shadow @Final private static DataParameter<Float> HEALTH;
@@ -54,11 +94,36 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Shadow protected EntityPlayer attackingPlayer;
 
+    @Override
+    public EntityPlayer attackingPlayer(){
+        return attackingPlayer;
+    }
+
+    @Override
+    public void SetAttackingPlayer(EntityPlayer player){
+        attackingPlayer = player;
+    }
+
     @Shadow private float absorptionAmount;
+
+    @Override
+    public float absorptionAmount(){
+        return absorptionAmount;
+    }
+
+    @Override
+    public void SetAbsorptionAmount(float value){
+        absorptionAmount = value;
+    }
 
     @Shadow private AbstractAttributeMap attributeMap;
 
     @Shadow @Final private Map<Potion, PotionEffect> activePotionsMap;
+
+    @Override
+    public Map<Potion, PotionEffect> GetPotion(){
+        return activePotionsMap;
+    }
 
     @Shadow private boolean potionsNeedUpdate;
 
@@ -74,6 +139,11 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     public MixinEntityLivingBase(World worldIn) {
         super(worldIn);
+    }
+
+    @Inject(at=@At("HEAD"),method = "addPotionEffect", cancellable = true)
+    public void addPotionEffect(PotionEffect potioneffectIn, CallbackInfo ci){
+        if(EntityUtil.isProtected(this))ci.cancel();
     }
 
     @Override
@@ -132,6 +202,11 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             this.dataManager.set(HEALTH, 0.0f);
             ci.cancel();
         }
+    }
+
+    @Override
+    public void SetHealth(float value){
+        this.dataManager.set(HEALTH,value);
     }
 
     @Inject(at = @At("HEAD"), method = "damageEntity", cancellable = true)

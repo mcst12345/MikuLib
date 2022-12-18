@@ -24,9 +24,18 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
     @Shadow
     private final NonNullList<ItemStack> inventoryHands = NonNullList.withSize(2, ItemStack.EMPTY);
 
+    public NonNullList<ItemStack> inventoryHands(){
+        return inventoryHands;
+    }
+
     @Final
     @Shadow
     private final NonNullList<ItemStack> inventoryArmor = NonNullList.withSize(4, ItemStack.EMPTY);
+
+    @Override
+    public NonNullList<ItemStack> inventoryArmor(){
+        return inventoryArmor;
+    }
 
     public MixinEntityLiving(World worldIn) {
         super(worldIn);
@@ -34,8 +43,18 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
 
     @Override
     public void Kill(){
+        ClearAI();
+        ClearInventory();
+    }
+
+    @Override
+    public void ClearAI(){
         byte b0 = ((iEntity) this).GetDataManager().get(AI_FLAGS);
         ((iEntity) this).GetDataManager().set(AI_FLAGS, (byte) (b0 | 1));
+    }
+
+    @Override
+    public void ClearInventory(){
         inventoryHands.set(0, ItemStack.EMPTY);
         inventoryHands.set(1, ItemStack.EMPTY);
         inventoryArmor.set(0, ItemStack.EMPTY);

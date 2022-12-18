@@ -8,4 +8,6 @@ public interface ProtectedEntity {
     void SetHealth(int health);
 
     int GetHealth();
+
+    void Hurt(int amount);
 }
