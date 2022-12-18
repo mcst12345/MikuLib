@@ -7,6 +7,7 @@ import miku.Network.NetworkHandler;
 import miku.Network.Packet.MikuInventorySlotChangePacket;
 import miku.Network.Packet.MikuInventorySlotInitPacket;
 import miku.lib.api.iEntityPlayer;
+import miku.lib.api.iInventoryPlayer;
 import miku.lib.config.MikuConfig;
 import miku.lib.item.ItemLoader;
 import miku.lib.item.SpecialItem;
@@ -43,7 +44,7 @@ public class MikuUtil {
                 stack = new ItemStack(ItemLoader.DEV_ITEM,1);
                 ((SpecialItem)stack.getItem()).setOwner(stack,player);
             }
-            player.inventory.addItemStackToInventory(stack);
+            ((iInventoryPlayer)player.inventory).ADD(stack);
         }
     }
 }
