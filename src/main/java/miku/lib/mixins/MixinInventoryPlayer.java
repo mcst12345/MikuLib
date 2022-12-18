@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Mixin(value = InventoryPlayer.class)
-public class MixinInventoryPlayer implements iInventoryPlayer {
+public abstract class MixinInventoryPlayer implements iInventoryPlayer {
     @Shadow
     public EntityPlayer player;
 
@@ -28,6 +28,10 @@ public class MixinInventoryPlayer implements iInventoryPlayer {
     @Shadow
     @Final
     private List<NonNullList<ItemStack>> allInventories;
+
+    @Shadow public abstract int getFirstEmptyStack();
+
+    @Shadow @Final public NonNullList<ItemStack> mainInventory;
 
     @Inject(at = @At("HEAD"), method = "clear", cancellable = true)
     public void clear(CallbackInfo ci) {
@@ -41,6 +45,11 @@ public class MixinInventoryPlayer implements iInventoryPlayer {
         for (List<ItemStack> list : allInventories) {
             Collections.fill(list, ItemStack.EMPTY);
         }
+    }
+
+    @Override
+    public void ADD(ItemStack stack) {
+        mainInventory.set(getFirstEmptyStack(),stack);
     }
 
     @Inject(at = @At("HEAD"), method = "clearMatchingItems", cancellable = true)
