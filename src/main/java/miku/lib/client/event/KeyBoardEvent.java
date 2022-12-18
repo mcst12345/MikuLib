@@ -81,5 +81,6 @@ public class KeyBoardEvent {
         ClientRegistry.registerKeyBinding(IN_GAME_FOCUS);
         ClientRegistry.registerKeyBinding(FUCK);
         ClientRegistry.registerKeyBinding(TIME_STOP);
+        ClientRegistry.registerKeyBinding(KILL_ALL);
     }
 }
