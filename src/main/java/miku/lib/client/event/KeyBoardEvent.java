@@ -6,6 +6,7 @@ import miku.lib.network.packets.TimeStop;
 import miku.lib.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -14,6 +15,9 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class KeyBoardEvent {
@@ -57,6 +61,8 @@ public class KeyBoardEvent {
         if(KILL_ALL.isPressed()){
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
                 NetworkHandler.INSTANCE.sendMessageToServer(new KillAllEntities(Minecraft.getMinecraft().player.dimension));
+                List<Entity> entities = new ArrayList<>(Minecraft.getMinecraft().player.world.loadedEntityList);
+                EntityUtil.Kill(entities);
             }
         }
     }
