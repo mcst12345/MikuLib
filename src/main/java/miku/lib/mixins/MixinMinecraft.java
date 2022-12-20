@@ -115,7 +115,6 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Inject(at = @At("HEAD"), method = "displayGuiScreen", cancellable = true)
     public void displayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
-        if(guiScreenIn!=null)System.out.println(guiScreenIn);
         if(EntityUtil.isProtected(player)){
             if (guiScreenIn instanceof GuiGameOver) {
                 guiScreenIn.onGuiClosed();

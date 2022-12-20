@@ -19,6 +19,7 @@
     "MixinItemStack",
     "MixinNetHandlerPlayServer",
     "MixinPlayerList",
+    "MixinSaveHandler",
     "MixinSimpleChannelHandlerWrapper",
     "MixinSimpleNetworkWrapper",
     "MixinWorld",

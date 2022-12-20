@@ -72,7 +72,10 @@ public class EntityUtil {
                 }
             }
         }
-        return entity instanceof ProtectedEntity;
+        if(entity instanceof ProtectedEntity){
+            return !((ProtectedEntity) entity).CanBeKilled() || !((ProtectedEntity) entity).DEAD();
+        }
+        return false;
     }
 
     public static boolean isDEAD(Entity entity){
