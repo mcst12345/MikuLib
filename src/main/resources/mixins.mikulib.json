@@ -17,6 +17,7 @@
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
     "MixinItemStack",
+    "MixinLauncherClassLoader",
     "MixinNetHandlerPlayServer",
     "MixinPlayerList",
     "MixinSaveHandler",

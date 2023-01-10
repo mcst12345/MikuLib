@@ -79,6 +79,7 @@ public class EntityUtil {
     }
 
     public static boolean isDEAD(Entity entity){
+        if(entity == null)return false;
         return DEAD.contains(entity) || ((iEntity)entity).isDEAD();
     }
 

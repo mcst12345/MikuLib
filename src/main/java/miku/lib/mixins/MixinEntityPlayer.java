@@ -3,6 +3,7 @@ package miku.lib.mixins;
 import miku.lib.api.iEnderInventory;
 import miku.lib.api.iEntityPlayer;
 import miku.lib.api.iInventoryPlayer;
+import miku.lib.api.ProtectedEntity;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import miku.lib.util.MikuUtil;
@@ -147,7 +148,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
 
     @Inject(at = @At("HEAD"), method = "attackTargetEntityWithCurrentItem", cancellable = true)
     public void attackTargetEntityWithCurrentItem(Entity targetEntity, CallbackInfo ci){
-        if (EntityUtil.isProtected(this) || EntityUtil.isProtected(targetEntity)) {
+        if (EntityUtil.isProtected(this) || (EntityUtil.isProtected(targetEntity)&&!((ProtectedEntity)targetEntity).CanBeKilled())) {
             if(!EntityUtil.isProtected(targetEntity))EntityUtil.Kill(targetEntity);
             ci.cancel();
         }
