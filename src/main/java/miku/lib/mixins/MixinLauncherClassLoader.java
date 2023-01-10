@@ -22,7 +22,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-@Mixin(value = LaunchClassLoader.class)
+@Mixin(value = LaunchClassLoader.class,remap = false)
 public abstract class MixinLauncherClassLoader extends URLClassLoader {
     @Shadow private Set<String> invalidClasses;
 
@@ -65,6 +65,7 @@ public abstract class MixinLauncherClassLoader extends URLClassLoader {
      * @reason FUCK
      */
     @Overwrite
+    @Override
     public Class<?> findClass(final String name) throws ClassNotFoundException {
 
         for (final String exception : classLoaderExceptions) {

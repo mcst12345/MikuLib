@@ -1,6 +1,7 @@
 package miku.lib.mixins;
 
 import com.google.common.collect.ImmutableSetMultimap;
+import miku.lib.api.ProtectedEntity;
 import miku.lib.api.iChunk;
 import miku.lib.api.iEntity;
 import miku.lib.api.iWorld;
@@ -94,6 +95,7 @@ public abstract class MixinWorld implements iWorld {
 
     public void remove(Entity entity){
         this.loadedEntityList.remove(entity);
+        weatherEffects.remove(entity);
         for (IWorldEventListener eventListener : this.eventListeners) {
             eventListener.onEntityRemoved(entity);
         }
@@ -139,6 +141,7 @@ public abstract class MixinWorld implements iWorld {
     {
         EntityUtil.REMOVE((World)(Object)this);
         if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
+        if(EntityUtil.isKilling())return;
         this.profiler.startSection("entities");
         this.profiler.startSection("global");
 
@@ -175,7 +178,7 @@ public abstract class MixinWorld implements iWorld {
                     throw new ReportedException(crashreport);
             }
 
-            if (entity.isDead && !EntityUtil.isProtected(entity) && !SpecialItem.isTimeStop())
+            if (entity.isDead && !EntityUtil.isProtected(entity) && !SpecialItem.isTimeStop() && !(entity instanceof ProtectedEntity))
             {
                 this.weatherEffects.remove(i--);
             }
@@ -255,7 +258,7 @@ public abstract class MixinWorld implements iWorld {
                     this.getChunk(l1, i2).removeEntity(entity2);
                 }
 
-                this.loadedEntityList.remove(i1--);
+                this.loadedEntityList.remove(entity2);
                 this.onEntityRemoved(entity2);
             }
 
