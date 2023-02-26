@@ -31,6 +31,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements iEntityPlayer {
 
+    protected int mode=-1;
+
+    @Override
+    public void SetGameMode(int mode){
+        this.mode = mode;
+    }
+
+    @Override
+    public int GetGameMode(){
+        return mode;
+    }
+
     @Shadow public abstract void addStat(StatBase stat);
 
     @Shadow protected InventoryEnderChest enderChest;

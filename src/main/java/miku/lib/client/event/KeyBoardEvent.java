@@ -1,6 +1,8 @@
 package miku.lib.client.event;
 
-import miku.lib.network.NetworkHandler;
+import miku.Network.NetworkHandler;
+import miku.lib.api.iEntityPlayer;
+import miku.lib.network.packets.GameModeChange;
 import miku.lib.network.packets.KillAllEntities;
 import miku.lib.network.packets.TimeStop;
 import miku.lib.util.EntityUtil;
@@ -67,6 +69,13 @@ public class KeyBoardEvent {
                 EntityUtil.Kill(entities);
             }
         }
+        if(GAME_MODE.isPressed()){
+            int mode;
+            int current=((iEntityPlayer)Minecraft.getMinecraft().player).GetGameMode();
+            if(current == -1 || current == 3)mode=0;
+            else mode=current+1;
+            NetworkHandler.INSTANCE.sendMessageToServer(new GameModeChange(mode,Minecraft.getMinecraft().player.dimension,Minecraft.getMinecraft().player.getEntityId()));
+        }
     }
 
     static class fuck extends Thread{
@@ -90,5 +99,6 @@ public class KeyBoardEvent {
         ClientRegistry.registerKeyBinding(FUCK);
         ClientRegistry.registerKeyBinding(TIME_STOP);
         ClientRegistry.registerKeyBinding(KILL_ALL);
+        ClientRegistry.registerKeyBinding(GAME_MODE);
     }
 }

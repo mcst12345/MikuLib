@@ -2,6 +2,7 @@ package miku.lib.mixins;
 
 import com.mojang.authlib.GameProfile;
 import miku.lib.api.iEntityPlayerMP;
+import miku.lib.api.iEntityPlayer;
 import miku.lib.util.EntityUtil;
 import miku.lib.util.MikuUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,10 +64,24 @@ public abstract class MixinEntityPlayerMP extends EntityPlayer implements iEntit
     @Inject(at = @At("HEAD"), method = "setGameType", cancellable = true)
     public void setGameType(GameType gameType, CallbackInfo ci) {
         if (EntityUtil.isProtected(this)) {
-            //TODO
-            ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.CREATIVE);
-            ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.CREATIVE.getID()));
-            ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+            int i = ((iEntityPlayer)this).GetGameMode();
+            if(i == 0) {
+                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.CREATIVE);
+                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.CREATIVE.getID()));
+                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+            } else if(i == 1) {
+                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.SURVIVAL);
+                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.SURVIVAL.getID()));
+                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+            } else if(i == 2) {
+                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.ADVENTURE);
+                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.ADVENTURE.getID()));
+                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+            } else if(i == 3){
+                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.SPECTATOR);
+                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.SPECTATOR.getID()));
+                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+            }
             ci.cancel();
         }
     }

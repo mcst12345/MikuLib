@@ -10,4 +10,8 @@ public interface iEntityPlayer {
     boolean isMiku();
 
     void setMiku();
+
+    void SetGameMode(int mode);
+
+    int GetGameMode();
 }

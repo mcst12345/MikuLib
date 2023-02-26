@@ -1,9 +1,6 @@
 package miku.lib.network;
 
-import miku.lib.network.packets.ClientTimeStop;
-import miku.lib.network.packets.ExitGame;
-import miku.lib.network.packets.KillAllEntities;
-import miku.lib.network.packets.TimeStop;
+import miku.lib.network.packets.*;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -20,6 +17,7 @@ public enum NetworkHandler {
         channel.registerMessage(TimeStop.MessageHandler.class,TimeStop.class, index++, Side.SERVER);
         channel.registerMessage(ClientTimeStop.MessageHandler.class,ClientTimeStop.class,index++,Side.CLIENT);
         channel.registerMessage(KillAllEntities.MessageHandler.class,KillAllEntities.class,index++,Side.SERVER);
+        channel.registerMessage(GameModeChange.MessageHandler.class,GameModeChange.class,index++,Side.SERVER);
     }
 
     public void sendMessageToServer(IMessage msg) {
