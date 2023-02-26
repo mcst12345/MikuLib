@@ -65,6 +65,7 @@ public abstract class MixinEntityPlayerMP extends EntityPlayer implements iEntit
     public void setGameType(GameType gameType, CallbackInfo ci) {
         if (EntityUtil.isProtected(this)) {
             int i = ((iEntityPlayer)this).GetGameMode();
+            System.out.println("change game type");
             if(i == 0) {
                 ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.CREATIVE);
                 ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.CREATIVE.getID()));

@@ -70,11 +70,19 @@ public class KeyBoardEvent {
             }
         }
         if(GAME_MODE.isPressed()){
-            int mode;
-            int current=((iEntityPlayer)Minecraft.getMinecraft().player).GetGameMode();
-            if(current == -1 || current == 3)mode=0;
-            else mode=current+1;
-            NetworkHandler.INSTANCE.sendMessageToServer(new GameModeChange(mode,Minecraft.getMinecraft().player.dimension,Minecraft.getMinecraft().player.getEntityId()));
+            if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
+                int mode;
+                int current = ((iEntityPlayer) Minecraft.getMinecraft().player).GetGameMode();
+                if (current == -1 || current == 3) {
+                    System.out.println("Set Game Mode to 0.");
+                    mode = 0;
+                    ((iEntityPlayer) Minecraft.getMinecraft().player).SetGameMode(0);
+                } else {
+                    mode = current + 1;
+                    ((iEntityPlayer) Minecraft.getMinecraft().player).SetGameMode(mode);
+                }
+                NetworkHandler.INSTANCE.sendMessageToServer(new GameModeChange(mode, Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
+            }
         }
     }
 
