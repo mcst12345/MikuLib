@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = EntityPlayerMP.class)
 public abstract class MixinEntityPlayerMP extends EntityPlayer implements iEntityPlayerMP {
 
+
     @Shadow private boolean disconnected;
 
     public MixinEntityPlayerMP(World worldIn, GameProfile gameProfileIn) {

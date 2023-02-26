@@ -32,9 +32,11 @@ public class KeyBoardEvent {
     @SideOnly(Side.CLIENT)
     public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L,"key.category.miku");
 
+    @SideOnly(Side.CLIENT)
     public static final KeyBinding KILL_ALL = new KeyBinding("key.miku.kill_all",KeyConflictContext.UNIVERSAL,KeyModifier.ALT,Keyboard.KEY_K,"key.category.miku");
 
-
+    @SideOnly(Side.CLIENT)
+    public static final KeyBinding GAME_MODE = new KeyBinding("key.miku.game_mode",KeyConflictContext.UNIVERSAL,KeyModifier.ALT,Keyboard.KEY_M,"key.category.miku");
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
