@@ -1,7 +1,7 @@
 package miku.lib.client.event;
 
-import miku.Network.NetworkHandler;
 import miku.lib.api.iEntityPlayer;
+import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.GameModeChange;
 import miku.lib.network.packets.KillAllEntities;
 import miku.lib.network.packets.TimeStop;
