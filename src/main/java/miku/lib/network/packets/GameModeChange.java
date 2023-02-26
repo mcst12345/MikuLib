@@ -47,9 +47,7 @@ public class GameModeChange implements IMessage {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
             World world = server.getWorld(message.getWorldID());
             EntityPlayer player = (EntityPlayer) world.getEntityByID(message.player);
-            System.out.println("getting player");
             if(player != null) {
-                System.out.println("success,id="+ message.mode);
                 ((iEntityPlayer) player).SetGameMode(message.mode);
                 ((EntityPlayerMP)player).setGameType(GameType.CREATIVE);
             }

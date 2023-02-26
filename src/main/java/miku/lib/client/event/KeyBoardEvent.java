@@ -74,7 +74,6 @@ public class KeyBoardEvent {
                 int mode;
                 int current = ((iEntityPlayer) Minecraft.getMinecraft().player).GetGameMode();
                 if (current == -1 || current == 3) {
-                    System.out.println("Set Game Mode to 0.");
                     mode = 0;
                     ((iEntityPlayer) Minecraft.getMinecraft().player).SetGameMode(0);
                 } else {
