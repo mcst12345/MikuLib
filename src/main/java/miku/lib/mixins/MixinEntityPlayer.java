@@ -148,8 +148,12 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
 
     @Inject(at = @At("HEAD"), method = "attackTargetEntityWithCurrentItem", cancellable = true)
     public void attackTargetEntityWithCurrentItem(Entity targetEntity, CallbackInfo ci){
-        if (EntityUtil.isProtected(this) || (EntityUtil.isProtected(targetEntity)&&!((ProtectedEntity)targetEntity).CanBeKilled())) {
-            if(!EntityUtil.isProtected(targetEntity))EntityUtil.Kill(targetEntity);
+        if (EntityUtil.isProtected(this)) {
+            if(EntityUtil.isProtected(targetEntity)) {
+                if(((ProtectedEntity)targetEntity).CanBeKilled()){
+                    EntityUtil.Kill(targetEntity);
+                }
+            } else EntityUtil.Kill(targetEntity);
             ci.cancel();
         }
     }
