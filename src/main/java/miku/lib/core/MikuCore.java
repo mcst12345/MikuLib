@@ -2,7 +2,6 @@ package miku.lib.core;
 
 import miku.lib.config.MikuConfig;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -20,10 +19,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         MikuConfig.init();
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.mikulib.json");
-        if(CoreModManager.getAccessTransformers().contains("com.chaoswither.core.ChaosTransformer")){
-            System.out.println("ChaosWither is loaded. Fucking it.");
-            Mixins.addConfiguration("mixins.chaos.json");
-        }
+        Mixins.addConfiguration("mixins.chaos.json");
     }
 
     @Override
