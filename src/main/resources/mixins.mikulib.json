@@ -4,7 +4,6 @@
   "package": "miku.lib.mixins",
   "mixins": [
     "MixinBanIP",
-    "MixinChaosUpdateEvent",
     "MixinChunk",
     "MixinEnderInventory",
     "MixinEntity",
@@ -17,7 +16,6 @@
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
     "MixinItemStack",
-    "MixinLauncherClassLoader",
     "MixinNetHandlerPlayServer",
     "MixinPlayerList",
     "MixinSaveHandler",

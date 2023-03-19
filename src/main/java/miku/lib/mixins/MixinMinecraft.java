@@ -2,6 +2,7 @@ package miku.lib.mixins;
 
 import miku.lib.api.iMinecraft;
 import miku.lib.util.EntityUtil;
+import miku.lib.util.crashReportUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
@@ -40,6 +41,7 @@ import java.io.IOException;
 
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
+    public MixinMinecraft(){}
     protected boolean protect = false;
 
     @Override
@@ -111,6 +113,11 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow
     public static long getSystemTime() {
         return 0;
+    }
+
+    @Shadow
+    public static Minecraft getMinecraft() {
+        return null;
     }
 
     @Inject(at = @At("HEAD"), method = "displayGuiScreen", cancellable = true)
@@ -213,13 +220,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable1, "Updating screen events");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Affected screen");
-                crashreportcategory.addDetail("Screen name", new ICrashReportDetail<String>()
-                {
-                    public String call() throws Exception
-                    {
-                        return ((Minecraft)(Object)this).currentScreen.getClass().getCanonicalName();
-                    }
-                });
+                crashReportUtil.addDetail(crashreportcategory,"Screen name",getMinecraft());
                 throw new ReportedException(crashreport);
             }
 
@@ -233,13 +234,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 {
                     CrashReport crashreport1 = CrashReport.makeCrashReport(throwable, "Ticking screen");
                     CrashReportCategory crashreportcategory1 = crashreport1.makeCategory("Affected screen");
-                    crashreportcategory1.addDetail("Screen name", new ICrashReportDetail<String>()
-                    {
-                        public String call() throws Exception
-                        {
-                            return ((Minecraft)(Object)this).currentScreen.getClass().getCanonicalName();
-                        }
-                    });
+                    crashReportUtil.addDetail(crashreportcategory1,"Screen name",getMinecraft());
                     throw new ReportedException(crashreport1);
                 }
             }
