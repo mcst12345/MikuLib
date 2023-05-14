@@ -22,7 +22,8 @@
     "MixinSimpleChannelHandlerWrapper",
     "MixinSimpleNetworkWrapper",
     "MixinWorld",
-    "MixinWorldServer"
+    "MixinWorldServer",
+    "MixinEntityTracker"
   ],
   "client": [
     "ClientMixinEntityLivingBase",
