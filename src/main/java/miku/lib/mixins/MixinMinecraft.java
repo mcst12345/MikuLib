@@ -1,6 +1,7 @@
 package miku.lib.mixins;
 
 import miku.lib.api.iMinecraft;
+import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import miku.lib.util.crashReportUtil;
 import net.minecraft.client.Minecraft;
@@ -276,7 +277,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.profiler.endStartSection("levelRenderer");
 
-            if (!this.isGamePaused && !TimeStop)
+            if (!this.isGamePaused && !TimeStop && !SpecialItem.isTimeStop())
             {
                 this.renderGlobal.updateClouds();
             }
@@ -293,7 +294,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 this.world.updateEntities();
             }
         }
-        else if (this.entityRenderer.isShaderActive() && !TimeStop)
+        else if (this.entityRenderer.isShaderActive() && !TimeStop && !SpecialItem.isTimeStop())
         {
             this.entityRenderer.stopUseShader();
         }
@@ -335,14 +336,14 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.profiler.endStartSection("animateTick");
 
-            if (!this.isGamePaused && this.world != null && !TimeStop)
+            if (!this.isGamePaused && this.world != null && !TimeStop && !SpecialItem.isTimeStop())
             {
                 this.world.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
             }
 
             this.profiler.endStartSection("particles");
 
-            if (!this.isGamePaused && !TimeStop)
+            if (!this.isGamePaused && !TimeStop && !SpecialItem.isTimeStop())
             {
                 this.effectRenderer.updateEffects();
             }
