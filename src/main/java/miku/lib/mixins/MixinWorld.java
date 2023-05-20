@@ -1,7 +1,6 @@
 package miku.lib.mixins;
 
 import com.google.common.collect.ImmutableSetMultimap;
-import miku.lib.api.ProtectedEntity;
 import miku.lib.api.iChunk;
 import miku.lib.api.iEntity;
 import miku.lib.api.iWorld;
@@ -144,7 +143,7 @@ public abstract class MixinWorld implements iWorld {
         if(EntityUtil.isKilling())return;
 
         for(Entity e : loadedEntityList){
-            if(SpecialItem.isTimeStop() || ((iEntity)e).isTimeStop() && !EntityUtil.isProtected(e)){
+            if( (SpecialItem.isTimeStop() || ((iEntity)e).isTimeStop()) && !EntityUtil.isProtected(e)){
                 ((iEntity)e).TimeStop();
             }
         }

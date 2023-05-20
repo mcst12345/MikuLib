@@ -271,7 +271,7 @@ public abstract class MixinEntity implements iEntity {
             }
             if(((Entity)(Object)this) instanceof EntityPlayer){
                 ((iEntityPlayer)this).Kill();
-                world.playerEntities.remove(this);
+                world.playerEntities.remove((this));
                 if(((Entity)(Object)this) instanceof EntityPlayerMP){
                     EntityPlayerMP playerMP = ((EntityPlayerMP)(Object)this);
                     NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
@@ -284,6 +284,7 @@ public abstract class MixinEntity implements iEntity {
 
     @Override
     public boolean isTimeStop() {
+        if(EntityUtil.isProtected(this))return false;
         return isTimeStop;
     }
 
@@ -368,17 +369,17 @@ public abstract class MixinEntity implements iEntity {
         rideCooldown=_rideCooldown;
         preventEntitySpawning=_preventEntitySpawning;
         world=_world;
-        posX=_posX;
-        posY=_posY;
-        posZ=_posZ;
+        if(ticksExisted>0){
+            posX = lastTickPosX;
+            posY = lastTickPosY;
+            posZ = lastTickPosZ;
+        }
         prevPosX=_prevPosX;
         prevPosY=_prevPosY;
         prevPosZ=_prevPosZ;
-        prevRotationPitch=_prevRotationPitch;
-        prevRotationYaw=_prevRotationYaw;
         boundingBox=_boundingBox;
-        rotationYaw=_rotationYaw;
-        rotationPitch=_rotationPitch;
+        rotationYaw=prevRotationYaw;
+        rotationPitch=prevRotationPitch;
         onGround=_onGround;
         collided=_collided;
         collidedHorizontally=_collidedHorizontally;
@@ -389,15 +390,11 @@ public abstract class MixinEntity implements iEntity {
         velocityChanged=_velocityChanged;
         width=_width;
         height=_height;
-        prevDistanceWalkedModified=_prevDistanceWalkedModified;
-        distanceWalkedModified=_distanceWalkedModified;
+        distanceWalkedModified=prevDistanceWalkedModified;
         distanceWalkedOnStepModified=_distanceWalkedOnStepModified;
         fallDistance=_fallDistance;
         nextStepDistance=_nextStepDistance;
         nextFlap=_nextFlap;
-        lastTickPosX=_lastTickPosX;
-        lastTickPosZ=_lastTickPosY;
-        lastTickPosY=_lastTickPosZ;
         stepHeight=_stepHeight;
         noClip=_noClip;
         entityCollisionReduction=_entityCollisionReduction;
@@ -440,7 +437,7 @@ public abstract class MixinEntity implements iEntity {
 
     @Inject(at = @At("HEAD"), method = "onUpdate", cancellable = true)
     public void onUpdate(CallbackInfo ci) {
-        if (this.isTimeStop || SpecialItem.isTimeStop()) {
+        if ((this.isTimeStop || SpecialItem.isTimeStop()) && !EntityUtil.isProtected(this)) {
             TimeStop();
             ci.cancel();
         }

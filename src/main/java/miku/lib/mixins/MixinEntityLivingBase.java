@@ -3,7 +3,6 @@ package miku.lib.mixins;
 import miku.lib.api.iEntity;
 import miku.lib.api.iEntityLivingBase;
 import miku.lib.item.SpecialItem;
-import miku.lib.network.packets.TimeStop;
 import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -159,6 +158,12 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Shadow public float moveForward;
 
+    @Shadow public float prevRotationYawHead;
+
+    @Shadow public float prevCameraPitch;
+
+    @Shadow public float prevRenderYawOffset;
+
     public MixinEntityLivingBase(World worldIn) {
         super(worldIn);
     }
@@ -276,7 +281,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Inject(at = @At("HEAD"),method = "onUpdate",cancellable = true)
     public void onUpdate(CallbackInfo ci){
-        if(((iEntity)this).isTimeStop() || SpecialItem.isTimeStop()){
+        if((((iEntity)this).isTimeStop() || SpecialItem.isTimeStop()) && !EntityUtil.isProtected(this)){
             ((iEntity)this).TimeStop();
             this.swingProgressInt=0;
             this.swingProgress=0.0f;
@@ -296,12 +301,12 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Override
     public void TimeStop(){
-        rotationYawHead=_rotationYawHead;
-        cameraPitch=_cameraPitch;
-        renderYawOffset=_renderYawOffset;
-        moveStrafing=_moveStrafing;
-        moveVertical=_moveVertical;
-        moveForward=_moveForward;
+        rotationYawHead=prevRotationYawHead;
+        cameraPitch=prevCameraPitch;
+        renderYawOffset=prevRenderYawOffset;
+        moveStrafing=0.0f;
+        moveVertical=0.0f;
+        moveForward=0.0f;
     }
 
 }
