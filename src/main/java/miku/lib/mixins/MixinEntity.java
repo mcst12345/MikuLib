@@ -2,6 +2,7 @@ package miku.lib.mixins;
 
 import miku.lib.api.*;
 import miku.lib.config.MikuConfig;
+import miku.lib.item.SpecialItem;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ExitGame;
 import miku.lib.util.EntityUtil;
@@ -288,7 +289,6 @@ public abstract class MixinEntity implements iEntity {
 
     @Override
     public void SetTimeStop() {
-        isTimeStop=true;
         _entityId=entityId;
         _ridingEntity=ridingEntity;
         _forceSpawn=forceSpawn;
@@ -356,6 +356,8 @@ public abstract class MixinEntity implements iEntity {
         _isPositionDirty=isPositionDirty;
         _pistonDeltasGameTime=pistonDeltasGameTime;
         _isAddedToWorld=isAddedToWorld;
+        if(((Entity)(Object)this) instanceof EntityLivingBase)((iEntityLivingBase)this).SetTimeStop();
+        isTimeStop=!isTimeStop;
     }
 
     @Override
@@ -430,11 +432,15 @@ public abstract class MixinEntity implements iEntity {
         motionX=0;
         motionY=0;
         motionZ=0;
+
+        if(((Entity)(Object)this) instanceof EntityLivingBase){
+            ((iEntityLivingBase)this).TimeStop();
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "onUpdate", cancellable = true)
     public void onUpdate(CallbackInfo ci) {
-        if (this.isTimeStop) {
+        if (this.isTimeStop || SpecialItem.isTimeStop()) {
             TimeStop();
             ci.cancel();
         }

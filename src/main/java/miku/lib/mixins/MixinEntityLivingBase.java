@@ -2,6 +2,8 @@ package miku.lib.mixins;
 
 import miku.lib.api.iEntity;
 import miku.lib.api.iEntityLivingBase;
+import miku.lib.item.SpecialItem;
+import miku.lib.network.packets.TimeStop;
 import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,6 +32,13 @@ import java.util.Map;
 
 @Mixin(value = EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements iEntityLivingBase {
+
+    protected float _rotationYawHead;
+    protected float _cameraPitch;
+    protected float _renderYawOffset;
+    protected float _moveStrafing;
+    protected float _moveVertical;
+    protected float _moveForward;
     @Override
     public int idleTime(){
         return idleTime;
@@ -136,6 +145,19 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
     @Shadow public int swingProgressInt;
 
     @Shadow public float swingProgress;
+
+    @Shadow public float cameraPitch;
+
+    @Shadow
+    public float rotationYawHead;
+
+    @Shadow public float renderYawOffset;
+
+    @Shadow public float moveStrafing;
+
+    @Shadow public float moveVertical;
+
+    @Shadow public float moveForward;
 
     public MixinEntityLivingBase(World worldIn) {
         super(worldIn);
@@ -254,11 +276,32 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Inject(at = @At("HEAD"),method = "onUpdate",cancellable = true)
     public void onUpdate(CallbackInfo ci){
-        if(((iEntity)this).isTimeStop()){
+        if(((iEntity)this).isTimeStop() || SpecialItem.isTimeStop()){
             ((iEntity)this).TimeStop();
             this.swingProgressInt=0;
             this.swingProgress=0.0f;
             ci.cancel();
         }
     }
+
+    @Override
+    public void SetTimeStop(){
+        _rotationYawHead=rotationYawHead;
+        _cameraPitch=cameraPitch;
+        _renderYawOffset=renderYawOffset;
+        _moveStrafing=moveStrafing;
+        _moveVertical=moveVertical;
+        _moveForward=moveForward;
+    }
+
+    @Override
+    public void TimeStop(){
+        rotationYawHead=_rotationYawHead;
+        cameraPitch=_cameraPitch;
+        renderYawOffset=_renderYawOffset;
+        moveStrafing=_moveStrafing;
+        moveVertical=_moveVertical;
+        moveForward=_moveForward;
+    }
+
 }

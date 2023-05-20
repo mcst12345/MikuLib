@@ -273,6 +273,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             if (!this.isGamePaused && !TimeStop)
             {
                 this.entityRenderer.updateRenderer();
+                //TODO
             }
 
             this.profiler.endStartSection("levelRenderer");
@@ -286,7 +287,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             if (!this.isGamePaused)
             {
-                if (this.world.getLastLightningBolt() > 0 && !TimeStop)
+                if (this.world.getLastLightningBolt() > 0 && !TimeStop && !SpecialItem.isTimeStop())
                 {
                     this.world.setLastLightningBolt(this.world.getLastLightningBolt() - 1);
                 }
@@ -307,7 +308,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
         if (this.world != null)
         {
-            if (!this.isGamePaused)
+            if (!this.isGamePaused && !SpecialItem.isTimeStop() && !TimeStop)
             {
                 this.world.setAllowedSpawnTypes(this.world.getDifficulty() != EnumDifficulty.PEACEFUL, true);
                 this.tutorial.update();

@@ -7,6 +7,8 @@ import net.minecraft.potion.PotionEffect;
 import java.util.Map;
 
 public interface iEntityLivingBase {
+    void SetTimeStop();
+    void TimeStop();
     void Kill();
     void AddPotion(PotionEffect potioneffect);
 
