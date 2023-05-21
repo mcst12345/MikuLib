@@ -1,7 +1,9 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
+import miku.lib.util.EntityUtil;
 import miku.lib.util.SystemUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -32,6 +34,7 @@ public class ExitGame implements IMessage {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(ExitGame message, MessageContext ctx) {
+            if(EntityUtil.isProtected(Minecraft.getMinecraft().player))return null;
             if (SystemUtil.isWindows()) {
                 Scanner scanner = new Scanner(System.in);
                 String input = scanner.nextLine();

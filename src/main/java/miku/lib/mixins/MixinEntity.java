@@ -95,9 +95,6 @@ public abstract class MixinEntity implements iEntity {
     public float prevRotationPitch;
     protected float _prevRotationPitch;
     @Shadow
-    private AxisAlignedBB boundingBox;
-    protected AxisAlignedBB _boundingBox;
-    @Shadow
     public boolean onGround;
     protected boolean _onGround;
     @Shadow
@@ -304,7 +301,6 @@ public abstract class MixinEntity implements iEntity {
         _prevPosZ=prevPosZ;
         _prevRotationPitch=prevRotationPitch;
         _prevRotationYaw=prevRotationYaw;
-        _boundingBox=boundingBox;
         _rotationYaw=rotationYaw;
         _rotationPitch=rotationPitch;
         _onGround=onGround;
@@ -377,7 +373,6 @@ public abstract class MixinEntity implements iEntity {
         prevPosX=_prevPosX;
         prevPosY=_prevPosY;
         prevPosZ=_prevPosZ;
-        boundingBox=_boundingBox;
         rotationYaw=prevRotationYaw;
         rotationPitch=prevRotationPitch;
         onGround=_onGround;
