@@ -30,7 +30,7 @@
     "MixinForgeCommandHandler",
     "MixinMinecraft",
     "MixinWorldClient",
-    "MixinRenderManager"
+    "MixinEntityClient"
   ],
   "server": [],
   "required": false,

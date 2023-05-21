@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.Random;
@@ -251,6 +252,11 @@ public abstract class MixinEntity implements iEntity {
 
     protected boolean isTimeStop=false;
 
+
+    @Inject(at=@At("HEAD"),method = "isGlowing", cancellable = true)
+    public void isGlowing(CallbackInfoReturnable<Boolean> cir){
+        if((SpecialItem.isTimeStop() || isTimeStop) && !EntityUtil.isProtected(this))cir.setReturnValue(false);
+    }
     @Override
     public void kill() {
         DEAD=true;
