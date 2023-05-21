@@ -250,8 +250,16 @@ public abstract class MixinEntity implements iEntity {
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
 
+    @Shadow public abstract String getName();
+
     protected boolean isTimeStop=false;
 
+
+    @Inject(at=@At("HEAD"),method = "getBrightnessForRender", cancellable = true)
+    public void getBrightnessForRender(CallbackInfoReturnable<Integer> cir){
+        System.out.println("Injection succeed in "+getName());
+        if(SpecialItem.isTimeStop() || ((iEntity)this).isTimeStop())cir.setReturnValue(EntityUtil.isProtected(this) ? 15728880 : 0);
+    }
 
     @Inject(at=@At("HEAD"),method = "isGlowing", cancellable = true)
     public void isGlowing(CallbackInfoReturnable<Boolean> cir){

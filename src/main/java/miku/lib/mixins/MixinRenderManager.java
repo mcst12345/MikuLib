@@ -15,5 +15,6 @@ public class MixinRenderManager {
     @Inject(at=@At("HEAD"),method = "renderEntityStatic", cancellable = true)
     public void renderEntityStatic(Entity entityIn, float partialTicks, boolean p_188388_3_, CallbackInfo ci){
         if((SpecialItem.isTimeStop() || ((iEntity)entityIn).isTimeStop()) && !EntityUtil.isProtected(entityIn))ci.cancel();
+        System.out.println(entityIn.getClass().toString());
     }
 }
