@@ -37,7 +37,7 @@ public abstract class MixinMinecraftServer {
 
     @Shadow private PlayerList playerList;
 
-    @Shadow public Hashtable<Integer, long[]> worldTickTimes;
+    @Shadow(remap = false) public Hashtable<Integer, long[]> worldTickTimes;
 
     @Shadow public abstract NetworkSystem getNetworkSystem();
 
