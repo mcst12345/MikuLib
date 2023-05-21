@@ -2,7 +2,6 @@ package miku.lib.mixins;
 
 import miku.lib.api.*;
 import miku.lib.config.MikuConfig;
-import miku.lib.item.SpecialItem;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ExitGame;
 import miku.lib.util.EntityUtil;
@@ -18,20 +17,15 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.Random;
@@ -99,6 +93,9 @@ public abstract class MixinEntity implements iEntity {
     @Shadow
     public float prevRotationPitch;
     protected float _prevRotationPitch;
+    @Shadow
+    private AxisAlignedBB boundingBox;
+    protected AxisAlignedBB _boundingBox;
     @Shadow
     public boolean onGround;
     protected boolean _onGround;
@@ -254,41 +251,8 @@ public abstract class MixinEntity implements iEntity {
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
 
-
-    @Shadow public abstract float getEyeHeight();
-
     protected boolean isTimeStop=false;
 
-
-    /**
-     * @author mcst12345
-     * @reason the fucking NPE
-     */
-    @Overwrite
-    @SideOnly(Side.CLIENT)
-    public int getBrightnessForRender()
-    {
-        if(SpecialItem.isTimeStop()){
-            System.out.println("Skip.");
-            return 0;
-        }
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor(this.posX), 0, MathHelper.floor(this.posZ));
-
-        if (this.world.isBlockLoaded(blockpos$mutableblockpos))
-        {
-            blockpos$mutableblockpos.setY(MathHelper.floor(this.posY + (double)this.getEyeHeight()));
-            return this.world.getCombinedLight(blockpos$mutableblockpos, 0);
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    @Inject(at=@At("HEAD"),method = "isGlowing", cancellable = true)
-    public void isGlowing(CallbackInfoReturnable<Boolean> cir){
-        if((SpecialItem.isTimeStop() || isTimeStop) && !EntityUtil.isProtected(this))cir.setReturnValue(false);
-    }
     @Override
     public void kill() {
         DEAD=true;
@@ -306,7 +270,7 @@ public abstract class MixinEntity implements iEntity {
             }
             if(((Entity)(Object)this) instanceof EntityPlayer){
                 ((iEntityPlayer)this).Kill();
-                world.playerEntities.remove((this));
+                world.playerEntities.remove(this);
                 if(((Entity)(Object)this) instanceof EntityPlayerMP){
                     EntityPlayerMP playerMP = ((EntityPlayerMP)(Object)this);
                     NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
@@ -391,7 +355,6 @@ public abstract class MixinEntity implements iEntity {
         _isPositionDirty=isPositionDirty;
         _pistonDeltasGameTime=pistonDeltasGameTime;
         _isAddedToWorld=isAddedToWorld;
-        if(((Entity)(Object)this) instanceof EntityLivingBase)((iEntityLivingBase)this).SetTimeStop();
         isTimeStop=!isTimeStop;
     }
 
@@ -470,7 +433,7 @@ public abstract class MixinEntity implements iEntity {
 
     @Inject(at = @At("HEAD"), method = "onUpdate", cancellable = true)
     public void onUpdate(CallbackInfo ci) {
-        if ((this.isTimeStop || SpecialItem.isTimeStop()) && !EntityUtil.isProtected(this)) {
+        if (this.isTimeStop) {
             TimeStop();
             ci.cancel();
         }

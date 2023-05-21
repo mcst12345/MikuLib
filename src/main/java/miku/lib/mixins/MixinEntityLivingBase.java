@@ -2,7 +2,6 @@ package miku.lib.mixins;
 
 import miku.lib.api.iEntity;
 import miku.lib.api.iEntityLivingBase;
-import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,13 +30,6 @@ import java.util.Map;
 
 @Mixin(value = EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements iEntityLivingBase {
-
-    protected float _rotationYawHead;
-    protected float _cameraPitch;
-    protected float _renderYawOffset;
-    protected float _moveStrafing;
-    protected float _moveVertical;
-    protected float _moveForward;
     @Override
     public int idleTime(){
         return idleTime;
@@ -145,10 +137,9 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Shadow public float swingProgress;
 
-    @Shadow public float cameraPitch;
+    @Shadow public float rotationYawHead;
 
-    @Shadow
-    public float rotationYawHead;
+    @Shadow public float cameraPitch;
 
     @Shadow public float renderYawOffset;
 
@@ -281,22 +272,12 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Inject(at = @At("HEAD"),method = "onUpdate",cancellable = true)
     public void onUpdate(CallbackInfo ci){
-        if((((iEntity)this).isTimeStop() || SpecialItem.isTimeStop()) && !EntityUtil.isProtected(this)){
+        if(((iEntity)this).isTimeStop()){
             ((iEntity)this).TimeStop();
             this.swingProgressInt=0;
             this.swingProgress=0.0f;
             ci.cancel();
         }
-    }
-
-    @Override
-    public void SetTimeStop(){
-        _rotationYawHead=rotationYawHead;
-        _cameraPitch=cameraPitch;
-        _renderYawOffset=renderYawOffset;
-        _moveStrafing=moveStrafing;
-        _moveVertical=moveVertical;
-        _moveForward=moveForward;
     }
 
     @Override
@@ -308,5 +289,4 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
         moveVertical=0.0f;
         moveForward=0.0f;
     }
-
 }

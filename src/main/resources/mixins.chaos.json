@@ -6,7 +6,6 @@
     "MixinChaosUpdateEvent"
   ],
   "client": [
-
   ],
   "server": [],
   "required": false,

@@ -29,8 +29,7 @@
     "ClientMixinEntityLivingBase",
     "MixinForgeCommandHandler",
     "MixinMinecraft",
-    "MixinWorldClient",
-    "MixinRenderManager"
+    "MixinWorldClient"
   ],
   "server": [],
   "required": false,
