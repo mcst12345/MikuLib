@@ -18,11 +18,15 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -250,15 +254,35 @@ public abstract class MixinEntity implements iEntity {
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
 
-    @Shadow public abstract String getName();
+
+    @Shadow public abstract float getEyeHeight();
 
     protected boolean isTimeStop=false;
 
 
-    @Inject(at=@At("HEAD"),method = "getBrightnessForRender", cancellable = true)
-    public void getBrightnessForRender(CallbackInfoReturnable<Integer> cir){
-        System.out.println("Injection succeed in "+getName());
-        if(SpecialItem.isTimeStop() || ((iEntity)this).isTimeStop())cir.setReturnValue(EntityUtil.isProtected(this) ? 15728880 : 0);
+    /**
+     * @author mcst12345
+     * @reason the fucking NPE
+     */
+    @Overwrite
+    @SideOnly(Side.CLIENT)
+    public int getBrightnessForRender()
+    {
+        if(SpecialItem.isTimeStop()){
+            System.out.println("Skip.");
+            return 0;
+        }
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor(this.posX), 0, MathHelper.floor(this.posZ));
+
+        if (this.world.isBlockLoaded(blockpos$mutableblockpos))
+        {
+            blockpos$mutableblockpos.setY(MathHelper.floor(this.posY + (double)this.getEyeHeight()));
+            return this.world.getCombinedLight(blockpos$mutableblockpos, 0);
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     @Inject(at=@At("HEAD"),method = "isGlowing", cancellable = true)

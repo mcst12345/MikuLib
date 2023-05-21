@@ -6,7 +6,7 @@
     "MixinChaosUpdateEvent"
   ],
   "client": [
-    "MixinRenderManager"
+
   ],
   "server": [],
   "required": false,
