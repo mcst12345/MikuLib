@@ -30,6 +30,7 @@
     "ClientMixinEntityLivingBase",
     "MixinForgeCommandHandler",
     "MixinMinecraft",
+    "MixinParticleManager",
     "MixinWorldClient"
   ],
   "server": [],

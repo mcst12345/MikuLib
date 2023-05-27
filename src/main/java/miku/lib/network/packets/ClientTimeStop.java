@@ -26,6 +26,7 @@ public class ClientTimeStop implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(ClientTimeStop message, MessageContext ctx) {
             ((iMinecraft) Minecraft.getMinecraft()).SetTimeStop();
+
             return null;
         }
     }
