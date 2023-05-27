@@ -59,6 +59,11 @@ public abstract class MixinMinecraft implements iMinecraft {
         TimeStop=!TimeStop;
     }
 
+    @Override
+    public boolean isTimeStop(){
+        return TimeStop;
+    }
+
     protected boolean TimeStop=false;
 
     @Shadow public EntityPlayerSP player;

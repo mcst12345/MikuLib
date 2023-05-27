@@ -12,18 +12,19 @@
     "MixinEntityPlayer",
     "MixinEntityPlayerMP",
     "MixinEntityPlayerSP",
+    "MixinEntityTracker",
     "MixinEventBus",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
     "MixinItemStack",
+    "MixinMinecraftServer",
     "MixinNetHandlerPlayServer",
     "MixinPlayerList",
     "MixinSaveHandler",
     "MixinSimpleChannelHandlerWrapper",
     "MixinSimpleNetworkWrapper",
     "MixinWorld",
-    "MixinWorldServer",
-    "MixinEntityTracker"
+    "MixinWorldServer"
   ],
   "client": [
     "ClientMixinEntityLivingBase",

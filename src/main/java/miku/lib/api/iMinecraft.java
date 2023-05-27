@@ -10,4 +10,6 @@ public interface iMinecraft {
     void SetProtected();
 
     boolean protect();
+
+    boolean isTimeStop();
 }
