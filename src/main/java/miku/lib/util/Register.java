@@ -17,7 +17,11 @@ import java.util.Objects;
 
 public class Register {
     public static void RegisterItem(RegistryEvent.Register<Item> event, Item item, String name) {
-        event.getRegistry().register(item.setRegistryName("miku:" + name));
+        RegisterItem(event,item,"miku",name);
+    }
+
+    public static void RegisterItem(RegistryEvent.Register<Item> event, Item item,String mod, String name){
+        event.getRegistry().register(item.setRegistryName(mod + ":" + name));
     }
 
     @SideOnly(Side.CLIENT)
@@ -26,17 +30,28 @@ public class Register {
     }
 
     public static void RegisterEnchantment(RegistryEvent.Register<Enchantment> event, Enchantment enchantment, String name) {
-        event.getRegistry().register(enchantment.setName(name).setRegistryName("miku:" + name));
+        RegisterEnchantment(event,enchantment,"miku",name);
     }
 
+    public static void RegisterEnchantment(RegistryEvent.Register<Enchantment> event, Enchantment enchantment, String mod, String name){
+        event.getRegistry().register(enchantment.setName(name).setRegistryName(mod + ":" + name));
+    }
     public static void RegisterBlock(RegistryEvent.Register<Block> event, Block block, String name) {
-        event.getRegistry().register(block.setRegistryName("miku:" + name));
+        RegisterBlock(event,block,"miku",name);
+    }
+
+    public static void RegisterBlock(RegistryEvent.Register<Block> event, Block block, String mod, String name){
+        event.getRegistry().register(block.setRegistryName(mod+ ":" + name));
     }
 
     public static void RegisterEntity(RegistryEvent.Register<EntityEntry> event, String inside_name, String name, int network, Class<? extends Entity> c) {
+        RegisterEntity(event,"miku",inside_name,name,network,c);
+    }
+
+    public static void RegisterEntity(RegistryEvent.Register<EntityEntry> event,String mod, String inside_name, String name, int network, Class<? extends Entity> c){
         event.getRegistry().register(EntityEntryBuilder.create()
                 .entity(c)
-                .id(new ResourceLocation("miku", inside_name), network)
+                .id(new ResourceLocation(mod, inside_name), network)
                 .name(name)
                 .tracker(80, 3, false)
                 .build()
