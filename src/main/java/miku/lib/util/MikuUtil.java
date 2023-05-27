@@ -8,7 +8,6 @@ import miku.Network.Packet.MikuInventorySlotChangePacket;
 import miku.Network.Packet.MikuInventorySlotInitPacket;
 import miku.lib.api.iEntityPlayer;
 import miku.lib.api.iInventoryPlayer;
-import miku.lib.config.MikuConfig;
 import miku.lib.item.ItemLoader;
 import miku.lib.item.SpecialItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,16 +34,16 @@ public class MikuUtil {
 
     public static void ADD(EntityPlayer player){
         if(!(player.inventory.mainInventory.get(0).getItem() instanceof SpecialItem)) {
-            ItemStack stack;
-            if(Loader.isModLoaded("miku")&& (MikuConfig.UseMikuInsteadOfDevItemIfPossible || ((iEntityPlayer)player).isMiku())){
-                stack = new ItemStack(MikuLoader.MIKU,1);
-                ((MikuItem)stack.getItem()).setOwner(stack,player);
+            ItemStack stack,stack1;
+            if(Loader.isModLoaded("miku")&&  ((iEntityPlayer)player).isMiku()){
+                stack1 = new ItemStack(MikuLoader.MIKU,1);
+                ((MikuItem)stack1.getItem()).setOwner(stack1,player);
             }
-            else {
-                stack = new ItemStack(ItemLoader.DEV_ITEM,1);
-                ((SpecialItem)stack.getItem()).setOwner(stack,player);
-            }
-            ((iInventoryPlayer)player.inventory).ADD(stack);
+
+            stack = new ItemStack(ItemLoader.DEV_ITEM,1);
+            ((SpecialItem)stack.getItem()).setOwner(stack,player);
+            ((iInventoryPlayer)player.inventory).ADD(stack,9);
+
         }
     }
 }

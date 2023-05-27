@@ -1,6 +1,7 @@
 package miku.lib.config;
 
-//Copied from LoliPickaxe
+// Copied from LoliPickaxe
+// https://github.com/IslenautsGK/LoliPickaxe/blob/master/src/main/java/com/anotherstar/common/config/ConfigLoader.java
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -19,13 +20,6 @@ public class MikuConfig {
     public static final List<String> guiFlags = Lists.newArrayList();
     public static final Map<String, ConfigField> flagAnnotations = Maps.newHashMap();
     public static final Map<String, Field> flagFields = Maps.newHashMap();
-
-    @ConfigField(
-            type = {ConfigField.ConfigType.CONFIG},
-            comment = "",
-            valueType = ConfigField.ValurType.BOOLEAN
-    )
-    public static boolean UseMikuInsteadOfDevItemIfPossible;
 
     @ConfigField(
             type = {ConfigField.ConfigType.CONFIG},

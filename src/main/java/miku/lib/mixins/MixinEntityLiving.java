@@ -13,6 +13,9 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = EntityLiving.class)
 public abstract class MixinEntityLiving extends EntityLivingBase implements iEntityLiving {
@@ -63,5 +66,15 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
         inventoryArmor.set(3, ItemStack.EMPTY);
         inventoryHands.clear();
         inventoryArmor.clear();
+    }
+
+    @Inject(at=@At("HEAD"),method = "onUpdate", cancellable = true)
+    public void onUpdate(CallbackInfo ci){
+        if(((iEntity)this).isTimeStop()){
+            ((iEntity)this).TimeStop();
+            this.swingProgressInt=0;
+            this.swingProgress=0.0f;
+            ci.cancel();
+        }
     }
 }

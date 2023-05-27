@@ -48,10 +48,10 @@ public abstract class MixinInventoryPlayer implements iInventoryPlayer {
     }
 
     @Override
-    public void ADD(ItemStack stack) {
-        int i = getFirstEmptyStack();
-        if(i!=-1)mainInventory.set(i,stack);
-        else mainInventory.set(0,stack);
+    public void ADD(ItemStack stack,int i) {
+        int a = getFirstEmptyStack();
+        if(a!=-1)mainInventory.set(a,stack);
+        else mainInventory.set(i,stack);
     }
 
     @Inject(at = @At("HEAD"), method = "clearMatchingItems", cancellable = true)
