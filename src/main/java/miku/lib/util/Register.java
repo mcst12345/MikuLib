@@ -1,5 +1,6 @@
 package miku.lib.util;
 
+import miku.Miku.Miku;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.enchantment.Enchantment;
@@ -10,6 +11,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,5 +58,12 @@ public class Register {
                 .tracker(80, 3, false)
                 .build()
         );
+    }
+
+    public static void RegisterEntity(String entity,Class<? extends Entity> c,String name,int id){
+        EntityRegistry.registerModEntity(new ResourceLocation("miku",entity), c,name,id, Miku.INSTANCE,80,3,true);
+    }
+    public static void RegisterEntity(String mod,String entity,Class<? extends Entity> c,String name,int id,Object MOD){
+        EntityRegistry.registerModEntity(new ResourceLocation(mod,entity), c,name,id, MOD,80,3,true);
     }
 }
