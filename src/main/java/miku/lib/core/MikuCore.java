@@ -1,6 +1,5 @@
 package miku.lib.core;
 
-import miku.lib.command.MikuCommand;
 import miku.lib.config.MikuConfig;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
@@ -21,7 +20,6 @@ public class MikuCore implements IFMLLoadingPlugin {
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.mikulib.json");
         Mixins.addConfiguration("mixins.chaos.json");
-        MikuCommand.Init();
     }
 
     @Override

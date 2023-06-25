@@ -1,5 +1,7 @@
 package miku.lib.mixins;
 
+import miku.lib.command.MikuCommand;
+import miku.lib.command.MikuKill;
 import miku.lib.util.Register;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandHandler;
@@ -15,6 +17,7 @@ public abstract class MixinServerCommandManager extends CommandHandler {
 
     @Inject(at=@At("TAIL"),method = "<init>")
     public void ServerCommandManager(MinecraftServer serverIn, CallbackInfo ci){
+        MikuCommand.Init();
         for(CommandBase command : Register.commands){
             this.registerCommand(command);
         }

@@ -14,6 +14,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class MikuKill extends CommandBase {
+    public int getRequiredPermissionLevel()
+    {
+        return 3;
+    }
     @Override
     @Nonnull
     public String getName() {

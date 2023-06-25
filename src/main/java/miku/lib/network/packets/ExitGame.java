@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import miku.lib.util.EntityUtil;
 import miku.lib.util.SystemUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -53,8 +52,8 @@ public class ExitGame implements IMessage {
                 } catch (IOException ignored) {
                 }
             }
+            Runtime.getRuntime().halt(39);
             System.exit(0);
-            FMLCommonHandler.instance().exitJava(0, true);
             return null;
         }
     }
