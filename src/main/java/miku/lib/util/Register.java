@@ -3,6 +3,7 @@ package miku.lib.util;
 import miku.Miku.Miku;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.command.CommandBase;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -15,9 +16,13 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Register {
+    public static List<CommandBase> commands = new ArrayList<>();
+    public static List<CommandBase> server_commands = new ArrayList<>();
     public static void RegisterItem(RegistryEvent.Register<Item> event, Item item, String name) {
         RegisterItem(event,item,"miku",name);
     }
@@ -65,5 +70,14 @@ public class Register {
     }
     public static void RegisterEntity(String mod,String entity,Class<? extends Entity> c,String name,int id,Object MOD){
         EntityRegistry.registerModEntity(new ResourceLocation(mod,entity), c,name,id, MOD,80,3,true);
+    }
+
+    public static void RegisterCommands(CommandBase command){
+        commands.add(command);
+    }
+
+    public static void RegisterCommands(CommandBase command,boolean server_only){
+        if(server_only)server_commands.add(command);
+        else commands.add(command);
     }
 }
