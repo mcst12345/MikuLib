@@ -12,6 +12,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class SetHealth extends CommandBase {
     @Override
@@ -35,7 +38,7 @@ public class SetHealth extends CommandBase {
     public void execute(@Nonnull MinecraftServer server,@Nonnull ICommandSender sender,@Nonnull String[] args) throws CommandException {
         if (args.length < 1)
         {
-            throw new WrongUsageException("commands.miku.set_health");
+            throw new WrongUsageException("commands.set_health.usage");
         }
         else {
             if (args.length > 1){
@@ -54,5 +57,16 @@ public class SetHealth extends CommandBase {
                 ((iEntityLivingBase) player).SetHealth((float) value);
             }
         }
+    }
+
+    public boolean isUsernameIndex(@Nonnull String[] args, int index)
+    {
+        return index == 0;
+    }
+
+    @Nonnull
+    public List<String> getTabCompletions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
+    {
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames()) : Collections.emptyList();
     }
 }

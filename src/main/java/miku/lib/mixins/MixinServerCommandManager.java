@@ -1,7 +1,6 @@
 package miku.lib.mixins;
 
 import miku.lib.command.MikuCommand;
-import miku.lib.command.MikuKill;
 import miku.lib.util.Register;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandHandler;

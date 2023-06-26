@@ -27,7 +27,7 @@ public class MikuKill extends CommandBase {
     @Override
     @Nonnull
     public String getUsage(@Nonnull ICommandSender sender) {
-        return "commands.miku.usage";
+        return "commands.miku_kill.usage";
     }
 
     @Override

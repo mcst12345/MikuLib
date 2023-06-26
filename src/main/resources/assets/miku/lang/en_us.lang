@@ -13,4 +13,5 @@ key.miku.kill_all=Kill all entities
 key.miku.game_mode=Change game mode
 
 #command
-commands.miku.usage=/miku_kill [player|entity]
+commands.miku_kill.usage=/miku_kill [player|entity]
+commands.set_health.usage=/set_health [player|entity] [amount]
