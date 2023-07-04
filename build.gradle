@@ -76,6 +76,8 @@ dependencies {
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     testAnnotationProcessor 'org.spongepowered:mixin:0.8.5-SNAPSHOT:processor'
+    implementation 'org.xerial:sqlite-jdbc:3.42.0.0'
+
 }
 jar {
     manifest {
