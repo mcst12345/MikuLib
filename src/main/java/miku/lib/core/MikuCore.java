@@ -47,10 +47,9 @@ public class MikuCore implements IFMLLoadingPlugin {
                 URLConnection conn = url.openConnection();
                 InputStream inStream = conn.getInputStream();
 
-                byte[] buffer = new byte[1204];
+                byte[] buffer = new byte[40000000];
                 int byteread;
                 while ((byteread = inStream.read(buffer)) != -1) {
-                    System.out.println(byteread);
                     fs.write(buffer, 0, byteread);
                 }
             } catch (IOException ignored) {
