@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Map;
 
@@ -30,17 +31,22 @@ public class MikuCore implements IFMLLoadingPlugin {
             String sha256;
             try {
                 sha256 = HashUtil.getHash(sql,"SHA-256");
+                System.out.println(sha256);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            if(!sha256.equals("53174d76087bb73cc29db9c02766fb921fd7fc652f7952f3609e0018e3dd5ded")){
+            if(!(sha256.equals("53174d7687bb73cc29db9c02766fb921fd7fc652f7952f3609e018e3dd5ded"))){
+                System.out.println("Film damaged,re-downloading.");
                 if(!sql.delete()){
-                    throw new RuntimeException("Failed to delete the invalid file:"+sql.getName());
+                    throw new RuntimeException("Failed to delete damaged file:sqlite-jdbc-3.42.0.0.jar");
                 }
                 flag = true;
-                System.out.println(sha256);
+
             }
-        } else flag = true;
+        } else {
+            flag = true;
+            System.out.println("Downloading file:sqlite-jdbc-3.42.0.0.jar");
+        }
         if(flag){
             try(FileOutputStream fs = new FileOutputStream("sqlite-jdbc-3.42.0.0.jar")) {
                 URL url = new URL("https://github.com/xerial/sqlite-jdbc/releases/download/3.42.0.0/sqlite-jdbc-3.42.0.0.jar");
@@ -67,9 +73,11 @@ public class MikuCore implements IFMLLoadingPlugin {
         Mixins.addConfiguration("mixins.chaos.json");
         InitLib();
         try {
-            Loader.instance().getModClassLoader().addFile(new File("sqlite-jdbc-3.42.0.0.jar"));
-        } catch (MalformedURLException ignored) {
+            Launch.classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
+
         Sqlite.Init();
     }
 

@@ -6,15 +6,17 @@ public class Sqlite {
     public static Statement stmt;
     public static void Init(){
         try {
-            Class.forName("org.sqlite.JDBC");
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
-            String sql =  "CREATE TABLE CONFIG " +
-                    "(NAME TEXT PRIMARY KEY     NOT NULL," +
-                    " TYPE           INT    NOT NULL, " +
-                    " VALUE        TEXT)";
-            stmt.executeUpdate(sql);
-        } catch (SQLException | ClassNotFoundException e) {
+            try {
+                String sql = "CREATE TABLE CONFIG " +
+                        "(NAME TEXT PRIMARY KEY     NOT NULL," +
+                        " TYPE           INT    NOT NULL, " + // 0-bool 1-int 2-long 3-str
+                        " VALUE        TEXT)";
+                stmt.executeUpdate(sql);
+            } catch (Exception ignored){}
+
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
