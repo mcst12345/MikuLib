@@ -17,7 +17,6 @@ public class Sqlite {
                         "(NAME TEXT PRIMARY KEY     NOT NULL," +
                         " VALUE        TEXT)";
                 stmt.executeUpdate(sql);
-                c.commit();
                 if(GetConfigValue("first_run",0)==null){
                     System.out.println("Init database");
                     WriteConfigValue("debug_mode","false");
@@ -26,8 +25,13 @@ public class Sqlite {
                     System.out.println("auto_range_kill:"+GetConfigValue("auto_range_kill",0));
 
                     WriteConfigValue("first_run","true");
+                } else {
+                    System.out.println("first_run:"+GetConfigValue("first_run",0));
                 }
-            } catch (Exception ignored){}
+            } catch (Exception e){
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
 
 
 
@@ -70,7 +74,6 @@ public class Sqlite {
                     "VALUES ("+NAME+","+VALUE+")";
         try {
             stmt.executeUpdate(sql);
-            c.commit();
         } catch (SQLException ignored) {
         }
     }
