@@ -64,8 +64,9 @@ public class Sqlite {
                 default:
                     return null;
             }
-        } catch (SQLException ignored) {
-            return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -74,7 +75,9 @@ public class Sqlite {
                     "VALUES ("+NAME+","+VALUE+")";
         try {
             stmt.executeUpdate(sql);
-        } catch (SQLException ignored) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }
