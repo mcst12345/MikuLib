@@ -12,9 +12,16 @@ public class Sqlite {
             try {
                 String sql = "CREATE TABLE IF NOT EXISTS CONFIG " +
                         "(NAME TEXT PRIMARY KEY     NOT NULL," +
-                        " TYPE           INT    NOT NULL, " + // 0-bool 1-int 2-long 3-str
                         " VALUE        TEXT)";
                 stmt.executeUpdate(sql);
+                c.commit();
+                if(GetConfigValue("first_run",0)==null){
+                    WriteConfigValue("debug_mode","false");
+                    System.out.println("debug_mode:"+GetConfigValue("debug_mode",0));
+                    WriteConfigValue("auto_range_kill","true");
+                    System.out.println("auto_range_kill:"+GetConfigValue("auto_range_kill",0));
+
+                }
             } catch (Exception ignored){}
 
 
@@ -25,23 +32,33 @@ public class Sqlite {
     }
 
     @Nullable
-    public static Object GetConfigValue(String NAME,int TYPE){
+    public static Object GetConfigValue(String NAME,int TYPE){// 0-bool 1-int 2-long 3-str
         try {
             ResultSet rs = stmt.executeQuery("SELETE * FROM CONFIG;");
             switch (TYPE){
                 case 0:
-                    return Boolean.parseBoolean(rs.getString("value"));
+                    return Boolean.parseBoolean(rs.getString(NAME));
                 case 1:
-                    return Integer.parseInt(rs.getString("value"));
+                    return Integer.parseInt(rs.getString(NAME));
                 case 2:
-                    return Long.parseLong(rs.getString("value"));
+                    return Long.parseLong(rs.getString(NAME));
                 case 3:
-                    return rs.getString("value");
+                    return rs.getString(NAME);
                 default:
                     return null;
             }
         } catch (SQLException ignored) {
             return null;
+        }
+    }
+
+    public static void WriteConfigValue(String NAME,String VALUE){
+        String sql = "INSERT INTO CONFIG (NAME,VALUE)" +
+                    "VALUES ("+NAME+","+VALUE+")";
+        try {
+            stmt.executeUpdate(sql);
+            c.commit();
+        } catch (SQLException ignored) {
         }
     }
 }
