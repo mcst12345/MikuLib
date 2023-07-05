@@ -1,6 +1,5 @@
 package miku.lib.core;
 
-import miku.lib.config.MikuConfig;
 import miku.lib.sqlite.Sqlite;
 import miku.lib.util.HashUtil;
 import net.minecraft.launchwrapper.Launch;
@@ -43,7 +42,10 @@ public class MikuCore implements IFMLLoadingPlugin {
             }
         } else {
             flag = true;
-            System.out.println("Downloading file:sqlite-jdbc-3.42.0.0.jar");
+            System.out.println("Downloading file:sqlite-jdbc-3.42.0.0.jar.");
+            System.out.println("If you are in China and can't download this file because of GFW,download it from this url:");
+            System.out.println("https://ghproxy.com/github.com/xerial/sqlite-jdbc/releases/download/3.42.0.0/sqlite-jdbc-3.42.0.0.jar");
+            System.out.println("and put it into your .minecraft dir.");
         }
         if(flag){
             try(FileOutputStream fs = new FileOutputStream("sqlite-jdbc-3.42.0.0.jar")) {
@@ -65,18 +67,16 @@ public class MikuCore implements IFMLLoadingPlugin {
     public static boolean RescueMode=false;
 
     public MikuCore(){
-        MikuConfig.init();
-        MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.mikulib.json");
-        Mixins.addConfiguration("mixins.chaos.json");
         InitLib();
         try {
             Launch.classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-
         Sqlite.Init();
+        MixinBootstrap.init();
+        Mixins.addConfiguration("mixins.mikulib.json");
+        Mixins.addConfiguration("mixins.chaos.json");
     }
 
     @Override

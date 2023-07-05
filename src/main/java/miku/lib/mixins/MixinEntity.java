@@ -1,9 +1,9 @@
 package miku.lib.mixins;
 
 import miku.lib.api.*;
-import miku.lib.config.MikuConfig;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ExitGame;
+import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -437,7 +437,7 @@ public abstract class MixinEntity implements iEntity {
             TimeStop();
             ci.cancel();
         }
-        if(EntityUtil.isProtected(this) && MikuConfig.AutoRangeKill){
+        if(EntityUtil.isProtected(this) && ((boolean)Sqlite.GetConfigValue("auto_range_kill",0))){
             List<Entity> list = world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB(posX - 20, posY - 20, posZ - 20, posX + 20, posY + 20, posZ + 20));
             EntityUtil.Kill(list);
         }
