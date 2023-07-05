@@ -11,14 +11,14 @@ public class Sqlite {
         try {
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
-            System.out.println("Connected to database");
+            System.out.println("Connected to database.");
             try {
                 String sql = "CREATE TABLE IF NOT EXISTS CONFIG " +
                         "(NAME TEXT PRIMARY KEY     NOT NULL," +
                         " VALUE        TEXT)";
                 stmt.executeUpdate(sql);
                 if(GetConfigValue("first_run",0)==null){
-                    System.out.println("Init database");
+                    System.out.println("Init database.");
                     WriteConfigValue("debug_mode","false");
                     System.out.println("debug_mode:"+GetConfigValue("debug_mode",0));
                     WriteConfigValue("auto_range_kill","true");
