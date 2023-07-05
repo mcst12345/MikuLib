@@ -97,4 +97,8 @@ public class Sqlite {
             throw new RuntimeException(e);
         }
     }
+
+    public static void ClearConfigCache(){
+        Configs.clear();
+    }
 }
