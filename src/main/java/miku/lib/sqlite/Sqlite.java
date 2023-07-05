@@ -43,11 +43,11 @@ public class Sqlite {
     @Nullable
     public static Object GetConfigValue(String NAME,int TYPE){// 0-bool 1-int 2-long 3-str
         try {
-            ResultSet rs = stmt.executeQuery("SELETE * FROM CONFIG;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM CONFIG;");
             String result = null;
             while(rs.next()){
-                if(Objects.equals(rs.getString("name"), NAME)) {
-                    result = rs.getString("value");
+                if(Objects.equals(rs.getString("NAME"), NAME)) {
+                    result = rs.getString("VALUE");
                     break;
                 }
             }
@@ -72,7 +72,7 @@ public class Sqlite {
 
     public static void WriteConfigValue(String NAME,String VALUE){
         String sql = "INSERT INTO CONFIG (NAME,VALUE)" +
-                    "VALUES ("+NAME+","+VALUE+")";
+                    "VALUES ('"+NAME+"','"+VALUE+"')";
         try {
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
