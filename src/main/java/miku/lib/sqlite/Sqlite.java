@@ -2,6 +2,8 @@ package miku.lib.sqlite;
 
 import javax.annotation.Nullable;
 import java.sql.*;
+import java.util.Objects;
+
 public class Sqlite {
     public static Connection c;
     public static Statement stmt;
@@ -9,6 +11,7 @@ public class Sqlite {
         try {
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
+            System.out.println("Connected to database");
             try {
                 String sql = "CREATE TABLE IF NOT EXISTS CONFIG " +
                         "(NAME TEXT PRIMARY KEY     NOT NULL," +
@@ -16,11 +19,13 @@ public class Sqlite {
                 stmt.executeUpdate(sql);
                 c.commit();
                 if(GetConfigValue("first_run",0)==null){
+                    System.out.println("Init database");
                     WriteConfigValue("debug_mode","false");
                     System.out.println("debug_mode:"+GetConfigValue("debug_mode",0));
                     WriteConfigValue("auto_range_kill","true");
                     System.out.println("auto_range_kill:"+GetConfigValue("auto_range_kill",0));
 
+                    WriteConfigValue("first_run","true");
                 }
             } catch (Exception ignored){}
 
@@ -35,15 +40,23 @@ public class Sqlite {
     public static Object GetConfigValue(String NAME,int TYPE){// 0-bool 1-int 2-long 3-str
         try {
             ResultSet rs = stmt.executeQuery("SELETE * FROM CONFIG;");
+            String result = null;
+            while(rs.next()){
+                if(Objects.equals(rs.getString("name"), NAME)) {
+                    result = rs.getString("value");
+                    break;
+                }
+            }
+            if(result == null)return null;
             switch (TYPE){
                 case 0:
-                    return Boolean.parseBoolean(rs.getString(NAME));
+                    return Boolean.parseBoolean(result);
                 case 1:
-                    return Integer.parseInt(rs.getString(NAME));
+                    return Integer.parseInt(result);
                 case 2:
-                    return Long.parseLong(rs.getString(NAME));
+                    return Long.parseLong(result);
                 case 3:
-                    return rs.getString(NAME);
+                    return result;
                 default:
                     return null;
             }
