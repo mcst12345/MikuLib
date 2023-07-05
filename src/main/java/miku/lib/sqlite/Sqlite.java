@@ -24,7 +24,7 @@ public class Sqlite {
                     WriteConfigValue("auto_range_kill","true");
                     System.out.println("auto_range_kill:"+GetConfigValue("auto_range_kill",0));
 
-                    WriteConfigValue("first_run","true");
+                    WriteConfigValue("first_run","false");
                 } else {
                     System.out.println("first_run:"+GetConfigValue("first_run",0));
                 }
