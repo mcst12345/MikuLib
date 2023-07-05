@@ -2,9 +2,11 @@ package miku.lib.sqlite;
 
 import javax.annotation.Nullable;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class Sqlite {
+    protected static final HashMap<String,Object> Configs = new HashMap<>();
     public static Connection c;
     public static Statement stmt;
     public static void Init(){
@@ -42,27 +44,42 @@ public class Sqlite {
 
     @Nullable
     public static Object GetConfigValue(String NAME,int TYPE){// 0-bool 1-int 2-long 3-str
+        if(Configs.get(NAME)!=null)return Configs.get(NAME);
         try {
             ResultSet rs = stmt.executeQuery("SELECT * FROM CONFIG;");
             String result = null;
             while(rs.next()){
                 if(Objects.equals(rs.getString("NAME"), NAME)) {
                     result = rs.getString("VALUE");
+                    Configs.put(NAME,result);
                     break;
                 }
             }
-            if(result == null)return null;
+            if(result == null) {
+                rs.close();
+                return null;
+            }
             switch (TYPE){
-                case 0:
+                case 0: {
+                    rs.close();
                     return Boolean.parseBoolean(result);
-                case 1:
+                }
+                case 1: {
+                    rs.close();
                     return Integer.parseInt(result);
-                case 2:
+                }
+                case 2: {
+                    rs.close();
                     return Long.parseLong(result);
-                case 3:
+                }
+                case 3: {
+                    rs.close();
                     return result;
-                default:
+                }
+                default: {
+                    rs.close();
                     return null;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
