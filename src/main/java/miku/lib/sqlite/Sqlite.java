@@ -50,7 +50,22 @@ public class Sqlite {
             while(rs.next()){
                 if(Objects.equals(rs.getString("NAME"), NAME)) {
                     result = rs.getString("VALUE");
-                    Configs.put(NAME,result);
+                    switch (TYPE){
+                        case 0: {
+                            Configs.put(NAME,result.equals("true"));
+                        }
+                        case 1: {
+                            Configs.put(NAME,Integer.parseInt(result));
+                        }
+                        case 2: {
+                            Configs.put(NAME,Long.parseLong(result));
+                        }
+                        case 3: {
+                            Configs.put(NAME,result);
+                        }
+                        default: {
+                        }
+                    }
                     break;
                 }
             }
@@ -61,7 +76,7 @@ public class Sqlite {
             switch (TYPE){
                 case 0: {
                     rs.close();
-                    return Boolean.parseBoolean(result);
+                    return result.equals("true");
                 }
                 case 1: {
                     rs.close();
