@@ -15,20 +15,19 @@ public class Sqlite {
             stmt = c.createStatement();
             System.out.println("Connected to database.");
             try {
-                String sql = "CREATE TABLE IF NOT EXISTS CONFIG " +
-                        "(NAME TEXT PRIMARY KEY     NOT NULL," +
-                        " VALUE        TEXT)";
-                stmt.executeUpdate(sql);
-                if(GetConfigValue("first_run",0)==null){
+                CreateTable("CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
+                CreateTable("HIDDEN_MODS","ID TEXT PRIMARY KEY    NOT NULL");
+                CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
+                if(GetValueFromTable("first_run","CONFIG",0)==null){
                     System.out.println("Init database.");
                     WriteConfigValue("debug_mode","false");
-                    System.out.println("debug_mode:"+GetConfigValue("debug_mode",0));
+                    System.out.println("debug_mode:"+ GetValueFromTable("debug_mode","CONFIG",0));
                     WriteConfigValue("auto_range_kill","true");
-                    System.out.println("auto_range_kill:"+GetConfigValue("auto_range_kill",0));
+                    System.out.println("auto_range_kill:"+ GetValueFromTable("auto_range_kill","CONFIG",0));
 
                     WriteConfigValue("first_run","false");
                 } else {
-                    System.out.println("first_run:"+GetConfigValue("first_run",0));
+                    System.out.println("first_run:"+ GetValueFromTable("first_run","CONFIG",0));
                 }
             } catch (Exception e){
                 e.printStackTrace();
@@ -43,10 +42,10 @@ public class Sqlite {
     }
 
     @Nullable
-    public static Object GetConfigValue(String NAME,int TYPE){// 0-bool 1-int 2-long 3-str
+    public static Object GetValueFromTable(String NAME,String TABLE, int TYPE){// 0-bool 1-int 2-long 3-str
         if(Configs.get(NAME)!=null)return Configs.get(NAME);
         try {
-            ResultSet rs = stmt.executeQuery("SELECT * FROM CONFIG;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM "+TABLE+";");
             String result = null;
             while(rs.next()){
                 if(Objects.equals(rs.getString("NAME"), NAME)) {
@@ -100,5 +99,15 @@ public class Sqlite {
 
     public static void ClearConfigCache(){
         Configs.clear();
+    }
+
+    public static void CreateTable(String NAME,String VALUES){
+        try {
+            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS "+NAME+
+                    " ("+VALUES+")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }

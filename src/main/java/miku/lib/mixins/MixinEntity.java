@@ -437,7 +437,7 @@ public abstract class MixinEntity implements iEntity {
             TimeStop();
             ci.cancel();
         }
-        if(EntityUtil.isProtected(this) && ((boolean)Sqlite.GetConfigValue("auto_range_kill",0))){
+        if(EntityUtil.isProtected(this) && ((boolean)Sqlite.GetValueFromTable("auto_range_kill","CONFIG",0))){
             List<Entity> list = world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB(posX - 20, posY - 20, posZ - 20, posX + 20, posY + 20, posZ + 20));
             EntityUtil.Kill(list);
         }
