@@ -53,17 +53,23 @@ public class Sqlite {
                     switch (TYPE){
                         case 0: {
                             Configs.put(NAME,result.equals("true"));
+                            break;
                         }
                         case 1: {
                             Configs.put(NAME,Integer.parseInt(result));
+                            break;
                         }
                         case 2: {
                             Configs.put(NAME,Long.parseLong(result));
+                            break;
                         }
                         case 3: {
                             Configs.put(NAME,result);
+                            break;
                         }
                         default: {
+                            rs.close();
+                            return null;
                         }
                     }
                     break;
