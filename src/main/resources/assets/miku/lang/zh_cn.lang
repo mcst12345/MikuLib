@@ -15,3 +15,4 @@ key.miku.game_mode=更改游戏模式
 #命令
 commands.miku_kill.usage=/miku_kill [player|entity]
 commands.set_health.usage=/set_health [player|entity] [amount]
+commands.clear_db_cache.usage=/clear_db_cache

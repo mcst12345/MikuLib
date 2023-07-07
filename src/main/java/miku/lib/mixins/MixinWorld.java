@@ -7,6 +7,7 @@ import miku.lib.api.iEntity;
 import miku.lib.api.iWorld;
 import miku.lib.core.MikuCore;
 import miku.lib.item.SpecialItem;
+import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
@@ -109,12 +110,12 @@ public abstract class MixinWorld implements iWorld {
 
     @Inject(at=@At("HEAD"),method = "spawnEntity", cancellable = true)
     public void spawnEntity(Entity entityIn, CallbackInfoReturnable<Boolean> cir){
-        if(EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))cir.setReturnValue(false);
+        if(Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))cir.setReturnValue(false);
     }
 
     @Inject(at=@At("HEAD"),method = "onEntityAdded", cancellable = true)
     public void onEntityAdded(Entity entityIn, CallbackInfo ci){
-        if(EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))ci.cancel();
+        if(Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))ci.cancel();
     }
 
     @Inject(at=@At("HEAD"),method = "onEntityRemoved", cancellable = true)

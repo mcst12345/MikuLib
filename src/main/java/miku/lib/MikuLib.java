@@ -1,6 +1,8 @@
 package miku.lib;
 
 import miku.lib.proxy.CommonProxy;
+import miku.lib.sqlite.Sqlite;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;

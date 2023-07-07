@@ -433,6 +433,7 @@ public abstract class MixinEntity implements iEntity {
 
     @Inject(at = @At("HEAD"), method = "onUpdate", cancellable = true)
     public void onUpdate(CallbackInfo ci) {
+        if(Sqlite.IS_MOB_BANNED((Entity) (Object)this))ci.cancel();
         if (this.isTimeStop) {
             TimeStop();
             ci.cancel();
