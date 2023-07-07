@@ -30,7 +30,6 @@ public class Sqlite {
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 if(GetValueFromTable("first_run","CONFIG",0)==null){
                     System.out.println("Init database.");
-                    WriteConfigValue("debug_mode","false");
                     WriteConfigValue("auto_range_kill","true");
                     WriteConfigValue("debug","false");
 
