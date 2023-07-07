@@ -3,9 +3,9 @@
     "modid": "mikulib",
     "name": "MikuLib",
     "description": "Miku Library by mcst12345",
-    "version": "1.6.8",
+    "version": "1.6.9",
     "mcversion": "1.12.2",
-    "url": "https://www.mcst12345.top:8443",
+    "url": "https://github.com/mcst12345/MikuLib",
     "updateUrl": "",
     "authorList": [
       "mcst12345"

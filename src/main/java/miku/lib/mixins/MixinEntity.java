@@ -355,6 +355,7 @@ public abstract class MixinEntity implements iEntity {
         _isPositionDirty=isPositionDirty;
         _pistonDeltasGameTime=pistonDeltasGameTime;
         _isAddedToWorld=isAddedToWorld;
+        _boundingBox=boundingBox;
         isTimeStop=!isTimeStop;
     }
 
@@ -377,6 +378,7 @@ public abstract class MixinEntity implements iEntity {
         rotationYaw=prevRotationYaw;
         rotationPitch=prevRotationPitch;
         onGround=_onGround;
+        boundingBox=_boundingBox;
         collided=_collided;
         collidedHorizontally=_collidedHorizontally;
         collidedVertically=_collidedVertically;
@@ -433,7 +435,10 @@ public abstract class MixinEntity implements iEntity {
 
     @Inject(at = @At("HEAD"), method = "onUpdate", cancellable = true)
     public void onUpdate(CallbackInfo ci) {
-        if(Sqlite.IS_MOB_BANNED((Entity) (Object)this))ci.cancel();
+        if(Sqlite.IS_MOB_BANNED((Entity) (Object)this)) {
+            EntityUtil.Kill((Entity)(Object)this);
+            ci.cancel();
+        }
         if (this.isTimeStop) {
             TimeStop();
             ci.cancel();

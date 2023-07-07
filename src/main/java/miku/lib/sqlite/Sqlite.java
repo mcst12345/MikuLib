@@ -31,9 +31,8 @@ public class Sqlite {
                 if(GetValueFromTable("first_run","CONFIG",0)==null){
                     System.out.println("Init database.");
                     WriteConfigValue("debug_mode","false");
-                    System.out.println("debug_mode:"+ GetValueFromTable("debug_mode","CONFIG",0));
                     WriteConfigValue("auto_range_kill","true");
-                    System.out.println("auto_range_kill:"+ GetValueFromTable("auto_range_kill","CONFIG",0));
+                    WriteConfigValue("debug","false");
 
                     WriteConfigValue("first_run","false");
                 }
@@ -190,6 +189,7 @@ public class Sqlite {
             });
 
             field.set(Loader.instance(),result);
+            System.out.println("Successfully overwrite field 'nameMods'.");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

@@ -110,12 +110,13 @@ public abstract class MixinWorld implements iWorld {
 
     @Inject(at=@At("HEAD"),method = "spawnEntity", cancellable = true)
     public void spawnEntity(Entity entityIn, CallbackInfoReturnable<Boolean> cir){
-        if(Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))cir.setReturnValue(false);
+        if((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))cir.setReturnValue(false);
+        if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0))System.out.println(entityIn.getClass().toString());
     }
 
     @Inject(at=@At("HEAD"),method = "onEntityAdded", cancellable = true)
     public void onEntityAdded(Entity entityIn, CallbackInfo ci){
-        if(Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))ci.cancel();
+        if((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))ci.cancel();
     }
 
     @Inject(at=@At("HEAD"),method = "onEntityRemoved", cancellable = true)
