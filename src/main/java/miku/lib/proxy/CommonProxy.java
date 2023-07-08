@@ -1,6 +1,8 @@
 package miku.lib.proxy;
 
 import miku.lib.util.ClassUtil;
+import miku.lib.world.Void;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.spongepowered.asm.mixin.Mixins;
@@ -8,6 +10,8 @@ import org.spongepowered.asm.mixin.Mixins;
 public class CommonProxy {
     public CommonProxy(){}
     public void preInit(FMLPreInitializationEvent event){
+        Biome.registerBiome(-25,"mikulib:void",Void.VoidBiome);
+        Void.Init();
     }
 
     public void init(FMLInitializationEvent event){
