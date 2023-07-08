@@ -128,6 +128,12 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Inject(at = @At("HEAD"), method = "displayGuiScreen", cancellable = true)
     public void displayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
+        if (Sqlite.IS_GUI_BANNED(guiScreenIn)) {
+            if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0))System.out.println(guiScreenIn.getClass().toString()+" is banned");
+            guiScreenIn.onGuiClosed();
+            ci.cancel();
+
+        }
         if(EntityUtil.isProtected(player)){
             if (guiScreenIn instanceof GuiGameOver) {
                 guiScreenIn.onGuiClosed();
@@ -141,7 +147,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
         }
-        if (guiScreenIn != null && Sqlite.IS_GUI_BANNED(guiScreenIn)) ci.cancel();
+        if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0) && guiScreenIn!=null)System.out.println(guiScreenIn.getClass().toString());
     }
 
     @Override

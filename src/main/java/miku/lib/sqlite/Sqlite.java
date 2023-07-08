@@ -75,7 +75,7 @@ public class Sqlite {
             while (rs.next()) {
                 s = rs.getString(KEY);
                 list.add(Class.forName(s));
-                System.out.println("Add value:" + rs.getString(KEY));
+                System.out.println("Add class:" + rs.getString(KEY));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -167,6 +167,9 @@ public class Sqlite {
         GetClassFromTable("BANNED_MOBS","ID",BANNED_MOBS);
         BANNED_ITEMS.clear();
         GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
+        BANNED_GUIS.clear();
+        GetClassFromTable("BANNED_GUIS","ID",BANNED_GUIS);
+
     }
 
     public static void CreateTable(String NAME,String VALUES){
@@ -179,20 +182,32 @@ public class Sqlite {
         }
     }
 
-    public static boolean IS_MOB_BANNED(Entity entity){
-        return BANNED_MOBS.contains(entity.getClass());
+    public static boolean IS_MOB_BANNED(@Nullable Entity entity){
+        return entity != null && BANNED_MOBS.contains(entity.getClass());
     }
-    public static boolean IS_ITEM_BANNED(Item item){
-        return BANNED_ITEMS.contains(item.getClass());
+    public static boolean IS_ITEM_BANNED(@Nullable Item item){
+        return item != null && BANNED_ITEMS.contains(item.getClass());
     }
-    public static boolean IS_GUI_BANNED(Gui gui){
-        return BANNED_GUIS.contains(gui.getClass());
+    public static boolean IS_GUI_BANNED(@Nullable Gui gui){
+        return gui != null && BANNED_GUIS.contains(gui.getClass());
     }
 
     public static void Init(){
         GetClassFromTable("BANNED_MOBS","ID",BANNED_MOBS);
         GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
         GetClassFromTable("BANNED_GUIS","ID",BANNED_GUIS);
+
+        if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            for(Object o : BANNED_MOBS){
+                System.out.println("Mob "+o.toString()+" is banned.");
+            }
+            for(Object o : BANNED_ITEMS){
+                System.out.println("Item "+o.toString()+" is banned.");
+            }
+            for(Object o : BANNED_GUIS){
+                System.out.println("GUI "+o.toString()+" is banned.");
+            }
+        }
 
         Class<Loader> loader = (Class<Loader>) Loader.instance().getClass();
         try {
