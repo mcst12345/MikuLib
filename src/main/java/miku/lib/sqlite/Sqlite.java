@@ -1,5 +1,6 @@
 package miku.lib.sqlite;
 
+import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Loader;
@@ -12,11 +13,10 @@ import java.util.*;
 
 public class Sqlite {
     protected static final HashMap<String,Object> Configs = new HashMap<>();
-
     protected static final ArrayList<String> HIDDEN_MODS = new ArrayList<>();
-
     protected static final ArrayList<Class<? extends Entity>> BANNED_MOBS = new ArrayList<>();
     protected static final ArrayList<Class<? extends Item>> BANNED_ITEMS = new ArrayList<>();
+    protected static final ArrayList<Class<? extends Gui>> BANNED_GUIS = new ArrayList<>();
 
     public static Connection c;
     public static Statement stmt;
@@ -31,6 +31,7 @@ public class Sqlite {
                 CreateTable("HIDDEN_MODS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
+                CreateTable("BANNED_GUIS","ID TEXT PRIMARY KEY    NOT NULL");
                 if(GetValueFromTable("first_run","CONFIG",0)==null){
                     System.out.println("Init database.");
                     WriteConfigValue("auto_range_kill","true");
@@ -181,14 +182,17 @@ public class Sqlite {
     public static boolean IS_MOB_BANNED(Entity entity){
         return BANNED_MOBS.contains(entity.getClass());
     }
-
     public static boolean IS_ITEM_BANNED(Item item){
         return BANNED_ITEMS.contains(item.getClass());
+    }
+    public static boolean IS_GUI_BANNED(Gui gui){
+        return BANNED_GUIS.contains(gui.getClass());
     }
 
     public static void Init(){
         GetClassFromTable("BANNED_MOBS","ID",BANNED_MOBS);
         GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
+        GetClassFromTable("BANNED_GUIS","ID",BANNED_GUIS);
 
         Class<Loader> loader = (Class<Loader>) Loader.instance().getClass();
         try {

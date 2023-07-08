@@ -2,6 +2,7 @@ package miku.lib.mixins;
 
 import miku.lib.api.iMinecraft;
 import miku.lib.item.SpecialItem;
+import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
 import miku.lib.util.crashReportUtil;
 import net.minecraft.client.Minecraft;
@@ -140,6 +141,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
         }
+        if (guiScreenIn != null && Sqlite.IS_GUI_BANNED(guiScreenIn)) ci.cancel();
     }
 
     @Override
