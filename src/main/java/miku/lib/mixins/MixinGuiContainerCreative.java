@@ -18,6 +18,6 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
 
     @Inject(at=@At("HEAD"),method = "handleMouseClick", cancellable = true)
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type, CallbackInfo ci){
-        if(this.mc.player.inventory.getItemStack() == null)ci.cancel();
+        if(this.mc.player.inventory.getItemStack() == null || slotIn.getStack() == null)ci.cancel();
     }
 }
