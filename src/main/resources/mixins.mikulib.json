@@ -15,6 +15,7 @@
     "MixinEntityTracker",
     "MixinEventBus",
     "MixinFMLPreInitializationEvent",
+    "MixinGuiContainerCreative",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
     "MixinItemStack",
