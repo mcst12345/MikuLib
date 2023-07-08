@@ -32,12 +32,10 @@ public class Sqlite {
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_GUIS","ID TEXT PRIMARY KEY    NOT NULL");
-                if(GetValueFromTable("first_run","CONFIG",0)==null){
-                    System.out.println("Init database.");
-                    WriteConfigValue("auto_range_kill","true");
-                    WriteConfigValue("debug","false");
-                    WriteConfigValue("first_run","false");
-                }
+                System.out.println("Init database.");
+                WriteConfigValue("auto_range_kill","true");
+                WriteConfigValue("debug","false");
+                WriteConfigValue("void_keep_loaded","true");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
 
@@ -151,7 +149,7 @@ public class Sqlite {
     }
 
     public static void WriteConfigValue(String NAME,String VALUE){
-        String sql = "INSERT INTO CONFIG (NAME,VALUE)" +
+        String sql = "INSERT OR IGNORE INTO CONFIG (NAME,VALUE)" +
                     "VALUES ('"+NAME+"','"+VALUE+"')";
         try {
             stmt.executeUpdate(sql);
