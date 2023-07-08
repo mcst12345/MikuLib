@@ -62,7 +62,7 @@ public class VoidProvider extends WorldProvider {
     @SideOnly(Side.CLIENT)
     @Nonnull
     public Vec3d getFogColor(float p_76562_1_, float p_76562_2_){
-        return new Vec3d(0.0d,0.0d,0.0d);
+        return new Vec3d(1.0d,1.0d,1.0d);
     }
 
     @Override
