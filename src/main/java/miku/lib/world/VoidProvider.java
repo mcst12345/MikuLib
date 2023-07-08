@@ -55,7 +55,14 @@ public class VoidProvider extends WorldProvider {
     @SideOnly(Side.CLIENT)
     public float[] calcSunriseSunsetColors(float celestialAngle, float partialTicks)
     {
-        return new float[0];
+        return new float[3];
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    @Nonnull
+    public Vec3d getFogColor(float p_76562_1_, float p_76562_2_){
+        return new Vec3d(0.0d,0.0d,0.0d);
     }
 
     @Override
