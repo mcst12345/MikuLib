@@ -12,6 +12,6 @@ public class MixinFMLPreInitializationEvent {
 
     @Inject(at=@At("TAIL"),method = "<init>")
     public void Init(Object[] data, CallbackInfo ci){
-        Sqlite.InitModList();
+        Sqlite.Init();
     }
 }

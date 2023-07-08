@@ -73,7 +73,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        Sqlite.Init();
+        Sqlite.CoreInit();
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.mikulib.json");
         Mixins.addConfiguration("mixins.chaos.json");

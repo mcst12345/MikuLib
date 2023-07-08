@@ -1,6 +1,7 @@
 package miku.lib.mixins;
 
 import miku.lib.item.SpecialItem;
+import miku.lib.sqlite.Sqlite;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -19,6 +20,10 @@ public abstract class MixinItemStack {
 
     @Shadow
     public abstract Item getItem();
+
+    @Shadow private int stackSize;
+
+    @Shadow private boolean isEmpty;
 
     @Inject(at = @At("HEAD"), method = "isItemStackDamageable", cancellable = true)
     public void isItemStackDamageable(CallbackInfoReturnable<Boolean> cir) {
@@ -72,6 +77,10 @@ public abstract class MixinItemStack {
     @Inject(at = @At("HEAD"), method = "setCount", cancellable = true)
     public void setCount(int size, CallbackInfo ci) {
         if (this.getItem() instanceof SpecialItem) ci.cancel();
+        if(Sqlite.IS_ITEM_BANNED(this.getItem())){
+            this.stackSize=0;
+            this.isEmpty = true;
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "getCount", cancellable = true)
@@ -79,6 +88,10 @@ public abstract class MixinItemStack {
         if (this.getItem() instanceof SpecialItem) {
             cir.setReturnValue(1);
         }
+        if(Sqlite.IS_ITEM_BANNED(this.getItem()))cir.setReturnValue(0);
     }
+
+
+
 
 }

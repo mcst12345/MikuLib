@@ -1,6 +1,7 @@
 package miku.lib.sqlite;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
@@ -14,11 +15,12 @@ public class Sqlite {
 
     protected static final ArrayList<String> HIDDEN_MODS = new ArrayList<>();
 
-    protected static final ArrayList<String> BANNED_MOBS = new ArrayList<>();
+    protected static final ArrayList<Class<? extends Entity>> BANNED_MOBS = new ArrayList<>();
+    protected static final ArrayList<Class<? extends Item>> BANNED_ITEMS = new ArrayList<>();
 
     public static Connection c;
     public static Statement stmt;
-    public static void Init(){
+    public static void CoreInit(){
         try {
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
@@ -28,26 +30,16 @@ public class Sqlite {
                 CreateTable("CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 CreateTable("HIDDEN_MODS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
+                CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
                 if(GetValueFromTable("first_run","CONFIG",0)==null){
                     System.out.println("Init database.");
                     WriteConfigValue("auto_range_kill","true");
                     WriteConfigValue("debug","false");
-
                     WriteConfigValue("first_run","false");
                 }
                 System.out.println("Reading lists.");
-                GetValuesFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
-                GetValuesFromTable("BANNED_MOBS","ID",BANNED_MOBS);
+                GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
 
-                System.out.println("Hidden mods:");
-                for(String s : HIDDEN_MODS){
-                    System.out.println(s);
-                }
-
-                System.out.println("Banned mobs");
-                for(String s : BANNED_MOBS){
-                    System.out.println(s);
-                }
 
             } catch (Exception e){
                 e.printStackTrace();
@@ -61,19 +53,37 @@ public class Sqlite {
         }
     }
 
-    public static void GetValuesFromTable(String TABLE,String VALUE,ArrayList list){
+    public static void GetStringsFromTable(String TABLE, String KEY, ArrayList list){
         try {
             ResultSet rs = stmt.executeQuery("SELECT * FROM "+TABLE+";");
             while(rs.next()){
-                list.add(rs.getString(VALUE));
-                System.out.println("Add value:"+rs.getString(VALUE));
+                list.add(rs.getString(KEY));
+                System.out.println("Add value:"+rs.getString(KEY));
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
-    @Nullable
+
+    public static void GetClassFromTable(String TABLE,String KEY, ArrayList list) {
+        ResultSet rs;
+        String s = null;
+        try {
+            rs = stmt.executeQuery("SELECT * FROM " + TABLE + ";");
+            while (rs.next()) {
+                s = rs.getString(KEY);
+                list.add(Class.forName(s));
+                System.out.println("Add value:" + rs.getString(KEY));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class not found:" + s);
+        }
+    }
+        @Nullable
     public static Object GetValueFromTable(String NAME,String TABLE, int TYPE){// 0-bool 1-int 2-long 3-str
         if(Configs.get(NAME)!=null)return Configs.get(NAME);
         try {
@@ -153,7 +163,9 @@ public class Sqlite {
     public static void ClearDBCache(){
         Configs.clear();
         BANNED_MOBS.clear();
-        GetValuesFromTable("BANNED_MOBS","ID",BANNED_MOBS);
+        GetClassFromTable("BANNED_MOBS","ID",BANNED_MOBS);
+        BANNED_ITEMS.clear();
+        GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
     }
 
     public static void CreateTable(String NAME,String VALUES){
@@ -167,10 +179,17 @@ public class Sqlite {
     }
 
     public static boolean IS_MOB_BANNED(Entity entity){
-        return BANNED_MOBS.contains(entity.getClass().toString());
+        return BANNED_MOBS.contains(entity.getClass());
     }
 
-    public static void InitModList(){
+    public static boolean IS_ITEM_BANNED(Item item){
+        return BANNED_ITEMS.contains(item.getClass());
+    }
+
+    public static void Init(){
+        GetClassFromTable("BANNED_MOBS","ID",BANNED_MOBS);
+        GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
+
         Class<Loader> loader = (Class<Loader>) Loader.instance().getClass();
         try {
             System.out.println("Init mod list.");
