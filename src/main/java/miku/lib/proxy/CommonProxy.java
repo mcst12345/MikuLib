@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixins;
 public class CommonProxy {
     public CommonProxy(){}
     public void preInit(FMLPreInitializationEvent event){
-        Biome.registerBiome(-25,"mikulib:void",Void.VoidBiome);
         Void.Init();
     }
 
