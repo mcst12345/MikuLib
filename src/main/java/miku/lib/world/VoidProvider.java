@@ -55,7 +55,7 @@ public class VoidProvider extends WorldProvider {
     @SideOnly(Side.CLIENT)
     public float[] calcSunriseSunsetColors(float celestialAngle, float partialTicks)
     {
-        return new float[3];
+        return new float[5];
     }
 
     @Override
