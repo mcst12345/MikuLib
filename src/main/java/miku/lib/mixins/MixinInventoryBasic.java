@@ -25,11 +25,11 @@ public class MixinInventoryBasic implements iInventoryBasic {
 
     @Inject(at=@At("TAIL"),method = "getStackInSlot", cancellable = true)
     public void getStackInSlot(int index, CallbackInfoReturnable<ItemStack> cir){
-        if(Sqlite.IS_ITEM_BANNED(cir.getReturnValue().getItem()))cir.setReturnValue(null);
+        if(Sqlite.IS_ITEM_BANNED(cir.getReturnValue().getItem()))cir.setReturnValue(ItemStack.EMPTY);
     }
 
     @Inject(at=@At("HEAD"),method = "addItem", cancellable = true)
     public void addItem(ItemStack stack, CallbackInfoReturnable<ItemStack> cir){
-        if(Sqlite.IS_ITEM_BANNED(stack.getItem()))cir.setReturnValue(null);
+        if(Sqlite.IS_ITEM_BANNED(stack.getItem()))cir.setReturnValue(ItemStack.EMPTY);
     }
 }
