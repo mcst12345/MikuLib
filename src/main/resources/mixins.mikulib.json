@@ -24,8 +24,6 @@
     "MixinPlayerList",
     "MixinSaveHandler",
     "MixinServerCommandManager",
-    "MixinSimpleChannelHandlerWrapper",
-    "MixinSimpleNetworkWrapper",
     "MixinSlot",
     "MixinWorld",
     "MixinWorldServer"
