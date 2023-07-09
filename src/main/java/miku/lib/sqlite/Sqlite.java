@@ -36,6 +36,7 @@ public class Sqlite {
                 WriteConfigValue("auto_range_kill","true");
                 WriteConfigValue("debug","false");
                 WriteConfigValue("void_keep_loaded","true");
+                WriteConfigValue("miku_kill_exit_attack","true");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
 

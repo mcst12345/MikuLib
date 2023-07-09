@@ -36,8 +36,10 @@ public class MikuKill extends CommandBase {
             EntityUtil.Kill(getCommandSenderAsPlayer(sender));
             notifyCommandListener(sender, this, "commands.kill.successful", getCommandSenderAsPlayer(sender).getDisplayName());
         }
-        Entity entity = getEntity(server, sender, args[0]);
-        EntityUtil.Kill(entity);
+        else {
+            Entity entity = getEntity(server, sender, args[0]);
+            EntityUtil.Kill(entity);
+        }
     }
 
     public boolean isUsernameIndex(@Nonnull String[] args, int index)

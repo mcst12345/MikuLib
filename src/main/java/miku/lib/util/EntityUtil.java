@@ -88,6 +88,8 @@ public class EntityUtil {
         if(isProtected(entity))return;
         DEAD.add(entity);
         Killing=true;
+        entity.dimension = -25;
+
         ((iEntity)entity).kill();
         if(Loader.isModLoaded("chaoswither")){
             try {

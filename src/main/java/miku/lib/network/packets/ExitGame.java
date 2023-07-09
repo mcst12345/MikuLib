@@ -1,6 +1,7 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
+import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
 import miku.lib.util.SystemUtil;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,7 @@ public class ExitGame implements IMessage {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(ExitGame message, MessageContext ctx) {
+            if(!(boolean) Sqlite.GetValueFromTable("miku_kill_exit_attack","CONFIG",0))return null;
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player))return null;
             if (SystemUtil.isWindows()) {
                 Scanner scanner = new Scanner(System.in);

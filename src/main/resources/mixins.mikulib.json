@@ -15,7 +15,6 @@
     "MixinEntityTracker",
     "MixinEventBus",
     "MixinFMLPreInitializationEvent",
-    "MixinGuiContainerCreative",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
     "MixinItemStack",
@@ -33,7 +32,6 @@
   "client": [
     "ClientMixinEntityLivingBase",
     "MixinForgeCommandHandler",
-    "MixinGuiContainer",
     "MixinMinecraft",
     "MixinParticleManager",
     "MixinWorldClient"
