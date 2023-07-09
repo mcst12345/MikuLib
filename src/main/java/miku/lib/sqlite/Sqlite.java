@@ -17,6 +17,7 @@ public class Sqlite {
     protected static final ArrayList<Class<? extends Entity>> BANNED_MOBS = new ArrayList<>();
     protected static final ArrayList<Class<? extends Item>> BANNED_ITEMS = new ArrayList<>();
     protected static final ArrayList<Class<? extends Gui>> BANNED_GUIS = new ArrayList<>();
+    protected static final ArrayList<String> BANNED_MODS = new ArrayList<>();
 
     public static Connection c;
     public static Statement stmt;
@@ -29,6 +30,7 @@ public class Sqlite {
                 System.out.println("Creating tables.");
                 CreateTable("CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 CreateTable("HIDDEN_MODS","ID TEXT PRIMARY KEY    NOT NULL");
+                CreateTable("BANNED_MODS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_GUIS","ID TEXT PRIMARY KEY    NOT NULL");
@@ -39,6 +41,7 @@ public class Sqlite {
                 WriteConfigValue("miku_kill_exit_attack","true");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
+                GetStringsFromTable("BANNED_MODS","ID",BANNED_MODS);
 
 
             } catch (Exception e){
@@ -221,6 +224,11 @@ public class Sqlite {
             mods.forEach((key,value) -> {
                 if(!HIDDEN_MODS.contains(key)){
                     result.put(key,value);
+                }
+                if(BANNED_MODS.contains(key)){
+                    System.out.println("Mod "+key+" is banned. Exiting.");
+                    Runtime.getRuntime().halt(39);
+                    System.exit(0);
                 }
             });
 

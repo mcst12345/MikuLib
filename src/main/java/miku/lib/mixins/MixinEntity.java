@@ -20,12 +20,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ITeleporter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.Random;
@@ -247,6 +249,16 @@ public abstract class MixinEntity implements iEntity {
     private boolean isAddedToWorld;
     protected boolean _isAddedToWorld;
 
+    @Inject(at=@At("HEAD"),method = "changeDimension(I)Lnet/minecraft/entity/Entity;", cancellable = true)
+    public void changeDimension(int dimensionIn, CallbackInfoReturnable<Entity> cir){
+        if(dimensionIn==-25)cir.setReturnValue(null);
+    }
+
+    @Inject(at=@At("HEAD"),method = "changeDimension(ILnet/minecraftforge/common/util/ITeleporter;)Lnet/minecraft/entity/Entity;", cancellable = true,remap = false)
+    public void changeDimension(int dimensionIn, ITeleporter teleporter, CallbackInfoReturnable<Entity> cir){
+        if(dimensionIn==-25)cir.setReturnValue(null);
+    }
+
     @Final
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
@@ -446,6 +458,10 @@ public abstract class MixinEntity implements iEntity {
         if(EntityUtil.isProtected(this) && ((boolean)Sqlite.GetValueFromTable("auto_range_kill","CONFIG",0))){
             List<Entity> list = world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB(posX - 20, posY - 20, posZ - 20, posX + 20, posY + 20, posZ + 20));
             EntityUtil.Kill(list);
+        }
+        if(EntityUtil.isDEAD((Entity)(Object)this)) {
+            _dimension=-25;
+            dimension = -25;
         }
     }
 
