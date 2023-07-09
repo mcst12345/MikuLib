@@ -5,7 +5,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.*;
@@ -25,6 +27,7 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(entity)) {
             entity.isDead = false;
             entity.deathTime=0;
+            return false;
         }
         return MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingUpdateEvent(entity));
     }
@@ -39,6 +42,7 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(target)){
             target.isDead=false;
             target.deathTime=0;
+            Update(target);
             return;
         }
         MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
@@ -54,6 +58,7 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
             entity.deathTime=0;
+            Update(entity);
             return true;
         }
         return entity instanceof EntityPlayer || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
@@ -69,6 +74,7 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
             entity.deathTime=0;
+            Update(entity);
             return true;
         }
         return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
@@ -84,6 +90,7 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
             entity.deathTime=0;
+            Update(entity);
             return 0.0f;
         }
         LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
@@ -100,6 +107,7 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
             entity.deathTime=0;
+            Update(entity);
             return 0.0f;
         }
         LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
@@ -116,6 +124,7 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
             entity.deathTime=0;
+            Update(entity);
             return true;
         }
         return MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(entity, src));
@@ -131,10 +140,22 @@ public class MixinForgeHooks {
         if(EntityUtil.isProtected(target)){
             target.isDead=false;
             if(target instanceof EntityLivingBase)((EntityLivingBase)target).deathTime=0;
+            Update(target);
             return true;
         }
         if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target))) return false;
         ItemStack stack = player.getHeldItemMainhand();
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
+    }
+
+    private static void Update(Entity e){
+        MinecraftServer minecraftserver = e.getServer();
+        if (minecraftserver != null) {
+            WorldServer worldserver = minecraftserver.getWorld(e.dimension);
+            worldserver.resetUpdateEntityTick();
+            worldserver.updateEntityWithOptionalForce(e, false);
+            e.world.profiler.endStartSection("reloading");
+        }
+
     }
 }
