@@ -2,6 +2,7 @@ package miku.lib.mixins;
 
 import miku.lib.api.iEntity;
 import miku.lib.api.iEntityLiving;
+import miku.lib.util.EntityUtil;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -10,6 +11,8 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -75,6 +78,14 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
             this.swingProgressInt=0;
             this.swingProgress=0.0f;
             ci.cancel();
+        }
+    }
+
+    @Inject(at=@At("HEAD"),method = "handleStatusUpdate", cancellable = true)
+    @SideOnly(Side.CLIENT)
+    public void handleStatusUpdate(byte id, CallbackInfo ci){
+        if(EntityUtil.isProtected(this)){
+            if(id == (byte) 3 || id == (byte) 30 || id == (byte) 29 || id == (byte) 37 || id == (byte) 33 || id == (byte) 36 || id == (byte) 20 || id == (byte) 2 || id == (byte) 35)ci.cancel();
         }
     }
 }

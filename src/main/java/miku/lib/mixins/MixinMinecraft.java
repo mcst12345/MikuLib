@@ -40,6 +40,9 @@ import java.io.IOException;
 
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
+    public void Stop(){
+        running=false;
+    }
     public MixinMinecraft(){}
     protected boolean protect = false;
 
@@ -130,6 +133,8 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow public boolean skipRenderWorld;
 
     @Shadow public abstract void setIngameFocus();
+
+    @Shadow private volatile boolean running;
 
     /**
      * @author mcst12345
