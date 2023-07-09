@@ -13,7 +13,7 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(value = ForgeHooks.class)
+@Mixin(value = ForgeHooks.class,remap = false)
 public class MixinForgeHooks {
     /**
      * @author mcst12345
