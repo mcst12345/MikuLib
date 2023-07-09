@@ -12,7 +12,7 @@ plugins {
 
 
 group = 'miku'
-version = '1.6.11'
+version = '1.6.12'
 
 java {
     archivesBaseName = 'MikuLib'
@@ -86,7 +86,7 @@ jar {
         attributes([
                 "Specification-Title"     : "mikulib",
                 "Specification-Vendor"    : "mcst12345",
-                "Specification-Version"   : "1.6.11",
+                "Specification-Version"   : "1.6.12",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "mcst12345",
