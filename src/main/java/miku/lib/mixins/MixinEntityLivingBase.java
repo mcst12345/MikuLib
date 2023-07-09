@@ -5,20 +5,26 @@ import miku.lib.api.iEntityLivingBase;
 import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EntityTracker;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeMap;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.play.server.SPacketCollectItem;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.CombatTracker;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -288,5 +294,23 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
         moveStrafing=0.0f;
         moveVertical=0.0f;
         moveForward=0.0f;
+    }
+
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
+    public void onItemPickup(Entity entityIn, int quantity)
+    {
+        if ((!entityIn.isDead && !EntityUtil.isProtected(entityIn)) && !this.world.isRemote)
+        {
+            EntityTracker entitytracker = ((WorldServer)this.world).getEntityTracker();
+
+            if (entityIn instanceof EntityItem || entityIn instanceof EntityArrow || entityIn instanceof EntityXPOrb)
+            {
+                entitytracker.sendToTracking(entityIn, new SPacketCollectItem(entityIn.getEntityId(), this.getEntityId(), quantity));
+            }
+        }
     }
 }
