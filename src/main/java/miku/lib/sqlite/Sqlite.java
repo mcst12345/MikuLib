@@ -18,6 +18,7 @@ public class Sqlite {
     protected static final ArrayList<Class<? extends Item>> BANNED_ITEMS = new ArrayList<>();
     protected static final ArrayList<Class<? extends Gui>> BANNED_GUIS = new ArrayList<>();
     protected static final ArrayList<String> BANNED_MODS = new ArrayList<>();
+    protected static final ArrayList<String> BANNED_CLASS = new ArrayList<>();
 
     public static Connection c;
     public static Statement stmt;
@@ -42,7 +43,7 @@ public class Sqlite {
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS","ID",BANNED_MODS);
-
+                GetStringsFromTable("BANNED_CLASS","ID",BANNED_CLASS);
 
             } catch (Exception e){
                 e.printStackTrace();
@@ -211,6 +212,14 @@ public class Sqlite {
             }
         }
 
+        for(String s : BANNED_CLASS){
+            if(isClassLoaded(s)){
+                System.out.println("Class "+s+" is banned. Exiting.");
+                Runtime.getRuntime().halt(39);
+                System.exit(0);
+            }
+        }
+
         Class<Loader> loader = (Class<Loader>) Loader.instance().getClass();
         try {
             System.out.println("Init mod list.");
@@ -237,6 +246,16 @@ public class Sqlite {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        }
+    }
+
+    protected static boolean isClassLoaded(String clazz){
+        try {
+            Class.forName(clazz);
+            return true;
+        }
+        catch (ClassNotFoundException e){
+            return false;
         }
     }
 
