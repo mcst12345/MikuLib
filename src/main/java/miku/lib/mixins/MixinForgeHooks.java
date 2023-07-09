@@ -54,7 +54,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
-            EntityUtil.isProtected(src.getTrueSource());
+            EntityUtil.Kill(src.getTrueSource());
             return true;
         }
         if(EntityUtil.isProtected(src.getTrueSource())) {
@@ -73,7 +73,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
-            EntityUtil.isProtected(src.getTrueSource());
+            EntityUtil.Kill(src.getTrueSource());
             return true;
         }
         if(EntityUtil.isProtected(src.getTrueSource())) {
@@ -92,7 +92,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
-            EntityUtil.isProtected(src.getTrueSource());
+            EntityUtil.Kill(src.getTrueSource());
             return 0.0f;
         }
         if(EntityUtil.isProtected(src.getTrueSource())) {
@@ -112,7 +112,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
-            EntityUtil.isProtected(src.getTrueSource());
+            EntityUtil.Kill(src.getTrueSource());
             return 0.0f;
         }
         if(EntityUtil.isProtected(src.getTrueSource())) {
@@ -132,7 +132,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
-            EntityUtil.isProtected(src.getTrueSource());
+            EntityUtil.Kill(src.getTrueSource());
             return true;
         }
         if(EntityUtil.isProtected(src.getTrueSource())) {
