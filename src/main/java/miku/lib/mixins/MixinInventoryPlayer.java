@@ -67,4 +67,5 @@ public abstract class MixinInventoryPlayer implements iInventoryPlayer {
             ci.cancel();
         }
     }
+
 }
