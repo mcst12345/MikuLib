@@ -112,11 +112,11 @@ public class INFO extends GuiScrollingList {
             BufferBuilder wr = tess.getBuffer();
             int offset = (this.left + this.listWidth/2) - (logoDims.width / 2);
             if(miku) {
-                offset = (this.left + this.listWidth) - (logoDims.width) - 400;
+                offset = (this.left + this.listWidth) - (logoDims.width) - 500;
                 wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-                wr.pos(offset, top + logoDims.height * 3, ((iGuiModList) instance).getzLevel()).tex(0, 1).endVertex();
-                wr.pos(offset + logoDims.width * 3, top + logoDims.height * 3, ((iGuiModList) instance).getzLevel()).tex(1, 1).endVertex();
-                wr.pos(offset + logoDims.width * 3, top, ((iGuiModList) instance).getzLevel()).tex(1, 0).endVertex();
+                wr.pos(offset, top + logoDims.height * 5, ((iGuiModList) instance).getzLevel()).tex(0, 1).endVertex();
+                wr.pos(offset + logoDims.width * 5, top + logoDims.height * 5, ((iGuiModList) instance).getzLevel()).tex(1, 1).endVertex();
+                wr.pos(offset + logoDims.width * 5, top, ((iGuiModList) instance).getzLevel()).tex(1, 0).endVertex();
                 wr.pos(offset, top, ((iGuiModList) instance).getzLevel()).tex(0, 0).endVertex();
             }
             else {

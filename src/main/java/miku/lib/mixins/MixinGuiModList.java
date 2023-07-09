@@ -61,6 +61,8 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
         if (selectedMod == null)
             return;
 
+        boolean miku = Objects.equals(selectedMod.getModId(), "mikulib");
+
         ResourceLocation logoPath = null;
         Dimension logoDims = new Dimension(0, 0);
         List<String> lines = new ArrayList<>();
@@ -87,7 +89,7 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
                 if (logo != null)
                 {
                     logoPath = tm.getDynamicTextureLocation("modlogo", new DynamicTexture(logo));
-                    if(Objects.equals(selectedMod.getModId(), "mikulib"))logoPath = new ResourceLocation("miku","textures/cover.png");
+                    if(miku)logoPath = new ResourceLocation("miku","textures/cover.png");
                     logoDims = new Dimension(logo.getWidth(), logo.getHeight());
                 }
             }
@@ -139,6 +141,7 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
 
             lines.add(null);
             lines.add(selectedMod.getMetadata().description);
+            if(miku)lines.clear();
         }
         else
         {
@@ -167,6 +170,7 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
 
         modInfo = new INFO(this.width - this.listWidth - 30, lines, logoPath, logoDims,(GuiModList) (Object)this);
     }
+
 
 
     public Minecraft getMC(){
