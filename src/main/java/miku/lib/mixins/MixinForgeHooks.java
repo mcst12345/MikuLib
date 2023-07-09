@@ -22,7 +22,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static boolean onLivingUpdate(EntityLivingBase entity)
     {
-        if(EntityUtil.isProtected(entity))entity.isDead=false;
+        if(EntityUtil.isProtected(entity)) {
+            entity.isDead = false;
+            entity.deathTime=0;
+        }
         return MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingUpdateEvent(entity));
     }
 
@@ -35,6 +38,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(target)){
             target.isDead=false;
+            target.deathTime=0;
             return;
         }
         MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
@@ -49,6 +53,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
+            entity.deathTime=0;
             return true;
         }
         return entity instanceof EntityPlayer || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
@@ -63,6 +68,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
+            entity.deathTime=0;
             return true;
         }
         return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
@@ -77,6 +83,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
+            entity.deathTime=0;
             return 0.0f;
         }
         LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
@@ -92,6 +99,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
+            entity.deathTime=0;
             return 0.0f;
         }
         LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
@@ -107,6 +115,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(entity)){
             entity.isDead=false;
+            entity.deathTime=0;
             return true;
         }
         return MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(entity, src));
@@ -121,6 +130,7 @@ public class MixinForgeHooks {
     {
         if(EntityUtil.isProtected(target)){
             target.isDead=false;
+            if(target instanceof EntityLivingBase)((EntityLivingBase)target).deathTime=0;
             return true;
         }
         if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target))) return false;
