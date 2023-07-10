@@ -81,7 +81,7 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        return new String[0];
+        return new String[]{"miku.lib.core.MikuAccessTransformer"};
     }
 
     @Override
