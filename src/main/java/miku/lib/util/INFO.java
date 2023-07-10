@@ -110,9 +110,8 @@ public class INFO extends GuiScrollingList {
             }
             boolean miku = logoPath.getNamespace().equals("miku") && logoPath.getPath().equals("textures/cover.png");
             BufferBuilder wr = tess.getBuffer();
-            int offset = (this.left + this.listWidth/2) - (logoDims.width / 2);
+            int offset = (this.left + this.listWidth/2) - (logoDims.width / 2)*5;
             if(miku) {
-                offset = (this.left + this.listWidth) - (logoDims.width) - 500;
                 wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
                 wr.pos(offset, top + logoDims.height * 5, ((iGuiModList) instance).getzLevel()).tex(0, 1).endVertex();
                 wr.pos(offset + logoDims.width * 5, top + logoDims.height * 5, ((iGuiModList) instance).getzLevel()).tex(1, 1).endVertex();
