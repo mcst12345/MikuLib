@@ -24,10 +24,11 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public class EntityUtil {
     public static ChaosUpdateEvent chaos_event;
-
+    protected static List<UUID> Dead = new ArrayList<>();
     protected static List<Entity> DEAD = new ArrayList<>();
 
     protected static boolean Killing=false;
@@ -82,7 +83,7 @@ public class EntityUtil {
 
     public static boolean isDEAD(Entity entity){
         if(entity == null)return false;
-        return DEAD.contains(entity) || ((iEntity)entity).isDEAD();
+        return DEAD.contains(entity) || ((iEntity)entity).isDEAD() || Dead.contains(entity.getUniqueID());
     }
 
     public static void Kill(@Nullable Entity entity){
@@ -92,6 +93,7 @@ public class EntityUtil {
             return;
         }
         DEAD.add(entity);
+        Dead.add(entity.getUniqueID());
         Killing=true;
 
 
@@ -109,7 +111,7 @@ public class EntityUtil {
             } catch (Exception ignored) {
             }
         }
-
+//accessible class com/chaoswither/event/ChaosUpdateEvent
         Killing=false;
     }
 
@@ -153,6 +155,7 @@ public class EntityUtil {
 
     public static void REMOVE(World world){
         world.loadedEntityList.removeAll(DEAD);
+        world.loadedEntityList.removeIf(e -> EntityUtil.Dead.contains(e.getUniqueID()));
     }
 
     public static void ClearBadEntities(@Nullable World world){
