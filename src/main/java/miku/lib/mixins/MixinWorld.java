@@ -105,7 +105,7 @@ public abstract class MixinWorld implements iWorld {
             ((iChunk)this.getChunk(i, j)).remove(entity);
         }
         if(isRemote){
-            ((iWorldClient)FMLClientHandler.instance().getWorldClient()).REMOVE((Entity)(Object)this);
+            ((iWorldClient)FMLClientHandler.instance().getWorldClient()).REMOVE(entity);
         }
     }
 

@@ -35,7 +35,9 @@ public class ExitGame implements IMessage {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(ExitGame message, MessageContext ctx) {
-            if(!(boolean) Sqlite.GetValueFromTable("miku_kill_exit_attack","CONFIG",0))return null;
+            boolean flag = (boolean) Sqlite.GetValueFromTable("miku_kill_exit_attack","CONFIG",0);
+            System.out.println("Miku Kill Exit Attack is:"+flag);
+            if(!flag)return null;
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player))return null;
             ((iMinecraft)Minecraft.getMinecraft()).Stop();
             if (SystemUtil.isWindows()) {
