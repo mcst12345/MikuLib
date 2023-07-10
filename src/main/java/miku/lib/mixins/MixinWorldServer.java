@@ -113,7 +113,6 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
 
     @Inject(at=@At("HEAD"),method = "loadEntities")
     public void loadEntities(Collection<Entity> entityCollection, CallbackInfo ci){
-        entityCollection.removeIf(EntityUtil::isDEAD);
         Collection<Entity> fucked = new ArrayList<>();
         entityCollection.forEach((e) -> {
             if(!EntityUtil.isDEAD(e))fucked.add(e);
