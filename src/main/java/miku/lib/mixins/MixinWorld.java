@@ -1,10 +1,7 @@
 package miku.lib.mixins;
 
 import com.google.common.collect.ImmutableSetMultimap;
-import miku.lib.api.ProtectedEntity;
-import miku.lib.api.iChunk;
-import miku.lib.api.iEntity;
-import miku.lib.api.iWorld;
+import miku.lib.api.*;
 import miku.lib.core.MikuCore;
 import miku.lib.item.SpecialItem;
 import miku.lib.sqlite.Sqlite;
@@ -27,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -106,6 +104,9 @@ public abstract class MixinWorld implements iWorld {
         {
             ((iChunk)this.getChunk(i, j)).remove(entity);
         }
+        if(isRemote){
+            ((iWorldClient)FMLClientHandler.instance().getWorldClient()).REMOVE((Entity)(Object)this);
+        }
     }
 
     @Inject(at=@At("HEAD"),method = "spawnEntity", cancellable = true)
@@ -132,6 +133,11 @@ public abstract class MixinWorld implements iWorld {
     @Inject(at=@At("HEAD"),method = "removeEntityDangerously", cancellable = true)
     public void removeEntityDangerously(Entity entityIn, CallbackInfo ci){
         if(EntityUtil.isProtected(entityIn))ci.cancel();
+    }
+
+    @Inject(at=@At("TAIL"),method = "getEntityByID", cancellable = true)
+    public void getEntityByID(int id, CallbackInfoReturnable<Entity> cir){
+        if(EntityUtil.isDEAD(cir.getReturnValue()))cir.setReturnValue(null);
     }
 
     /**

@@ -1,6 +1,7 @@
 package miku.lib.mixins;
 
 import miku.lib.api.iMinecraft;
+import miku.lib.api.iWorldClient;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.client.Minecraft;
@@ -16,11 +17,15 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Set;
 
 @Mixin(value = WorldClient.class)
-public abstract class MixinWorldClient extends World {
+public abstract class MixinWorldClient extends World implements iWorldClient {
     @Shadow @Final private Set<Entity> entityList;
 
     @Shadow @Final private Set<Entity> entitySpawnQueue;
@@ -29,6 +34,11 @@ public abstract class MixinWorldClient extends World {
 
     protected MixinWorldClient(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);
+    }
+
+    public void REMOVE(Entity entity){
+        entityList.remove(entity);
+        entitySpawnQueue.remove(entity);
     }
 
     /**
@@ -85,5 +95,40 @@ public abstract class MixinWorldClient extends World {
         this.profiler.endStartSection("blocks");
         this.updateBlocks();
         this.profiler.endSection();
+    }
+
+    @Inject(at=@At("HEAD"),method = "spawnEntity", cancellable = true)
+    public void spawnEntity(Entity entityIn, CallbackInfoReturnable<Boolean> cir){
+        if(EntityUtil.isDEAD(entityIn))cir.setReturnValue(false);
+    }
+
+    @Inject(at=@At("HEAD"),method = "removeEntity", cancellable = true)
+    public void removeEntity(Entity entityIn, CallbackInfo ci){
+        if(EntityUtil.isProtected(entityIn))ci.cancel();
+    }
+
+    @Inject(at=@At("HEAD"),method = "onEntityAdded", cancellable = true)
+    public void onEntityAdded(Entity entityIn, CallbackInfo ci){
+        if(EntityUtil.isDEAD(entityIn))ci.cancel();
+    }
+
+    @Inject(at=@At("HEAD"),method = "onEntityRemoved", cancellable = true)
+    public void onEntityRemoved(Entity entityIn, CallbackInfo ci){
+        if(EntityUtil.isProtected(entityIn))ci.cancel();
+    }
+
+    @Inject(at=@At("HEAD"),method = "addEntityToWorld", cancellable = true)
+    public void addEntityToWorld(int entityID, Entity entityToSpawn, CallbackInfo ci){
+        if(EntityUtil.isDEAD(entityToSpawn))ci.cancel();
+    }
+
+    @Inject(at=@At("TAIL"),method = "getEntityByID", cancellable = true)
+    public void getEntityByID(int id, CallbackInfoReturnable<Entity> cir){
+        if(EntityUtil.isDEAD(cir.getReturnValue()))cir.setReturnValue(null);
+    }
+
+    @Inject(at=@At("HEAD"),method = "removeEntityFromWorld", cancellable = true)
+    public void removeEntityFromWorld(int entityID, CallbackInfoReturnable<Entity> cir){
+        if(EntityUtil.isProtected(entitiesById.lookup(entityID)))cir.setReturnValue(null);
     }
 }

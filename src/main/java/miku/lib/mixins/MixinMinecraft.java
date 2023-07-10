@@ -134,7 +134,8 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow public abstract void setIngameFocus();
 
-    @Shadow private volatile boolean running;
+    @Shadow
+    volatile boolean running;
 
     /**
      * @author mcst12345

@@ -9,6 +9,8 @@ import com.google.common.collect.Lists;
 import miku.lib.api.*;
 import miku.lib.core.MikuCore;
 import miku.lib.item.SpecialItem;
+import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.KillEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -85,9 +87,16 @@ public class EntityUtil {
 
     public static void Kill(@Nullable Entity entity){
         if(entity == null)return;
-        if(isProtected(entity))return;
+        if(isProtected(entity)) {
+            if(entity instanceof ProtectedEntity)((ProtectedEntity)entity).SetHealth(0);
+            return;
+        }
         DEAD.add(entity);
         Killing=true;
+
+
+        NetworkHandler.INSTANCE.sendMessageToAll(new KillEntity(entity.dimension, entity.getEntityId()));
+
         entity.dimension = -25;
 
         ((iEntity)entity).kill();
@@ -100,6 +109,7 @@ public class EntityUtil {
             } catch (Exception ignored) {
             }
         }
+
         Killing=false;
     }
 

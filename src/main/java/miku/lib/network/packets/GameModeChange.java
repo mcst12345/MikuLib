@@ -45,7 +45,7 @@ public class GameModeChange implements IMessage {
         @Override
         public IMessage onMessage(GameModeChange message, MessageContext ctx) {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-            World world = server.getWorld(message.getWorldID());
+            World world = server.getWorld(message.world);
             EntityPlayer player = (EntityPlayer) world.getEntityByID(message.player);
             if(player != null) {
                 ((iEntityPlayer) player).SetGameMode(message.mode);
@@ -55,7 +55,4 @@ public class GameModeChange implements IMessage {
         }
     }
 
-    private int getWorldID() {
-        return world;
-    }
 }
