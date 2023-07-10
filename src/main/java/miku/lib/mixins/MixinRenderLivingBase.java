@@ -33,4 +33,9 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
             }
         }
     }
+
+    @Inject(at=@At("HEAD"),method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", cancellable = true)
+    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci){
+        if(EntityUtil.isDEAD(entity))ci.cancel();
+    }
 }
