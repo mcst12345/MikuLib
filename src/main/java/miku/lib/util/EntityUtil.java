@@ -97,7 +97,7 @@ public class EntityUtil {
         Killing=true;
 
 
-        NetworkHandler.INSTANCE.sendMessageToAll(new KillEntity(entity.dimension, entity.getEntityId()));
+        if(!entity.world.isRemote)NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity( entity.getEntityId()),entity.world);
 
         entity.dimension = -25;
 

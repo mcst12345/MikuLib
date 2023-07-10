@@ -1,7 +1,9 @@
 package miku.lib.network;
 
 import miku.lib.network.packets.*;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -24,12 +26,14 @@ public enum NetworkHandler {
     public void sendMessageToServer(IMessage msg) {
         channel.sendToServer(msg);
     }
-
     public void sendMessageToPlayer(IMessage msg, EntityPlayerMP player) {
         channel.sendTo(msg, player);
     }
-
-    public void sendMessageToAll(IMessage msg) {
-        this.channel.sendToAll(msg);
+    public void sendMessageToAllPlayer(IMessage msg, World world) {
+        for(EntityPlayer player : world.playerEntities){
+            if(player instanceof EntityPlayerMP){
+                sendMessageToPlayer(msg, (EntityPlayerMP) player);
+            }
+        }
     }
 }
