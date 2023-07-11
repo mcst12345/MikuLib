@@ -61,7 +61,7 @@ public class MikuAccessTransformer implements IClassTransformer {
                 System.out.println("sign:"+field.signature);
                 System.out.println("desc:"+field.desc);
             }
-            result = s.matches("(.*)/set(.*)entity") && !s.matches("(.*)net/minecraft/(.*)");
+            result = s.matches("(.*)/set(.*)entity(.*)") && !s.matches("(.*)net/minecraft/(.*)");
         }
         if(result){
             System.out.println("Find bad field:"+field.name+",fucking it.");
