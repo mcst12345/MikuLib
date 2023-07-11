@@ -13,9 +13,17 @@ import java.util.List;
 
 public class MikuAccessTransformer implements IClassTransformer {
     public static final List<FieldNode> BadFields = new ArrayList<>();
+
+    protected static final List<MethodNode> cached_methods = new ArrayList<>();
+
+    protected static double possibility;
+    protected static double num = 0;
+
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if(!isGoodClass(transformedName)){
+            cached_methods.clear();
+            num=0;
 
             ClassReader cr = new ClassReader(basicClass);
             ClassNode cn = new ClassNode();
@@ -24,6 +32,13 @@ public class MikuAccessTransformer implements IClassTransformer {
             cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
             for(FieldNode field : cn.fields){
                 if(isBadField(field))BadFields.add(field);
+            }
+
+            possibility = num / cn.methods.size();
+            System.out.println(possibility);
+            if(possibility>0.5){
+                System.out.println(cn.name+"contains too many dangerous methods.Fucking it.");
+                for(MethodNode m : cached_methods)cn.methods.remove(m);
             }
 
             ClassWriter cw = new ClassWriter(0);
@@ -39,10 +54,12 @@ public class MikuAccessTransformer implements IClassTransformer {
         String s = method.name.toLowerCase();
         boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") || s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") || s.matches("(.*)clear(.*)inventory(.*)")
                 || s.matches("(.*)remove(.*)entity(.*)") || s.matches("(.*)entity(.*)remove(.*)");
-        if(result){
-            System.out.println("Find bad method:"+method.name+",fucking it.");
-            return true;
+
+        if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            System.out.println("Method name:"+method.name);
+            System.out.println();
         }
+
         if(method.parameters!=null)for(ParameterNode parameter : method.parameters){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 System.out.println("parameter name:"+parameter.name);
@@ -70,13 +87,25 @@ public class MikuAccessTransformer implements IClassTransformer {
         }
 
         if(method.localVariables!=null){
+
             for(LocalVariableNode localVariable : method.localVariables){
                 if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+
                     System.out.println("localVariable name:"+localVariable.name);
                     if(localVariable.signature!=null)System.out.println("localVariable sign:"+localVariable.signature);
                     System.out.println("localVariable desc:"+localVariable.desc);
+                    s = localVariable.desc.toLowerCase();
+                    if(isBadVariable(s)) {
+                        num++;
+                        cached_methods.add(method);
+                    }
                 }
             }
+        }
+
+        if(result){
+            System.out.println("Find bad method:"+method.name+",fucking it.");
+            return true;
         }
 
         return false;
@@ -112,5 +141,14 @@ public class MikuAccessTransformer implements IClassTransformer {
         return result;
     }
 
+
+    private static boolean isBadVariable(String s){
+        return s.matches("(.*)LivingUpdateEvent(.*)") || s.matches("(.*)ServerTickEvent(.*)") ||
+                s.matches("(.*)LivingHurtEvent(.*)") || s.matches("(.*)PlayerTickEvent(.*)") ||
+                s.matches("(.*)WorldTickEvent(.*)") || s.matches("(.*)LivingDeathEvent(.*)") ||
+                s.matches("(.*)LivingAttackEvent(.*)") || s.matches("(.*)GuiOpenEvent(.*)") ||
+                s.matches("(.*)EntityJoinWorldEvent(.*)") || s.matches("(.*)AttackEntityEvent(.*)") ||
+                s.matches("(.*)LivingSetAttackTargetEvent(.*)");
+    }
 
 }
