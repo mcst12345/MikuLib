@@ -11,10 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MikuAccessTransformer implements IClassTransformer {
+    protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
+            "noppes.(.*)","mezz.(.*)","com.brandon3055.(.*)","codechicken.(.*)","twilightforest.(.*)",
+            "moze_intel.(.*),","cofh.(.*)","alexiy.(.*)","vazkii.(.*)","sweetmagic.(.*)","stevekung.(.*)",
+            "com.dhanantry.(.*)","com.therandomlabs.(.*)","thebetweenlands.(.*)","java.com.pg85.otg.forge.(.*)",
+            "com.gildedgames.(.*)"};
     public static final List<FieldNode> BadFields = new ArrayList<>();
-
     protected static final List<MethodNode> cached_methods = new ArrayList<>();
-
     protected static double possibility;
     protected static double num;
 
@@ -119,7 +122,14 @@ public class MikuAccessTransformer implements IClassTransformer {
                 clazz.matches("com.google.(.*)") || clazz.matches("java.(.*)") || clazz.matches("io.netty.(.*)") ||
                 clazz.matches("org.apache.(.*)") || clazz.matches("com.mojang.(.*)") || clazz.matches("com.sun.(.*)") ||
                 clazz.matches("org.lwjgl.(.*)") || clazz.matches("org.spongepowered.(.*)") || clazz.matches("scala.(.*)") ||
-                clazz.matches("net.optifine(.*)");
+                clazz.matches("net.optifine(.*)") || clazz.matches("org.sqlite.") || clazz.matches("com.intellij.(.*)");
+
+        for(String s : white_list){
+            if (clazz.matches(s)) {
+                result = true;
+                break;
+            }
+        }
 
         if(result){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0))System.out.println("Ignore good class:"+clazz);
