@@ -1,0 +1,45 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.8.0",
+  "package": "miku.lib.mixins.minecraft",
+
+  "mixins": [
+    "MixinBanIP",
+    "MixinChunk",
+    "MixinEnderInventory",
+    "MixinEntity",
+    "MixinEntityLiving",
+    "MixinEntityLivingBase",
+    "MixinEntityPlayer",
+    "MixinEntityPlayerMP",
+    "MixinEntityPlayerSP",
+    "MixinEntityTracker",
+    "MixinEventBus",
+    "MixinFMLPreInitializationEvent",
+    "MixinForgeHooks",
+    "MixinInventoryBasic",
+    "MixinInventoryPlayer",
+    "MixinItemStack",
+    "MixinMinecraftServer",
+    "MixinNetHandlerPlayServer",
+    "MixinPlayerList",
+    "MixinSaveHandler",
+    "MixinServerCommandManager",
+    "MixinSlot",
+    "MixinWorld",
+    "MixinWorldServer"
+  ],
+  "client": [
+    "ClientMixinEntityLivingBase",
+    "MixinForgeCommandHandler",
+    "MixinGuiModList",
+    "MixinMinecraft",
+    "MixinParticleManager",
+    "MixinRender",
+    "MixinRenderLivingBase",
+    "MixinWorldClient"
+  ],
+  "server": [],
+  "required": false,
+  "setSourceFile": false
+}

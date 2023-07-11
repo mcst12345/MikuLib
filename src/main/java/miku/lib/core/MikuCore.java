@@ -75,7 +75,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         }
         Sqlite.CoreInit();
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.mikulib.json");
+        Mixins.addConfiguration("mixins.minecraft.json");
         Mixins.addConfiguration("mixins.chaos.json");
     }
 
