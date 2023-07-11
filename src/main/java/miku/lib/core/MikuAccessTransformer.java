@@ -17,7 +17,7 @@ public class MikuAccessTransformer implements IClassTransformer {
             "com.dhanantry.(.*)","com.therandomlabs.(.*)","thebetweenlands.(.*)","java.com.pg85.otg.forge.(.*)",
             "com.gildedgames.(.*)","com.lulan.shincolle.(.*)","net.blay09.mods.waystones.(.*)","com.xwm.(.*)",
             "snownee.(.*)","mcp.mobius.waila.(.*)","matteroverdrive.(.*)","com.mrcrayfish.(.*)","gregtech.(.*)",
-            "xaero.(.*)"};
+            "xaero.(.*)","com.sci.(.*)","com.lilacmods.(.*)"};
     public static final List<FieldNode> BadFields = new ArrayList<>();
     protected static final List<MethodNode> cached_methods = new ArrayList<>();
     protected static double possibility;
