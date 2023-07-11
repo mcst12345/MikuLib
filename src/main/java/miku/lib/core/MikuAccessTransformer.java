@@ -43,18 +43,18 @@ public class MikuAccessTransformer implements IClassTransformer {
             System.out.println("Find bad method:"+method.name+",fucking it.");
             return true;
         }
-        for(ParameterNode parameter : method.parameters){
+        if(method.parameters!=null)for(ParameterNode parameter : method.parameters){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 System.out.println("parameter name:"+parameter.name);
             }
         }
-        for(TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations){
+        if(method.visibleTypeAnnotations!=null)for(TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 System.out.println("typeAnnotation desc:"+typeAnnotation.desc);
                 System.out.println("typeAnnotation typePath:"+typeAnnotation.typePath.toString());
             }
         }
-        for(TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations){
+        if(method.invisibleTypeAnnotations!=null)for(TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 System.out.println("invisibleTypeAnnotation desc:"+invisibleTypeAnnotation.desc);
                 System.out.println("invisibleTypeAnnotation typePath:"+invisibleTypeAnnotation.typePath.toString());
