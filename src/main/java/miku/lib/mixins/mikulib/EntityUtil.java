@@ -1,21 +1,45 @@
-package miku.lib.util;
+package miku.lib.mixins.mikulib;
 
-import com.chaoswither.event.ChaosUpdateEvent;
+import com.anotherstar.common.entity.EntityLoli;
+import com.chaoswither.entity.EntityChaosWither;
+import com.google.common.collect.Lists;
+import miku.lib.api.*;
+import miku.lib.core.MikuCore;
+import miku.lib.item.SpecialItem;
+import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.KillEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Loader;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
+
+@Mixin(value = miku.lib.util.EntityUtil.class,remap = false)
 public class EntityUtil {
-    public static ChaosUpdateEvent chaos_event;
-    //protected static List<UUID> Dead = new ArrayList<>();
-    //protected static List<Entity> DEAD = new ArrayList<>();
+    private static final List<UUID> Dead = new ArrayList<>();
+    private static final List<Entity> DEAD = new ArrayList<>();
 
-    //protected static boolean Killing=false;
+    private static boolean Killing = false;
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static boolean isProtected(@Nullable Object object){
-        /*if(!(object instanceof Entity))return false;
+        if(!(object instanceof Entity))return false;
         Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
             if(MikuCore.RescueMode)return true;
@@ -59,18 +83,26 @@ public class EntityUtil {
         if(entity instanceof ProtectedEntity){
             return !((ProtectedEntity) entity).CanBeKilled() || !((ProtectedEntity) entity).DEAD();
         }
-        return false;*/
         return false;
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static boolean isDEAD(Entity entity){
-        /*if(entity == null)return false;
-        return DEAD.contains(entity) || ((iEntity)entity).isDEAD() || Dead.contains(entity.getUniqueID());*/
-        return false;
+        if(entity == null)return false;
+        return DEAD.contains(entity) || ((iEntity)entity).isDEAD() || Dead.contains(entity.getUniqueID());
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static void Kill(@Nullable Entity entity){
-        /*if(entity == null)return;
+        if(entity == null)return;
         if(isProtected(entity)) {
             if(entity instanceof ProtectedEntity)((ProtectedEntity)entity).SetHealth(0);
             return;
@@ -80,41 +112,51 @@ public class EntityUtil {
         Killing=true;
 
 
-        if(!entity.world.isRemote)NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity( entity.getEntityId()),entity.world);
+        if(!entity.world.isRemote) NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity( entity.getEntityId()),entity.world);
 
         entity.dimension = -25;
 
         ((iEntity)entity).kill();
-        if(Loader.isModLoaded("chaoswither")){
-            try {
-                chaoswither.happymode = false;
-                DetermineEvent.WITHERLIVE = false;
-                ChaosUpdateEvent.godlist.clear();
-                ((iChaosUpdateEvent)chaos_event).KILL();
-            } catch (Exception ignored) {
-            }
-        }
-        Killing=false;*/
+        Killing=false;
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static boolean isKilling(){
-        return false;
-        //return Killing;
+        return Killing;
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static void RangeKill(World world, double x, double y, double z, double range){
-        /*List<Entity> list = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
-        Kill(list);*/
+        List<Entity> list = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
+        Kill(list);
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static void Kill(Collection<Entity> entities){
-        /*for (Entity entity : entities) {
+        for (Entity entity : entities) {
             Kill(entity);
-        }*/
+        }
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static void KillNoSizeEntity(Entity entity){
-        /*List<Entity> entities = Lists.newArrayList();
+        List<Entity> entities = Lists.newArrayList();
         for (int dist = 0; dist <= 100; dist += 2) {
             AxisAlignedBB bb = entity.getEntityBoundingBox();
             Vec3d vec = entity.getLookVec();
@@ -127,22 +169,37 @@ public class EntityUtil {
             list.remove(entity);
             entities.addAll(list);
         }
-        Kill(entities);*/
+        Kill(entities);
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static void RangeKill(final Entity Player, int range){
-        /*List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
-        list.removeIf(EntityUtil::isProtected);
-        Kill(list);*/
+        List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
+        list.removeIf(miku.lib.util.EntityUtil::isProtected);
+        Kill(list);
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static void REMOVE(World world){
-        /*world.loadedEntityList.removeAll(DEAD);
-        world.loadedEntityList.removeIf(e -> EntityUtil.Dead.contains(e.getUniqueID()));*/
+        world.loadedEntityList.removeAll(DEAD);
+        world.loadedEntityList.removeIf(e -> Dead.contains(e.getUniqueID()));
     }
 
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
     public static void ClearBadEntities(@Nullable World world){
-        /*if(world == null)return;
+        if(world == null)return;
         if(world.loadedEntityList == null)return;
         if(world.loadedEntityList.isEmpty())return;
         for(Entity entity : world.loadedEntityList){
@@ -152,6 +209,6 @@ public class EntityUtil {
             if(Loader.isModLoaded("chaoswither")){
                 if(entity instanceof EntityChaosWither)Kill(entity);
             }
-        }*/
+        }
     }
 }
