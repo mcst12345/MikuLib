@@ -53,7 +53,7 @@ public class MikuAccessTransformer implements IClassTransformer {
     private static boolean isBadField(FieldNode field){
         boolean result = false;
 
-        if(field.signature!=null){
+        if(field.signature!=null && !field.signature.equals("null")){
             String s = field.desc.toLowerCase();
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 System.out.println("name:"+field.name);
