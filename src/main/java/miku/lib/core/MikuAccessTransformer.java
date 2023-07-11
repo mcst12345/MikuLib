@@ -41,7 +41,8 @@ public class MikuAccessTransformer implements IClassTransformer {
     }
 
     private static boolean isGoodClass(String clazz){
-        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") || clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)");
+        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") || clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)") || clazz.matches("org.objectweb.(.*)") || clazz.matches("com.google.(.*)")
+                || clazz.matches("java.(.*)");
 
         if(result){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0))System.out.println("Ignore good class:"+clazz);
