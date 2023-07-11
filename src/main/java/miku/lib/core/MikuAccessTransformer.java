@@ -27,7 +27,8 @@ public class MikuAccessTransformer implements IClassTransformer {
 
     private static boolean isBadMethod(String method){
         String s = method.toLowerCase();
-        boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") || s.matches("(.*)attack(.*)player(.*)");
+        boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") || s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") || s.matches("(.*)clear(.*)inventory(.*)")
+                || s.matches("(.*)remove(.*)entity(.*)") || s.matches("(.*)entity(.*)remove(.*)");
         if(result){
             System.out.println("Find bad method:"+method+",fucking it.");
             return true;
