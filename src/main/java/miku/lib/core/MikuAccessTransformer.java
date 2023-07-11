@@ -70,12 +70,14 @@ public class MikuAccessTransformer implements IClassTransformer {
             System.out.println("The danger-value of class "+cn.name+":"+possibility);
             if(possibility > 0.4d){
                 System.out.println(cn.name+"contains too many dangerous methods.Fucking those methods.");
-                for(MethodNode m : cached_methods)cn.methods.remove(m);
+                for(MethodNode m : cached_methods) {
+                    cn.methods.remove(m);
+                }
             }
 
             if(possibility > 0.6d){
                 System.out.println(cn.name+"is too dangerous. Destroy it.");
-                cn.methods.clear();
+                cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
             }
 
 
