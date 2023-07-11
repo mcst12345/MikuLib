@@ -9,4 +9,6 @@ public interface iMinecraft {
     boolean protect();
     boolean isTimeStop();
     void Stop();
+    void SET_INGAME_FOCUS();
+    void SET_INGAME_NOT_FOCUS();
 }

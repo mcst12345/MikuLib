@@ -31,7 +31,11 @@
   "client": [
     "ClientMixinEntityLivingBase",
     "MixinForgeCommandHandler",
+    "MixinGuiIngameMenu",
     "MixinGuiModList",
+    "MixinGuiScreen",
+    "MixinGuiScreenAdvancements",
+    "MixinGuiScreenDemo",
     "MixinMinecraft",
     "MixinParticleManager",
     "MixinRender",

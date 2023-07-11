@@ -24,12 +24,14 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.util.MouseHelper;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -45,6 +47,47 @@ public abstract class MixinMinecraft implements iMinecraft {
     }
     public MixinMinecraft(){}
     protected boolean protect = false;
+
+    public void SET_INGAME_FOCUS(){
+        if (Display.isActive())
+        {
+            if (!this.inGameHasFocus)
+            {
+                if (!IS_RUNNING_ON_MAC)
+                {
+                    KeyBinding.updateKeyBindState();
+                }
+
+                this.inGameHasFocus = true;
+                this.mouseHelper.grabMouseCursor();
+                this.displayGuiScreen(null);
+                this.leftClickCounter = 10000;
+            }
+        }
+    }
+
+    public void SET_INGAME_NOT_FOCUS(){
+        if (this.inGameHasFocus)
+        {
+            this.inGameHasFocus = false;
+            this.mouseHelper.ungrabMouseCursor();
+        }
+    }
+
+
+    /**
+     * @author mcst12345
+     * @reason F
+     */
+    @Overwrite
+    public void setIngameFocus(){}
+
+    /**
+     * @author mcst12345
+     * @reason F
+     */
+    @Overwrite
+    public void setIngameNotInFocus(){}
 
     @Override
     public boolean protect(){
@@ -97,8 +140,6 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow private int leftClickCounter;
 
-    @Shadow protected abstract void runTickMouse() throws IOException;
-
     @Shadow protected abstract void runTickKeyboard() throws IOException;
 
     @Shadow private int joinPlayerCounter;
@@ -128,14 +169,17 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow public GameSettings gameSettings;
 
-    @Shadow public abstract void setIngameNotInFocus();
-
     @Shadow public boolean skipRenderWorld;
 
-    @Shadow public abstract void setIngameFocus();
 
     @Shadow
     volatile boolean running;
+
+    @Shadow public boolean inGameHasFocus;
+
+    @Shadow public MouseHelper mouseHelper;
+
+    @Shadow @Final public static boolean IS_RUNNING_ON_MAC;
 
     /**
      * @author mcst12345
@@ -194,7 +238,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
         if (guiScreenIn != null)
         {
-            this.setIngameNotInFocus();
+            SET_INGAME_NOT_FOCUS();
             KeyBinding.unPressAllKeys();
 
             while (Mouse.next())
@@ -214,7 +258,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         else
         {
             this.soundHandler.resumeSounds();
-            this.setIngameFocus();
+            SET_INGAME_FOCUS();
         }
     }
 
@@ -438,5 +482,75 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.profiler.endSection();
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
         this.systemTime = getSystemTime();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason F
+     */
+    @Overwrite
+    private void runTickMouse() throws IOException
+    {
+        while (Mouse.next())
+        {
+            if (net.minecraftforge.client.ForgeHooksClient.postMouseEvent()) continue;
+
+            int i = Mouse.getEventButton();
+            KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
+
+            if (Mouse.getEventButtonState())
+            {
+                if (this.player.isSpectator() && i == 2)
+                {
+                    this.ingameGUI.getSpectatorGui().onMiddleClick();
+                }
+                else
+                {
+                    KeyBinding.onTick(i - 100);
+                }
+            }
+
+            long j = getSystemTime() - this.systemTime;
+
+            if (j <= 200L)
+            {
+                int k = Mouse.getEventDWheel();
+
+                if (k != 0)
+                {
+                    if (this.player.isSpectator())
+                    {
+                        k = k < 0 ? -1 : 1;
+
+                        if (this.ingameGUI.getSpectatorGui().isMenuActive())
+                        {
+                            this.ingameGUI.getSpectatorGui().onMouseScroll(-k);
+                        }
+                        else
+                        {
+                            float f = MathHelper.clamp(this.player.capabilities.getFlySpeed() + (float)k * 0.005F, 0.0F, 0.2F);
+                            this.player.capabilities.setFlySpeed(f);
+                        }
+                    }
+                    else
+                    {
+                        this.player.inventory.changeCurrentItem(k);
+                    }
+                }
+
+                if (this.currentScreen == null)
+                {
+                    if (!this.inGameHasFocus && Mouse.getEventButtonState())
+                    {
+                        SET_INGAME_FOCUS();
+                    }
+                }
+                else if (this.currentScreen != null)
+                {
+                    this.currentScreen.handleMouseInput();
+                }
+            }
+            net.minecraftforge.fml.common.FMLCommonHandler.instance().fireMouseInput();
+        }
     }
 }
