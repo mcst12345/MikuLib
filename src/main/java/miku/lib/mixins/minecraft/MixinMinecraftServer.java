@@ -198,8 +198,9 @@ public abstract class MixinMinecraftServer {
                     {
                         try {
                             this.tick();
-                        } catch (Exception e) {
-                            if(!(e instanceof NoSuchFieldException || e instanceof NoSuchMethodException || e instanceof ClassNotFoundException))throw e;
+                        } catch (Throwable e) {
+                            System.out.println("WARN:catch exception:"+e);
+//if(!(e instanceof NoSuchFieldException || e instanceof NoSuchMethodException || e instanceof ClassNotFoundException))throw e;
                         }
                         i = 0L;
                     }
@@ -210,8 +211,10 @@ public abstract class MixinMinecraftServer {
                             i -= 50L;
                             try {
                                 this.tick();
-                            } catch (Exception e) {
-                                if(!(e instanceof NoSuchFieldException || e instanceof NoSuchMethodException || e instanceof ClassNotFoundException))throw e;
+                            } catch (Throwable e) {
+                                System.out.println("WARN:catch exception:"+e);
+
+                               // if(!(e instanceof NoSuchFieldException || e instanceof NoSuchMethodException || e instanceof ClassNotFoundException))throw e;
                             }
                         }
                     }
