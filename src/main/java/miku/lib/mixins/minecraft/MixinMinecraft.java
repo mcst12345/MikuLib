@@ -590,13 +590,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         try {
             this.init();
         } catch (Throwable e) {
-            if(!ExceptionUtil.isIgnored(e)) {
-                finished = true;
-                throw new RuntimeException(e);
-            }
-            else {
-                System.out.println("WARN:catch exception:"+e);
-            }
+            System.out.println("WARN:catch exception:"+e);
         }
         if (!finished) {
             while (true) {
@@ -620,10 +614,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                         }
                     }
                 } catch (Throwable e) {
-                    if(!ExceptionUtil.isIgnored(e))throw new RuntimeException(e);
-                    else {
-                        System.out.println("WARN:catch exception:"+e);
-                    }
+                    System.out.println("WARN:catch exception:"+e);
                 }
             }
         }

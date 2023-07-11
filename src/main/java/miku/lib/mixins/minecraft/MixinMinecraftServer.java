@@ -2,7 +2,6 @@ package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
 import miku.lib.item.SpecialItem;
-import miku.lib.util.ExceptionUtil;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.network.ServerStatusResponse;
 import net.minecraft.profiler.Profiler;
@@ -181,7 +180,7 @@ public abstract class MixinMinecraftServer {
 
                     if (j > 2000L && this.currentTime - this.timeOfLastWarning >= 15000L)
                     {
-                        LOGGER.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
+                        LOGGER.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", j, j / 50L);
                         j = 2000L;
                         this.timeOfLastWarning = this.currentTime;
                     }
@@ -200,10 +199,7 @@ public abstract class MixinMinecraftServer {
                         try {
                             this.tick();
                         } catch (Throwable e) {
-                            if(!ExceptionUtil.isIgnored(e))throw new RuntimeException(e);
-                            else {
-                                System.out.println("WARN:catch exception:"+e);
-                            }
+                            System.out.println("WARN:catch exception:"+e);
                         }
                         i = 0L;
                     }
@@ -215,10 +211,7 @@ public abstract class MixinMinecraftServer {
                             try {
                                 this.tick();
                             } catch (Throwable e) {
-                                if(!ExceptionUtil.isIgnored(e))throw new RuntimeException(e);
-                                else {
-                                    System.out.println("WARN:catch exception:"+e);
-                                }
+                                System.out.println("WARN:catch exception:"+e);
                             }
                         }
                     }
@@ -243,7 +236,7 @@ public abstract class MixinMinecraftServer {
         catch (Throwable throwable1)
         {
             LOGGER.error("Encountered an unexpected exception", throwable1);
-            CrashReport crashreport = null;
+            CrashReport crashreport;
 
             if (throwable1 instanceof ReportedException)
             {
@@ -258,7 +251,7 @@ public abstract class MixinMinecraftServer {
 
             if (crashreport.saveToFile(file1))
             {
-                LOGGER.error("This crash report has been saved to: {}", (Object)file1.getAbsolutePath());
+                LOGGER.error("This crash report has been saved to: {}", file1.getAbsolutePath());
             }
             else
             {
