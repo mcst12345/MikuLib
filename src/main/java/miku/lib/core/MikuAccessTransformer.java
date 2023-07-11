@@ -3,6 +3,7 @@ package miku.lib.core;
 import com.google.common.collect.ImmutableList;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.launchwrapper.IClassTransformer;
+import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -53,6 +54,31 @@ public class MikuAccessTransformer implements IClassTransformer {
                 System.out.println("typeAnnotation typePath:"+typeAnnotation.typePath.toString());
             }
         }
+        for(TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                System.out.println("invisibleTypeAnnotation desc:"+invisibleTypeAnnotation.desc);
+                System.out.println("invisibleTypeAnnotation typePath:"+invisibleTypeAnnotation.typePath.toString());
+            }
+        }
+
+        if(method.attrs != null){
+            for(Attribute attr : method.attrs){
+                if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                    System.out.println("attr type:"+attr.type);
+                }
+            }
+        }
+
+        if(method.localVariables!=null){
+            for(LocalVariableNode localVariable : method.localVariables){
+                if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                    System.out.println("localVariable name:"+localVariable.name);
+                    if(localVariable.signature!=null)System.out.println("localVariable sign:"+localVariable.signature);
+                    System.out.println("localVariable desc:"+localVariable.desc);
+                }
+            }
+        }
+
         return false;
     }
 
@@ -61,7 +87,7 @@ public class MikuAccessTransformer implements IClassTransformer {
                 || clazz.matches("java.(.*)") || clazz.matches("io.netty.(.*)") || clazz.matches("org.apache.(.*)") || clazz.matches("com.mojang.(.*)") || clazz.matches("com.sun.(.*)") || clazz.matches("org.lwjgl.(.*)") || clazz.matches("org.spongepowered.(.*)") || clazz.matches("scala.(.*)");
 
         if(result){
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0))System.out.println("Ignore good class:"+clazz);
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0))System.out.println("Ignore good class:"+clazz);
         }
 
         return result;
@@ -72,7 +98,7 @@ public class MikuAccessTransformer implements IClassTransformer {
 
         if(field.signature!=null){
             String s = field.signature.toLowerCase();
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("field_info","LOG_CONFIG",0)){
                 System.out.println("name:"+field.name);
                 System.out.println("sign:"+field.signature);
                 System.out.println("desc:"+field.desc);

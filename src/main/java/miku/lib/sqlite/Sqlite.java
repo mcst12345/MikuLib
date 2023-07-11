@@ -36,11 +36,15 @@ public class Sqlite {
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_GUIS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_CLASS","ID TEXT PRIMARY KEY    NOT NULL");
+                CreateTable("LOG_CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 System.out.println("Init database.");
-                WriteConfigValue("auto_range_kill","true");
-                WriteConfigValue("debug","false");
-                WriteConfigValue("void_keep_loaded","true");
-                WriteConfigValue("miku_kill_exit_attack","true");
+                CreateConfigValue("auto_range_kill","CONFIG","true");
+                CreateConfigValue("debug","CONFIG","false");
+                CreateConfigValue("void_keep_loaded","CONFIG","true");
+                CreateConfigValue("miku_kill_exit_attack","CONFIG","true");
+                CreateConfigValue("class_info","LOG_CONFIG","true");
+                CreateConfigValue("method_info","LOG_CONFIG","true");
+                CreateConfigValue("field_info","LOG_CONFIG","true");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS","ID",BANNED_MODS);
@@ -154,8 +158,8 @@ public class Sqlite {
         }
     }
 
-    public static void WriteConfigValue(String NAME,String VALUE){
-        String sql = "INSERT OR IGNORE INTO CONFIG (NAME,VALUE)" +
+    public static void CreateConfigValue(String NAME, String TABLE, String VALUE){
+        String sql = "INSERT OR IGNORE INTO "+TABLE+" (NAME,VALUE)" +
                     "VALUES ('"+NAME+"','"+VALUE+"')";
         try {
             stmt.executeUpdate(sql);
