@@ -16,7 +16,7 @@ public class MikuAccessTransformer implements IClassTransformer {
     protected static final List<MethodNode> cached_methods = new ArrayList<>();
 
     protected static double possibility;
-    protected static double num = 0;
+    protected static double num;
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
@@ -96,6 +96,7 @@ public class MikuAccessTransformer implements IClassTransformer {
                     System.out.println("localVariable desc:"+localVariable.desc);
                     s = localVariable.desc.toLowerCase();
                     if(isBadVariable(s)) {
+                        System.out.println("Found bad variable:"+localVariable.name);
                         num++;
                         cached_methods.add(method);
                     }
