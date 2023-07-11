@@ -37,6 +37,8 @@ public class MikuAccessTransformer implements IClassTransformer {
     }
 
     private static boolean isGoodClass(String clazz){
+        
+
         return clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") || clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)");
     }
 
