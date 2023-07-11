@@ -23,14 +23,6 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class KeyBoardEvent {
-    protected static final fuck thread = new fuck();
-
-    @SideOnly(Side.CLIENT)
-    public static final KeyBinding IN_GAME_FOCUS = new KeyBinding("key.miku.in_game_focus", KeyConflictContext.UNIVERSAL, KeyModifier.SHIFT, Keyboard.KEY_I, "key.category.miku");
-
-    @SideOnly(Side.CLIENT)
-    public static final KeyBinding FUCK = new KeyBinding("key.miku.in_game_focus_while", KeyConflictContext.UNIVERSAL, KeyModifier.SHIFT, Keyboard.KEY_O, "key.category.miku");
-
     @SideOnly(Side.CLIENT)
     public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L,"key.category.miku");
 
@@ -43,20 +35,6 @@ public class KeyBoardEvent {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onKeyPressed(InputEvent.KeyInputEvent event){
-        if(IN_GAME_FOCUS.isPressed()){
-            if(Minecraft.getMinecraft().inGameHasFocus)Minecraft.getMinecraft().setIngameNotInFocus();
-            else Minecraft.getMinecraft().setIngameFocus();
-            thread.flag = !thread.flag;
-        }
-        if(FUCK.isPressed()){
-            if(!thread.isAlive()) {
-                thread.flag = !Minecraft.getMinecraft().inGameHasFocus;
-                thread.start();
-            }
-            else {
-                thread.enabled = ! thread.enabled;
-            }
-        }
         if(TIME_STOP.isPressed()){
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
                 NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension));
@@ -85,25 +63,9 @@ public class KeyBoardEvent {
         }
     }
 
-    static class fuck extends Thread{
-        public boolean flag;
-        public boolean enabled = true;
-
-        @Override
-        public void run(){
-            while(true){
-                if(enabled){
-                    if (flag) Minecraft.getMinecraft().setIngameFocus();
-                    else Minecraft.getMinecraft().setIngameNotInFocus();
-                }
-            }
-        }
-    }
 
     @SideOnly(Side.CLIENT)
     public static void Init(){
-        ClientRegistry.registerKeyBinding(IN_GAME_FOCUS);
-        ClientRegistry.registerKeyBinding(FUCK);
         ClientRegistry.registerKeyBinding(TIME_STOP);
         ClientRegistry.registerKeyBinding(KILL_ALL);
         ClientRegistry.registerKeyBinding(GAME_MODE);
