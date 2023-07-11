@@ -1,16 +1,16 @@
 package miku.lib.core;
 
-import com.sun.org.apache.bcel.internal.generic.GETFIELD;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.objectweb.asm.*;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.objectweb.asm.Opcodes.IFEQ;
 import static org.objectweb.asm.Opcodes.IRETURN;
 
 public class MikuAccessTransformer implements IClassTransformer {
@@ -53,8 +53,8 @@ public class MikuAccessTransformer implements IClassTransformer {
             cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
 
             for(MethodNode mn : cn.methods){
-                if(Objects.equals(mn.name, "transform")){
-                    //Fucking but not killing it
+                if(Objects.equals(mn.name, "transform") && Objects.equals(mn.desc, "(Ljava/lang/String;Ljava/lang/String;[B)[B")){
+                    System.out.println("Found asm transform in class:"+cn.name+",destroying it.");
                     mn.visitCode();
                     mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
                     mn.visitInsn(IRETURN);
@@ -90,6 +90,9 @@ public class MikuAccessTransformer implements IClassTransformer {
 
     private static boolean isBadMethod(MethodNode method){
         String s = method.name.toLowerCase();
+        if(s.matches("<(.*)init(.*)>")){
+            return false;
+        }
         boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
