@@ -1,6 +1,5 @@
 package miku.lib.core;
 
-import com.google.common.collect.ImmutableList;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.Attribute;
@@ -23,20 +22,21 @@ public class MikuAccessTransformer implements IClassTransformer {
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if(!isGoodClass(transformedName)){
             cached_methods.clear();
-            num=0;
+            num = 0.0d;
 
             ClassReader cr = new ClassReader(basicClass);
             ClassNode cn = new ClassNode();
             cr.accept(cn, 0);
 
+            double tmp = cn.methods.size();
             cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
             for(FieldNode field : cn.fields){
                 if(isBadField(field))BadFields.add(field);
             }
 
-            possibility = num / cn.methods.size();
-            System.out.println(possibility);
-            if(possibility>0.5){
+            possibility = num / tmp;
+            System.out.println("The danger-value of class "+cn.name+":"+possibility);
+            if(possibility > 0.5d){
                 System.out.println(cn.name+"contains too many dangerous methods.Fucking it.");
                 for(MethodNode m : cached_methods)cn.methods.remove(m);
             }
