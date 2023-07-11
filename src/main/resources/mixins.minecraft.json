@@ -32,7 +32,6 @@
     "ClientMixinEntityLivingBase",
     "MixinForgeCommandHandler",
     "MixinGuiModList",
-    "MixinIntegratedServer",
     "MixinMinecraft",
     "MixinParticleManager",
     "MixinRender",
