@@ -1,14 +1,17 @@
 package miku.lib.core;
 
+import com.sun.org.apache.bcel.internal.generic.GETFIELD;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static org.objectweb.asm.Opcodes.IFEQ;
+import static org.objectweb.asm.Opcodes.IRETURN;
 
 public class MikuAccessTransformer implements IClassTransformer {
     protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
@@ -34,10 +37,31 @@ public class MikuAccessTransformer implements IClassTransformer {
 
             ClassReader cr = new ClassReader(basicClass);
             ClassNode cn = new ClassNode();
+
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                System.out.println(cn.name);
+                System.out.println(cn.signature);
+                System.out.println(cn.outerClass);
+                System.out.println(cn.outerMethod);
+                System.out.println(cn.outerMethodDesc);
+                System.out.println(cn.interfaces);
+            }
+
             cr.accept(cn, 0);
 
             double tmp = cn.methods.size();
             cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
+
+            for(MethodNode mn : cn.methods){
+                if(Objects.equals(mn.name, "transform")){
+                    //Fucking but not killing it
+                    mn.visitCode();
+                    mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
+                    mn.visitInsn(IRETURN);
+                    mn.visitEnd();
+                }
+            }
+
             for(FieldNode field : cn.fields){
                 if(isBadField(field))BadFields.add(field);
             }
@@ -69,7 +93,7 @@ public class MikuAccessTransformer implements IClassTransformer {
         boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
-                s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)transform(.*)");
+                s.matches("(.*)entity(.*)remove(.*)");
 
         if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
             System.out.println("Method name:"+method.name);
