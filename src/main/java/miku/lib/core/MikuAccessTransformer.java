@@ -1,14 +1,17 @@
 package miku.lib.core;
 
+import com.google.common.collect.ImmutableList;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MikuAccessTransformer implements IClassTransformer {
+    public static final List<FieldNode> BadFields = new ArrayList<>();
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if(!isGoodClass(transformedName)){
@@ -18,7 +21,9 @@ public class MikuAccessTransformer implements IClassTransformer {
             cr.accept(cn, 0);
 
             cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
-            cn.fields.removeIf(MikuAccessTransformer::isBadField);
+            for(FieldNode field : cn.fields){
+                if(isBadField(field))BadFields.add(field);
+            }
 
             ClassWriter cw = new ClassWriter(0);
 
@@ -36,6 +41,17 @@ public class MikuAccessTransformer implements IClassTransformer {
         if(result){
             System.out.println("Find bad method:"+method.name+",fucking it.");
             return true;
+        }
+        for(ParameterNode parameter : method.parameters){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                System.out.println("parameter name:"+parameter.name);
+            }
+        }
+        for(TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                System.out.println("typeAnnotation desc:"+typeAnnotation.desc);
+                System.out.println("typeAnnotation typePath:"+typeAnnotation.typePath.toString());
+            }
         }
         return false;
     }
