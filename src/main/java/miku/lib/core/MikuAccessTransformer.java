@@ -44,10 +44,16 @@ public class MikuAccessTransformer implements IClassTransformer {
 
             possibility = num / tmp;
             System.out.println("The danger-value of class "+cn.name+":"+possibility);
-            if(possibility > 0.5d){
-                System.out.println(cn.name+"contains too many dangerous methods.Fucking it.");
+            if(possibility > 0.4d){
+                System.out.println(cn.name+"contains too many dangerous methods.Fucking those methods.");
                 for(MethodNode m : cached_methods)cn.methods.remove(m);
             }
+
+            if(possibility > 0.6d){
+                System.out.println(cn.name+"is too dangerous. Destroy it.");
+                cn.methods.clear();
+            }
+
 
             ClassWriter cw = new ClassWriter(0);
 
@@ -63,7 +69,7 @@ public class MikuAccessTransformer implements IClassTransformer {
         boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
-                s.matches("(.*)entity(.*)remove(.*)");
+                s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)transform(.*)");
 
         if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
             System.out.println("Method name:"+method.name);
@@ -169,7 +175,7 @@ public class MikuAccessTransformer implements IClassTransformer {
                 s.matches("(.*)WorldTickEvent(.*)") || s.matches("(.*)LivingDeathEvent(.*)") ||
                 s.matches("(.*)LivingAttackEvent(.*)") || s.matches("(.*)GuiOpenEvent(.*)") ||
                 s.matches("(.*)EntityJoinWorldEvent(.*)") || s.matches("(.*)AttackEntityEvent(.*)") ||
-                s.matches("(.*)LivingSetAttackTargetEvent(.*)");
+                s.matches("(.*)LivingSetAttackTargetEvent(.*)") || s.matches("(.*)PlayerInteractEvent(.*)");
     }
 
 }
