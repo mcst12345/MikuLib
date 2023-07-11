@@ -52,8 +52,10 @@ public class MikuAccessTransformer implements IClassTransformer {
 
     private static boolean isBadMethod(MethodNode method){
         String s = method.name.toLowerCase();
-        boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") || s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") || s.matches("(.*)clear(.*)inventory(.*)")
-                || s.matches("(.*)remove(.*)entity(.*)") || s.matches("(.*)entity(.*)remove(.*)");
+        boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
+                s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
+                s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
+                s.matches("(.*)entity(.*)remove(.*)");
 
         if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
             System.out.println("Method name:"+method.name);
@@ -87,14 +89,13 @@ public class MikuAccessTransformer implements IClassTransformer {
         }
 
         if(method.localVariables!=null){
-
             for(LocalVariableNode localVariable : method.localVariables){
                 if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
 
                     System.out.println("localVariable name:"+localVariable.name);
                     if(localVariable.signature!=null)System.out.println("localVariable sign:"+localVariable.signature);
                     System.out.println("localVariable desc:"+localVariable.desc);
-                    s = localVariable.desc.toLowerCase();
+                    s = localVariable.desc;
                     if(isBadVariable(s)) {
                         System.out.println("Found bad variable:"+localVariable.name);
                         num++;
@@ -113,8 +114,12 @@ public class MikuAccessTransformer implements IClassTransformer {
     }
 
     private static boolean isGoodClass(String clazz){
-        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") || clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)") || clazz.matches("org.objectweb.(.*)") || clazz.matches("com.google.(.*)")
-                || clazz.matches("java.(.*)") || clazz.matches("io.netty.(.*)") || clazz.matches("org.apache.(.*)") || clazz.matches("com.mojang.(.*)") || clazz.matches("com.sun.(.*)") || clazz.matches("org.lwjgl.(.*)") || clazz.matches("org.spongepowered.(.*)") || clazz.matches("scala.(.*)");
+        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") ||
+                clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)") || clazz.matches("org.objectweb.(.*)") ||
+                clazz.matches("com.google.(.*)") || clazz.matches("java.(.*)") || clazz.matches("io.netty.(.*)") ||
+                clazz.matches("org.apache.(.*)") || clazz.matches("com.mojang.(.*)") || clazz.matches("com.sun.(.*)") ||
+                clazz.matches("org.lwjgl.(.*)") || clazz.matches("org.spongepowered.(.*)") || clazz.matches("scala.(.*)") ||
+                clazz.matches("net.optifine(.*)");
 
         if(result){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0))System.out.println("Ignore good class:"+clazz);
