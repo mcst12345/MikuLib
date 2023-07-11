@@ -2,7 +2,6 @@
   "compatibilityLevel": "JAVA_8",
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins.minecraft",
-
   "mixins": [
     "MixinBanIP",
     "MixinChunk",
@@ -33,6 +32,7 @@
     "ClientMixinEntityLivingBase",
     "MixinForgeCommandHandler",
     "MixinGuiModList",
+    "MixinIntegratedServer",
     "MixinMinecraft",
     "MixinParticleManager",
     "MixinRender",
