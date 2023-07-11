@@ -4,6 +4,7 @@ import miku.lib.api.iMinecraft;
 import miku.lib.item.SpecialItem;
 import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
+import miku.lib.util.ExceptionUtil;
 import miku.lib.util.crashReportUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MusicTicker;
@@ -24,11 +25,14 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.util.MinecraftError;
 import net.minecraft.util.MouseHelper;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
+import org.apache.logging.log4j.Logger;
+import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -180,6 +184,26 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow public MouseHelper mouseHelper;
 
     @Shadow @Final public static boolean IS_RUNNING_ON_MAC;
+
+    @Shadow protected abstract void init() throws LWJGLException, IOException;
+
+    @Shadow public abstract void displayCrashReport(CrashReport crashReportIn);
+
+    @Shadow public abstract CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash);
+
+    @Shadow private boolean hasCrashed;
+
+    @Shadow private CrashReport crashReporter;
+
+    @Shadow protected abstract void runGameLoop() throws IOException;
+
+    @Shadow public abstract void freeMemory();
+
+    @Shadow @Final private static Logger LOGGER;
+
+    @Shadow public abstract void shutdownMinecraftApplet();
+
+    @Shadow private static Minecraft instance;
 
     /**
      * @author mcst12345
@@ -553,4 +577,57 @@ public abstract class MixinMinecraft implements iMinecraft {
             net.minecraftforge.fml.common.FMLCommonHandler.instance().fireMouseInput();
         }
     }
+
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
+    public void run() {
+        boolean finished = false;
+        this.running = true;
+
+        try {
+            this.init();
+        } catch (Throwable e) {
+            if(!ExceptionUtil.isIgnored(e)) {
+                finished = true;
+                throw new RuntimeException(e);
+            }
+            else {
+                System.out.println("WARN:catch exception:"+e);
+            }
+        }
+        if (!finished) {
+            while (true) {
+                try {
+                    while (this.running) {
+                        if (!this.hasCrashed || this.crashReporter == null) {
+                            try {
+                                this.runGameLoop();
+                            } catch (OutOfMemoryError var10) {
+                                this.freeMemory();
+                                this.displayGuiScreen(new GuiMemoryErrorScreen());
+                                System.gc();
+                            } catch (Throwable e){
+                                if(!ExceptionUtil.isIgnored(e))throw new RuntimeException(e);
+                                else {
+                                    System.out.println("WARN:catch exception:"+e);
+                                }
+                            }
+                        } else {
+                            this.displayCrashReport(this.crashReporter);
+                        }
+                    }
+                } catch (Throwable e) {
+                    if(!ExceptionUtil.isIgnored(e))throw new RuntimeException(e);
+                    else {
+                        System.out.println("WARN:catch exception:"+e);
+                    }
+                }
+            }
+        }
+
+    }
+
 }

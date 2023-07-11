@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
 import miku.lib.item.SpecialItem;
+import miku.lib.util.ExceptionUtil;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.network.ServerStatusResponse;
 import net.minecraft.profiler.Profiler;
@@ -199,8 +200,10 @@ public abstract class MixinMinecraftServer {
                         try {
                             this.tick();
                         } catch (Throwable e) {
-                            System.out.println("WARN:catch exception:"+e);
-//if(!(e instanceof NoSuchFieldException || e instanceof NoSuchMethodException || e instanceof ClassNotFoundException))throw e;
+                            if(!ExceptionUtil.isIgnored(e))throw new RuntimeException(e);
+                            else {
+                                System.out.println("WARN:catch exception:"+e);
+                            }
                         }
                         i = 0L;
                     }
@@ -212,9 +215,10 @@ public abstract class MixinMinecraftServer {
                             try {
                                 this.tick();
                             } catch (Throwable e) {
-                                System.out.println("WARN:catch exception:"+e);
-
-                               // if(!(e instanceof NoSuchFieldException || e instanceof NoSuchMethodException || e instanceof ClassNotFoundException))throw e;
+                                if(!ExceptionUtil.isIgnored(e))throw new RuntimeException(e);
+                                else {
+                                    System.out.println("WARN:catch exception:"+e);
+                                }
                             }
                         }
                     }
