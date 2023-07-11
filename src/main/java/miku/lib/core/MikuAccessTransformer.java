@@ -1,5 +1,6 @@
 package miku.lib.core;
 
+import miku.lib.sqlite.Sqlite;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -37,9 +38,13 @@ public class MikuAccessTransformer implements IClassTransformer {
     }
 
     private static boolean isGoodClass(String clazz){
-        
+        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") || clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)");
 
-        return clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") || clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)");
+        if(result){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0))System.out.println("Ignore good class:"+clazz);
+        }
+
+        return result;
     }
 
 
