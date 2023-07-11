@@ -240,16 +240,11 @@ public abstract class MixinWorld implements iWorld {
                 }
                 catch (Throwable throwable1)
                 {
-                    CrashReport crashreport1 = CrashReport.makeCrashReport(throwable1, "Ticking entity");
-                    CrashReportCategory crashreportcategory1 = crashreport1.makeCategory("Entity being ticked");
-                    entity2.addEntityCrashInfo(crashreportcategory1);
+                    throwable1.printStackTrace();
                     if (net.minecraftforge.common.ForgeModContainer.removeErroringEntities)
                     {
-                        net.minecraftforge.fml.common.FMLLog.log.fatal("{}", crashreport1.getCompleteReport());
                         removeEntity(entity2);
                     }
-                    else
-                        throw new ReportedException(crashreport1);
                 }
             }
 
@@ -415,8 +410,13 @@ public abstract class MixinWorld implements iWorld {
             }
             else
             {
-                if(!entityIn.updateBlocked)
-                    entityIn.onUpdate();
+                if(!entityIn.updateBlocked) {
+                    try {
+                        entityIn.onUpdate();
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 
