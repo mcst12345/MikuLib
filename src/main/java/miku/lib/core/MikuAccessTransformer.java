@@ -31,11 +31,10 @@ public class MikuAccessTransformer implements IClassTransformer {
 
     private static boolean isBadMethod(MethodNode method){
         String s = method.name.toLowerCase();
-        if(s.matches("org.objectweb.asm.tree.MethodNode(.*)"))return false;
         boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") || s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") || s.matches("(.*)clear(.*)inventory(.*)")
                 || s.matches("(.*)remove(.*)entity(.*)") || s.matches("(.*)entity(.*)remove(.*)");
         if(result){
-            System.out.println("Find bad method:"+method+",fucking it.");
+            System.out.println("Find bad method:"+method.name+",fucking it.");
             return true;
         }
         return false;
@@ -56,7 +55,7 @@ public class MikuAccessTransformer implements IClassTransformer {
         boolean result = false;
 
         if(field.signature!=null){
-            String s = field.desc.toLowerCase();
+            String s = field.signature.toLowerCase();
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 System.out.println("name:"+field.name);
                 System.out.println("sign:"+field.signature);
