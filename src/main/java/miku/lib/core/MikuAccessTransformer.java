@@ -5,6 +5,8 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
 public class MikuAccessTransformer implements IClassTransformer {
     @Override
@@ -15,7 +17,8 @@ public class MikuAccessTransformer implements IClassTransformer {
             ClassNode cn = new ClassNode();
             cr.accept(cn, 0);
 
-            cn.methods.removeIf(mn -> isBadMethod(mn.name));
+            cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
+            cn.fields.removeIf(MikuAccessTransformer::isBadField);
 
             ClassWriter cw = new ClassWriter(0);
 
@@ -26,8 +29,8 @@ public class MikuAccessTransformer implements IClassTransformer {
         return basicClass;
     }
 
-    private static boolean isBadMethod(String method){
-        String s = method.toLowerCase();
+    private static boolean isBadMethod(MethodNode method){
+        String s = method.name.toLowerCase();
         boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") || s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") || s.matches("(.*)clear(.*)inventory(.*)")
                 || s.matches("(.*)remove(.*)entity(.*)") || s.matches("(.*)entity(.*)remove(.*)");
         if(result){
@@ -47,6 +50,23 @@ public class MikuAccessTransformer implements IClassTransformer {
         return result;
     }
 
+    private static boolean isBadField(FieldNode field){
+
+
+        String s = field.desc.toLowerCase();
+
+        boolean result = s.matches("(.*)/set(.*)entity") && !s.matches("(.*)net/minecraft/(.*)");
+
+        if(result){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                System.out.println("name:"+field.name);
+                System.out.println("sign:"+field.signature);
+                System.out.println("desc:"+field.desc);
+            }
+        }
+
+        return result;
+    }
 
 
 }
