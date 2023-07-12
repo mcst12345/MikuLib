@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,7 +21,7 @@ import java.util.List;
 
 public class MikuTweaker implements ITweaker {
     private void InitLib(){
-        File sql = new File("sqlite-jdbc-3.42.0.0.jar");
+        File sql = new File("libraries/sqlite-jdbc-3.42.0.0.jar");
         boolean flag = false;
         if(sql.exists()){
             String sha256;
@@ -67,14 +66,14 @@ public class MikuTweaker implements ITweaker {
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
         InitLib();
-        try {
-            Class<URLClassLoader> clazz = (Class<URLClassLoader>) java.lang.ClassLoader.getSystemClassLoader().getClass();
-            Method method = clazz.getMethod("addURL",URL.class);
-            method.invoke(ClassLoader.getSystemClassLoader(),new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
-            //Launch.classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
-        } catch (MalformedURLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        //try {
+            //Class<URLClassLoader> clazz = (Class<URLClassLoader>) java.lang.ClassLoader.getSystemClassLoader().getClass();
+            //Method method = clazz.getMethod("addURL",URL.class);
+            //method.invoke(ClassLoader.getSystemClassLoader(),new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
+        //    Launch.classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
+        //} catch (MalformedURLException e) {
+        //    throw new RuntimeException(e);
+        //}
         Sqlite.CoreInit();
         String[] additionArgs = {"--gameDir", gameDir.getAbsolutePath(), "--assetsDir", assetsDir.getAbsolutePath(), "--version", profile};
         List<String> fullArgs = new ArrayList<>();
