@@ -156,7 +156,7 @@ public class Sqlite {
                     return null;
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
             return false;
         }

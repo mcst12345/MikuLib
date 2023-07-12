@@ -10,9 +10,6 @@ import org.objectweb.asm.tree.*;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import static org.objectweb.asm.Opcodes.*;
 
 public class MikuTransformer implements IClassTransformer {
     protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
