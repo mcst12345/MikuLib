@@ -14,7 +14,7 @@ import java.util.Objects;
 
 import static org.objectweb.asm.Opcodes.*;
 
-public class MikuAccessTransformer implements IClassTransformer {
+public class MikuTransformer implements IClassTransformer {
     protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
             "noppes.(.*)","mezz.(.*)","com.brandon3055.(.*)","codechicken.(.*)","twilightforest.(.*)",
             "moze_intel.(.*),","cofh.(.*)","alexiy.(.*)","vazkii.(.*)","sweetmagic.(.*)","stevekung.(.*)",
@@ -64,7 +64,7 @@ public class MikuAccessTransformer implements IClassTransformer {
 
 
             double tmp = cn.methods.size();
-            cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
+            cn.methods.removeIf(MikuTransformer::isBadMethod);
 
             for(MethodNode mn : cn.methods){
                 if(Objects.equals(mn.name, "transform") && Objects.equals(mn.desc, "(Ljava/lang/String;Ljava/lang/String;[B)[B")){

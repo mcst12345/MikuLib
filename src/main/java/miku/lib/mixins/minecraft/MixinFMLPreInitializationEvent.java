@@ -1,6 +1,6 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.core.MikuAccessTransformer;
+import miku.lib.core.MikuTransformer;
 import miku.lib.sqlite.Sqlite;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.objectweb.asm.tree.FieldNode;
@@ -15,7 +15,7 @@ public class MixinFMLPreInitializationEvent {
     @Inject(at=@At("TAIL"),method = "<init>")
     public void Init(Object[] data, CallbackInfo ci){
         Sqlite.Init();
-        for(FieldNode field : MikuAccessTransformer.BadFields){
+        for(FieldNode field : MikuTransformer.BadFields){
             //To Do ?
         }
     }
