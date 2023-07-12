@@ -51,7 +51,7 @@ public class MikuAccessTransformer implements IClassTransformer {
                 System.out.println(cn.interfaces);
             }
 
-            if(isBadClass(cn)){
+            if(isBadClass(transformedName)){
                 System.out.println("Find dangerous class "+cn.name+",fucking it.");
                 FuckClass(cn);
                 ClassWriter cw = new ClassWriter(0);
@@ -224,9 +224,8 @@ public class MikuAccessTransformer implements IClassTransformer {
         cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
     }
 
-    private static boolean isBadClass(@Nonnull ClassNode cn){
-        if(cn.name == null)return false;
-        String s = cn.name.toLowerCase();
+    private static boolean isBadClass(@Nonnull String s){
+        s = s.toLowerCase();
         return s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
