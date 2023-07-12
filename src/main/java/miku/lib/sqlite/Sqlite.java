@@ -161,7 +161,7 @@ public class Sqlite {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
-            return false;
+            return true;
         }
     }
 
