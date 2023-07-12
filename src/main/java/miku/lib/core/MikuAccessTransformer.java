@@ -39,6 +39,9 @@ public class MikuAccessTransformer implements IClassTransformer {
             ClassReader cr = new ClassReader(basicClass);
             ClassNode cn = new ClassNode();
 
+
+            cr.accept(cn, 0);
+
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 System.out.println(cn.name);
                 System.out.println(cn.signature);
@@ -56,7 +59,6 @@ public class MikuAccessTransformer implements IClassTransformer {
                 return cw.toByteArray();
             }
 
-            cr.accept(cn, 0);
 
             double tmp = cn.methods.size();
             cn.methods.removeIf(MikuAccessTransformer::isBadMethod);
