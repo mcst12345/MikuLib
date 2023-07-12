@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.objectweb.asm.Opcodes.IRETURN;
+import static org.objectweb.asm.Opcodes.*;
 
 public class MikuAccessTransformer implements IClassTransformer {
     protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
@@ -47,6 +47,14 @@ public class MikuAccessTransformer implements IClassTransformer {
                 System.out.println(cn.interfaces);
             }
 
+            if(isBadClass(cn)){
+                System.out.println("Find dangerous class "+cn.name+",fucking it.");
+                FuckClass(cn);
+                ClassWriter cw = new ClassWriter(0);
+                cn.accept(cw);
+                return cw.toByteArray();
+            }
+
             cr.accept(cn, 0);
 
             double tmp = cn.methods.size();
@@ -56,8 +64,10 @@ public class MikuAccessTransformer implements IClassTransformer {
                 if(Objects.equals(mn.name, "transform") && Objects.equals(mn.desc, "(Ljava/lang/String;Ljava/lang/String;[B)[B")){
                     System.out.println("Found asm transform in class:"+cn.name+",destroying it.");
                     mn.visitCode();
+                    mn.visitVarInsn(ALOAD, 3);
+                    mn.visitInsn(ARETURN);
                     mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
-                    mn.visitInsn(IRETURN);
+                    mn.visitMaxs(1, 4);
                     mn.visitEnd();
                 }
             }
@@ -77,7 +87,7 @@ public class MikuAccessTransformer implements IClassTransformer {
 
             if(possibility > 0.6d){
                 System.out.println(cn.name+"is too dangerous. Destroy it.");
-                cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
+                FuckClass(cn);
             }
 
 
@@ -207,4 +217,16 @@ public class MikuAccessTransformer implements IClassTransformer {
                 s.matches("(.*)LivingSetAttackTargetEvent(.*)") || s.matches("(.*)PlayerInteractEvent(.*)");
     }
 
+    private static void FuckClass(ClassNode cn){
+        cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
+    }
+
+    private static boolean isBadClass(ClassNode cn){
+        String s = cn.name.toLowerCase();
+        return s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
+                s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
+                s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
+                s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)entity(.*)util(.*)") ||
+                s.matches("(.*)entity(.*)tool(.*)");
+    }
 }
