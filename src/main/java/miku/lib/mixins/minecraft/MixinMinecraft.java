@@ -29,6 +29,7 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
+import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -180,6 +181,14 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow public MouseHelper mouseHelper;
 
     @Shadow @Final public static boolean IS_RUNNING_ON_MAC;
+
+    @Shadow protected abstract void init() throws LWJGLException, IOException;
+
+    @Shadow protected abstract void runGameLoop() throws IOException;
+
+    @Shadow public abstract void freeMemory();
+
+    @Shadow public abstract void shutdownMinecraftApplet();
 
     /**
      * @author mcst12345
@@ -551,6 +560,58 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
             net.minecraftforge.fml.common.FMLCommonHandler.instance().fireMouseInput();
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
+    public void run()
+    {
+        this.running = true;
+
+        try
+        {
+            this.init();
+        }
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+        }
+
+        while (true)
+        {
+            try
+            {
+                while (this.running)
+                {
+                    try
+                    {
+                        this.runGameLoop();
+                    }
+                    catch (OutOfMemoryError var10)
+                    {
+                        this.freeMemory();
+                        this.displayGuiScreen(new GuiMemoryErrorScreen());
+                        System.gc();
+                    }
+                    catch (Throwable e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+            catch (Throwable throwable1)
+            {
+                throwable1.printStackTrace();
+            }
+            finally
+            {
+                this.shutdownMinecraftApplet();
+            }
+
+            return;
         }
     }
 }
