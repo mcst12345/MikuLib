@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.*;
 
 public class Sqlite {
+    protected static boolean loaded = false;
     protected static final HashMap<String,Object> Configs = new HashMap<>();
     protected static final ArrayList<String> HIDDEN_MODS = new ArrayList<>();
     protected static final ArrayList<Class<? extends Entity>> BANNED_MOBS = new ArrayList<>();
@@ -20,9 +21,15 @@ public class Sqlite {
     protected static final ArrayList<String> BANNED_MODS = new ArrayList<>();
     protected static final ArrayList<String> BANNED_CLASS = new ArrayList<>();
 
-    public static Connection c;
-    public static Statement stmt;
+    protected static Connection c;
+    protected static Statement stmt;
+
+    public static boolean isLoaded(){
+        return loaded;
+    }
+
     public static void CoreInit(){
+        loaded = true;
         try {
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
@@ -54,9 +61,6 @@ public class Sqlite {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
-
-
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

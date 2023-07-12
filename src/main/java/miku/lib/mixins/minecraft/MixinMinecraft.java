@@ -570,6 +570,8 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void run()
     {
+        System.out.println("Successfully fucked Minecraft.");
+
         this.running = true;
 
         try

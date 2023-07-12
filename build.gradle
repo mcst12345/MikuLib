@@ -97,7 +97,8 @@ jar {
                 "FMLCorePlugin"              : "miku.lib.core.MikuCore",
                 "FMLCorePluginContainsFMLMod": true,
                 'FMLAT': 'AT.cfg',
-                'TweakClass': 'miku.lib.core.MikuTweaker'
+                'TweakClass': 'miku.lib.core.MikuTweaker',
+                'ForceLoadAsMod': 'true'
         ])
     }
 }

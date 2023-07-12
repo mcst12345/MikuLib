@@ -24,9 +24,6 @@ public class MikuCore implements IFMLLoadingPlugin {
     public static boolean RescueMode=false;
 
     public MikuCore(){
-        MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.minecraft.json");
-        Mixins.addConfiguration("mixins.mikulib.json");
     }
 
     @Override
@@ -47,12 +44,7 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     @Override
     public void injectData(Map<String, Object> data) {
-        try {
-            ClassLoader appClassLoader = Launch.class.getClassLoader();
-            MethodUtils.invokeMethod(appClassLoader, true, "addURL", this.getClass().getProtectionDomain().getCodeSource().getLocation());
-            MethodUtils.invokeStaticMethod(appClassLoader.loadClass(this.getClass().getName()), "initMixin");
-        } catch (Exception ignored) {
-        }
+
     }
 
     @Override
