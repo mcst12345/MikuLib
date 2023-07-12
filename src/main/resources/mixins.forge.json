@@ -1,0 +1,19 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.8.0",
+  "package": "miku.lib.mixins.minecraftforge",
+  "mixins": [
+    "MixinEventBus",
+    "MixinFMLPreInitializationEvent",
+    "MixinForgeCommandHandler",
+    "MixinForgeHooks",
+    "MixinGuiModList",
+    "MixinItemStack"
+  ],
+  "client": [
+    "MixinFMLClientHandler"
+  ],
+  "server": [],
+  "required": false,
+  "setSourceFile": false
+}

@@ -1,4 +1,4 @@
-package miku.lib.mixins.minecraft;
+package miku.lib.mixins.minecraftforge;
 
 import miku.lib.item.SpecialItem;
 import miku.lib.sqlite.Sqlite;

@@ -1,4 +1,4 @@
-package miku.lib.mixins.minecraft;
+package miku.lib.mixins.minecraftforge;
 
 import miku.lib.util.EntityUtil;
 import net.minecraft.client.Minecraft;
