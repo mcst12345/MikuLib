@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MikuTweaker implements ITweaker {
     private void InitLib(){
-        File sql = new File("libraries/sqlite-jdbc-3.42.0.0.jar");
+        File sql = new File("libraries/org/sqlite/sqlite-jdbc-3.42.0.0.jar");
         boolean flag = false;
         if(sql.exists()){
             String sha256;
