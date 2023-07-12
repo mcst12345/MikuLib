@@ -47,7 +47,7 @@ public class MikuAccessTransformer implements IClassTransformer {
                 print("Class sign:"+cn.signature);
                 print("outer class:"+cn.outerClass);
                 print("outer method:"+cn.outerMethod);
-                print("outer method desc"+cn.outerMethodDesc);
+                print("outer method desc:"+cn.outerMethodDesc);
                 System.out.println("Interfaces:");
                 for(String s : cn.interfaces){
                     print(s);
