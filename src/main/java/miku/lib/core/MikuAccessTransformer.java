@@ -43,12 +43,15 @@ public class MikuAccessTransformer implements IClassTransformer {
             cr.accept(cn, 0);
 
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                System.out.println(cn.name);
-                System.out.println(cn.signature);
-                System.out.println(cn.outerClass);
-                System.out.println(cn.outerMethod);
-                System.out.println(cn.outerMethodDesc);
-                System.out.println(cn.interfaces);
+                print("Class name:"+cn.name);
+                print("Class sign:"+cn.signature);
+                print("outer class:"+cn.outerClass);
+                print("outer method:"+cn.outerMethod);
+                print("outer method desc"+cn.outerMethodDesc);
+                System.out.println("Interfaces:");
+                for(String s : cn.interfaces){
+                    print(s);
+                }
             }
 
             if(isBadClass(transformedName)){
@@ -114,32 +117,31 @@ public class MikuAccessTransformer implements IClassTransformer {
                 s.matches("(.*)entity(.*)remove(.*)");
 
         if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-            System.out.println("Method name:"+method.name);
-            System.out.println();
+            print("Method name:"+method.name);
         }
 
         if(method.parameters!=null)for(ParameterNode parameter : method.parameters){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                System.out.println("parameter name:"+parameter.name);
+                print("parameter name:"+parameter.name);
             }
         }
         if(method.visibleTypeAnnotations!=null)for(TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                System.out.println("typeAnnotation desc:"+typeAnnotation.desc);
-                System.out.println("typeAnnotation typePath:"+typeAnnotation.typePath.toString());
+                print("typeAnnotation desc:"+typeAnnotation.desc);
+                print("typeAnnotation typePath:"+typeAnnotation.typePath.toString());
             }
         }
         if(method.invisibleTypeAnnotations!=null)for(TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations){
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                System.out.println("invisibleTypeAnnotation desc:"+invisibleTypeAnnotation.desc);
-                System.out.println("invisibleTypeAnnotation typePath:"+invisibleTypeAnnotation.typePath.toString());
+                print("invisibleTypeAnnotation desc:"+invisibleTypeAnnotation.desc);
+                print("invisibleTypeAnnotation typePath:"+invisibleTypeAnnotation.typePath.toString());
             }
         }
 
         if(method.attrs != null){
             for(Attribute attr : method.attrs){
                 if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                    System.out.println("attr type:"+attr.type);
+                    print("attr type:"+attr.type);
                 }
             }
         }
@@ -148,9 +150,9 @@ public class MikuAccessTransformer implements IClassTransformer {
             for(LocalVariableNode localVariable : method.localVariables){
                 if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
 
-                    System.out.println("localVariable name:"+localVariable.name);
+                    print("localVariable name:"+localVariable.name);
                     if(localVariable.signature!=null)System.out.println("localVariable sign:"+localVariable.signature);
-                    System.out.println("localVariable desc:"+localVariable.desc);
+                    print("localVariable desc:"+localVariable.desc);
                     s = localVariable.desc;
                     if(isBadVariable(s)) {
                         System.out.println("Found bad variable:"+localVariable.name);
@@ -197,9 +199,9 @@ public class MikuAccessTransformer implements IClassTransformer {
         if(field.signature!=null){
             String s = field.signature.toLowerCase();
             if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("field_info","LOG_CONFIG",0)){
-                System.out.println("name:"+field.name);
-                System.out.println("sign:"+field.signature);
-                System.out.println("desc:"+field.desc);
+                print("name:"+field.name);
+                print("sign:"+field.signature);
+                print("desc:"+field.desc);
             }
             result = (s.matches("(.*)/set(.*)entity(.*)") || s.matches("(.*)/list(.*)entity(.*)"))&& !s.matches("(.*)net/minecraft/(.*)");
         }
@@ -231,5 +233,10 @@ public class MikuAccessTransformer implements IClassTransformer {
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                 s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)entity(.*)util(.*)") ||
                 s.matches("(.*)entity(.*)tool(.*)");
+    }
+
+    public static void print(String s){
+        if(s.matches("(.*):null(.*)"))return;
+        System.out.println(s);
     }
 }
