@@ -7,6 +7,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -221,7 +222,8 @@ public class MikuAccessTransformer implements IClassTransformer {
         cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
     }
 
-    private static boolean isBadClass(ClassNode cn){
+    private static boolean isBadClass(@Nonnull ClassNode cn){
+        if(cn.name == null)return false;
         String s = cn.name.toLowerCase();
         return s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
