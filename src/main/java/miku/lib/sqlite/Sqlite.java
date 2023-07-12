@@ -157,7 +157,10 @@ public class Sqlite {
                 }
             }
         } catch (SQLException | NullPointerException e) {
-            e.printStackTrace();
+            if(e instanceof SQLException) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
             return false;
         }
     }
