@@ -63,12 +63,6 @@ public class MikuTweaker implements ITweaker {
 
     public MikuTweaker(){
         InitLib();
-        try {
-            Launch.classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        Sqlite.CoreInit();
     }
 
     @Override
@@ -82,6 +76,12 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
+        try {
+            classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        Sqlite.CoreInit();
         System.out.println("Add MikuTransformer");
         classLoader.registerTransformer("miku.lib.core.MikuTransformer");
     }
