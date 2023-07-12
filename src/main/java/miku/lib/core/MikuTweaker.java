@@ -10,8 +10,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,14 +64,20 @@ public class MikuTweaker implements ITweaker {
     }
     private String[] args;
 
-    public MikuTweaker(){
-        InitLib();
-    }
-
     @Override
     public void acceptOptions(List<String> args, File gameDir, File assetsDir, String profile) {
+        InitLib();
+        try {
+            Class<URLClassLoader> clazz = (Class<URLClassLoader>) java.lang.ClassLoader.getSystemClassLoader().getClass();
+            Method method = clazz.getMethod("addURL",URL.class);
+            method.invoke(ClassLoader.getSystemClassLoader(),new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
+            //Launch.classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
+        } catch (MalformedURLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        Sqlite.CoreInit();
         String[] additionArgs = {"--gameDir", gameDir.getAbsolutePath(), "--assetsDir", assetsDir.getAbsolutePath(), "--version", profile};
-        List<String> fullArgs =  new ArrayList<String>();
+        List<String> fullArgs = new ArrayList<>();
         fullArgs.addAll(args);
         fullArgs.addAll(Arrays.asList(additionArgs));
         this.args = fullArgs.toArray(new String[fullArgs.size()]);
@@ -76,12 +85,6 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
-        try {
-            classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        Sqlite.CoreInit();
         System.out.println("Add MikuTransformer");
         classLoader.registerTransformer("miku.lib.core.MikuTransformer");
     }
