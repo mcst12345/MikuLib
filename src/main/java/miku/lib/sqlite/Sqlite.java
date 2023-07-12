@@ -158,7 +158,7 @@ public class Sqlite {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            return false;
         }
     }
 

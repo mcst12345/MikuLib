@@ -42,7 +42,15 @@ public class MikuTransformer implements IClassTransformer {
 
             cr.accept(cn, 0);
 
-            if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            if(isBadClass(transformedName)){
+                System.out.println("Find dangerous class "+cn.name+",fucking it.");
+                FuckClass(cn);
+                ClassWriter cw = new ClassWriter(0);
+                cn.accept(cw);
+                return cw.toByteArray();
+            }
+
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 print("Class name:"+cn.name);
                 print("Class sign:"+cn.signature);
                 print("outer class:"+cn.outerClass);
@@ -54,46 +62,34 @@ public class MikuTransformer implements IClassTransformer {
                 }
             }
 
-            if(isBadClass(transformedName)){
-                System.out.println("Find dangerous class "+cn.name+",fucking it.");
+
+
+
+            double tmp = cn.methods.size();
+            cn.methods.removeIf(MikuTransformer::isBadMethod);
+
+
+
+            possibility = num / tmp;
+            System.out.println("The danger-value of class "+cn.name+":"+possibility);
+
+            if(possibility > 0.6d){
+                System.out.println(cn.name+"is too dangerous. Destroy it.");
                 FuckClass(cn);
                 ClassWriter cw = new ClassWriter(0);
                 cn.accept(cw);
                 return cw.toByteArray();
             }
 
-
-            double tmp = cn.methods.size();
-            cn.methods.removeIf(MikuTransformer::isBadMethod);
-
-            for(MethodNode mn : cn.methods){
-                if(Objects.equals(mn.name, "transform") && Objects.equals(mn.desc, "(Ljava/lang/String;Ljava/lang/String;[B)[B")){
-                    System.out.println("Found asm transform in class:"+cn.name+",destroying it.");
-                    mn.visitCode();
-                    mn.visitVarInsn(ALOAD, 3);
-                    mn.visitInsn(ARETURN);
-                    mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
-                    mn.visitMaxs(1, 4);
-                    mn.visitEnd();
-                }
-            }
-
-            for(FieldNode field : cn.fields){
-                if(isBadField(field))BadFields.add(field);
-            }
-
-            possibility = num / tmp;
-            System.out.println("The danger-value of class "+cn.name+":"+possibility);
-            if(possibility > 0.4d){
+            else if(possibility > 0.4d){
                 System.out.println(cn.name+"contains too many dangerous methods.Fucking those methods.");
                 for(MethodNode m : cached_methods) {
                     cn.methods.remove(m);
                 }
             }
 
-            if(possibility > 0.6d){
-                System.out.println(cn.name+"is too dangerous. Destroy it.");
-                FuckClass(cn);
+            for(FieldNode field : cn.fields){
+                if(isBadField(field))BadFields.add(field);
             }
 
 
@@ -116,23 +112,23 @@ public class MikuTransformer implements IClassTransformer {
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                 s.matches("(.*)entity(.*)remove(.*)");
 
-        if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+        if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
             print("Method name:"+method.name);
         }
 
         if(method.parameters!=null)for(ParameterNode parameter : method.parameters){
-            if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 print("parameter name:"+parameter.name);
             }
         }
         if(method.visibleTypeAnnotations!=null)for(TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations){
-            if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 print("typeAnnotation desc:"+typeAnnotation.desc);
                 print("typeAnnotation typePath:"+typeAnnotation.typePath.toString());
             }
         }
         if(method.invisibleTypeAnnotations!=null)for(TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations){
-            if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                 print("invisibleTypeAnnotation desc:"+invisibleTypeAnnotation.desc);
                 print("invisibleTypeAnnotation typePath:"+invisibleTypeAnnotation.typePath.toString());
             }
@@ -140,7 +136,7 @@ public class MikuTransformer implements IClassTransformer {
 
         if(method.attrs != null){
             for(Attribute attr : method.attrs){
-                if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
                     print("attr type:"+attr.type);
                 }
             }
@@ -148,7 +144,7 @@ public class MikuTransformer implements IClassTransformer {
 
         if(method.localVariables!=null){
             for(LocalVariableNode localVariable : method.localVariables){
-                if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+                if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
 
                     print("localVariable name:"+localVariable.name);
                     if(localVariable.signature!=null)System.out.println("localVariable sign:"+localVariable.signature);
@@ -187,7 +183,7 @@ public class MikuTransformer implements IClassTransformer {
         }
 
         if(result){
-            if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0))System.out.println("Ignore good class:"+clazz);
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0))System.out.println("Ignore good class:"+clazz);
         }
 
         return result;
@@ -198,7 +194,7 @@ public class MikuTransformer implements IClassTransformer {
 
         if(field.signature!=null){
             String s = field.signature.toLowerCase();
-            if(Sqlite.isLoaded())if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("field_info","LOG_CONFIG",0)){
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("field_info","LOG_CONFIG",0)){
                 print("name:"+field.name);
                 print("sign:"+field.signature);
                 print("desc:"+field.desc);
@@ -232,7 +228,7 @@ public class MikuTransformer implements IClassTransformer {
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                 s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)entity(.*)util(.*)") ||
-                s.matches("(.*)entity(.*)tool(.*)");
+                s.matches("(.*)entity(.*)tool(.*)") || s.matches("(.*)transformer(.*)");
     }
 
     public static void print(String s){
