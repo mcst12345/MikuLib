@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 import static java.lang.reflect.Modifier.*;
 
-//Hi,forge. Fxxk you!
+//The fuck?
 
 //R.I.P. Do not enable this.
 //Or you'll get: java.lang.NullPointerException: Initializing game

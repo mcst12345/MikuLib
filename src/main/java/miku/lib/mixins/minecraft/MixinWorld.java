@@ -2,7 +2,6 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import miku.lib.api.*;
-import miku.lib.core.MikuCore;
 import miku.lib.item.SpecialItem;
 import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
@@ -148,7 +147,7 @@ public abstract class MixinWorld implements iWorld {
     public void updateEntities()
     {
         EntityUtil.REMOVE((World)(Object)this);
-        if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
+        //if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
         if(EntityUtil.isKilling())return;
         this.profiler.startSection("entities");
         this.profiler.startSection("global");
@@ -355,7 +354,7 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
         this.profiler.endSection();
-        if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
+        //if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
         EntityUtil.REMOVE((World)(Object)this);
     }
 

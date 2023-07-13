@@ -4,7 +4,6 @@ import com.anotherstar.common.entity.EntityLoli;
 import com.chaoswither.entity.EntityChaosWither;
 import com.google.common.collect.Lists;
 import miku.lib.api.*;
-import miku.lib.core.MikuCore;
 import miku.lib.item.SpecialItem;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.KillEntity;
@@ -42,7 +41,7 @@ public class EntityUtil {
         if(!(object instanceof Entity))return false;
         Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
-            if(MikuCore.RescueMode)return true;
+            //if(MikuCore.RescueMode)return true;
             if(entity.world.isRemote){
                 if(((iMinecraft) Minecraft.getMinecraft()).protect())return true;
             }
