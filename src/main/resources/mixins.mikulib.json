@@ -8,6 +8,6 @@
   "client": [
   ],
   "server": [],
-  "required": false,
+  "required": true,
   "setSourceFile": false
 }

@@ -12,7 +12,10 @@ import org.spongepowered.asm.mixin.Mixins;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +44,24 @@ public class MikuTweaker implements ITweaker {
         System.out.println("Add MikuTransformer");
         classLoader.registerTransformer("miku.lib.core.MikuTransformer");
 
+
+        //classLoader.registerTransformer("miku.lib.core.AccessTransformer");
+
+        File programRootDir = new File("/libs/");
+        URLClassLoader class_Loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        Method add;
+        try {
+            add = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        add.setAccessible(true);
+        try {
+            add.invoke(class_Loader, programRootDir.toURI().toURL());
+        } catch (IllegalAccessException | InvocationTargetException | MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
         System.out.println("Adding MikuCore");
 
         try {
@@ -55,7 +76,6 @@ public class MikuTweaker implements ITweaker {
                  URISyntaxException e) {
             e.printStackTrace();
         }
-        //classLoader.registerTransformer("miku.lib.core.AccessTransformer");
     }
 
     @Override
