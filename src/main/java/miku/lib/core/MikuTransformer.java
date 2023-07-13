@@ -24,7 +24,8 @@ public class MikuTransformer implements IClassTransformer {
             "xaero.(.*)","com.sci.(.*)","com.lilacmods.(.*)","cn.academy.(.*)","tragicneko.(.*)","com.github.alexthe666.(.*)",
             "ic2.(.*)","com.vicmatskiv.(.*)","com.shinoow.(.*)","morph.(.*)","appeng.(.*)","com.lucunji.(.*)","software.bernie.(.*)",
             "com.enderio.(.*)","forestry.(.*)","com.pam.harvestcraft.(.*)","slimeknights.(.*)","com.rwtema.(.*)","cn.mcmod.(.*)",
-            "cn.mcmod_mmf.(.*)","galaxyspace.(.*)","com.gildedgames.(.*)","blusunrize.(.*)"};
+            "cn.mcmod_mmf.(.*)","galaxyspace.(.*)","com.gildedgames.(.*)","blusunrize.(.*)","com.mega.(.*)","koala.(.*)","net.tslat.(.*)",
+            "com.ferreusveritas.(.*)","harmonised.(.*)","mod.acgaming.(.*)"};
     public static final List<FieldNode> BadFields = new ArrayList<>();
     protected static final List<MethodNode> cached_methods = new ArrayList<>();
     protected static double possibility;
