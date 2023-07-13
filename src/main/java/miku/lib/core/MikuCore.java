@@ -13,10 +13,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.Map;
+
+import static miku.lib.core.MikuTweaker.classLoader;
 
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.Name("MikuLib")
@@ -67,12 +72,27 @@ public class MikuCore implements IFMLLoadingPlugin {
     public static boolean RescueMode=false;
 
     public MikuCore(){
-        //InitLib();
-        //try {
-            //Launch.classLoader.addURL(new File("sqlite-jdbc-3.42.0.0.jar").toURI().toURL());
-        //} catch (MalformedURLException e) {
-        //    throw new RuntimeException(e);
-        //}
+        InitLib();
+        File file1 = new File("sqlite-jdbc-3.42.0.0.jar");
+        URLClassLoader classloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        Method add;
+        try {
+            add = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        add.setAccessible(true);
+        try {
+            add.invoke(classloader, file1.toURI().toURL());
+        } catch (IllegalAccessException | InvocationTargetException | MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            classLoader.addURL(file1.toURI().toURL());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
         Sqlite.CoreInit();
     }
 

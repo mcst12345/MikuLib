@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MikuTweaker implements ITweaker {
+    public static LaunchClassLoader classLoader;
     private String[] args;
 
     @Override
@@ -34,6 +35,7 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
+        MikuTweaker.classLoader = classLoader;
         try {
             CoreModManager.getIgnoredMods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName()); // <-- 将自身从 CoreMod 忽略列表中移除
         } catch (Throwable ignored) {}
@@ -47,20 +49,7 @@ public class MikuTweaker implements ITweaker {
 
         //classLoader.registerTransformer("miku.lib.core.AccessTransformer");
 
-        File programRootDir = new File("/libs/");
-        URLClassLoader class_Loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-        Method add;
-        try {
-            add = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-        add.setAccessible(true);
-        try {
-            add.invoke(class_Loader, programRootDir.toURI().toURL());
-        } catch (IllegalAccessException | InvocationTargetException | MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+
 
         System.out.println("Adding MikuCore");
 
