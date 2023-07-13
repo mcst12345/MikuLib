@@ -44,7 +44,6 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
     @Shadow private String openGLWarning2;
     @Shadow private int openGLWarning2Width;
     @Shadow private int widthCopyrightRest;
-    @Shadow private NotificationModUpdateScreen modUpdateNotification;
     @Shadow private GuiScreen realmsNotification;
 
     @Shadow protected abstract boolean areRealmsNotificationsEnabled();
@@ -170,6 +169,5 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         {
             this.realmsNotification.drawScreen(mouseX, mouseY, partialTicks);
         }
-        modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
     }
 }
