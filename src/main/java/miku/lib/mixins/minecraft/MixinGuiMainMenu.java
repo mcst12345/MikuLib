@@ -63,6 +63,6 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 
     @Inject(at=@At("HEAD"),method = "drawScreen")
     public void drawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci){
-        if(!field_194400_H.getNamespace().equals("miku"))field_194400_H = new ResourceLocation("miku:textures/gui/miku-edition.png");
+        if(!field_194400_H.getNamespace().equals("miku"))field_194400_H = new ResourceLocation("miku:textures/gui/miku-edition-disabled.png");
     }
 }
