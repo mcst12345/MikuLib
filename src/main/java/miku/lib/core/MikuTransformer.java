@@ -10,6 +10,9 @@ import org.objectweb.asm.tree.*;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static org.objectweb.asm.Opcodes.IRETURN;
 
 public class MikuTransformer implements IClassTransformer {
     protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
@@ -38,6 +41,19 @@ public class MikuTransformer implements IClassTransformer {
 
 
             cr.accept(cn, 0);
+
+            if(transformedName.toLowerCase().matches("(.*)transformer(.*)")){
+                System.out.println("Find coremod that is not in whitelist. Fucking it.");
+                System.out.println("If this breaks innocent mods,report this on https://github.com/mcst12345/MikuLib/issues");
+                for(MethodNode mn : cn.methods){
+                    if(Objects.equals(mn.name, "transform")){
+                        mn.visitCode();
+                        mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
+                        mn.visitInsn(IRETURN);
+                        mn.visitEnd();
+                    }
+                }
+            }
 
             if(isBadClass(transformedName)){
                 System.out.println("Find dangerous class "+cn.name+",fucking it.");
@@ -228,7 +244,7 @@ public class MikuTransformer implements IClassTransformer {
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                 s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)entity(.*)util(.*)") ||
-                s.matches("(.*)entity(.*)tool(.*)") || s.matches("(.*)transformer(.*)");
+                s.matches("(.*)entity(.*)tool(.*)");
     }
 
     public static void print(String s){

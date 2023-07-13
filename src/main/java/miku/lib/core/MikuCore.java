@@ -24,6 +24,7 @@ public class MikuCore implements IFMLLoadingPlugin {
     public static boolean RescueMode=false;
 
     public MikuCore(){
+        System.out.println("Load MikuCore.");
     }
 
     @Override
