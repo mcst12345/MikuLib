@@ -200,7 +200,7 @@ public class MikuTransformer implements IClassTransformer {
         }
 
         if(result){
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0))System.out.println("Ignore good class:"+clazz);
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0) && !clazz.matches("net.minecraft.(.*)"))System.out.println("Ignore good class:"+clazz);
         }
 
         return result;

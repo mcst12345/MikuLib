@@ -3,12 +3,11 @@
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins.minecraftforge",
   "mixins": [
-    "MixinEventBus",
-    "MixinFMLPreInitializationEvent",
-    "MixinForgeCommandHandler",
-    "MixinForgeHooks",
     "MixinGuiModList",
-    "MixinItemStack"
+    "MixinItemStack",
+    "MixinEventBus",
+    "MixinForgeCommandHandler",
+    "MixinForgeHooks"
   ],
   "client": [
   ],

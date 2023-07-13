@@ -27,6 +27,7 @@
   "client": [
     "ClientMixinEntityLivingBase",
     "MixinGuiIngameMenu",
+    "MixinGuiMainMenu",
     "MixinGuiScreen",
     "MixinGuiScreenAdvancements",
     "MixinGuiScreenDemo",
