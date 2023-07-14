@@ -107,13 +107,13 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         int cx = width / 2;
         int cy = height / 2;
         double proportion;
-        if (((double) 1400 / (double) 738) < (double) width / (double) height) {
-            proportion = (double) height / (double) 738;
+        if (((double) 5658 / (double) 3329) < (double) width / (double) height) {
+            proportion = (double) height / (double) 3329;
         } else {
-            proportion = (double) width / (double) 1400;
+            proportion = (double) width / (double) 5658;
         }
-        int x = (int) (1400 * proportion / 2);
-        int y = (int) (738 * proportion / 2);
+        int x = (int) (5658 * proportion / 2);
+        int y = (int) (3329 * proportion / 2);
         bufferbuilder.pos(cx - x, cy + y, zLevel).tex(0, 1).endVertex();
         bufferbuilder.pos(cx + x, cy + y, zLevel).tex(1, 1).endVertex();
         bufferbuilder.pos(cx + x, cy - y, zLevel).tex(1, 0).endVertex();
