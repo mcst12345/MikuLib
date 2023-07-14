@@ -31,8 +31,6 @@ public abstract class MixinFontRenderer implements iFontRenderer {
 
     @Shadow protected abstract void doDraw(float f);
 
-    @Shadow public abstract int getCharWidth(char character);
-
     @Override
     public void EnableAlpha() {
         this.enableAlpha();
