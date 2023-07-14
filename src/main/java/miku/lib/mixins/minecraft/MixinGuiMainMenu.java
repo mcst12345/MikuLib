@@ -39,8 +39,6 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
     @Shadow @Final private static Random RANDOM;
     @Shadow private float panoramaTimer;
 
-    @Shadow protected abstract void renderSkybox(int mouseX, int mouseY, float partialTicks);
-
     @Shadow @Final private static ResourceLocation MINECRAFT_TITLE_TEXTURES;
     @Shadow @Final private float minceraftRoll;
     @Shadow private int widthCopyright;
@@ -97,9 +95,6 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
     {
         field_194400_H = new ResourceLocation("miku:textures/gui/miku-edition.png");
         this.panoramaTimer += partialTicks;
-        //GlStateManager.disableAlpha();
-        //this.mc.getFramebuffer().unbindFramebuffer();
-        //GlStateManager.viewport(0, 0, 256, 256);
         this.mc.getTextureManager().bindTexture(BACKGROUND);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -120,12 +115,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         bufferbuilder.pos(cx - x, cy - y, zLevel).tex(0, 0).endVertex();
         tessellator.draw();
 
-
-        //this.renderSkybox(mouseX, mouseY, partialTicks);
-        //GlStateManager.enableAlpha();
-        int i = 274;
         int j = this.width / 2 - 137;
-        int k = 30;
         this.drawGradientRect(0, 0, this.width, this.height, -2130706433, 16777215);
         this.drawGradientRect(0, 0, this.width, this.height, 0, Integer.MIN_VALUE);
         this.mc.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURES);
@@ -133,7 +123,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 
         if ((double)this.minceraftRoll < 1.0E-4D)
         {
-            this.drawTexturedModalRect(j + 0, 30, 0, 0, 99, 44);
+            this.drawTexturedModalRect(j, 30, 0, 0, 99, 44);
             this.drawTexturedModalRect(j + 99, 30, 129, 0, 27, 44);
             this.drawTexturedModalRect(j + 99 + 26, 30, 126, 0, 3, 44);
             this.drawTexturedModalRect(j + 99 + 26 + 3, 30, 99, 0, 26, 44);
@@ -141,7 +131,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         }
         else
         {
-            this.drawTexturedModalRect(j + 0, 30, 0, 0, 155, 44);
+            this.drawTexturedModalRect(j, 30, 0, 0, 155, 44);
             this.drawTexturedModalRect(j + 155, 30, 0, 45, 155, 44);
         }
 
@@ -158,7 +148,6 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         GlStateManager.scale(f, f, f);
         this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, -256);
         GlStateManager.popMatrix();
-        String s = "Minecraft 1.12.2"+ ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
 
         java.util.List<String> brandings = com.google.common.collect.Lists.reverse(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(true));
         for (int brdline = 0; brdline < brandings.size(); brdline++)
