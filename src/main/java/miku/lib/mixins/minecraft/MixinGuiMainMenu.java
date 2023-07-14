@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraft;
 //Holy Shit. I hate Gui.
 
 import com.google.common.collect.Lists;
+import miku.lib.api.iFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -145,7 +146,22 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         float f = 1.8F - MathHelper.abs(MathHelper.sin((float)(Minecraft.getSystemTime() % 1000L) / 1000.0F * ((float)Math.PI * 2F)) * 0.1F);
         f = f * 120.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
         GlStateManager.scale(f, f, f);
-        this.drawCenteredString(this.fontRenderer, this.splashText, 10, -16, 57197187);
+        //this.drawCenteredString(this.fontRenderer, this.splashText, 10, -16, 57197187);
+
+        ((iFontRenderer)this.fontRenderer).EnableAlpha();
+        ((iFontRenderer)this.fontRenderer).ResetStyles();
+        if(((iFontRenderer)this.fontRenderer).bidiFlag()){
+            this.splashText = ((iFontRenderer)this.fontRenderer).BidiReorder(this.splashText);
+        }
+        ((iFontRenderer)this.fontRenderer).SetRed(22);
+        ((iFontRenderer)this.fontRenderer).SetGreen(77);
+        ((iFontRenderer)this.fontRenderer).SetBlue(73);
+        ((iFontRenderer)this.fontRenderer).setColor();
+        ((iFontRenderer)this.fontRenderer).SetX(10);
+        ((iFontRenderer)this.fontRenderer).SetY(16);
+        ((iFontRenderer)this.fontRenderer).renderStringAtPos(this.splashText);
+
+
         GlStateManager.popMatrix();
 
         java.util.List<String> brandings = com.google.common.collect.Lists.reverse(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(true));
