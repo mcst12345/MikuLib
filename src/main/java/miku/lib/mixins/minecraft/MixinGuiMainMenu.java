@@ -1,15 +1,20 @@
 package miku.lib.mixins.minecraft;
 
+//Holy Shit. I hate Gui.
+
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.client.gui.NotificationModUpdateScreen;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,6 +32,8 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 
     @Mutable
     @Shadow @Final private static ResourceLocation field_194400_H;
+
+    private static final ResourceLocation BACKGROUND = new ResourceLocation("miku:textures/gui/background.png");
 
     @Shadow private String splashText;
     @Shadow @Final private static Random RANDOM;
@@ -73,7 +80,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
                 do {
                     this.splashText = list.get(RANDOM.nextInt(list.size()));
 
-                } while (this.splashText.hashCode() == 125780783);//What the fuck is this number?
+                } while (this.splashText.hashCode() == 39393939);//What the fuck is this number?
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,9 +97,32 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
     {
         field_194400_H = new ResourceLocation("miku:textures/gui/miku-edition.png");
         this.panoramaTimer += partialTicks;
-        GlStateManager.disableAlpha();
-        this.renderSkybox(mouseX, mouseY, partialTicks);
-        GlStateManager.enableAlpha();
+        //GlStateManager.disableAlpha();
+        //this.mc.getFramebuffer().unbindFramebuffer();
+        //GlStateManager.viewport(0, 0, 256, 256);
+        this.mc.getTextureManager().bindTexture(BACKGROUND);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        int cx = width / 2;
+        int cy = height / 2;
+        double proportion;
+        if (((double) 1400 / (double) 738) < (double) width / (double) height) {
+            proportion = (double) height / (double) 738;
+        } else {
+            proportion = (double) width / (double) 1400;
+        }
+        int x = (int) (1400 * proportion / 2);
+        int y = (int) (738 * proportion / 2);
+        bufferbuilder.pos(cx - x, cy + y, zLevel).tex(0, 1).endVertex();
+        bufferbuilder.pos(cx + x, cy + y, zLevel).tex(1, 1).endVertex();
+        bufferbuilder.pos(cx + x, cy - y, zLevel).tex(1, 0).endVertex();
+        bufferbuilder.pos(cx - x, cy - y, zLevel).tex(0, 0).endVertex();
+        tessellator.draw();
+
+
+        //this.renderSkybox(mouseX, mouseY, partialTicks);
+        //GlStateManager.enableAlpha();
         int i = 274;
         int j = this.width / 2 - 137;
         int k = 30;
@@ -128,16 +158,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         GlStateManager.scale(f, f, f);
         this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, -256);
         GlStateManager.popMatrix();
-        String s = "Minecraft 1.12.2";
-
-        if (this.mc.isDemo())
-        {
-            s = s + " Demo";
-        }
-        else
-        {
-            s = s + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
-        }
+        String s = "Minecraft 1.12.2"+ ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
 
         java.util.List<String> brandings = com.google.common.collect.Lists.reverse(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(true));
         for (int brdline = 0; brdline < brandings.size(); brdline++)
