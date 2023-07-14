@@ -146,8 +146,12 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         float f = 1.8F - MathHelper.abs(MathHelper.sin((float)(Minecraft.getSystemTime() % 1000L) / 1000.0F * ((float)Math.PI * 2F)) * 0.1F);
         f = f * 110.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
         GlStateManager.scale(f, f, f);
-        this.drawCenteredString(this.fontRenderer, this.splashText, 18, -20, 57197187);
 
+        //shit mountain.
+        //I want to change the text color to #39c5bb.
+        //I don't know WHY these fucking code works.
+        //Holy shit. I hate Gui.
+        this.drawCenteredString(this.fontRenderer, this.splashText, 18, 10, 57197187);
         ((iFontRenderer)this.fontRenderer).EnableAlpha();
         ((iFontRenderer)this.fontRenderer).ResetStyles();
         if(((iFontRenderer)this.fontRenderer).bidiFlag()){
@@ -159,8 +163,9 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         ((iFontRenderer)this.fontRenderer).SetAlpha(1);
         ((iFontRenderer)this.fontRenderer).setColor();
         ((iFontRenderer)this.fontRenderer).SetX(16);
-        ((iFontRenderer)this.fontRenderer).SetY(-8);
+        ((iFontRenderer)this.fontRenderer).SetY(20);
         ((iFontRenderer)this.fontRenderer).renderStringAtPos(this.splashText);
+
 
 
         GlStateManager.popMatrix();
