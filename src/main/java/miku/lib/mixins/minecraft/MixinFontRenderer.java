@@ -29,7 +29,7 @@ public abstract class MixinFontRenderer implements iFontRenderer {
 
     @Shadow protected float posY;
 
-    @Shadow protected abstract void doDraw(float f);
+    @Shadow(remap = false) protected abstract void doDraw(float f);
 
     @Override
     public void EnableAlpha() {
