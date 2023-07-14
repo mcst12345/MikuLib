@@ -5,16 +5,39 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.objectweb.asm.Opcodes.IRETURN;
+import static org.objectweb.asm.Opcodes.*;
 
 public class MikuTransformer implements IClassTransformer {
+    private static boolean decompiler = false;
+
+    public MikuTransformer(){
+        try {
+            InputStream stream = MikuTweaker.class.getResourceAsStream("/decompiler");
+            byte[] dat = new byte[stream.available()];
+            stream.read(dat);
+            stream.close();
+            char[] text = new char[dat.length];
+
+            for (int i = 0; i < dat.length; ++i) {
+                text[i] = (char) dat[i];
+            }
+
+            String s = String.copyValueOf(text);
+
+            decompiler = !s.contains("false") && s.contains("true");
+        } catch (IOException ignored) {
+        }
+    }
     protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
             "noppes.(.*)","mezz.(.*)","com.brandon3055.(.*)","codechicken.(.*)","twilightforest.(.*)",
             "moze_intel.(.*),","cofh.(.*)","alexiy.(.*)","vazkii.(.*)","sweetmagic.(.*)","stevekung.(.*)",
@@ -48,9 +71,19 @@ public class MikuTransformer implements IClassTransformer {
                 System.out.println("If this breaks innocent mods,report this on https://github.com/mcst12345/MikuLib/issues");
                 for(MethodNode mn : cn.methods){
                     if(Objects.equals(mn.name, "transform")){
+                        //mn.visitCode();
+                        //Label start = new Label();
+                        //mn.visitLabel(start);
+                        //mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
+                        //mn.visitInsn(IRETURN);
+                        //mn.visitEnd();
                         mn.visitCode();
-                        mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
-                        mn.visitInsn(IRETURN);
+                        Label label0 = new Label();
+                        mn.visitLabel(label0);
+                        mn.visitLineNumber(8, label0);
+                        mn.visitVarInsn(ALOAD, 3);
+                        mn.visitInsn(ARETURN);
+                        mn.visitMaxs(1,4);
                         mn.visitEnd();
                     }
                 }
