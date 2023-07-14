@@ -29,7 +29,9 @@ public abstract class MixinFontRenderer implements iFontRenderer {
 
     @Shadow protected float posY;
 
-    @Shadow protected abstract void renderStringAtPos(String text, boolean shadow);
+    @Shadow protected abstract void doDraw(float f);
+
+    @Shadow public abstract int getCharWidth(char character);
 
     @Override
     public void EnableAlpha() {
@@ -65,7 +67,10 @@ public abstract class MixinFontRenderer implements iFontRenderer {
     public void SetY(float f){
         this.posY = f;
     }
-    public void renderStringAtPos(String s){
-        this.renderStringAtPos(s,false);
+    public void renderStringAtPos(String text){
+        for (int i = 0; i < text.length(); ++i)
+        {
+            doDraw(0);
+        }
     }
 }

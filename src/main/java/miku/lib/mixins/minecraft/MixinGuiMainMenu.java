@@ -144,9 +144,9 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         GlStateManager.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
         GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
         float f = 1.8F - MathHelper.abs(MathHelper.sin((float)(Minecraft.getSystemTime() % 1000L) / 1000.0F * ((float)Math.PI * 2F)) * 0.1F);
-        f = f * 105.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
+        f = f * 110.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
         GlStateManager.scale(f, f, f);
-        //this.drawCenteredString(this.fontRenderer, this.splashText, 10, -16, 57197187);
+        this.drawCenteredString(this.fontRenderer, this.splashText, 12, -16, 57197187);
 
         ((iFontRenderer)this.fontRenderer).EnableAlpha();
         ((iFontRenderer)this.fontRenderer).ResetStyles();
@@ -156,6 +156,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         ((iFontRenderer)this.fontRenderer).SetRed(57);
         ((iFontRenderer)this.fontRenderer).SetGreen(197);
         ((iFontRenderer)this.fontRenderer).SetBlue(187);
+        ((iFontRenderer)this.fontRenderer).SetAlpha(1);
         ((iFontRenderer)this.fontRenderer).setColor();
         ((iFontRenderer)this.fontRenderer).SetX(2);
         ((iFontRenderer)this.fontRenderer).SetY(8);
