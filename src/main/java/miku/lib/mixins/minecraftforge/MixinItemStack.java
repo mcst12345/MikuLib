@@ -4,6 +4,7 @@ import miku.lib.item.SpecialItem;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -31,6 +32,8 @@ public abstract class MixinItemStack {
     @Shadow @Final private Item item;
 
     @Shadow @Final public static ItemStack EMPTY;
+
+    @Shadow private int itemDamage;
 
     @Inject(at = @At("HEAD"), method = "isItemStackDamageable", cancellable = true)
     public void isItemStackDamageable(CallbackInfoReturnable<Boolean> cir) {
@@ -115,5 +118,34 @@ public abstract class MixinItemStack {
         if(Sqlite.IS_ITEM_BANNED(this.item))cir.setReturnValue(EMPTY);
     }
 
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public boolean isEmpty()
+    {
+        if(item instanceof SpecialItem)return false;
+        if(Sqlite.IS_ITEM_BANNED(item))return true;
+        if (((ItemStack)(Object)this) == EMPTY)
+        {
+            return true;
+        }
+        else if (this.getItemRaw() != null && this.getItemRaw() != Items.AIR)
+        {
+            if (this.stackSize <= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return this.itemDamage < -32768 || this.itemDamage > 65535;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
 
 }
