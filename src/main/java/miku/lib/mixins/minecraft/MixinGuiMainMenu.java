@@ -116,7 +116,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         }
 
         this.mc.getTextureManager().bindTexture(field_194400_H);
-        drawModalRectWithCustomSizedTexture(j + 50, 62, 0.0F, 0.0F, 176, 30, 172.0F, 34.0F);
+        drawModalRectWithCustomSizedTexture(j + 50, 62, 0.0F, 0.0F, 164, 30, 172.0F, 34.0F);
 
         this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu((GuiMainMenu) (Object)this, this.fontRenderer, this.width, this.height, this.splashText);
 
