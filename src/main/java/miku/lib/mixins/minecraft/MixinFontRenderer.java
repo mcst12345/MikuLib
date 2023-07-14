@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(FontRenderer.class)
 public abstract class MixinFontRenderer implements iFontRenderer {
 
-    @Shadow protected abstract void enableAlpha();
+    @Shadow(remap = false) protected abstract void enableAlpha();
 
     @Shadow protected abstract void resetStyles();
 
