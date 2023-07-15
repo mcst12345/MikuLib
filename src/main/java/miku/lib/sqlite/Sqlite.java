@@ -9,9 +9,13 @@ import net.minecraftforge.fml.common.ModContainer;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class Sqlite {
+
     protected static boolean loaded = false;
     protected static final HashMap<String,Object> Configs = new HashMap<>();
     protected static final ArrayList<String> HIDDEN_MODS = new ArrayList<>();
@@ -31,6 +35,7 @@ public class Sqlite {
     public static void CoreInit(){
         loaded = true;
         try {
+
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
             System.out.println("Connected to database.");

@@ -83,6 +83,7 @@ dependencies {
 
 }
 jar {
+
     manifest {
         attributes([
                 "Specification-Title"     : "mikulib",
@@ -95,8 +96,11 @@ jar {
 
         ])
         attributes([
-                'TweakClass': 'miku.lib.core.MikuTweaker'
+                'TweakClass': 'miku.lib.core.MikuTweaker',
         ])
+    }
+    from{
+        //files("${System.getProperty('java.home')}/../lib/tools.jar")
     }
 }
 

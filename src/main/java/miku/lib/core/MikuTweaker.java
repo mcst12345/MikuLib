@@ -4,30 +4,35 @@ import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.spi.AttachProvider;
+import miku.lib.sqlite.Sqlite;
 import net.minecraft.launchwrapper.ITweaker;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
-
-
+import sun.tools.attach.LinuxAttachProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MikuTweaker implements ITweaker {
-    public MikuTweaker(){
-        try {
-            VirtualMachine attach = VirtualMachine.attach("pid");
-            attach.loadAgent("MikuAgent.jar");
-        } catch (AttachNotSupportedException | IOException | AgentLoadException | AgentInitializationException e) {
-            throw new RuntimeException(e);
-        }
+    public MikuTweaker() {
+
     }
-    public static LaunchClassLoader classLoader;
     private String[] args;
 
     @Override
@@ -41,7 +46,6 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
-        MikuTweaker.classLoader = classLoader;
         try {
             CoreModManager.getIgnoredMods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName()); // <-- 将自身从 CoreMod 忽略列表中移除
         } catch (Throwable ignored) {}
