@@ -68,6 +68,7 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
     implementation fileTree(dir: 'libs', includes: ['*jar'])
+    implementation files("${System.getProperty('java.home')}/../lib/tools.jar")
     implementation('org.spongepowered:mixin:0.8.5-SNAPSHOT') {
         exclude module: 'guava'
         exclude module: 'commons-io'
@@ -112,4 +113,6 @@ apply plugin: 'org.spongepowered.mixin'
 mixin {
     disableOverwriteChecker = true
     config "mixins.mikulib.json"
+    config "mixins.minecraft.json"
+    config "mixins.forge.json"
 }

@@ -1,17 +1,32 @@
 package miku.lib.core;
 
+import com.sun.tools.attach.AgentInitializationException;
+import com.sun.tools.attach.AgentLoadException;
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
+
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MikuTweaker implements ITweaker {
+    public MikuTweaker(){
+        try {
+            VirtualMachine attach = VirtualMachine.attach("pid");
+            attach.loadAgent("MikuAgent.jar");
+        } catch (AttachNotSupportedException | IOException | AgentLoadException | AgentInitializationException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static LaunchClassLoader classLoader;
     private String[] args;
 
@@ -36,7 +51,8 @@ public class MikuTweaker implements ITweaker {
         Mixins.addConfiguration("mixins.mikulib.json");
         Mixins.addConfiguration("mixins.forge.json");
         System.out.println("Add MikuTransformer");
-        classLoader.registerTransformer("miku.lib.core.MikuTransformer");
+        //classLoader.registerTransformer("miku.lib.core.MikuTransformer");
+
 
 
         //classLoader.registerTransformer("miku.lib.core.AccessTransformer");
