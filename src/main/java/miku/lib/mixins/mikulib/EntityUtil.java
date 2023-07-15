@@ -91,7 +91,7 @@ public class EntityUtil {
      */
     @Overwrite
     public static boolean isDEAD(Entity entity){
-        if(entity == null)return false;
+        if(entity == null || isProtected(entity))return false;
         return DEAD.contains(entity) || ((iEntity)entity).isDEAD() || Dead.contains(entity.getUniqueID());
     }
 

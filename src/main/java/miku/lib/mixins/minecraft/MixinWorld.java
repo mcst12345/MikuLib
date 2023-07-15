@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import miku.lib.api.*;
+import miku.lib.effect.MikuEffect;
 import miku.lib.item.SpecialItem;
 import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
@@ -9,6 +10,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.profiler.Profiler;
@@ -33,12 +35,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    protected static final List<MikuEffect> effects = new ArrayList<>();
     @Shadow protected List<IWorldEventListener> eventListeners;
 
     @Shadow protected abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);
@@ -91,6 +95,10 @@ public abstract class MixinWorld implements iWorld {
 
     @Shadow protected abstract boolean isAreaLoaded(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, boolean allowEmpty);
 
+    public void AddEffect(MikuEffect effect){
+        effects.add(effect);
+    }
+
     public void remove(Entity entity){
         this.loadedEntityList.remove(entity);
         weatherEffects.remove(entity);
@@ -139,6 +147,16 @@ public abstract class MixinWorld implements iWorld {
         if(EntityUtil.isDEAD(cir.getReturnValue()))cir.setReturnValue(null);
     }
 
+
+
+    public List<MikuEffect> GetEntityEffects(EntityLivingBase entity){;
+        List<MikuEffect> result = new ArrayList<>();
+        for(MikuEffect effect : effects){
+            if(effect.entity == entity)result.add(effect);
+        }
+        return result;
+    }
+
     /**
      * @author mcst12345
      * @reason ...
@@ -147,7 +165,6 @@ public abstract class MixinWorld implements iWorld {
     public void updateEntities()
     {
         EntityUtil.REMOVE((World)(Object)this);
-        //if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
         if(EntityUtil.isKilling())return;
         this.profiler.startSection("entities");
         this.profiler.startSection("global");
@@ -210,6 +227,11 @@ public abstract class MixinWorld implements iWorld {
         if(!SpecialItem.isTimeStop())this.unloadedEntityList.clear();
         this.tickPlayers();
         this.profiler.endStartSection("regular");
+
+        for(MikuEffect effect : effects){
+            if(effect.shouldRemove())effects.remove(effect);
+            if(effect.shouldPerform())effect.perform();
+        }
 
         for (int i1 = 0; i1 < this.loadedEntityList.size(); ++i1)
         {
