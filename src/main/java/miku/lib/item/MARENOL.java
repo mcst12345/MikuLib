@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 public class MARENOL extends ItemFood {
     public MARENOL() {
         super(0, 0, true);
+        this.setTranslationKey("marenol");
         this.setCreativeTab(null);
     }
 

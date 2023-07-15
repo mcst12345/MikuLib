@@ -29,7 +29,6 @@ public class MikuTweaker implements ITweaker {
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
         System.out.println("Add MikuTransformer");
         classLoader.registerTransformer("miku.lib.core.MikuTransformer");
-        classLoader.registerTransformer("miku.lib.core.MixinTransformer");
         try {
             CoreModManager.getIgnoredMods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName()); // <-- 将自身从 CoreMod 忽略列表中移除
         } catch (Throwable ignored) {}

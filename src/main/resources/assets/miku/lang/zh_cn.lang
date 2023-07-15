@@ -3,6 +3,7 @@
 #物品
 item.hidden.name=开发者物品
 itemGroup.miku=miku
+item.marenol.name=§4MARENOL
 
 #按键
 key.category.miku=Miku
@@ -15,4 +16,5 @@ key.miku.game_mode=更改游戏模式
 #命令
 commands.miku_kill.usage=/miku_kill [player|entity]
 commands.set_health.usage=/set_health [player|entity] [amount]
+
 commands.clear_db_cache.usage=/clear_db_cache
