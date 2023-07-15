@@ -233,10 +233,15 @@ public class MikuTransformer implements IClassTransformer {
         }
 
         if(result){
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0) && !clazz.matches("net.minecraft.(.*)"))System.out.println("Ignore good class:"+clazz);
+            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0) && !shouldNotPrint(clazz))System.out.println("Ignore good class:"+clazz);
         }
 
         return result;
+    }
+
+    private static boolean shouldNotPrint(String s){
+        return s.matches("net.minecraft.(.*)") || s.matches("net.optifine.(.*)") || s.matches("com.google.(.*)") || s.matches("com.sun.(.*)") || s.matches("java.(.*)") || s.matches("it.unimi.dsi.(.*)") ||
+               s.matches("paulscode.(.*)") || s.matches("io.netty.(.*)");
     }
 
     private static boolean isBadField(FieldNode field){
