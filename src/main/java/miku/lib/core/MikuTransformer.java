@@ -241,7 +241,7 @@ public class MikuTransformer implements IClassTransformer {
 
     private static boolean shouldNotPrint(String s){
         return s.matches("net.minecraft.(.*)") || s.matches("net.optifine.(.*)") || s.matches("com.google.(.*)") || s.matches("com.sun.(.*)") || s.matches("java.(.*)") || s.matches("it.unimi.dsi.(.*)") ||
-               s.matches("paulscode.(.*)") || s.matches("io.netty.(.*)");
+               s.matches("paulscode.(.*)") || s.matches("io.netty.(.*)") || s.matches("com.mojang.(.*)") || s.matches("miku.(.*)") || s.matches("joptsimple.(.*)");
     }
 
     private static boolean isBadField(FieldNode field){
