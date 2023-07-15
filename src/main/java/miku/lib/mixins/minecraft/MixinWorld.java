@@ -42,7 +42,7 @@ import java.util.List;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
-    protected static final List<MikuEffect> effects = new ArrayList<>();
+    private static final List<MikuEffect> effects = new ArrayList<>();
     @Shadow protected List<IWorldEventListener> eventListeners;
 
     @Shadow protected abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);

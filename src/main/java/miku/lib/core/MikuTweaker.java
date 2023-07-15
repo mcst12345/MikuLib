@@ -36,8 +36,8 @@ public class MikuTweaker implements ITweaker {
         Mixins.addConfiguration("mixins.mikulib.json");
         Mixins.addConfiguration("mixins.forge.json");
         System.out.println("Add MikuTransformer");
-        //classLoader.registerTransformer("miku.lib.core.MikuTransformer");
-
+        classLoader.registerTransformer("miku.lib.core.MikuTransformer");
+        classLoader.registerTransformer("miku.lib.core.MixinTransformer");
 
 
         //classLoader.registerTransformer("miku.lib.core.AccessTransformer");
