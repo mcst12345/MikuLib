@@ -12,16 +12,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @Mod.EventBusSubscriber
 public class ItemLoader {
     public static final Item DEV_ITEM = new SpecialItem();
+    public static final Item MARENOL = new MARENOL();
 
 
     @SubscribeEvent
     public static void registerItem(RegistryEvent.Register<Item> event){
         Register.RegisterItem(event,DEV_ITEM,"developer");
+        Register.RegisterItem(event,MARENOL,"marenol");
     }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public static void registerItemModel(ModelRegistryEvent event){
         Register.RegisterItemModel(DEV_ITEM);
+        Register.RegisterItemModel(MARENOL);
     }
 }
