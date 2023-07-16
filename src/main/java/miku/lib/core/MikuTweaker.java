@@ -33,7 +33,7 @@ public class MikuTweaker implements ITweaker {
             FileOutputStream outputStream = new FileOutputStream("mods/MikuLib-SQlite-1.0.jar");
             outputStream.write(file);
             outputStream.close();
-            System.out.println("MikuLib has just extracted the sqlite module of it. Please restart it.");
+            System.out.println("MikuLib has just extracted the sqlite module of it. Please restart the game.");
             throw new RuntimeException("MikuLib has completed its installation,please restart the game.");
         }
     }
