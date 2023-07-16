@@ -7,12 +7,33 @@ import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MikuTweaker implements ITweaker {
-    public MikuTweaker() {
+    public MikuTweaker() throws IOException {
+       boolean flag = true;
+        for(File file : new File("mods").listFiles()){
+            if(file.getName().equals("MikuLib-SQlite-1.0.jar")){
+                flag = false;
+                break;
+            }
+        }
+        if(flag){
+            System.out.println("MikuLib's sqlite module doesn't exists,extract it.");
+            InputStream stream = MikuTweaker.class.getResourceAsStream("/MikuLib-SQlite-1.0.jar");
+            byte[] file = new byte[stream.available()];
+
+            stream.read(file);
+            stream.close();
+            FileOutputStream outputStream = new FileOutputStream("mods/MikuLib-SQlite-1.0.jar");
+            outputStream.write(file);
+            outputStream.close();
+        }
     }
     private String[] args;
 
