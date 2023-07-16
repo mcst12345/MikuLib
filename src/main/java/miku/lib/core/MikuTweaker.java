@@ -30,7 +30,7 @@ public class MikuTweaker implements ITweaker {
         System.out.println("Add MikuTransformer");
         classLoader.registerTransformer("miku.lib.core.MikuTransformer");
         try {
-            //CoreModManager.getIgnoredMods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName()); // <-- 将自身从 CoreMod 忽略列表中移除
+            CoreModManager.getLoadedCoremods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName()); // <-- 将自身从 CoreMod 忽略列表中移除
         } catch (Throwable ignored) {}
         System.out.println("Init mixins");
         MixinBootstrap.init();
