@@ -9,6 +9,9 @@ buildscript {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+        maven {
+            url 'https://jitpack.io'
+        }
     }
     dependencies {
         classpath files('forgegradle/ForgeGradle-1.2.1.jar')
@@ -27,19 +30,21 @@ minecraft {
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
+    //compile("com.github.LegacyModdingMC.UniMixins:unimixins-all-1.7.10:$unimixinsVersion:dev")
+    implementation fileTree(dir: 'libs', includes: ['*jar'])
 
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+}
 
+sourceCompatibility='1.8'
+targetCompatibility='1.8'
+
+configurations.compile.dependencies.each {
+    if (it instanceof ExternalModuleDependency) {
+        it.exclude module: "SpongeMixins"
+        it.exclude module: "SpongePoweredMixin"
+        it.exclude module: "00gasstation-mc1.7.10"
+        it.exclude module: "gtnhmixins"
+    }
 }
 
 processResources
@@ -59,5 +64,26 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+jar {
+
+    manifest {
+        attributes([
+                "Specification-Title"     : "mikulib",
+                "Specification-Vendor"    : "mcst12345",
+                "Specification-Version"   : "1.0",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "1.0",
+                "Implementation-Vendor"   : "mcst12345",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+
+        ])
+        attributes([
+                'TweakClass': 'miku.lib.core.MikuTweaker',
+        ])
+    }
+    from{
     }
 }
