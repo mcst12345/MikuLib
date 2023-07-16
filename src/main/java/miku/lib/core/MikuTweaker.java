@@ -1,5 +1,7 @@
 package miku.lib.core;
 
+import miku.lib.gui.PleaseRestart;
+import miku.lib.util.ClassUtil;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.relauncher.CoreModManager;
@@ -33,6 +35,9 @@ public class MikuTweaker implements ITweaker {
             FileOutputStream outputStream = new FileOutputStream("mods/MikuLib-SQlite-1.0.jar");
             outputStream.write(file);
             outputStream.close();
+            if(ClassUtil.find("net.minecraft.client.Minecraft"))new PleaseRestart();
+            else System.out.println("MikuLib has just extracted the sqlite module of it. Please restart it.");
+            Thread.currentThread().suspend();
         }
     }
     private String[] args;
