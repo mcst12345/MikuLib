@@ -20,6 +20,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//ShitMountain.
+//Just for a biggggggggggggggger mod cover.
 public class INFO extends GuiScrollingList {
     private final GuiModList instance;
     @Nullable
@@ -111,20 +113,18 @@ public class INFO extends GuiScrollingList {
             boolean miku = logoPath.getNamespace().equals("miku") && logoPath.getPath().equals("textures/cover.png");
             BufferBuilder wr = tess.getBuffer();
             int offset = (this.left + this.listWidth/2) - (logoDims.width / 2)*5;
+            wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
             if(miku) {
-                wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
                 wr.pos(offset, top + logoDims.height * 5, ((iGuiModList) instance).getzLevel()).tex(0, 1).endVertex();
                 wr.pos(offset + logoDims.width * 5, top + logoDims.height * 5, ((iGuiModList) instance).getzLevel()).tex(1, 1).endVertex();
                 wr.pos(offset + logoDims.width * 5, top, ((iGuiModList) instance).getzLevel()).tex(1, 0).endVertex();
-                wr.pos(offset, top, ((iGuiModList) instance).getzLevel()).tex(0, 0).endVertex();
             }
             else {
-                wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
                 wr.pos(offset, top + logoDims.height, ((iGuiModList) instance).getzLevel()).tex(0, 1).endVertex();
                 wr.pos(offset + logoDims.width, top + logoDims.height, ((iGuiModList) instance).getzLevel()).tex(1, 1).endVertex();
                 wr.pos(offset + logoDims.width, top, ((iGuiModList) instance).getzLevel()).tex(1, 0).endVertex();
-                wr.pos(offset, top, ((iGuiModList) instance).getzLevel()).tex(0, 0).endVertex();
             }
+            wr.pos(offset, top, ((iGuiModList) instance).getzLevel()).tex(0, 0).endVertex();
             tess.draw();
             GlStateManager.disableBlend();
             top += logoDims.height + 10;

@@ -120,7 +120,7 @@ public abstract class MixinItemStack {
 
     /**
      * @author mcst12345
-     * @reason Fuck!
+     * @reason Hi,chaoswither@0.2.6. Fuck you!
      */
     @Overwrite
     public boolean isEmpty()

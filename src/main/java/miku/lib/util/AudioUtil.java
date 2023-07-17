@@ -7,6 +7,7 @@ import java.io.IOException;
 public class AudioUtil {
     protected static boolean isPlaying=false;
 
+    //only support wav file.
     public static void PlayMusic(String path){
         AudioInputStream as;
         try {
@@ -33,7 +34,6 @@ public class AudioUtil {
                 if (nBytesRead >= 0)
                     sdl.write(abData, 0, nBytesRead);
             }
-            //关闭SourceDataLine
             sdl.drain();
             sdl.close();
             isPlaying = false;

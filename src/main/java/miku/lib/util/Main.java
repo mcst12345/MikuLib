@@ -21,6 +21,7 @@ import net.minecraft.util.Session;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+//No usage at present.
 @SideOnly(Side.CLIENT)
 public class Main
 {

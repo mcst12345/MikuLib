@@ -43,7 +43,7 @@ public class KillAllEntities implements IMessage {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
             World world = server.getWorld(message.getWorldID());
             EntityPlayer sender = (EntityPlayer) world.getEntityByID(message.sender);
-            if(!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);
+            if(!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the sender
             List<Entity> entities = new ArrayList<>(world.loadedEntityList);
             EntityUtil.Kill(entities);
             return null;

@@ -45,7 +45,7 @@ public class TimeStop implements IMessage {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
             World world = server.getWorld(message.world);
             EntityPlayer sender = (EntityPlayer) world.getEntityByID(message.sender);
-            if(!EntityUtil.isProtected(sender))EntityUtil.Kill(sender);
+            if(!EntityUtil.isProtected(sender))EntityUtil.Kill(sender);//Check the sender
             for(EntityPlayer player : world.playerEntities){
                 NetworkHandler.INSTANCE.sendMessageToPlayer(new ClientTimeStop(), (EntityPlayerMP) player);
             }

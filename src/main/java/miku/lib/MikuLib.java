@@ -30,7 +30,7 @@ public class MikuLib {
     @Mod.Instance
     public static MikuLib INSTANCE;
 
-    protected Logger log;
+    protected Logger log;//I never use this.I prefer System.out.println.That's better for stacktracing.
 
 
     @Mod.EventHandler

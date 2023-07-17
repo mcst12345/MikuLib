@@ -42,13 +42,11 @@ public class KillEntity implements IMessage {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(KillEntity message, MessageContext ctx) {
-            System.out.println("packet arrived on "+Minecraft.getMinecraft().player.getName()+"'s client");
             WorldClient world = Minecraft.getMinecraft().world;
             EntityPlayer sender = (EntityPlayer) world.getEntityByID(message.sender);
-            if(!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);
+            if(!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the package sender
             Entity entity = world.getEntityByID(message.entity);
             if (entity != null) {
-                System.out.println("Get entity. Killing it.");
                 ((iEntity)entity).kill();
             }
             return null;

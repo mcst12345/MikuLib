@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixins;
 public class CommonProxy {
     public CommonProxy(){}
     public void preInit(FMLPreInitializationEvent event){
-        Void.Init();
+        Void.Init();//Register the void world.
     }
 
     public void init(FMLInitializationEvent event){
