@@ -11,6 +11,8 @@ public abstract class MikuEffect {
     protected final int duration;
     protected final int wait_time;
     protected int level;
+
+    //WARN:Any class extends this should have the constructor below.
     public MikuEffect(EntityLivingBase entity,int wait_time,int duration,int level){
         this.entity = entity;
         start = entity.ticksExisted;
@@ -39,7 +41,7 @@ public abstract class MikuEffect {
         result.setInteger("duration",duration);
         result.setInteger("wait",wait_time);
         result.setInteger("level",level);
-        result.setUniqueId("entity",entity.getUniqueID());
+        result.setInteger("entity",entity.getEntityId());
         result.setBoolean("remove",shouldRemove);
         return result;
     }

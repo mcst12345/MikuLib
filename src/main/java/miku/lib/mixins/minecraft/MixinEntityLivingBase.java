@@ -43,7 +43,7 @@ import java.util.Map;
 @Mixin(value = EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements iEntityLivingBase {
     @Inject(at=@At("TAIL"),method = "readEntityFromNBT")
-    public void readEntityFromNBT(NBTTagCompound compound, CallbackInfo ci) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void readEntityFromNBT(NBTTagCompound compound, CallbackInfo ci){
         if(compound.hasKey("MikuEffects",9)){
             NBTTagList MikuEffects = compound.getTagList("MikuEffects", 10);
             for (int i = 0; i < MikuEffects.tagCount(); ++i){
@@ -52,11 +52,13 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
                     Class<? extends MikuEffect> EffectClass = (Class<? extends miku.lib.effect.MikuEffect>) Class.forName(MikuEffect.getString("class"));
                     Constructor<? extends miku.lib.effect.MikuEffect> constructor = EffectClass.getConstructor(EntityLivingBase.class,int.class,int.class,int.class);
 
+                    System.out.println(((iWorld)world).GetEntityByUUID(MikuEffect.getUniqueId("entity")).getName());
+
                     if(!(((iWorld)world).GetEntityByUUID(MikuEffect.getUniqueId("entity")) instanceof EntityLivingBase)){
                         throw new RuntimeException("The fuck?");
                     }
 
-                    miku.lib.effect.MikuEffect effect = constructor.newInstance(((iWorld)world).GetEntityByUUID(MikuEffect.getUniqueId("entity")), MikuEffect.getInteger("wait"),MikuEffect.getInteger("duration"),MikuEffect.getInteger("level"));
+                    miku.lib.effect.MikuEffect effect = constructor.newInstance(world.getEntityByID(MikuEffect.getInteger("entity")), MikuEffect.getInteger("wait"),MikuEffect.getInteger("duration"),MikuEffect.getInteger("level"));
 
                     effect.FromNBT(MikuEffect);
 
@@ -65,6 +67,12 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
                     System.out.println("WARN:Effect class "+MikuEffect.getString("class")+" not found.Skip it.");
                 } catch (ClassCastException e){
                     System.out.println("WARN:Class "+MikuEffect.getString("class")+" is not a MikuEffect class.");
+                } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                         IllegalAccessException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                } catch (Throwable e){
+                    e.printStackTrace();
                 }
             }
         }
