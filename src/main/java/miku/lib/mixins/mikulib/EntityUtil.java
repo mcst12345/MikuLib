@@ -11,9 +11,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.Loader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -92,7 +94,7 @@ public class EntityUtil {
     @Overwrite
     public static boolean isDEAD(Entity entity){
         if(entity == null || isProtected(entity))return false;
-        return DEAD.contains(entity) || ((iEntity)entity).isDEAD() || Dead.contains(entity.getUniqueID());
+        return DEAD.contains(entity) || ((iEntity)entity).isDEAD() || Dead.contains(entity.getUniqueID()) || entity.dimension == -25;
     }
 
     /**
@@ -113,9 +115,22 @@ public class EntityUtil {
 
         if(!entity.world.isRemote) NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity( entity.getEntityId()),entity.world);
 
+
+        MinecraftServer minecraftserver = entity.getServer();
+        WorldServer worldserver = null;
+        WorldServer worldserver1 = null;
+        if(minecraftserver!=null){
+            worldserver = minecraftserver.getWorld(entity.dimension);
+            worldserver1 = minecraftserver.getWorld(-25);
+        }
         entity.dimension = -25;
 
         ((iEntity)entity).kill();
+
+        if(minecraftserver!=null){
+            worldserver.resetUpdateEntityTick();
+            worldserver1.resetUpdateEntityTick();
+        }
         Killing=false;
     }
 

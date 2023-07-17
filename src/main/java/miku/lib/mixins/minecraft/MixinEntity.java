@@ -252,12 +252,12 @@ public abstract class MixinEntity implements iEntity {
 
     @Inject(at=@At("HEAD"),method = "changeDimension(I)Lnet/minecraft/entity/Entity;", cancellable = true)
     public void changeDimension(int dimensionIn, CallbackInfoReturnable<Entity> cir){
-        if(dimensionIn==-25)cir.setReturnValue(null);
+        if(EntityUtil.isDEAD((Entity)(Object)this))cir.setReturnValue(null);
     }
 
     @Inject(at=@At("HEAD"),method = "changeDimension(ILnet/minecraftforge/common/util/ITeleporter;)Lnet/minecraft/entity/Entity;", cancellable = true,remap = false)
     public void changeDimension(int dimensionIn, ITeleporter teleporter, CallbackInfoReturnable<Entity> cir){
-        if(dimensionIn==-25)cir.setReturnValue(null);
+        if(EntityUtil.isDEAD((Entity)(Object)this))cir.setReturnValue(null);
     }
 
     @Final
