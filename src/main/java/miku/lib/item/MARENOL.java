@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MARENOL extends ItemFood {
+public class MARENOL extends ItemFood {//https://www.youtube.com/watch?v=BKl4gZDWP34
     public MARENOL() {
         super(0, 0, true);
         this.setTranslationKey("marenol");

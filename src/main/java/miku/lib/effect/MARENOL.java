@@ -4,7 +4,7 @@ import miku.lib.api.iEntity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
-public class MARENOL extends MikuEffect{
+public class MARENOL extends MikuEffect{//https://www.youtube.com/watch?v=BKl4gZDWP34
     private static final ResourceLocation TEXTURE = new ResourceLocation("miku","textures/gui/effect/marenol.png");
     public MARENOL(EntityLivingBase entity,int wait_time,int duration,int level){
         super(entity,wait_time,duration,level);

@@ -23,13 +23,13 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class KeyBoardEvent {
-    @SideOnly(Side.CLIENT)
+    @SideOnly(Side.CLIENT)//key to stop the time
     public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L,"key.category.miku");
 
-    @SideOnly(Side.CLIENT)
+    @SideOnly(Side.CLIENT)//key to kill all entities
     public static final KeyBinding KILL_ALL = new KeyBinding("key.miku.kill_all",KeyConflictContext.UNIVERSAL,KeyModifier.ALT,Keyboard.KEY_K,"key.category.miku");
 
-    @SideOnly(Side.CLIENT)
+    @SideOnly(Side.CLIENT)//key to change your game mode
     public static final KeyBinding GAME_MODE = new KeyBinding("key.miku.game_mode",KeyConflictContext.UNIVERSAL,KeyModifier.ALT,Keyboard.KEY_M,"key.category.miku");
 
     @SubscribeEvent
@@ -37,12 +37,12 @@ public class KeyBoardEvent {
     public void onKeyPressed(InputEvent.KeyInputEvent event){
         if(TIME_STOP.isPressed()){
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
-                NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension));
+                NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension,Minecraft.getMinecraft().player.getEntityId()));
             }
         }
         if(KILL_ALL.isPressed()){
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
-                NetworkHandler.INSTANCE.sendMessageToServer(new KillAllEntities(Minecraft.getMinecraft().player.dimension));
+                NetworkHandler.INSTANCE.sendMessageToServer(new KillAllEntities(Minecraft.getMinecraft().player.dimension,Minecraft.getMinecraft().player.getEntityId()));
                 List<Entity> entities = new ArrayList<>(Minecraft.getMinecraft().player.world.loadedEntityList);
                 EntityUtil.Kill(entities);
             }

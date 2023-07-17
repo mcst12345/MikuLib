@@ -113,7 +113,7 @@ public class EntityUtil {
         Killing=true;
 
 
-        if(!entity.world.isRemote) NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity( entity.getEntityId()),entity.world);
+        if(!entity.world.isRemote) NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity( entity.getEntityId(), entity.getEntityId()),entity.world);
 
 
         MinecraftServer minecraftserver = entity.getServer();

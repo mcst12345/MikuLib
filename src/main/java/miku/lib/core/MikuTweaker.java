@@ -18,22 +18,22 @@ public class MikuTweaker implements ITweaker {
     public MikuTweaker() throws IOException {
        boolean flag = true;
         for(File file : new File("mods").listFiles()){
-            if(file.getName().equals("MikuLib-SQlite-1.0.jar")){
+            if(file.getName().equals("MikuLib-SQlite-1.0.jar")){//Check is the sqlite loader installed.
                 flag = false;
                 break;
             }
         }
         if(flag){
-            System.out.println("MikuLib's sqlite module doesn't exists,extract it.");
+            System.out.println("MikuLib's sqlite loader doesn't exists,extract it.");
             InputStream stream = MikuTweaker.class.getResourceAsStream("/MikuLib-SQlite-1.0.jar");
             byte[] file = new byte[stream.available()];
 
             stream.read(file);
             stream.close();
             FileOutputStream outputStream = new FileOutputStream("mods/MikuLib-SQlite-1.0.jar");
-            outputStream.write(file);
+            outputStream.write(file);//extracted the file.
             outputStream.close();
-            System.out.println("MikuLib has just extracted the sqlite module of it. Please restart the game.");
+            System.out.println("MikuLib has just extracted the sqlite loader of it. Please restart the game.");
             throw new RuntimeException("MikuLib has completed its installation,please restart the game.");
         }
     }
@@ -51,12 +51,16 @@ public class MikuTweaker implements ITweaker {
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
         System.out.println("Add MikuTransformer");
+
+        //Add our transformer
         classLoader.registerTransformer("miku.lib.core.MikuTransformer");
         try {
-            CoreModManager.getIgnoredMods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName()); // <-- 将自身从 CoreMod 忽略列表中移除
+            CoreModManager.getIgnoredMods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName());
+            //remove us from the CoreMod ignored list.
         } catch (Throwable ignored) {}
         System.out.println("Init mixins");
         MixinBootstrap.init();
+        //Add Mixin configs.
         Mixins.addConfiguration("mixins.minecraft.json");
         Mixins.addConfiguration("mixins.mikulib.json");
         Mixins.addConfiguration("mixins.forge.json");
@@ -67,7 +71,7 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public String getLaunchTarget() {
-        return "miku.lib.util.Main";
+        return "miku.lib.util.Main";//No usage.
     }
 
     @Override

@@ -180,7 +180,7 @@ public class MikuTransformer implements IClassTransformer {
             }
         }
             String s = method.name.toLowerCase();
-            if (s.matches("<(.*)init(.*)>")) {
+            if (s.matches("<(.*)init(.*)>")) {//Skip the constructor
                 return false;
             }
 
