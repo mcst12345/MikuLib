@@ -2,6 +2,8 @@ package miku.lib.mixins.minecraft;
 
 import miku.lib.api.iEntity;
 import miku.lib.api.iEntityLivingBase;
+import miku.lib.api.iWorld;
+import miku.lib.effect.MikuEffect;
 import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,6 +16,8 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SPacketCollectItem;
 import net.minecraft.potion.Potion;
@@ -36,6 +40,19 @@ import java.util.Map;
 
 @Mixin(value = EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements iEntityLivingBase {
+    @Inject(at=@At("TAIL"),method = "readEntityFromNBT")
+    public void readEntityFromNBT(NBTTagCompound compound, CallbackInfo ci){
+
+    }
+
+    @Inject(at=@At("TAIL"),method = "writeEntityToNBT")
+    public void writeEntityToNBT(NBTTagCompound compound, CallbackInfo ci){
+        NBTTagList MikuEffects = new NBTTagList();
+        for(MikuEffect effect : ((iWorld)world).GetEntityEffects((EntityLivingBase)(Object)this)){
+            MikuEffects.appendTag(effect.toNBT());
+        }
+        compound.setTag("MikuEffects",MikuEffects);
+    }
     @Override
     public int idleTime(){
         return idleTime;
