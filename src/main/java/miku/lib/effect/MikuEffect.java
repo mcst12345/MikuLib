@@ -41,7 +41,6 @@ public abstract class MikuEffect {
         result.setInteger("duration",duration);
         result.setInteger("wait",wait_time);
         result.setInteger("level",level);
-        result.setInteger("entity",entity.getEntityId());
         result.setBoolean("remove",shouldRemove);
         return result;
     }

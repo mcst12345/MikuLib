@@ -11,5 +11,4 @@ public interface iWorld {
     void remove(Entity entity);
     void AddEffect(MikuEffect effect);
     List<MikuEffect> GetEntityEffects(EntityLivingBase entity);
-    Entity GetEntityByUUID(UUID uuid);
 }
