@@ -148,17 +148,16 @@ public class MikuTransformer implements IClassTransformer {
 
 
     //ShitMountain #2
-
-    //Holy Shit. This one is too big.
     private static boolean BadInvoke(String str){
-        return str.equals("net/minecraft/entity/EntityLivingBase.func_110143_aJ") || str.equals("net/minecraft/entity/EntityLivingBase.func_70106_y") || str.equals("net/minecraft/entity/EntityLivingBase.func_70659_e") ||
-                str.equals("net/minecraft/entity/EntityLivingBase.func_70645_a") || str.equals("net/minecraft/entity/EntityLivingBase.func_130011_c") || str.equals("net/minecraft/entity/EntityLivingBase.func_70606_j") ||
-                str.equals("net/minecraft/entity/EntityLivingBase.func_70097_a") || str.equals("net/minecraft/entity/ai/attributes/IAttributeInstance.func_111128_a") || str.equals("net/minecraft/world/World.func_175681_c") ||
-                str.equals("net/minecraft/world/World.func_72847_b") || str.equals("net/minecraft/world/chunk/Chunk.func_76622_b") || str.equals("net/minecraft/world/World.func_72960_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70106_y") ||
-                str.equals("net/minecraft/entity/player/EntityPlayer.func_70645_a") || str.matches("net/minecraft/entity/player/EntityPlayer.func_110142_aN") ||
-                str.equals("net/minecraft/util/CombatTracker.func_94547_a") || str.equals("net/minecraft/util/DamageSource.func_76359_i") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70097_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70606_j") ||
-                str.equals("net/minecraft/entity/player/EntityPlayer.func_70074_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70103_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_130011_c") ||
-                str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70674_bp");
+        return str.matches("(.*)func_110143_aJ") || str.matches("(.*)func_70106_y") || str.equals("net/minecraft/entity/EntityLivingBase.func_70659_e") ||
+                str.matches("(.*)func_70645_a") || str.matches("(.*)func_130011_c") || str.matches("(.*)func_70606_j") ||
+                str.matches("(.*)func_70097_a") || str.equals("net/minecraft/entity/ai/attributes/IAttributeInstance.func_111128_a") || str.equals("net/minecraft/world/World.func_175681_c") ||
+                str.equals("net/minecraft/world/World.func_72847_b") || str.equals("net/minecraft/world/chunk/Chunk.func_76622_b") || str.equals("net/minecraft/world/World.func_72960_a") ||
+                str.matches("(.*)func_110142_aN") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_174925_a") ||
+                str.equals("net/minecraft/util/CombatTracker.func_94547_a") || str.equals("net/minecraft/util/DamageSource.func_76359_i") ||
+                str.equals("net/minecraft/entity/player/EntityPlayer.func_70074_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70103_a") ||
+                str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.matches("(.*)func_70674_bp") ||
+                str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b");
     }
 
     private static boolean isBadMethod(MethodNode method,String className){
