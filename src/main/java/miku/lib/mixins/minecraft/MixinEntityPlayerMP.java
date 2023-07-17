@@ -64,23 +64,24 @@ public abstract class MixinEntityPlayerMP extends EntityPlayer implements iEntit
     @Inject(at = @At("HEAD"), method = "setGameType", cancellable = true)
     public void setGameType(GameType gameType, CallbackInfo ci) {
         if (EntityUtil.isProtected(this)) {
+            EntityPlayerMP player  = ((EntityPlayerMP) (Object) this);
             int i = ((iEntityPlayer)this).GetGameMode();
             if(i == 0) {
-                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.CREATIVE);
-                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.CREATIVE.getID()));
-                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+                player.interactionManager.setGameType(GameType.CREATIVE);
+                player.connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.CREATIVE.getID()));
+                player.sendPlayerAbilities();
             } else if(i == 1) {
-                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.SURVIVAL);
-                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.SURVIVAL.getID()));
-                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+                player.interactionManager.setGameType(GameType.SURVIVAL);
+                player.connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.SURVIVAL.getID()));
+                player.sendPlayerAbilities();
             } else if(i == 2) {
-                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.ADVENTURE);
-                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.ADVENTURE.getID()));
-                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+                player.interactionManager.setGameType(GameType.ADVENTURE);
+                player.connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.ADVENTURE.getID()));
+                player.sendPlayerAbilities();
             } else if(i == 3){
-                ((EntityPlayerMP) (Object) this).interactionManager.setGameType(GameType.SPECTATOR);
-                ((EntityPlayerMP) (Object) this).connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.SPECTATOR.getID()));
-                ((EntityPlayerMP) (Object) this).sendPlayerAbilities();
+                player.interactionManager.setGameType(GameType.SPECTATOR);
+                player.connection.sendPacket(new SPacketChangeGameState(3, (float) GameType.SPECTATOR.getID()));
+                player.sendPlayerAbilities();
             }
             ci.cancel();
         }

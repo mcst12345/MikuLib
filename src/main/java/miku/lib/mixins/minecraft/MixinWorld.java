@@ -40,6 +40,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import static miku.lib.sqlite.Sqlite.DEBUG;
+
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
     public boolean HasEffect(EntityLivingBase entity){
@@ -125,7 +127,7 @@ public abstract class MixinWorld implements iWorld {
     @Inject(at=@At("HEAD"),method = "spawnEntity", cancellable = true)
     public void spawnEntity(Entity entityIn, CallbackInfoReturnable<Boolean> cir){
         if((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))cir.setReturnValue(false);
-        if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0))System.out.println(entityIn.getClass().toString());
+        if(DEBUG())System.out.println(entityIn.getClass().toString());
     }
 
     @Inject(at=@At("HEAD"),method = "onEntityAdded", cancellable = true)

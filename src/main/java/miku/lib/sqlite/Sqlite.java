@@ -216,7 +216,7 @@ public class Sqlite {
         GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
         GetClassFromTable("BANNED_GUIS","ID",BANNED_GUIS);
 
-        if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0)){
+        if(DEBUG()){
             for(Object o : BANNED_MOBS){
                 System.out.println("Mob "+o.toString()+" is banned.");
             }
@@ -284,6 +284,10 @@ public class Sqlite {
             stmt.executeUpdate(s);
             return null;
         }
+    }
+
+    public static boolean DEBUG(){
+        return (boolean) GetValueFromTable("debug","CONFIG",0);
     }
 
     private static boolean hasReturn(String s){

@@ -19,8 +19,7 @@ public abstract class MixinGuiScreen extends Gui {
      * @reason F
      */
     @Overwrite
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
+    protected void keyTyped(char typedChar, int keyCode) {
         if (keyCode == 1)
         {
             this.mc.displayGuiScreen(null);

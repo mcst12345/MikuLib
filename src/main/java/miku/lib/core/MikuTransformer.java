@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static miku.lib.sqlite.Sqlite.DEBUG;
 import static org.objectweb.asm.Opcodes.*;
 
 public class MikuTransformer implements IClassTransformer {
@@ -97,7 +98,7 @@ public class MikuTransformer implements IClassTransformer {
                 return cw.toByteArray();
             }
 
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
+            if(DEBUG()){
                 print("Class name:"+cn.name);
                 print("Class sign:"+cn.signature);
                 print("outer class:"+cn.outerClass);
@@ -190,25 +191,25 @@ public class MikuTransformer implements IClassTransformer {
                     s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                     s.matches("(.*)entity(.*)remove(.*)") || result;
 
-            if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+            if (DEBUG()) {
                 print("Method name:" + method.name);
             }
 
             if (method.parameters != null) for (ParameterNode parameter : method.parameters) {
-                if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                if (DEBUG()) {
                     print("parameter name:" + parameter.name);
                 }
             }
             if (method.visibleTypeAnnotations != null)
                 for (TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations) {
-                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                    if (DEBUG()) {
                         print("typeAnnotation desc:" + typeAnnotation.desc);
                         print("typeAnnotation typePath:" + typeAnnotation.typePath.toString());
                     }
                 }
             if (method.invisibleTypeAnnotations != null)
                 for (TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations) {
-                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                    if (DEBUG()) {
                         print("invisibleTypeAnnotation desc:" + invisibleTypeAnnotation.desc);
                         print("invisibleTypeAnnotation typePath:" + invisibleTypeAnnotation.typePath.toString());
                     }
@@ -216,7 +217,7 @@ public class MikuTransformer implements IClassTransformer {
 
             if (method.attrs != null) {
                 for (Attribute attr : method.attrs) {
-                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                    if (DEBUG()) {
                         print("attr type:" + attr.type);
                     }
                 }
@@ -224,7 +225,7 @@ public class MikuTransformer implements IClassTransformer {
 
             if (method.localVariables != null) {
                 for (LocalVariableNode localVariable : method.localVariables) {
-                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                    if (DEBUG()) {
 
                         print("localVariable name:" + localVariable.name);
                         if (localVariable.signature != null)
@@ -270,7 +271,7 @@ public class MikuTransformer implements IClassTransformer {
         }
 
         if(result){
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0) && !shouldNotPrint(clazz))System.out.println("Ignore good class:"+clazz);
+            if(DEBUG() && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0) && !shouldNotPrint(clazz))System.out.println("Ignore good class:"+clazz);
         }
 
         return result;
@@ -288,7 +289,7 @@ public class MikuTransformer implements IClassTransformer {
 
         if(field.signature!=null){
             String s = field.signature.toLowerCase();
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0) && (boolean) Sqlite.GetValueFromTable("field_info","LOG_CONFIG",0)){
+            if(DEBUG() && (boolean) Sqlite.GetValueFromTable("field_info","LOG_CONFIG",0)){
                 print("name:"+field.name);
                 print("sign:"+field.signature);
                 print("desc:"+field.desc);

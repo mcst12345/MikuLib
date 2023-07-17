@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,7 +53,7 @@ public abstract class MixinMinecraftServer {
 
     @Shadow @Final private Snooper usageSnooper;
 
-    @Shadow public abstract boolean init() throws IOException;
+    @Shadow public abstract boolean init();
 
     @Shadow protected long currentTime;
 

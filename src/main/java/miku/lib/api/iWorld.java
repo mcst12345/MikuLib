@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface iWorld {
     void remove(Entity entity);

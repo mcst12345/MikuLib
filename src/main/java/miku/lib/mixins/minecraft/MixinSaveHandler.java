@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
 
 @Mixin(value = SaveHandler.class)
 public class MixinSaveHandler {
@@ -40,7 +41,7 @@ public class MixinSaveHandler {
 
                 if (file1.exists() && file1.isFile())
                 {
-                    nbttagcompound = CompressedStreamTools.readCompressed(new FileInputStream(file1));
+                    nbttagcompound = CompressedStreamTools.readCompressed(Files.newInputStream(file1.toPath()));
                 }
             }
             catch (Exception var4)
@@ -66,7 +67,7 @@ public class MixinSaveHandler {
                 NBTTagCompound nbttagcompound = player.writeToNBT(new NBTTagCompound());
                 File file1 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat.tmp");
                 File file2 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat");
-                CompressedStreamTools.writeCompressed(nbttagcompound, new FileOutputStream(file1));
+                CompressedStreamTools.writeCompressed(nbttagcompound, Files.newOutputStream(file1.toPath()));
 
                 if (file2.exists())
                 {

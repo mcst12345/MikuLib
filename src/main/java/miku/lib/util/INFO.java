@@ -1,7 +1,6 @@
 package miku.lib.util;
 
 import miku.lib.api.iGuiModList;
-import miku.lib.sqlite.Sqlite;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -107,9 +106,6 @@ public class INFO extends GuiScrollingList {
         {
             GlStateManager.enableBlend();
             instance.mc.renderEngine.bindTexture(logoPath);
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                System.out.println("Display mod cover:"+logoPath.getNamespace()+":"+logoPath.getPath());
-            }
             boolean miku = logoPath.getNamespace().equals("miku") && logoPath.getPath().equals("textures/cover.png");
             BufferBuilder wr = tess.getBuffer();
             int offset = (this.left + this.listWidth/2) - (logoDims.width / 2)*5;

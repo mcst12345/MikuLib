@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 
 //Ha!Ha!
+@SuppressWarnings("ALL")
 public class EntityUtil {
     public static boolean isProtected(@Nullable Object object){
         return false;

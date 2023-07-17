@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class SpecialItem extends Item {
-    protected static List<EntityPlayer> playerList = new ArrayList<>();
+    protected static final List<EntityPlayer> playerList = new ArrayList<>();
 
     protected static boolean TimeStop = false;
     public static boolean isTimeStop() {

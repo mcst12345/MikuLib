@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import com.google.common.collect.Lists;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.crash.CrashReport;
@@ -15,16 +16,19 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 @Mixin(value = WorldServer.class)
 public abstract class MixinWorldServer extends World implements IThreadListener {
+    @Shadow protected abstract boolean canAddEntity(Entity entityIn);
+
     protected MixinWorldServer(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);
     }
@@ -110,13 +114,21 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
             if(state == (byte) 3 || state == (byte) 30 || state == (byte) 29 || state == (byte) 37 || state == (byte) 33 || state == (byte) 36 || state == (byte) 20 || state == (byte) 2 || state == (byte) 35)ci.cancel();
         }
     }
-
-    @Inject(at=@At("HEAD"),method = "loadEntities")
-    public void loadEntities(Collection<Entity> entityCollection, CallbackInfo ci){
-        Collection<Entity> fucked = new ArrayList<>();
-        entityCollection.forEach((e) -> {
-            if(!EntityUtil.isDEAD(e))fucked.add(e);
-        });
-        entityCollection = fucked;
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public void loadEntities(@Nonnull Collection<Entity> entityCollection)
+    {
+        entityCollection.removeIf(EntityUtil::isDEAD);
+        for (Entity entity : Lists.newArrayList(entityCollection))
+        {
+            if (this.canAddEntity(entity) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this)))
+            {
+                this.loadedEntityList.add(entity);
+                this.onEntityAdded(entity);
+            }
+        }
     }
 }

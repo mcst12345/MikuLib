@@ -22,8 +22,7 @@ public abstract class MixinGuiScreenDemo extends GuiScreen{
      * @reason F
      */
     @Overwrite
-    protected void actionPerformed(GuiButton button) throws IOException
-    {
+    protected void actionPerformed(GuiButton button) {
         switch (button.id)
         {
             case 1:

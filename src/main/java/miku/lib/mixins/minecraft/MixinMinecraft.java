@@ -41,6 +41,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
+import static miku.lib.sqlite.Sqlite.DEBUG;
+
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
     public void Stop(){
@@ -141,7 +143,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow private int leftClickCounter;
 
-    @Shadow protected abstract void runTickKeyboard() throws IOException;
+    @Shadow protected abstract void runTickKeyboard();
 
     @Shadow private int joinPlayerCounter;
 
@@ -182,9 +184,9 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow @Final public static boolean IS_RUNNING_ON_MAC;
 
-    @Shadow protected abstract void init() throws LWJGLException, IOException;
+    @Shadow protected abstract void init();
 
-    @Shadow protected abstract void runGameLoop() throws IOException;
+    @Shadow protected abstract void runGameLoop();
 
     @Shadow public abstract void freeMemory();
 
@@ -198,7 +200,7 @@ public abstract class MixinMinecraft implements iMinecraft {
     public void displayGuiScreen(@Nullable GuiScreen guiScreenIn)
     {
         if (Sqlite.IS_GUI_BANNED(guiScreenIn)) {
-            if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0))System.out.println(guiScreenIn.getClass().toString()+" is banned");
+            if(DEBUG())System.out.println(guiScreenIn.getClass().toString()+" is banned");
             guiScreenIn.onGuiClosed();
             return;
         }
@@ -215,7 +217,8 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
         }
-        if((boolean)Sqlite.GetValueFromTable("debug","CONFIG",0) && guiScreenIn!=null)System.out.println(guiScreenIn.getClass().toString());
+        if(DEBUG() && guiScreenIn!=null)System.out.println(guiScreenIn.getClass().toString());
+        if(DEBUG() && guiScreenIn!=null)System.out.println(guiScreenIn.getClass().toString());
 
         if (guiScreenIn == null && this.world == null)
         {

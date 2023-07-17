@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class Register {
-    public static List<CommandBase> commands = new ArrayList<>();
-    public static List<CommandBase> server_commands = new ArrayList<>();
+    public static final List<CommandBase> commands = new ArrayList<>();
+    public static final List<CommandBase> server_commands = new ArrayList<>();
     public static void RegisterItem(RegistryEvent.Register<Item> event, Item item, String name) {
         RegisterItem(event,item,"miku",name);
     }

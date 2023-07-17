@@ -16,7 +16,7 @@ public class MixinNetHandlerPlayServer {
     public EntityPlayerMP player;
 
     @Inject(at = @At("HEAD"), method = "disconnect", cancellable = true)
-    public void disconnect(ITextComponent textComponent, CallbackInfo ci) throws NoSuchFieldException, ClassNotFoundException {
+    public void disconnect(ITextComponent textComponent, CallbackInfo ci) {
         if (EntityUtil.isProtected(player)) ci.cancel();
     }
 }
