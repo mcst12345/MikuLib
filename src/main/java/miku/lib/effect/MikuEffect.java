@@ -3,6 +3,11 @@ package miku.lib.effect;
 import miku.lib.util.EntityUtil;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
 
 public abstract class MikuEffect {
     protected boolean shouldRemove = false;
@@ -49,4 +54,8 @@ public abstract class MikuEffect {
         this.start = nbt.getInteger("start");
         this.shouldRemove = nbt.getBoolean("remove");
     }
+
+    @SideOnly(Side.CLIENT)
+    @Nullable
+    public abstract ResourceLocation getTEXTURE();
 }

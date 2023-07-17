@@ -35,11 +35,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    public boolean HasEffect(EntityLivingBase entity){
+        for(MikuEffect effect : effects){
+            if(effect.entity == entity)return true;
+        }
+        return false;
+    }
     private static final List<MikuEffect> effects = new ArrayList<>();
     @Shadow protected List<IWorldEventListener> eventListeners;
 

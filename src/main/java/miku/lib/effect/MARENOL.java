@@ -2,8 +2,10 @@ package miku.lib.effect;
 
 import miku.lib.api.iEntity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.ResourceLocation;
 
 public class MARENOL extends MikuEffect{
+    private static final ResourceLocation TEXTURE = new ResourceLocation("miku","textures/effect/marenol.png");
     public MARENOL(EntityLivingBase entity,int wait_time,int duration,int level){
         super(entity,wait_time,duration,level);
     }
@@ -22,5 +24,10 @@ public class MARENOL extends MikuEffect{
                 ((iEntity)entity).kill();
                 shouldRemove = false;
         }
+    }
+
+    @Override
+    public ResourceLocation getTEXTURE() {
+        return TEXTURE;
     }
 }

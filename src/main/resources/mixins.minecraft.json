@@ -33,6 +33,7 @@
     "MixinGuiScreen",
     "MixinGuiScreenAdvancements",
     "MixinGuiScreenDemo",
+    "MixinInventoryEffectRenderer",
     "MixinMinecraft",
     "MixinParticleManager",
     "MixinRender",
