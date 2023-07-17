@@ -35,7 +35,6 @@ public class Sqlite {
     public static void CoreInit(){
         loaded = true;
         try {
-
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
             System.out.println("Connected to database.");
