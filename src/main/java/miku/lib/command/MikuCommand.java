@@ -7,5 +7,6 @@ public class MikuCommand {
         Register.RegisterCommands(new MikuKill());
         Register.RegisterCommands(new SetHealth());
         Register.RegisterCommands(new ClearDBCache());
+        Register.RegisterCommands(new SQLOperation());
     }
 }
