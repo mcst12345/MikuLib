@@ -96,7 +96,7 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
             for(MikuEffect effect : ((iWorld)this.mc.player.world).GetEntityEffects(this.mc.player)){
                 if(effect.getTEXTURE() == null)continue;
                 this.mc.getTextureManager().bindTexture(effect.getTEXTURE());
-                this.drawTexturedModalRect(i + 6, j + 7, 0, 0, 18, 18);
+                this.drawTexturedModalRect(i + 6, j + 7, 0, 0, 72, 18);
 
             }
         }

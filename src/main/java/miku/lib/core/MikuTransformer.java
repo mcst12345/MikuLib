@@ -7,6 +7,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.analysis.AnalyzerException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -38,6 +39,9 @@ public class MikuTransformer implements IClassTransformer {
         } catch (IOException ignored) {
         }
     }
+
+
+    //ShitMountain #1
     protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
             "noppes.(.*)","mezz.(.*)","com.brandon3055.(.*)","codechicken.(.*)","twilightforest.(.*)",
             "moze_intel.(.*),","cofh.(.*)","alexiy.(.*)","vazkii.(.*)","sweetmagic.(.*)","stevekung.(.*)",
@@ -71,12 +75,6 @@ public class MikuTransformer implements IClassTransformer {
                 System.out.println("If this breaks innocent mods,report this on https://github.com/mcst12345/MikuLib/issues");
                 for(MethodNode mn : cn.methods){
                     if(Objects.equals(mn.name, "transform")){
-                        //mn.visitCode();
-                        //Label start = new Label();
-                        //mn.visitLabel(start);
-                        //mn.visitLocalVariable("basicClass", "[B", null, null, null, 3);
-                        //mn.visitInsn(IRETURN);
-                        //mn.visitEnd();
                         mn.visitCode();
                         Label label0 = new Label();
                         mn.visitLabel(label0);
@@ -113,8 +111,7 @@ public class MikuTransformer implements IClassTransformer {
 
 
             double tmp = cn.methods.size();
-            cn.methods.removeIf(MikuTransformer::isBadMethod);
-
+            cn.methods.removeIf(mn -> isBadMethod(mn, cn.name));
 
 
             possibility = num / tmp;
@@ -149,62 +146,96 @@ public class MikuTransformer implements IClassTransformer {
         return basicClass;
     }
 
-    private static boolean isBadMethod(MethodNode method){
-        String s = method.name.toLowerCase();
-        if(s.matches("<(.*)init(.*)>")){
-            return false;
-        }
-        boolean result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
-                s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
-                s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
-                s.matches("(.*)entity(.*)remove(.*)");
 
-        if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-            print("Method name:"+method.name);
-        }
+    //ShitMountain #2
 
-        if(method.parameters!=null)for(ParameterNode parameter : method.parameters){
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                print("parameter name:"+parameter.name);
+    //Holy Shit. This one is too big.
+    private static boolean BadInvoke(String str){
+        return str.equals("net/minecraft/entity/EntityLivingBase.func_110143_aJ") || str.equals("net/minecraft/entity/EntityLivingBase.func_70106_y") || str.equals("net/minecraft/entity/EntityLivingBase.func_70659_e") ||
+                str.equals("net/minecraft/entity/EntityLivingBase.func_70645_a") || str.equals("net/minecraft/entity/EntityLivingBase.func_130011_c") || str.equals("net/minecraft/entity/EntityLivingBase.func_70606_j") ||
+                str.equals("net/minecraft/entity/EntityLivingBase.func_70097_a") || str.equals("net/minecraft/entity/ai/attributes/IAttributeInstance.func_111128_a") || str.equals("net/minecraft/world/World.func_175681_c") ||
+                str.equals("net/minecraft/world/World.func_72847_b") || str.equals("net/minecraft/world/chunk/Chunk.func_76622_b") || str.equals("net/minecraft/world/World.func_72960_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70106_y") ||
+                str.equals("net/minecraft/entity/player/EntityPlayer.func_70645_a") || str.matches("net/minecraft/entity/player/EntityPlayer.func_110142_aN") ||
+                str.equals("net/minecraft/util/CombatTracker.func_94547_a") || str.equals("net/minecraft/util/DamageSource.func_76359_i") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70097_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70606_j") ||
+                str.equals("net/minecraft/entity/player/EntityPlayer.func_70074_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70103_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_130011_c") ||
+                str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70674_bp");
+    }
+
+    private static boolean isBadMethod(MethodNode method,String className){
+        boolean result = false;
+        if(decompiler){
+            try {
+                List<String> codes = CodeDecompiler.diagnose(className,method);
+                int number = 0;
+                for(String s : codes){
+                    if(BadInvoke(s))number++;
+                }
+                if(number>3)result = true;
+
+            } catch (AnalyzerException ignored) {
             }
         }
-        if(method.visibleTypeAnnotations!=null)for(TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations){
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                print("typeAnnotation desc:"+typeAnnotation.desc);
-                print("typeAnnotation typePath:"+typeAnnotation.typePath.toString());
+            String s = method.name.toLowerCase();
+            if (s.matches("<(.*)init(.*)>")) {
+                return false;
             }
-        }
-        if(method.invisibleTypeAnnotations!=null)for(TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations){
-            if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                print("invisibleTypeAnnotation desc:"+invisibleTypeAnnotation.desc);
-                print("invisibleTypeAnnotation typePath:"+invisibleTypeAnnotation.typePath.toString());
-            }
-        }
 
-        if(method.attrs != null){
-            for(Attribute attr : method.attrs){
-                if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-                    print("attr type:"+attr.type);
+            //ShitMountain #3
+            result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
+                    s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
+                    s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
+                    s.matches("(.*)entity(.*)remove(.*)");
+
+            if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                print("Method name:" + method.name);
+            }
+
+            if (method.parameters != null) for (ParameterNode parameter : method.parameters) {
+                if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                    print("parameter name:" + parameter.name);
                 }
             }
-        }
+            if (method.visibleTypeAnnotations != null)
+                for (TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations) {
+                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                        print("typeAnnotation desc:" + typeAnnotation.desc);
+                        print("typeAnnotation typePath:" + typeAnnotation.typePath.toString());
+                    }
+                }
+            if (method.invisibleTypeAnnotations != null)
+                for (TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations) {
+                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                        print("invisibleTypeAnnotation desc:" + invisibleTypeAnnotation.desc);
+                        print("invisibleTypeAnnotation typePath:" + invisibleTypeAnnotation.typePath.toString());
+                    }
+                }
 
-        if(method.localVariables!=null){
-            for(LocalVariableNode localVariable : method.localVariables){
-                if((boolean) Sqlite.GetValueFromTable("debug","CONFIG",0)){
-
-                    print("localVariable name:"+localVariable.name);
-                    if(localVariable.signature!=null)System.out.println("localVariable sign:"+localVariable.signature);
-                    print("localVariable desc:"+localVariable.desc);
-                    s = localVariable.desc;
-                    if(isBadVariable(s)) {
-                        System.out.println("Found bad variable:"+localVariable.name);
-                        num++;
-                        cached_methods.add(method);
+            if (method.attrs != null) {
+                for (Attribute attr : method.attrs) {
+                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+                        print("attr type:" + attr.type);
                     }
                 }
             }
-        }
+
+            if (method.localVariables != null) {
+                for (LocalVariableNode localVariable : method.localVariables) {
+                    if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
+
+                        print("localVariable name:" + localVariable.name);
+                        if (localVariable.signature != null)
+                            System.out.println("localVariable sign:" + localVariable.signature);
+                        print("localVariable desc:" + localVariable.desc);
+                        s = localVariable.desc;
+                        if (isBadVariable(s)) {
+                            System.out.println("Found bad variable:" + localVariable.name);
+                            num++;
+                            cached_methods.add(method);
+                            break;
+                        }
+                    }
+                }
+            }
 
         if(result){
             System.out.println("Find bad method:"+method.name+",fucking it.");
@@ -214,6 +245,8 @@ public class MikuTransformer implements IClassTransformer {
         return false;
     }
 
+
+    //ShitMountain #4
     private static boolean isGoodClass(String clazz){
         boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") ||
                 clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)") || clazz.matches("org.objectweb.(.*)") ||
@@ -239,6 +272,8 @@ public class MikuTransformer implements IClassTransformer {
         return result;
     }
 
+
+    //ShitMountain #5
     private static boolean shouldNotPrint(String s){
         return s.matches("net.minecraft.(.*)") || s.matches("net.optifine.(.*)") || s.matches("com.google.(.*)") || s.matches("com.sun.(.*)") || s.matches("java.(.*)") || s.matches("it.unimi.dsi.(.*)") ||
                s.matches("paulscode.(.*)") || s.matches("io.netty.(.*)") || s.matches("com.mojang.(.*)") || s.matches("miku.(.*)") || s.matches("joptsimple.(.*)");
@@ -264,6 +299,7 @@ public class MikuTransformer implements IClassTransformer {
     }
 
 
+    //ShitMountain #6
     private static boolean isBadVariable(String s){
         return s.matches("(.*)LivingUpdateEvent(.*)") || s.matches("(.*)ServerTickEvent(.*)") ||
                 s.matches("(.*)LivingHurtEvent(.*)") || s.matches("(.*)PlayerTickEvent(.*)") ||
@@ -277,6 +313,8 @@ public class MikuTransformer implements IClassTransformer {
         cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
     }
 
+
+    //ShitMountain #7
     private static boolean isBadClass(@Nonnull String s){
         s = s.toLowerCase();
         return s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
