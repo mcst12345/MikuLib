@@ -169,7 +169,9 @@ public class MikuTransformer implements IClassTransformer {
                 for(String s : codes){
                     if(BadInvoke(s))number++;
                 }
-                if(number>3)result = true;
+                if(number>3) {
+                    result = true;
+                }
 
             } catch (AnalyzerException ignored) {
             }
@@ -183,7 +185,7 @@ public class MikuTransformer implements IClassTransformer {
             result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
                     s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                     s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
-                    s.matches("(.*)entity(.*)remove(.*)");
+                    s.matches("(.*)entity(.*)remove(.*)") || result;
 
             if ((boolean) Sqlite.GetValueFromTable("debug", "CONFIG", 0)) {
                 print("Method name:" + method.name);
