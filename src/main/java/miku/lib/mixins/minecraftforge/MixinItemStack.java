@@ -33,7 +33,8 @@ public abstract class MixinItemStack {
 
     @Shadow @Final public static ItemStack EMPTY;
 
-    @Shadow private int itemDamage;
+    @Shadow
+    int itemDamage;
 
     @Inject(at = @At("HEAD"), method = "isItemStackDamageable", cancellable = true)
     public void isItemStackDamageable(CallbackInfoReturnable<Boolean> cir) {

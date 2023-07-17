@@ -155,7 +155,7 @@ public abstract class MixinWorld implements iWorld {
 
 
 
-    public List<MikuEffect> GetEntityEffects(EntityLivingBase entity){;
+    public List<MikuEffect> GetEntityEffects(EntityLivingBase entity){
         List<MikuEffect> result = new ArrayList<>();
         for(MikuEffect effect : effects){
             if(effect.entity == entity)result.add(effect);

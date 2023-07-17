@@ -239,7 +239,7 @@ public class Sqlite {
         Class<Loader> loader = (Class<Loader>) Loader.instance().getClass();
         try {
             System.out.println("Init mod list.");
-            Field field = loader.getField("namedMods");
+            Field field = loader.getDeclaredField("namedMods");
             field.setAccessible(true);
             System.out.println("Successfully set field 'namedMods' to accessible.");
             Map<String, ModContainer> mods;// = (Map<String, ModContainer>)field.get(Loader.instance());

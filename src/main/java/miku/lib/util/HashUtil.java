@@ -18,7 +18,7 @@ public class HashUtil {
         InputStream fis = Files.newInputStream(file.toPath());
         byte[] buffer = new byte[1024];
         MessageDigest md5 = MessageDigest.getInstance(hashType);
-        for (int numRead = 0; (numRead = fis.read(buffer)) > 0; ) {
+        for (int numRead; (numRead = fis.read(buffer)) > 0; ) {
             md5.update(buffer, 0, numRead);
         }
         fis.close();

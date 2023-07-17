@@ -13,11 +13,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class MikuTweaker implements ITweaker {
     public MikuTweaker() throws IOException {
        boolean flag = true;
-        for(File file : new File("mods").listFiles()){
+        for(File file : Objects.requireNonNull(new File("mods").listFiles())){
             if(file.getName().equals("MikuLib-SQlite-1.0.jar")){//Check is the sqlite loader installed.
                 flag = false;
                 break;
@@ -26,6 +27,7 @@ public class MikuTweaker implements ITweaker {
         if(flag){
             System.out.println("MikuLib's sqlite loader doesn't exists,extract it.");
             InputStream stream = MikuTweaker.class.getResourceAsStream("/MikuLib-SQlite-1.0.jar");
+            assert stream != null;
             byte[] file = new byte[stream.available()];
 
             stream.read(file);

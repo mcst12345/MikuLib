@@ -11,8 +11,11 @@
     "MixinItemStack"
   ],
   "client": [
+    "MixinFMLClientHandler"
   ],
-  "server": [],
+  "server": [
+    "MixinFMLServerHandler"
+  ],
   "required": true,
   "setSourceFile": false
 }

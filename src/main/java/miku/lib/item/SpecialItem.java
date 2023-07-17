@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SpecialItem extends Item {
     protected static List<EntityPlayer> playerList = new ArrayList<>();
@@ -156,7 +157,7 @@ public class SpecialItem extends Item {
     }
 
     public boolean hasOwner(@Nonnull ItemStack stack) {
-        return stack.hasTagCompound() && (stack.getTagCompound().hasKey("Owner") || stack.getTagCompound().hasKey("OwnerUUID"));
+        return stack.hasTagCompound() && (Objects.requireNonNull(stack.getTagCompound()).hasKey("Owner") || stack.getTagCompound().hasKey("OwnerUUID"));
     }
 
     public boolean isOwner(@Nullable ItemStack stack,@Nonnull EntityPlayer player) {
