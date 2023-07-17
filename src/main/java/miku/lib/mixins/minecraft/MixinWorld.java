@@ -35,13 +35,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import javax.annotation.Nullable;
+import java.util.*;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    @Nullable
+    public Entity GetEntityByUUID(UUID uuid){
+        for(Entity entity : loadedEntityList){
+            if(entity.getUniqueID() == uuid)return entity;
+        }
+        return null;
+    }
     private static final List<MikuEffect> effects = new ArrayList<>();
     @Shadow protected List<IWorldEventListener> eventListeners;
 

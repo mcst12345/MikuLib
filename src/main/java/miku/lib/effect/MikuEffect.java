@@ -7,7 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public abstract class MikuEffect {
     protected boolean shouldRemove = false;
     public final EntityLivingBase entity;
-    protected final int start;
+    protected int start;
     protected final int duration;
     protected final int wait_time;
     protected int level;
@@ -42,5 +42,10 @@ public abstract class MikuEffect {
         result.setUniqueId("entity",entity.getUniqueID());
         result.setBoolean("remove",shouldRemove);
         return result;
+    }
+
+    public void FromNBT(NBTTagCompound nbt){
+        this.start = nbt.getInteger("start");
+        this.shouldRemove = nbt.getBoolean("remove");
     }
 }

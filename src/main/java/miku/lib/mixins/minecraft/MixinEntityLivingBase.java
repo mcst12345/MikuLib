@@ -35,23 +35,48 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Map;
 
 @Mixin(value = EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements iEntityLivingBase {
     @Inject(at=@At("TAIL"),method = "readEntityFromNBT")
-    public void readEntityFromNBT(NBTTagCompound compound, CallbackInfo ci){
+    public void readEntityFromNBT(NBTTagCompound compound, CallbackInfo ci) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        if(compound.hasKey("MikuEffects",9)){
+            NBTTagList MikuEffects = compound.getTagList("MikuEffects", 10);
+            for (int i = 0; i < MikuEffects.tagCount(); ++i){
+                NBTTagCompound MikuEffect = MikuEffects.getCompoundTagAt(i);
+                try {
+                    Class<? extends MikuEffect> EffectClass = (Class<? extends miku.lib.effect.MikuEffect>) Class.forName(MikuEffect.getString("class"));
+                    Constructor<? extends miku.lib.effect.MikuEffect> constructor = EffectClass.getConstructor(EntityLivingBase.class,int.class,int.class,int.class);
 
+                    if(!(((iWorld)world).GetEntityByUUID(MikuEffect.getUniqueId("entity")) instanceof EntityLivingBase)){
+                        throw new RuntimeException("The fuck?");
+                    }
+
+                    miku.lib.effect.MikuEffect effect = constructor.newInstance(((iWorld)world).GetEntityByUUID(MikuEffect.getUniqueId("entity")), MikuEffect.getInteger("wait"),MikuEffect.getInteger("duration"),MikuEffect.getInteger("level"));
+
+                    effect.FromNBT(MikuEffect);
+
+                    ((iWorld)world).AddEffect(effect);
+                } catch (ClassNotFoundException e) {
+                    System.out.println("WARN:Effect class "+MikuEffect.getString("class")+" not found.Skip it.");
+                } catch (ClassCastException e){
+                    System.out.println("WARN:Class "+MikuEffect.getString("class")+" is not a MikuEffect class.");
+                }
+            }
+        }
     }
 
     @Inject(at=@At("TAIL"),method = "writeEntityToNBT")
     public void writeEntityToNBT(NBTTagCompound compound, CallbackInfo ci){
         NBTTagList MikuEffects = new NBTTagList();
-        for(MikuEffect effect : ((iWorld)world).GetEntityEffects((EntityLivingBase)(Object)this)){
+        if(!((iWorld)world).GetEntityEffects((EntityLivingBase)(Object)this).isEmpty())for(MikuEffect effect : ((iWorld)world).GetEntityEffects((EntityLivingBase)(Object)this)){
             MikuEffects.appendTag(effect.toNBT());
         }
-        compound.setTag("MikuEffects",MikuEffects);
+        if(!MikuEffects.isEmpty())compound.setTag("MikuEffects",MikuEffects);
     }
     @Override
     public int idleTime(){
