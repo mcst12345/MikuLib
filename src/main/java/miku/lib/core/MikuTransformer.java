@@ -36,6 +36,8 @@ public class MikuTransformer implements IClassTransformer {
             String s = String.copyValueOf(text);
 
             decompiler = !s.contains("false") && s.contains("true");
+
+            if(decompiler)print("Decompiler is enabled.");
         } catch (IOException ignored) {
         }
     }
@@ -170,7 +172,8 @@ public class MikuTransformer implements IClassTransformer {
                     if(BadInvoke(s))number++;
                 }
                 if(number>3) {
-                    result = true;
+                    System.out.println("The decompiler finds a bad method:"+method.name+",fucking it.");
+                    return true;
                 }
 
             } catch (AnalyzerException ignored) {
