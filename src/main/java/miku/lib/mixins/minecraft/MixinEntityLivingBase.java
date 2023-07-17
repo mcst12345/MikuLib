@@ -52,9 +52,9 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
                     Class<? extends MikuEffect> EffectClass = (Class<? extends miku.lib.effect.MikuEffect>) Class.forName(MikuEffect.getString("class"));
                     Constructor<? extends miku.lib.effect.MikuEffect> constructor = EffectClass.getConstructor(EntityLivingBase.class,int.class,int.class,int.class);
 
-                    System.out.println(((iWorld)world).GetEntityByUUID(MikuEffect.getUniqueId("entity")).getName());
+                    System.out.println(world.getEntityByID(MikuEffect.getInteger("entity")).getName());
 
-                    if(!(((iWorld)world).GetEntityByUUID(MikuEffect.getUniqueId("entity")) instanceof EntityLivingBase)){
+                    if(!(world.getEntityByID(MikuEffect.getInteger("entity")) instanceof EntityLivingBase)){
                         throw new RuntimeException("The fuck?");
                     }
 
