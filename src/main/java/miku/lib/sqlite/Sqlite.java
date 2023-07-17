@@ -276,4 +276,18 @@ public class Sqlite {
         }
     }
 
+    @Nullable
+    public static ResultSet ExecuteSQL(String s) throws SQLException {
+        if(hasReturn(s)){
+            return stmt.executeQuery(s);
+        }
+        else {
+            stmt.executeUpdate(s);
+            return null;
+        }
+    }
+
+    private static boolean hasReturn(String s){
+        return s.matches("SELECT (.*)");
+    }
 }

@@ -5,6 +5,7 @@
   "mixins": [
     "MixinBanIP",
     "MixinChunk",
+    "MixinCommandHandler",
     "MixinEnderInventory",
     "MixinEntity",
     "MixinEntityLiving",
