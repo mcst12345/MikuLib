@@ -46,6 +46,9 @@ import static miku.lib.sqlite.Sqlite.DEBUG;
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
     private static final List<Entity> protected_entities = new ArrayList<>();
+    public boolean protected_loaded(Entity e){
+        return protected_entities.contains(e);
+    }
     public boolean HasEffect(EntityLivingBase entity){
         for(MikuEffect effect : effects){
             if(effect.entity == entity)return true;

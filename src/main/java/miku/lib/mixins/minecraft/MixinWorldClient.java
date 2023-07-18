@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.api.iMinecraft;
+import miku.lib.api.iWorld;
 import miku.lib.api.iWorldClient;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
@@ -84,7 +85,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
             Entity entity = this.entitySpawnQueue.iterator().next();
             this.entitySpawnQueue.remove(entity);
 
-            if (!this.loadedEntityList.contains(entity))
+            if (!this.loadedEntityList.contains(entity) && !((iWorld)this).protected_loaded(entity))
             {
                 this.spawnEntity(entity);
             }
