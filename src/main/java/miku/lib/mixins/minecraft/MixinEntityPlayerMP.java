@@ -1,21 +1,16 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
-import miku.lib.api.iEntityPlayerMP;
 import miku.lib.api.iEntityPlayer;
+import miku.lib.api.iEntityPlayerMP;
 import miku.lib.util.EntityUtil;
-import miku.lib.util.MikuUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.NonNullList;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -85,15 +80,5 @@ public abstract class MixinEntityPlayerMP extends EntityPlayer implements iEntit
             }
             ci.cancel();
         }
-    }
-
-    /**
-     * @author mcst12345
-     * @reason MikuMod
-     */
-    @Overwrite
-    public void sendAllContents(Container containerToSend, NonNullList<ItemStack> itemsList)
-    {
-        MikuUtil.sendAllContents(containerToSend,itemsList,(EntityPlayerMP)(Object)this);
     }
 }

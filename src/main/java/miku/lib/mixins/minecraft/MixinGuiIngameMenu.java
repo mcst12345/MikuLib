@@ -8,8 +8,6 @@ import net.minecraft.realms.RealmsBridge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-import java.io.IOException;
-
 @Mixin(value = GuiIngameMenu.class)
 public abstract class MixinGuiIngameMenu extends GuiScreen{
     /**

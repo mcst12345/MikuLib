@@ -1,12 +1,11 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.api.ProtectedEntity;
 import miku.lib.api.iEnderInventory;
 import miku.lib.api.iEntityPlayer;
 import miku.lib.api.iInventoryPlayer;
-import miku.lib.api.ProtectedEntity;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
-import miku.lib.util.MikuUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -183,15 +182,6 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
         this.closeScreen();
     }
 
-    @Inject(at=@At("HEAD"),method = "onUpdate")
-    public void onUpdateStart(CallbackInfo ci){
-        if(EntityUtil.isProtected(this))MikuUtil.ADD((EntityPlayer) (Object)this);
-    }
-
-    @Inject(at=@At("TAIL"),method = "onUpdate")
-    public void onUpdateEnd(CallbackInfo ci){
-        if(EntityUtil.isProtected(this))MikuUtil.ADD((EntityPlayer) (Object)this);
-    }
 
     @Inject(at=@At("HEAD"),method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/item/EntityItem;", cancellable = true)
     public void dropItem(ItemStack droppedItem, boolean dropAround, boolean traceItem, CallbackInfoReturnable<EntityItem> cir){
