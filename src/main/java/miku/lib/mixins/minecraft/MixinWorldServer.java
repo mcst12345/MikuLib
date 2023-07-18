@@ -1,6 +1,5 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iWorld;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.crash.CrashReport;
@@ -148,7 +147,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
     @Overwrite
     public void updateEntities()
     {
-        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty() && !((iWorld)this).protected_player_loaded())
+        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty())
         {
             if (this.updateEntityTick++ >= 300)
             {
