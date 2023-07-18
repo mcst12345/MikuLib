@@ -26,7 +26,6 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeModContainer;
-import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.server.timings.TimeTracker;
@@ -107,8 +106,6 @@ public abstract class MixinWorld implements iWorld {
     @Shadow(remap = false) public abstract ImmutableSetMultimap<ChunkPos, ForgeChunkManager.Ticket> getPersistentChunks();
 
     @Shadow protected abstract boolean isAreaLoaded(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, boolean allowEmpty);
-
-    @Shadow public abstract void loadEntities(Collection<Entity> entityCollection);
 
     public void AddEffect(MikuEffect effect){
         effects.add(effect);
@@ -310,7 +307,17 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
 
+        this.profiler.startSection("updateProtected");
+
         for(Entity e : protected_entities){
+            int j2 = MathHelper.floor(e.posX);
+            int k2 = MathHelper.floor(e.posZ);
+            boolean isForced = !this.isRemote && getPersistentChunks().containsKey(new net.minecraft.util.math.ChunkPos(j2 >> 4, k2 >> 4));
+            int range = isForced ? 0 : 32;
+            if(!this.isAreaLoaded(j2 - range, 0, k2 - range, j2 + range, 0, k2 + range, true)){
+                continue;
+            }
+
             Entity entity3 = e.getRidingEntity();
 
             if (entity3 != null)
@@ -366,12 +373,12 @@ public abstract class MixinWorld implements iWorld {
                         e.posZ = e.lastTickPosZ;
                     }
 
-                    if (Double.isNaN((double)e.rotationPitch) || Double.isInfinite((double)e.rotationPitch))
+                    if (Double.isNaN(e.rotationPitch) || Double.isInfinite(e.rotationPitch))
                     {
                         e.rotationPitch = e.prevRotationPitch;
                     }
 
-                    if (Double.isNaN((double)e.rotationYaw) || Double.isInfinite((double)e.rotationYaw))
+                    if (Double.isNaN(e.rotationYaw) || Double.isInfinite(e.rotationYaw))
                     {
                         e.rotationYaw = e.prevRotationYaw;
                     }
@@ -422,6 +429,8 @@ public abstract class MixinWorld implements iWorld {
                 }
             }
         }
+
+        this.profiler.endSection();
 
         if(!SpecialItem.isTimeStop()){
             this.profiler.endStartSection("blockEntities");
