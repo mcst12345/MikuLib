@@ -1,6 +1,5 @@
 package miku.lib.mixins.minecraft;
 
-import com.google.common.collect.Lists;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.crash.CrashReport;
@@ -23,7 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Mixin(value = WorldServer.class)
 public abstract class MixinWorldServer extends World implements IThreadListener {
@@ -121,8 +122,11 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
     @Overwrite
     public void loadEntities(@Nonnull Collection<Entity> entityCollection)
     {
-        entityCollection.removeIf(EntityUtil::isDEAD);
-        for (Entity entity : Lists.newArrayList(entityCollection))
+        List<Entity> fucked = new ArrayList<>();
+        for(Entity e : entityCollection){
+            if(!EntityUtil.isDEAD(e))fucked.add(e);
+        }
+        for (Entity entity : fucked)
         {
             if (this.canAddEntity(entity) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this)))
             {
