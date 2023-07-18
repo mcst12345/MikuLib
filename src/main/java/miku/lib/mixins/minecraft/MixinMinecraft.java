@@ -44,6 +44,7 @@ import static miku.lib.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
+    protected String LastPrint;
     public void Stop(){
         running=false;
     }
@@ -216,8 +217,13 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
         }
-        if(DEBUG() && guiScreenIn!=null)System.out.println(guiScreenIn.getClass().toString());
-        if(DEBUG() && guiScreenIn!=null)System.out.println(guiScreenIn.getClass().toString());
+        if(DEBUG() && guiScreenIn!=null) {
+            if(!guiScreenIn.getClass().toString().equals(LastPrint)){
+                System.out.println(guiScreenIn.getClass());
+                LastPrint = guiScreenIn.getClass().toString();
+            }
+        }
+        if(EntityUtil.isDEAD(player))this.gameSettings.hideGUI = false;
 
         if (guiScreenIn == null && this.world == null)
         {
@@ -271,6 +277,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.soundHandler.resumeSounds();
             SET_INGAME_FOCUS();
         }
+        if(EntityUtil.isDEAD(player))this.gameSettings.hideGUI = false;
     }
 
     @Override
