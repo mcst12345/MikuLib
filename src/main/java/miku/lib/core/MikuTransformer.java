@@ -185,12 +185,11 @@ public class MikuTransformer implements IClassTransformer {
             }
 
             //ShitMountain #3
-            result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
+            result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)") ||
                     s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                     s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                     s.matches("(.*)entity(.*)remove(.*)") || result;
 
-            boolean suspected = s.matches("(.*)attack(.*)");
 
             if (DEBUG()) {
                 print("Method name:" + method.name);
@@ -200,10 +199,6 @@ public class MikuTransformer implements IClassTransformer {
                 if (DEBUG()) {
                     print("parameter name:" + parameter.name);
                 }
-                if(suspected){
-                    if(parameter.name.toLowerCase().matches("(.*)entity(.*)"))result = true;
-                }
-
             }
             if (method.visibleTypeAnnotations != null)
                 for (TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations) {
