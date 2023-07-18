@@ -63,7 +63,7 @@ public class MikuTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if(!isGoodClass(transformedName)){
+        if(true){//!isGoodClass(transformedName)
             cached_methods.clear();
             num = 0.0d;
 
@@ -72,6 +72,9 @@ public class MikuTransformer implements IClassTransformer {
 
 
             cr.accept(cn, 0);
+
+
+
 
             if(transformedName.toLowerCase().matches("(.*)transformer(.*)")){
                 System.out.println("Find coremod that is not in whitelist. Fucking it.");
@@ -107,6 +110,52 @@ public class MikuTransformer implements IClassTransformer {
                 System.out.println("Interfaces:");
                 for(String s : cn.interfaces){
                     print(s);
+                }
+            }
+            if(cn.visibleAnnotations!=null) {
+                System.out.println("visibleAnnotations:");
+                for (AnnotationNode an : cn.visibleAnnotations) {
+                    if(DEBUG()){
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                }
+            }
+
+            if(cn.visibleTypeAnnotations!=null)for(TypeAnnotationNode an : cn.visibleTypeAnnotations){
+                {
+                    System.out.println("visibleTypeAnnotations:");
+                    if(DEBUG()){
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                }
+            }
+
+            if(cn.invisibleAnnotations!=null) {
+                System.out.println("invisibleAnnotations:");
+                for (AnnotationNode an : cn.invisibleAnnotations) {
+                    if(DEBUG()){
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                    if(Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")){
+                        System.out.println("Found mixin class:"+cn.name+",fucking it.");
+                        FuckMixinClass(cn);
+                        ClassWriter cw = new ClassWriter(0);
+                        cn.accept(cw);
+                        return cw.toByteArray();
+                    }
+                }
+            }
+
+            if(cn.invisibleTypeAnnotations!=null) {
+                System.out.println("invisibleTypeAnnotations:");
+                for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
+                    if(DEBUG()){
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
                 }
             }
 
@@ -149,6 +198,72 @@ public class MikuTransformer implements IClassTransformer {
         return basicClass;
     }
 
+    private static boolean isBadInject(String s){//Holy Shit.
+        return s.contains("[setHealth]") || s.contains("[damageEntity]") || s.contains("[getHealth]") || s.contains("[getMaxHealth]") || s.contains("[setDead]") || s.contains("[attackEntityFrom]") ||
+                s.contains("[onDeath]") || s.contains("[replaceItemInInventory]") || s.contains("[dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/item/EntityItem;]") || s.contains("[dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;]") ||
+                s.contains("[dropItem(Z)Lnet/minecraft/entity/item/EntityItem;]") || s.contains("[setGameType]") || s.contains("[track(Lnet/minecraft/entity/Entity;IIZ)V]") || s.contains("[track(Lnet/minecraft/entity/Entity;)V]") || s.contains("[getStackInSlot]") ||
+                s.contains("[clear]") || s.contains("[clearMatchingItems]") || s.contains("[dropAllItems]") || s.contains("[disconnect]") || s.contains("[spawnEntity]") || s.contains("[onEntityAdded]") || s.contains("[onEntityRemoved]") || s.contains("[removeEntity]") ||
+                s.contains("[removeEntityDangerously]") || s.contains("[getEntityByID]") || s.contains("[canAddEntity]") || s.contains("[setEntityState]") || s.contains("[handleStatusUpdate]") || s.contains("[addPotionEffect]") || s.contains("[execute]") || s.contains("[tryExecute]") ||
+                s.contains("[recreatePlayerEntity]") || s.contains("[readPlayerData]") || s.contains("[writePlayerData]") || s.contains("[shouldRender]") || s.contains("[bindEntityTexture]") || s.contains("[doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V]") || s.contains("[displayGuiScreen]") ||
+                s.contains("[removeEntityFromWorld]") || s.contains("[post]") || s.contains("[setCount]") || s.contains("[getCount]") || s.contains("[isItemStackDamageable]") || s.contains("[isItemDamaged]") || s.contains("[setItemDamage]") || s.contains("[getItemDamage]") || s.contains("[getMaxDamage]") ||
+                s.contains("[attemptDamageItem]") || s.contains("[canDestroy]");
+    }
+
+    private static boolean isBadOverwrite(String s){
+        return s.equals("func_174812_G") || s.equals("func_70106_y") || s.equals("func_70097_a") || s.equals("func_71019_a") || s.equals("func_71040_bB") || s.equals("func_145779_a") || s.equals("func_70099_a") || s.equals("func_70089_S") || s.equals("func_70609_aI") || s.equals("func_130011_c") ||
+                s.equals("func_110143_aJ") || s.equals("func_70606_j") || s.equals("func_70645_a") || s.equals("func_70665_d") || s.equals("func_110138_aP") || s.equals("func_70103_a") || s.equals("func_70610_aX") || s.equals("func_70659_e") || s.equals("func_70689_ay") || s.equals("func_70652_k");
+    }
+
+    private static void FuckMixinClass(ClassNode cn){
+        for(MethodNode mn : cn.methods){
+            boolean removed = false;
+            if(mn.invisibleTypeAnnotations!=null) {
+                System.out.println("invisibleTypeAnnotations of "+mn.name);
+                for (TypeAnnotationNode an : mn.invisibleTypeAnnotations) {
+                    if(DEBUG()){
+                        print(an.desc);
+                        if(an.values!=null)print(an.values.toString());
+                    }
+                    if(Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/injection/Inject;")){
+                        if(an.values!=null){
+                            String s = an.values.toString();
+                            if(isBadInject(s)) {
+                                cn.methods.remove(mn);
+                                removed = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Overwrite")){
+                        if(isBadOverwrite(mn.name)){
+                            cn.methods.remove(mn);
+                            removed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(removed)continue;
+            if(mn.visibleAnnotations!=null) {
+                System.out.println("invisibleTypeAnnotations of "+mn.name);
+                for (AnnotationNode an : mn.visibleAnnotations) {
+                    if(DEBUG()){
+                        print(an.desc);
+                        if(an.values!=null)print(an.values.toString());
+                    }
+                }
+            }
+            if(mn.invisibleAnnotations!=null) {
+                System.out.println("invisibleAnnotations of "+mn.name);
+                for (AnnotationNode an : mn.invisibleAnnotations) {
+                    if(DEBUG()){
+                        print(an.desc);
+                        if(an.values!=null)print(an.values.toString());
+                    }
+                }
+            }
+        }
+    }
 
     //ShitMountain #2
     private static boolean BadInvoke(String str){
@@ -160,7 +275,8 @@ public class MikuTransformer implements IClassTransformer {
                 str.equals("net/minecraft/util/CombatTracker.func_94547_a") || str.equals("net/minecraft/util/DamageSource.func_76359_i") ||
                 str.equals("net/minecraft/entity/player/EntityPlayer.func_70074_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70103_a") ||
                 str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.matches("(.*)func_70674_bp") ||
-                str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b") || str.matches("(.*)func_72900_e") || str.equals("net/minecraft/entity/Entity.func_82142_c") ;
+                str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b") || str.matches("(.*)func_72900_e") || str.equals("net/minecraft/entity/Entity.func_82142_c") || str.matches("(.*)func_70665_d") ||
+                str.matches("(.*)func_70103_a");
     }
 
     private static boolean isBadMethod(MethodNode method,String className){
