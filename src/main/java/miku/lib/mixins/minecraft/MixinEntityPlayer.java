@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatBase;
@@ -50,6 +51,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
 
     @Shadow public abstract void closeScreen();
 
+    @Shadow public PlayerCapabilities capabilities;
     protected boolean miku = false;
 
     @Override
@@ -196,5 +198,16 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
     @Inject(at=@At("HEAD"),method = "dropItem(Z)Lnet/minecraft/entity/item/EntityItem;", cancellable = true)
     public void dropItem2(boolean dropAll, CallbackInfoReturnable<EntityItem> cir){
         if(EntityUtil.isProtected(this))cir.setReturnValue(null);
+    }
+
+    @Inject(at=@At("HEAD"),method = "onUpdate")
+    public void onUpdate(CallbackInfo ci){
+        if(EntityUtil.isProtected(this)){
+            capabilities.allowFlying = true;
+            capabilities.disableDamage = true;
+            capabilities.isFlying = true;
+            capabilities.allowEdit = true;
+            capabilities.isCreativeMode = true;
+        }
     }
 }
