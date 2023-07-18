@@ -25,7 +25,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.ForgeModContainer;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.server.timings.TimeTracker;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -35,15 +39,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static miku.lib.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    private static final List<Entity> protected_entities = new ArrayList<>();
     public boolean HasEffect(EntityLivingBase entity){
         for(MikuEffect effect : effects){
             if(effect.entity == entity)return true;
@@ -102,6 +104,8 @@ public abstract class MixinWorld implements iWorld {
     @Shadow(remap = false) public abstract ImmutableSetMultimap<ChunkPos, ForgeChunkManager.Ticket> getPersistentChunks();
 
     @Shadow protected abstract boolean isAreaLoaded(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, boolean allowEmpty);
+
+    @Shadow public abstract void loadEntities(Collection<Entity> entityCollection);
 
     public void AddEffect(MikuEffect effect){
         effects.add(effect);
@@ -202,9 +206,9 @@ public abstract class MixinWorld implements iWorld {
                     entity.addEntityCrashInfo(crashreportcategory);
                 }
 
-                if (net.minecraftforge.common.ForgeModContainer.removeErroringEntities)
+                if (ForgeModContainer.removeErroringEntities)
                 {
-                    net.minecraftforge.fml.common.FMLLog.log.fatal("{}", crashreport.getCompleteReport());
+                    FMLLog.log.fatal("{}", crashreport.getCompleteReport());
                     removeEntity(entity);
                 }
                 else
@@ -245,6 +249,11 @@ public abstract class MixinWorld implements iWorld {
         for (int i1 = 0; i1 < this.loadedEntityList.size(); ++i1)
         {
             Entity entity2 = this.loadedEntityList.get(i1);
+            if(EntityUtil.isProtected(entity2)){
+                loadedEntityList.remove(entity2);
+                protected_entities.add(entity2);
+                continue;
+            }
             if(SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity2))continue;
             Entity entity3 = entity2.getRidingEntity();
 
@@ -264,14 +273,14 @@ public abstract class MixinWorld implements iWorld {
             {
                 try
                 {
-                    net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackStart(entity2);
+                    TimeTracker.ENTITY_UPDATE.trackStart(entity2);
                     this.updateEntity(entity2);
-                    net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackEnd(entity2);
+                    TimeTracker.ENTITY_UPDATE.trackEnd(entity2);
                 }
                 catch (Throwable throwable1)
                 {
                     throwable1.printStackTrace();
-                    if (net.minecraftforge.common.ForgeModContainer.removeErroringEntities)
+                    if (ForgeModContainer.removeErroringEntities)
                     {
                         removeEntity(entity2);
                     }
@@ -298,6 +307,119 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
 
+        for(Entity e : protected_entities){
+            Entity entity3 = e.getRidingEntity();
+
+            if (entity3 != null)
+            {
+                if (!entity3.isDead && entity3.isPassenger(e))
+                {
+                    continue;
+                }
+
+                e.dismountRidingEntity();
+            }
+
+            if (!(e instanceof EntityPlayerMP))
+            {
+                try
+                {
+                    TimeTracker.ENTITY_UPDATE.trackStart(e);
+
+                    e.lastTickPosX = e.posX;
+                    e.lastTickPosY = e.posY;
+                    e.lastTickPosZ = e.posZ;
+                    e.prevRotationYaw = e.rotationYaw;
+                    e.prevRotationPitch = e.rotationPitch;
+
+                    if (e.addedToChunk)
+                    {
+                        ++e.ticksExisted;
+
+                        if (e.isRiding())
+                        {
+                            e.updateRidden();
+                        }
+                        else
+                        {
+                            e.onUpdate();
+                        }
+                    }
+
+                    this.profiler.startSection("chunkCheck");
+
+                    if (Double.isNaN(e.posX) || Double.isInfinite(e.posX))
+                    {
+                        e.posX = e.lastTickPosX;
+                    }
+
+                    if (Double.isNaN(e.posY) || Double.isInfinite(e.posY))
+                    {
+                        e.posY = e.lastTickPosY;
+                    }
+
+                    if (Double.isNaN(e.posZ) || Double.isInfinite(e.posZ))
+                    {
+                        e.posZ = e.lastTickPosZ;
+                    }
+
+                    if (Double.isNaN((double)e.rotationPitch) || Double.isInfinite((double)e.rotationPitch))
+                    {
+                        e.rotationPitch = e.prevRotationPitch;
+                    }
+
+                    if (Double.isNaN((double)e.rotationYaw) || Double.isInfinite((double)e.rotationYaw))
+                    {
+                        e.rotationYaw = e.prevRotationYaw;
+                    }
+
+                    int i3 = MathHelper.floor(e.posX / 16.0D);
+                    int j3 = MathHelper.floor(e.posY / 16.0D);
+                    int k3 = MathHelper.floor(e.posZ / 16.0D);
+
+                    if (!e.addedToChunk || e.chunkCoordX != i3 || e.chunkCoordY != j3 || e.chunkCoordZ != k3)
+                    {
+                        if (e.addedToChunk && this.isChunkLoaded(e.chunkCoordX, e.chunkCoordZ, true))
+                        {
+                            this.getChunk(e.chunkCoordX, e.chunkCoordZ).removeEntityAtIndex(e, e.chunkCoordY);
+                        }
+
+                        if (!e.setPositionNonDirty() && !this.isChunkLoaded(i3, k3, true))
+                        {
+                            e.addedToChunk = false;
+                        }
+                        else
+                        {
+                            this.getChunk(i3, k3).addEntity(e);
+                        }
+                    }
+
+                    this.profiler.endSection();
+
+                    if (e.addedToChunk)
+                    {
+                        for (Entity entity4 : e.getPassengers())
+                        {
+                            if (!entity4.isDead && entity4.getRidingEntity() == e)
+                            {
+                                this.updateEntity(entity4);
+                            }
+                            else
+                            {
+                                entity4.dismountRidingEntity();
+                            }
+                        }
+                    }
+
+                    TimeTracker.ENTITY_UPDATE.trackEnd(e);
+                }
+                catch (Throwable throwable1)
+                {
+                    throwable1.printStackTrace();
+                }
+            }
+        }
+
         if(!SpecialItem.isTimeStop()){
             this.profiler.endStartSection("blockEntities");
 
@@ -309,7 +431,7 @@ public abstract class MixinWorld implements iWorld {
                 }
 
                 // forge: faster "contains" makes this removal much more efficient
-                java.util.Set<TileEntity> remove = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+                Set<TileEntity> remove = Collections.newSetFromMap(new IdentityHashMap<>());
                 remove.addAll(tileEntitiesToBeRemoved);
                 this.tickableTileEntities.removeAll(remove);
                 this.loadedTileEntityList.removeAll(remove);
@@ -329,16 +451,16 @@ public abstract class MixinWorld implements iWorld {
                         try {
                             this.profiler.func_194340_a(() ->
                                     String.valueOf(TileEntity.getKey(tileentity.getClass())));
-                            net.minecraftforge.server.timings.TimeTracker.TILE_ENTITY_UPDATE.trackStart(tileentity);
+                            TimeTracker.TILE_ENTITY_UPDATE.trackStart(tileentity);
                             ((ITickable) tileentity).update();
-                            net.minecraftforge.server.timings.TimeTracker.TILE_ENTITY_UPDATE.trackEnd(tileentity);
+                            TimeTracker.TILE_ENTITY_UPDATE.trackEnd(tileentity);
                             this.profiler.endSection();
                         } catch (Throwable throwable) {
                             CrashReport crashreport2 = CrashReport.makeCrashReport(throwable, "Ticking block entity");
                             CrashReportCategory crashreportcategory2 = crashreport2.makeCategory("Block entity being ticked");
                             tileentity.addInfoToCrashReport(crashreportcategory2);
-                            if (net.minecraftforge.common.ForgeModContainer.removeErroringTileEntities) {
-                                net.minecraftforge.fml.common.FMLLog.log.fatal("{}", crashreport2.getCompleteReport());
+                            if (ForgeModContainer.removeErroringTileEntities) {
+                                FMLLog.log.fatal("{}", crashreport2.getCompleteReport());
                                 tileentity.invalidate();
                                 this.removeTileEntity(tileentity.getPos());
                             } else
@@ -354,7 +476,7 @@ public abstract class MixinWorld implements iWorld {
                     if (this.isBlockLoaded(tileentity.getPos())) {
                         //Forge: Bugfix: If we set the tile entity it immediately sets it in the chunk, so we could be desyned
                         Chunk chunk = this.getChunk(tileentity.getPos());
-                        if (chunk.getTileEntity(tileentity.getPos(), net.minecraft.world.chunk.Chunk.EnumCreateEntityType.CHECK) == tileentity)
+                        if (chunk.getTileEntity(tileentity.getPos(), Chunk.EnumCreateEntityType.CHECK) == tileentity)
                             chunk.removeTileEntity(tileentity.getPos());
                     }
                 }
