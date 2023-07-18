@@ -233,7 +233,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
         if (!(guiScreenIn instanceof GuiGameOver) &&net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
 
-        guiScreenIn = event.getGui();
+        if(!(guiScreenIn instanceof GuiGameOver))guiScreenIn = event.getGui();
         if (old != null && guiScreenIn != old)
         {
             old.onGuiClosed();
