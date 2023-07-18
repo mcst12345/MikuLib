@@ -7,22 +7,52 @@ import net.minecraft.util.ClassInheritanceMultiMap;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Chunk.class)
-public class MixinChunk implements iChunk {
+public abstract class MixinChunk implements iChunk {
     @Final
     @Shadow
     private final ClassInheritanceMultiMap[] entityLists = new ClassInheritanceMultiMap[16];
 
-    @Inject(at = @At("HEAD"), method = "removeEntity", cancellable = true)
-    public void removeEntity(Entity entityIn, CallbackInfo ci) {
-        if (((Chunk) (Object) this).isLoaded()) {
-            if(EntityUtil.isProtected(entityIn))ci.cancel();
+    @Shadow public abstract void markDirty();
+
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public void removeEntity(Entity entityIn)
+    {
+        if(EntityUtil.isProtected(entityIn))return;
+        this.removeEntityAtIndex(entityIn, entityIn.chunkCoordY);
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public void removeEntityAtIndex(Entity entityIn, int index)
+    {
+        if(EntityUtil.isProtected(entityIn))return;
+        if (index < 0)
+        {
+            index = 0;
         }
+
+        if (index >= this.entityLists.length)
+        {
+            index = this.entityLists.length - 1;
+        }
+
+        this.entityLists[index].remove(entityIn);
+        this.markDirty(); // Forge - ensure chunks are marked to save after entity removals
     }
 
     @Override

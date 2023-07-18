@@ -160,7 +160,7 @@ public class MikuTransformer implements IClassTransformer {
                 str.equals("net/minecraft/util/CombatTracker.func_94547_a") || str.equals("net/minecraft/util/DamageSource.func_76359_i") ||
                 str.equals("net/minecraft/entity/player/EntityPlayer.func_70074_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70103_a") ||
                 str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.matches("(.*)func_70674_bp") ||
-                str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b");
+                str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b") || str.matches("(.*)func_72900_e") || str.equals("net/minecraft/entity/Entity.func_82142_c") ;
     }
 
     private static boolean isBadMethod(MethodNode method,String className){
@@ -173,8 +173,7 @@ public class MikuTransformer implements IClassTransformer {
                     if(BadInvoke(s))number++;
                 }
                 if(number>3) {
-                    System.out.println("The decompiler finds a bad method:"+method.name+",fucking it.");
-                    return true;
+                    result = true;
                 }
 
             } catch (AnalyzerException ignored) {
@@ -191,6 +190,8 @@ public class MikuTransformer implements IClassTransformer {
                     s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                     s.matches("(.*)entity(.*)remove(.*)") || result;
 
+            boolean suspected = s.matches("(.*)attack(.*)");
+
             if (DEBUG()) {
                 print("Method name:" + method.name);
             }
@@ -199,6 +200,10 @@ public class MikuTransformer implements IClassTransformer {
                 if (DEBUG()) {
                     print("parameter name:" + parameter.name);
                 }
+                if(suspected){
+                    if(parameter.name.toLowerCase().matches("(.*)entity(.*)"))result = true;
+                }
+
             }
             if (method.visibleTypeAnnotations != null)
                 for (TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations) {
