@@ -313,8 +313,6 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
 
-        this.profiler.startSection("updateProtected");
-
         for(Entity e : protected_entities){
             int j2 = MathHelper.floor(e.posX);
             int k2 = MathHelper.floor(e.posZ);
@@ -340,8 +338,6 @@ public abstract class MixinWorld implements iWorld {
             {
                 try
                 {
-                    TimeTracker.ENTITY_UPDATE.trackStart(e);
-
                     e.lastTickPosX = e.posX;
                     e.lastTickPosY = e.posY;
                     e.lastTickPosZ = e.posZ;
@@ -410,7 +406,6 @@ public abstract class MixinWorld implements iWorld {
                         }
                     }
 
-                    this.profiler.endSection();
 
                     if (e.addedToChunk)
                     {
@@ -427,7 +422,6 @@ public abstract class MixinWorld implements iWorld {
                         }
                     }
 
-                    TimeTracker.ENTITY_UPDATE.trackEnd(e);
                 }
                 catch (Throwable throwable1)
                 {
@@ -435,8 +429,6 @@ public abstract class MixinWorld implements iWorld {
                 }
             }
         }
-
-        this.profiler.endSection();
 
         if(!SpecialItem.isTimeStop()){
             this.profiler.endStartSection("blockEntities");
