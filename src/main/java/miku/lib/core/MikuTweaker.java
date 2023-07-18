@@ -2,6 +2,7 @@ package miku.lib.core;
 
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -36,7 +37,7 @@ public class MikuTweaker implements ITweaker {
             outputStream.write(file);//extracted the file.
             outputStream.close();
             System.out.println("MikuLib has just extracted the sqlite loader of it. Please restart the game.");
-            throw new RuntimeException("MikuLib has completed its installation,please restart the game.");
+            FMLCommonHandler.instance().exitJava(0,true);
         }
     }
     private String[] args;
