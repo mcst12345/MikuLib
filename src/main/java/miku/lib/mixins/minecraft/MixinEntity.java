@@ -284,7 +284,7 @@ public abstract class MixinEntity implements iEntity {
             if(((Entity)(Object)this) instanceof EntityPlayer){
                 ((iEntityPlayer)this).Kill();
                 world.playerEntities.remove(this);
-                if(((Entity)(Object)this) instanceof EntityPlayerMP){
+                if(((Entity)(Object)this) instanceof EntityPlayerMP && (boolean) Sqlite.GetValueFromTable("miku_kill_kick_attack","CONFIG",0)){
                     EntityPlayerMP playerMP = ((EntityPlayerMP)(Object)this);
                     NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
                     playerMP.connection.disconnect(new TextComponentString("Goodbye!"));

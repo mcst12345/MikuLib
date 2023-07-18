@@ -43,7 +43,6 @@ public class EntityUtil {
         if(!(object instanceof Entity))return false;
         Entity entity = (Entity) object;
         if(entity instanceof EntityPlayer){
-            //if(MikuCore.RescueMode)return true;
             if(entity.world.isRemote){
                 if(((iMinecraft) Minecraft.getMinecraft()).protect())return true;
             }

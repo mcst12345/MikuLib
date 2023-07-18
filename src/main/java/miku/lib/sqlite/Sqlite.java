@@ -53,6 +53,7 @@ public class Sqlite {
                 CreateConfigValue("debug","CONFIG","false");
                 CreateConfigValue("void_keep_loaded","CONFIG","true");
                 CreateConfigValue("miku_kill_exit_attack","CONFIG","true");
+                CreateConfigValue("miku_kill_kick_attack","CONFIG","true");
                 CreateConfigValue("class_info","LOG_CONFIG","true");
                 CreateConfigValue("method_info","LOG_CONFIG","true");
                 CreateConfigValue("field_info","LOG_CONFIG","true");
