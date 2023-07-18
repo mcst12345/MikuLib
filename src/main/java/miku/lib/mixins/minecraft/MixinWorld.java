@@ -256,7 +256,6 @@ public abstract class MixinWorld implements iWorld {
         {
             Entity entity2 = this.loadedEntityList.get(i1);
             if(EntityUtil.isProtected(entity2)){
-                loadedEntityList.remove(entity2);
                 protected_entities.add(entity2);
                 continue;
             }
