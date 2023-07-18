@@ -50,7 +50,7 @@ public abstract class MixinWorld implements iWorld {
         }
         return false;
     }
-    private static final List<Entity> protected_entities = new ArrayList<>();
+    private static final HashSet<Entity> protected_entities = new HashSet<>();
     public boolean protected_loaded(Entity e){
         return protected_entities.contains(e);
     }
