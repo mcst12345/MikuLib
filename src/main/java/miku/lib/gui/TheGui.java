@@ -3,7 +3,6 @@ package miku.lib.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiYesNo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -56,17 +55,7 @@ public class TheGui extends GuiScreen {
                 this.mc.displayGuiScreen(null);
                 break;
             case 1:
-
-                if (this.mc.world.getWorldInfo().isHardcoreModeEnabled())
-                {
-                    this.mc.displayGuiScreen(new GuiMainMenu());
-                }
-                else
-                {
-                    GuiYesNo guiyesno = new GuiYesNo(this, I18n.format("deathScreen.quit.confirm"), "", I18n.format("deathScreen.titleScreen"), I18n.format("deathScreen.respawn"), 0);
-                    this.mc.displayGuiScreen(guiyesno);
-                    guiyesno.setButtonDelay(20);
-                }
+                this.mc.displayGuiScreen(new GuiMainMenu());
         }
     }
 

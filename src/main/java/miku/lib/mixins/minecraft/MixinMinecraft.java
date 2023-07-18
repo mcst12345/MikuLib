@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.api.iMinecraft;
+import miku.lib.gui.TheGui;
 import miku.lib.item.SpecialItem;
 import miku.lib.sqlite.Sqlite;
 import miku.lib.util.EntityUtil;
@@ -217,6 +218,11 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
         }
+
+        if(currentScreen instanceof TheGui){
+            if(!(guiScreenIn instanceof GuiMainMenu))return;
+        }
+
         if(DEBUG() && guiScreenIn!=null) {
             if(!guiScreenIn.getClass().toString().equals(LastPrint)){
                 System.out.println(guiScreenIn.getClass());
