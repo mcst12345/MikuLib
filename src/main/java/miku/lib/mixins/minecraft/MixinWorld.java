@@ -44,6 +44,12 @@ import static miku.lib.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    public boolean protected_player_loaded(){
+        for(Entity e : protected_entities){
+            if(e instanceof EntityPlayer)return true;
+        }
+        return false;
+    }
     private static final List<Entity> protected_entities = new ArrayList<>();
     public boolean protected_loaded(Entity e){
         return protected_entities.contains(e);

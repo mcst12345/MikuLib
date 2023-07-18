@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.api.iWorld;
 import miku.lib.item.SpecialItem;
 import miku.lib.util.EntityUtil;
 import net.minecraft.crash.CrashReport;
@@ -29,6 +30,10 @@ import java.util.List;
 @Mixin(value = WorldServer.class)
 public abstract class MixinWorldServer extends World implements IThreadListener {
     @Shadow protected abstract boolean canAddEntity(Entity entityIn);
+
+    @Shadow private int updateEntityTick;
+
+    @Shadow public abstract void resetUpdateEntityTick();
 
     protected MixinWorldServer(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);
@@ -134,5 +139,28 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
                 this.onEntityAdded(entity);
             }
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public void updateEntities()
+    {
+        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty() && !((iWorld)this).protected_player_loaded())
+        {
+            if (this.updateEntityTick++ >= 300)
+            {
+                return;
+            }
+        }
+        else
+        {
+            this.resetUpdateEntityTick();
+        }
+
+        this.provider.onWorldUpdateEntities();
+        super.updateEntities();
     }
 }
