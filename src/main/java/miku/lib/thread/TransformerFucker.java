@@ -1,6 +1,6 @@
 package miku.lib.thread;
 
-import miku.lib.util.MikuArrayList;
+import miku.lib.util.MikuArrayListEarly;
 import miku.lib.util.transform.ASMUtil;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -18,8 +18,8 @@ public class TransformerFucker extends Thread {
                 transformers.setAccessible(true);
                 List<IClassTransformer> t = (List<IClassTransformer>) transformers.get(Launch.classLoader);
                 t.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));//Fuck other transformers.
-                if (!(t instanceof MikuArrayList)) {
-                    MikuArrayList<IClassTransformer> fucked = new MikuArrayList<IClassTransformer>(2);
+                if (!(t instanceof MikuArrayListEarly)) {
+                    MikuArrayListEarly<IClassTransformer> fucked = new MikuArrayListEarly<IClassTransformer>(2);
                     for (IClassTransformer i : t) {
                         fucked.add(i);
                     }
