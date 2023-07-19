@@ -1,6 +1,9 @@
 package miku.lib.core;
 
+import miku.lib.util.transform.ASMUtil;
+import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.CoreModManager;
@@ -11,21 +14,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Field;
+import java.util.*;
 
 public class MikuTweaker implements ITweaker {
-    public MikuTweaker() throws IOException {
-       boolean flag = true;
-        for(File file : Objects.requireNonNull(new File("mods").listFiles())){
-            if(file.getName().equals("MikuLib-SQlite-1.0.jar")){//Check is the sqlite loader installed.
+    public static List<IClassTransformer> transformers = null;
+
+    public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
+        boolean flag = true;
+        for (File file : Objects.requireNonNull(new File("mods").listFiles())) {
+            if (file.getName().equals("MikuLib-SQlite-1.0.jar")) {//Check is the sqlite loader installed.
                 flag = false;
                 break;
             }
         }
-        if(flag){
+        if (flag) {
             System.out.println("MikuLib's sqlite loader doesn't exists,extract it.");
             InputStream stream = MikuTweaker.class.getResourceAsStream("/MikuLib-SQlite-1.0.jar");
             assert stream != null;
@@ -37,8 +40,17 @@ public class MikuTweaker implements ITweaker {
             outputStream.write(file);//extracted the file.
             outputStream.close();
             System.out.println("MikuLib has just extracted the sqlite loader of it. Please restart the game.");
-            FMLCommonHandler.instance().exitJava(0,true);
+            FMLCommonHandler.instance().exitJava(0, true);
         }
+        Field field = Launch.classLoader.getClass().getDeclaredField("transformers");
+        transformers = (List<IClassTransformer>) field.get(Launch.classLoader);
+        Timer timer = new Timer(false);
+        TimerTask task = new TimerTask() {
+            public void run() {
+                transformers.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));
+            }
+        };
+        timer.schedule(task, 1L);
     }
     private String[] args;
 
