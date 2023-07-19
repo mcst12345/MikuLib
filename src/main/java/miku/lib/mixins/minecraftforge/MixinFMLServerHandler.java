@@ -29,6 +29,7 @@ public abstract class MixinFMLServerHandler implements IFMLSidedHandler {
     public void beginServerLoading(MinecraftServer minecraftServer)
     {
         MikuTweaker.task.cancel();
+        MikuTweaker.cachedClasses.clear();
         server = minecraftServer;
         Loader.instance().loadMods(injectedModContainers);
         Sqlite.Init();

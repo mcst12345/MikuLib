@@ -19,6 +19,7 @@ import java.util.*;
 
 public class MikuTweaker implements ITweaker {
     public static List<IClassTransformer> transformers = null;
+    public static Map<String, Class<?>> cachedClasses = null;
 
     public static TimerTask task = null;
 
@@ -44,16 +45,19 @@ public class MikuTweaker implements ITweaker {
             System.out.println("MikuLib has just extracted the sqlite loader of it. Please restart the game.");
             FMLCommonHandler.instance().exitJava(0, true);
         }
-        Field field = Launch.classLoader.getClass().getDeclaredField("transformers");
-        field.setAccessible(true);
-        transformers = (List<IClassTransformer>) field.get(Launch.classLoader);
+        Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
+        Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
+        cachedClasses.setAccessible(true);
+        transformers.setAccessible(true);
+        MikuTweaker.transformers = (List<IClassTransformer>) transformers.get(Launch.classLoader);
+        MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
         Timer timer = new Timer(false);
         task = new TimerTask() {
             public void run() {
-                transformers.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));//Fuck other transformers.
+                MikuTweaker.transformers.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));//Fuck other transformers.
             }
         };
-        timer.schedule(task, 1L);
+        timer.schedule(task, 0);
     }
     private String[] args;
 
