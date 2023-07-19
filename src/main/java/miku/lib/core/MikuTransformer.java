@@ -63,141 +63,35 @@ public class MikuTransformer implements IClassTransformer {
     protected static double possibility;
     protected static double num;
 
-    @Override
-    public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if(!isGoodClass(transformedName)){
-            cached_methods.clear();
-            num = 0.0d;
+    //ShitMountain #4
+    private static boolean isGoodClass(String clazz){
+        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") ||
+                clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)") || clazz.matches("org.objectweb.(.*)") ||
+                clazz.matches("com.google.(.*)") || clazz.matches("java.(.*)") || clazz.matches("io.netty.(.*)") ||
+                clazz.matches("org.apache.(.*)") || clazz.matches("com.mojang.(.*)") || clazz.matches("com.sun.(.*)") ||
+                clazz.matches("org.lwjgl.(.*)") || clazz.matches("org.spongepowered.(.*)") || clazz.matches("scala.(.*)") ||
+                clazz.matches("net.optifine(.*)") || clazz.matches("org.sqlite.") || clazz.matches("com.intellij.(.*)") ||
+                clazz.matches("joptsimple.(.*)") || clazz.matches("org.jline(.*)") || clazz.matches("net.java.(.*)") ||
+                clazz.matches("com.ibm.(.*)") || clazz.matches("it.unimi.dsi.(.*)") || clazz.matches("com.typesafe.(.*)") ||
+                clazz.matches("com.jcraft.(.*)") || clazz.matches("com.github.(.*)");
 
-            ClassReader cr = new ClassReader(basicClass);
-            ClassNode cn = new ClassNode();
-
-
-            cr.accept(cn, 0);
-
-            if (DEBUG()) {
-                print("Class name:" + cn.name);
-                print("Class sign:" + cn.signature);
-                print("outer class:" + cn.outerClass);
-                print("outer method:" + cn.outerMethod);
-                print("outer method desc:" + cn.outerMethodDesc);
-                System.out.println("Interfaces:");
-                for (String s : cn.interfaces) {
-                    print(s);
-                }
+        for(String s : white_list){
+            if (clazz.matches(s)) {
+                result = true;
+                break;
             }
-            if (cn.visibleAnnotations != null) {
-                System.out.println("visibleAnnotations:");
-                for (AnnotationNode an : cn.visibleAnnotations) {
-                    if (DEBUG()) {
-                        print(an.desc);
-                        if (an.values != null) print(an.values.toString());
-                    }
-                }
-            }
-
-            if (cn.visibleTypeAnnotations != null) for (TypeAnnotationNode an : cn.visibleTypeAnnotations) {
-                {
-                    System.out.println("visibleTypeAnnotations:");
-                    if (DEBUG()) {
-                        print(an.desc);
-                        if (an.values != null) print(an.values.toString());
-                    }
-                }
-            }
-
-            if (cn.invisibleAnnotations != null) {
-                System.out.println("invisibleAnnotations:");
-                for (AnnotationNode an : cn.invisibleAnnotations) {
-                    if (DEBUG()) {
-                        print(an.desc);
-                        if (an.values != null) print(an.values.toString());
-                    }
-                    if (Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")) {
-                        System.out.println("Found mixin class:" + cn.name + ",fucking it.");
-                        FuckMixinClass(cn);
-                        ClassWriter cw = new ClassWriter(0);
-                        cn.accept(cw);
-                        return cw.toByteArray();
-                    }
-                }
-            }
-
-            if (cn.invisibleTypeAnnotations != null) {
-                System.out.println("invisibleTypeAnnotations:");
-                for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
-                    if (DEBUG()) {
-                        print(an.desc);
-                        print(an.values.toString());
-                    }
-                }
-            }
-
-
-            if (transformedName.toLowerCase().matches("(.*)transformer(.*)")) {
-                System.out.println("Find coremod that is not in whitelist. Fucking it.");
-                System.out.println("If this breaks innocent mods,report this on https://github.com/mcst12345/MikuLib/issues");
-                for (MethodNode mn : cn.methods) {
-                    if (Objects.equals(mn.name, "transform")) {
-                        mn.visitCode();
-                        Label label0 = new Label();
-                        mn.visitLabel(label0);
-                        mn.visitLineNumber(8, label0);
-                        mn.visitVarInsn(ALOAD, 3);
-                        mn.visitInsn(ARETURN);
-                        mn.visitMaxs(1,4);
-                        mn.visitEnd();
-                    }
-                }
-            }
-
-            if(isBadClass(transformedName)){
-                System.out.println("Find dangerous class "+cn.name+",fucking it.");
-                FuckClass(cn);
-                ClassWriter cw = new ClassWriter(0);
-                cn.accept(cw);
-                return cw.toByteArray();
-            }
-
-
-
-
-
-
-            double tmp = cn.methods.size();
-            cn.methods.removeIf(mn -> isBadMethod(mn, cn.name));
-
-
-            possibility = num / tmp;
-            System.out.println("The danger-value of class "+cn.name+":"+possibility);
-
-            if(possibility > 0.6d){
-                System.out.println(cn.name+"is too dangerous. Destroy it.");
-                FuckClass(cn);
-                ClassWriter cw = new ClassWriter(0);
-                cn.accept(cw);
-                return cw.toByteArray();
-            }
-
-            else if(possibility > 0.4d){
-                System.out.println(cn.name+"contains too many dangerous methods.Fucking those methods.");
-                for(MethodNode m : cached_methods) {
-                    cn.methods.remove(m);
-                }
-            }
-
-            for(FieldNode field : cn.fields){
-                if(isBadField(field))BadFields.add(field);
-            }
-
-
-            ClassWriter cw = new ClassWriter(0);
-
-            cn.accept(cw);
-
-            return cw.toByteArray();
         }
-        return basicClass;
+
+        if (result) {
+            if (DEBUG() && (boolean) Sqlite.GetValueFromTable("class_info", "LOG_CONFIG", 0) && !shouldNotPrint(clazz))
+                System.out.println("Ignore good class:" + clazz);
+        } else {
+            if (DEBUG() && (boolean) Sqlite.GetValueFromTable("class_info", "LOG_CONFIG", 0) && !shouldNotPrint(clazz)) {
+                System.out.println("Examine class:" + clazz);
+            }
+        }
+
+        return result;
     }
 
     private static boolean isBadInject(String s) {//Holy Shit.
@@ -398,31 +292,142 @@ public class MikuTransformer implements IClassTransformer {
         return false;
     }
 
+    @Override
+    public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if(!isGoodClass(transformedName)){
+            cached_methods.clear();
+            num = 0.0d;
 
-    //ShitMountain #4
-    private static boolean isGoodClass(String clazz){
-        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") ||
-                clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)") || clazz.matches("org.objectweb.(.*)") ||
-                clazz.matches("com.google.(.*)") || clazz.matches("java.(.*)") || clazz.matches("io.netty.(.*)") ||
-                clazz.matches("org.apache.(.*)") || clazz.matches("com.mojang.(.*)") || clazz.matches("com.sun.(.*)") ||
-                clazz.matches("org.lwjgl.(.*)") || clazz.matches("org.spongepowered.(.*)") || clazz.matches("scala.(.*)") ||
-                clazz.matches("net.optifine(.*)") || clazz.matches("org.sqlite.") || clazz.matches("com.intellij.(.*)") ||
-                clazz.matches("joptsimple.(.*)") || clazz.matches("org.jline(.*)") || clazz.matches("net.java.(.*)") ||
-                clazz.matches("com.ibm.(.*)") || clazz.matches("it.unimi.dsi.(.*)") || clazz.matches("com.typesafe.(.*)") ||
-                clazz.matches("com.jcraft.(.*)") || clazz.matches("com.github.(.*)");
+            ClassReader cr = new ClassReader(basicClass);
+            ClassNode cn = new ClassNode();
 
-        for(String s : white_list){
-            if (clazz.matches(s)) {
-                result = true;
-                break;
+
+            cr.accept(cn, 0);
+
+            if (DEBUG()) {
+                print("Class name:" + cn.name);
+                print("Class sign:" + cn.signature);
+                print("outer class:" + cn.outerClass);
+                print("outer method:" + cn.outerMethod);
+                print("outer method desc:" + cn.outerMethodDesc);
+                System.out.println("Interfaces:");
+                for (String s : cn.interfaces) {
+                    print(s);
+                }
             }
-        }
+            if (cn.visibleAnnotations != null) {
+                System.out.println("visibleAnnotations:");
+                for (AnnotationNode an : cn.visibleAnnotations) {
+                    if (DEBUG()) {
+                        print(an.desc);
+                        if (an.values != null) print(an.values.toString());
+                    }
+                }
+            }
 
-        if(result){
-            if(DEBUG() && (boolean) Sqlite.GetValueFromTable("class_info","LOG_CONFIG",0) && !shouldNotPrint(clazz))System.out.println("Ignore good class:"+clazz);
-        }
+            if (cn.visibleTypeAnnotations != null) for (TypeAnnotationNode an : cn.visibleTypeAnnotations) {
+                {
+                    System.out.println("visibleTypeAnnotations:");
+                    if (DEBUG()) {
+                        print(an.desc);
+                        if (an.values != null) print(an.values.toString());
+                    }
+                }
+            }
 
-        return result;
+            if (cn.invisibleAnnotations != null) {
+                System.out.println("invisibleAnnotations:");
+                for (AnnotationNode an : cn.invisibleAnnotations) {
+                    if (DEBUG()) {
+                        print(an.desc);
+                        if (an.values != null) print(an.values.toString());
+                    }
+                    if (Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")) {
+                        System.out.println("Found mixin class:" + cn.name + ",fucking it.");
+                        FuckMixinClass(cn);
+                        ClassWriter cw = new ClassWriter(0);
+                        cn.accept(cw);
+                        return cw.toByteArray();
+                    }
+                }
+            }
+
+            if (cn.invisibleTypeAnnotations != null) {
+                System.out.println("invisibleTypeAnnotations:");
+                for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
+                    if (DEBUG()) {
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                }
+            }
+
+
+            if (transformedName.toLowerCase().matches("(.*)transformer(.*)")) {
+                for (MethodNode mn : cn.methods) {
+                    if (Objects.equals(mn.name, "transform")) {
+                        System.out.println("Find coremod that is not in whitelist. Destroying it.");
+                        System.out.println("If this breaks innocent mods,report this on https://github.com/mcst12345/MikuLib/issues");
+                        mn.visitCode();
+                        Label label0 = new Label();
+                        mn.visitLabel(label0);
+                        mn.visitLineNumber(8, label0);
+                        mn.visitVarInsn(ALOAD, 3);
+                        mn.visitInsn(ARETURN);
+                        mn.visitMaxs(1, 4);
+                        mn.visitEnd();
+                        break;
+                    }
+                }
+            }
+
+            if(isBadClass(transformedName)){
+                System.out.println("Find dangerous class "+cn.name+",fucking it.");
+                FuckClass(cn);
+                ClassWriter cw = new ClassWriter(0);
+                cn.accept(cw);
+                return cw.toByteArray();
+            }
+
+
+
+
+
+
+            double tmp = cn.methods.size();
+            cn.methods.removeIf(mn -> isBadMethod(mn, cn.name));
+
+
+            possibility = num / tmp;
+            System.out.println("The danger-value of class "+cn.name+":"+possibility);
+
+            if(possibility > 0.6d){
+                System.out.println(cn.name+"is too dangerous. Destroy it.");
+                FuckClass(cn);
+                ClassWriter cw = new ClassWriter(0);
+                cn.accept(cw);
+                return cw.toByteArray();
+            }
+
+            else if(possibility > 0.4d){
+                System.out.println(cn.name+"contains too many dangerous methods.Fucking those methods.");
+                for(MethodNode m : cached_methods) {
+                    cn.methods.remove(m);
+                }
+            }
+
+            for(FieldNode field : cn.fields){
+                if(isBadField(field))BadFields.add(field);
+            }
+
+
+            ClassWriter cw = new ClassWriter(0);
+
+            cn.accept(cw);
+
+            return cw.toByteArray();
+        }
+        return basicClass;
     }
 
 
