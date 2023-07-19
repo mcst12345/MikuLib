@@ -17,4 +17,8 @@ public class MikuArrayList<E> extends ArrayList<E> {
         }
         return super.add(var1);
     }
+
+    public MikuArrayList(int var1) {
+        super(var1);
+    }
 }

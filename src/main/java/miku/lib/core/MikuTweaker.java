@@ -21,6 +21,14 @@ public class MikuTweaker implements ITweaker {
     public static Map<String, Class<?>> cachedClasses = null;
 
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
+        InitSqlite();
+        Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
+        cachedClasses.setAccessible(true);
+        MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
+        fucker.start();
+    }
+
+    protected void InitSqlite() throws IOException {
         boolean flag = true;
         for (File file : Objects.requireNonNull(new File("mods").listFiles())) {
             if (file.getName().equals("MikuLib-SQlite-1.0.jar")) {//Check is the sqlite loader installed.
@@ -42,11 +50,8 @@ public class MikuTweaker implements ITweaker {
             System.out.println("MikuLib has just extracted the sqlite loader of it. Please restart the game.");
             FMLCommonHandler.instance().exitJava(0, true);
         }
-        Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
-        cachedClasses.setAccessible(true);
-        MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
-        fucker.start();
     }
+
     private String[] args;
 
     @Override
