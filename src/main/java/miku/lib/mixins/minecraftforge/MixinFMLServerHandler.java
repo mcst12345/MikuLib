@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraftforge;
 
 import miku.lib.core.MikuTransformer;
+import miku.lib.core.MikuTweaker;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.IFMLSidedHandler;
@@ -27,6 +28,7 @@ public abstract class MixinFMLServerHandler implements IFMLSidedHandler {
     @Override
     public void beginServerLoading(MinecraftServer minecraftServer)
     {
+        MikuTweaker.task.cancel();
         server = minecraftServer;
         Loader.instance().loadMods(injectedModContainers);
         Sqlite.Init();

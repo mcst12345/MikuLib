@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraftforge;
 
 import com.google.common.collect.Maps;
 import miku.lib.core.MikuTransformer;
+import miku.lib.core.MikuTweaker;
 import miku.lib.sqlite.Sqlite;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -45,6 +46,7 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
     @Overwrite
     public void beginMinecraftLoading(Minecraft minecraft, List<IResourcePack> resourcePackList, IReloadableResourceManager resourceManager, MetadataSerializer metaSerializer)
     {
+        MikuTweaker.task.cancel();
         detectOptifine();
         SplashProgress.start();
         client = minecraft;

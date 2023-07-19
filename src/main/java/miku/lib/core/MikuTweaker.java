@@ -20,6 +20,8 @@ import java.util.*;
 public class MikuTweaker implements ITweaker {
     public static List<IClassTransformer> transformers = null;
 
+    public static TimerTask task = null;
+
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
         boolean flag = true;
         for (File file : Objects.requireNonNull(new File("mods").listFiles())) {
@@ -45,9 +47,9 @@ public class MikuTweaker implements ITweaker {
         Field field = Launch.classLoader.getClass().getDeclaredField("transformers");
         transformers = (List<IClassTransformer>) field.get(Launch.classLoader);
         Timer timer = new Timer(false);
-        TimerTask task = new TimerTask() {
+        task = new TimerTask() {
             public void run() {
-                transformers.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));
+                transformers.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));//Fuck other transformers.
             }
         };
         timer.schedule(task, 1L);
