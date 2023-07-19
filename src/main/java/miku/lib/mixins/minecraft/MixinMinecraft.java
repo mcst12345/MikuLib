@@ -510,20 +510,17 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     /**
      * @author mcst12345
-     * @reason F
+     * @reason Fuck
      */
     @Overwrite
-    private void runTickMouse() throws IOException
-    {
-        while (Mouse.next())
-        {
+    public void runTickMouse() throws IOException {
+        while (Mouse.next()) {
             if (net.minecraftforge.client.ForgeHooksClient.postMouseEvent()) continue;
 
             int i = Mouse.getEventButton();
             KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
 
-            if (Mouse.getEventButtonState())
-            {
+            if (Mouse.getEventButtonState()) {
                 if (this.player.isSpectator() && i == 2)
                 {
                     this.ingameGUI.getSpectatorGui().onMiddleClick();
