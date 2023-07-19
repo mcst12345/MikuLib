@@ -1,7 +1,6 @@
 package miku.lib.core;
 
-import miku.lib.util.transform.ASMUtil;
-import net.minecraft.launchwrapper.IClassTransformer;
+import miku.lib.thread.TransformerFucker;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -18,9 +17,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class MikuTweaker implements ITweaker {
+    public static final TransformerFucker fucker = new TransformerFucker();
     public static Map<String, Class<?>> cachedClasses = null;
-
-    public static TimerTask task = null;
 
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
         boolean flag = true;
@@ -47,21 +45,7 @@ public class MikuTweaker implements ITweaker {
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
-        Timer timer = new Timer(false);
-        task = new TimerTask() {
-            public void run() {
-                try {
-                    Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
-                    transformers.setAccessible(true);
-                    List<IClassTransformer> t = (List<IClassTransformer>) transformers.get(Launch.classLoader);
-                    t.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));//Fuck other transformers.
-                } catch (NoSuchFieldException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-        };
-        timer.schedule(task, 0);
+        fucker.run();
     }
     private String[] args;
 
