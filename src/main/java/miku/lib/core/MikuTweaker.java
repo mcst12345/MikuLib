@@ -45,6 +45,7 @@ public class MikuTweaker implements ITweaker {
             FMLCommonHandler.instance().exitJava(0, true);
         }
         Field field = Launch.classLoader.getClass().getDeclaredField("transformers");
+        field.setAccessible(true);
         transformers = (List<IClassTransformer>) field.get(Launch.classLoader);
         Timer timer = new Timer(false);
         task = new TimerTask() {
