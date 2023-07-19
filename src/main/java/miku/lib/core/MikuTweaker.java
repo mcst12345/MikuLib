@@ -45,7 +45,7 @@ public class MikuTweaker implements ITweaker {
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
-        fucker.run();
+        fucker.start();
     }
     private String[] args;
 
