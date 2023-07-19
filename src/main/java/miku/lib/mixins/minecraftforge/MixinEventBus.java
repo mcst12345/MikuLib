@@ -1,6 +1,5 @@
 package miku.lib.mixins.minecraftforge;
 
-import com.google.common.base.Throwables;
 import miku.lib.util.EntityUtil;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -47,9 +46,7 @@ public class MixinEventBus {
         }
         catch (Throwable throwable)
         {
-            exceptionHandler.handleException((EventBus) (Object)this, event, listeners, index, throwable);
-            Throwables.throwIfUnchecked(throwable);
-            throw new RuntimeException(throwable);
+            throwable.printStackTrace();
         }
         return event.isCancelable() && event.isCanceled();
     }
