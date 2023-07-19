@@ -91,7 +91,7 @@ public class MikuTransformer implements IClassTransformer {
                 for (AnnotationNode an : cn.visibleAnnotations) {
                     if (DEBUG()) {
                         print(an.desc);
-                        print(an.values.toString());
+                        if (an.values != null) print(an.values.toString());
                     }
                 }
             }
@@ -101,7 +101,7 @@ public class MikuTransformer implements IClassTransformer {
                     System.out.println("visibleTypeAnnotations:");
                     if (DEBUG()) {
                         print(an.desc);
-                        print(an.values.toString());
+                        if (an.values != null) print(an.values.toString());
                     }
                 }
             }
@@ -111,7 +111,7 @@ public class MikuTransformer implements IClassTransformer {
                 for (AnnotationNode an : cn.invisibleAnnotations) {
                     if (DEBUG()) {
                         print(an.desc);
-                        print(an.values.toString());
+                        if (an.values != null) print(an.values.toString());
                     }
                     if (Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")) {
                         System.out.println("Found mixin class:" + cn.name + ",fucking it.");
