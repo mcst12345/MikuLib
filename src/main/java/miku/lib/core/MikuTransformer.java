@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static miku.lib.sqlite.Sqlite.DEBUG;
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ARETURN;
 
 public class MikuTransformer implements IClassTransformer {
     private static boolean decompiler = false;
@@ -73,14 +74,70 @@ public class MikuTransformer implements IClassTransformer {
 
             cr.accept(cn, 0);
 
+            if (DEBUG()) {
+                print("Class name:" + cn.name);
+                print("Class sign:" + cn.signature);
+                print("outer class:" + cn.outerClass);
+                print("outer method:" + cn.outerMethod);
+                print("outer method desc:" + cn.outerMethodDesc);
+                System.out.println("Interfaces:");
+                for (String s : cn.interfaces) {
+                    print(s);
+                }
+            }
+            if (cn.visibleAnnotations != null) {
+                System.out.println("visibleAnnotations:");
+                for (AnnotationNode an : cn.visibleAnnotations) {
+                    if (DEBUG()) {
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                }
+            }
+
+            if (cn.visibleTypeAnnotations != null) for (TypeAnnotationNode an : cn.visibleTypeAnnotations) {
+                {
+                    System.out.println("visibleTypeAnnotations:");
+                    if (DEBUG()) {
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                }
+            }
+
+            if (cn.invisibleAnnotations != null) {
+                System.out.println("invisibleAnnotations:");
+                for (AnnotationNode an : cn.invisibleAnnotations) {
+                    if (DEBUG()) {
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                    if (Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")) {
+                        System.out.println("Found mixin class:" + cn.name + ",fucking it.");
+                        FuckMixinClass(cn);
+                        ClassWriter cw = new ClassWriter(0);
+                        cn.accept(cw);
+                        return cw.toByteArray();
+                    }
+                }
+            }
+
+            if (cn.invisibleTypeAnnotations != null) {
+                System.out.println("invisibleTypeAnnotations:");
+                for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
+                    if (DEBUG()) {
+                        print(an.desc);
+                        print(an.values.toString());
+                    }
+                }
+            }
 
 
-
-            if(transformedName.toLowerCase().matches("(.*)transformer(.*)")){
+            if (transformedName.toLowerCase().matches("(.*)transformer(.*)")) {
                 System.out.println("Find coremod that is not in whitelist. Fucking it.");
                 System.out.println("If this breaks innocent mods,report this on https://github.com/mcst12345/MikuLib/issues");
-                for(MethodNode mn : cn.methods){
-                    if(Objects.equals(mn.name, "transform")){
+                for (MethodNode mn : cn.methods) {
+                    if (Objects.equals(mn.name, "transform")) {
                         mn.visitCode();
                         Label label0 = new Label();
                         mn.visitLabel(label0);
@@ -101,63 +158,7 @@ public class MikuTransformer implements IClassTransformer {
                 return cw.toByteArray();
             }
 
-            if(DEBUG()){
-                print("Class name:"+cn.name);
-                print("Class sign:"+cn.signature);
-                print("outer class:"+cn.outerClass);
-                print("outer method:"+cn.outerMethod);
-                print("outer method desc:"+cn.outerMethodDesc);
-                System.out.println("Interfaces:");
-                for(String s : cn.interfaces){
-                    print(s);
-                }
-            }
-            if(cn.visibleAnnotations!=null) {
-                System.out.println("visibleAnnotations:");
-                for (AnnotationNode an : cn.visibleAnnotations) {
-                    if(DEBUG()){
-                        print(an.desc);
-                        print(an.values.toString());
-                    }
-                }
-            }
 
-            if(cn.visibleTypeAnnotations!=null)for(TypeAnnotationNode an : cn.visibleTypeAnnotations){
-                {
-                    System.out.println("visibleTypeAnnotations:");
-                    if(DEBUG()){
-                        print(an.desc);
-                        print(an.values.toString());
-                    }
-                }
-            }
-
-            if(cn.invisibleAnnotations!=null) {
-                System.out.println("invisibleAnnotations:");
-                for (AnnotationNode an : cn.invisibleAnnotations) {
-                    if(DEBUG()){
-                        print(an.desc);
-                        print(an.values.toString());
-                    }
-                    if(Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")){
-                        System.out.println("Found mixin class:"+cn.name+",fucking it.");
-                        FuckMixinClass(cn);
-                        ClassWriter cw = new ClassWriter(0);
-                        cn.accept(cw);
-                        return cw.toByteArray();
-                    }
-                }
-            }
-
-            if(cn.invisibleTypeAnnotations!=null) {
-                System.out.println("invisibleTypeAnnotations:");
-                for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
-                    if(DEBUG()){
-                        print(an.desc);
-                        print(an.values.toString());
-                    }
-                }
-            }
 
 
 
