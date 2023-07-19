@@ -47,17 +47,17 @@ public class MikuTransformer implements IClassTransformer {
 
 
     //ShitMountain #1
-    protected static final String[] white_list = new String[]{"zone.rong.(.*)","pl.asie.(.*)","micdoodle8.(.*)",
-            "noppes.(.*)","mezz.(.*)","com.brandon3055.(.*)","codechicken.(.*)","twilightforest.(.*)",
-            "moze_intel.(.*),","cofh.(.*)","alexiy.(.*)","vazkii.(.*)","sweetmagic.(.*)","stevekung.(.*)",
-            "com.dhanantry.(.*)","com.therandomlabs.(.*)","thebetweenlands.(.*)","java.com.pg85.otg.forge.(.*)",
-            "com.gildedgames.(.*)","com.lulan.shincolle.(.*)","net.blay09.mods.waystones.(.*)","com.xwm.(.*)",
-            "snownee.(.*)","mcp.mobius.waila.(.*)","matteroverdrive.(.*)","com.mrcrayfish.(.*)","gregtech.(.*)",
-            "xaero.(.*)","com.sci.(.*)","com.lilacmods.(.*)","cn.academy.(.*)","tragicneko.(.*)","com.github.alexthe666.(.*)",
-            "ic2.(.*)","com.vicmatskiv.(.*)","com.shinoow.(.*)","morph.(.*)","appeng.(.*)","com.lucunji.(.*)","software.bernie.(.*)",
-            "com.enderio.(.*)","forestry.(.*)","com.pam.harvestcraft.(.*)","slimeknights.(.*)","com.rwtema.(.*)","cn.mcmod.(.*)",
-            "cn.mcmod_mmf.(.*)","galaxyspace.(.*)","com.gildedgames.(.*)","blusunrize.(.*)","com.mega.(.*)","koala.(.*)","net.tslat.(.*)",
-            "com.ferreusveritas.(.*)","harmonised.(.*)","mod.acgaming.(.*)","openeye.(.*)"};
+    protected static final String[] white_list = new String[]{"zone.rong.(.*)", "pl.asie.(.*)", "micdoodle8.(.*)",
+            "noppes.(.*)", "mezz.(.*)", "com.brandon3055.(.*)", "codechicken.(.*)", "twilightforest.(.*)",
+            "moze_intel.(.*),", "cofh.(.*)", "alexiy.(.*)", "vazkii.(.*)", "sweetmagic.(.*)", "stevekung.(.*)",
+            "com.dhanantry.(.*)", "com.therandomlabs.(.*)", "thebetweenlands.(.*)", "java.com.pg85.otg.forge.(.*)",
+            "com.gildedgames.(.*)", "com.lulan.shincolle.(.*)", "net.blay09.mods.waystones.(.*)", "com.xwm.(.*)",
+            "snownee.(.*)", "mcp.mobius.waila.(.*)", "matteroverdrive.(.*)", "com.mrcrayfish.(.*)", "gregtech.(.*)",
+            "xaero.(.*)", "com.sci.(.*)", "com.lilacmods.(.*)", "cn.academy.(.*)", "tragicneko.(.*)", "com.github.alexthe666.(.*)",
+            "ic2.(.*)", "com.vicmatskiv.(.*)", "com.shinoow.(.*)", "morph.(.*)", "appeng.(.*)", "com.lucunji.(.*)", "software.bernie.(.*)",
+            "com.enderio.(.*)", "forestry.(.*)", "com.pam.harvestcraft.(.*)", "slimeknights.(.*)", "com.rwtema.(.*)", "cn.mcmod.(.*)",
+            "cn.mcmod_mmf.(.*)", "galaxyspace.(.*)", "com.gildedgames.(.*)", "blusunrize.(.*)", "com.mega.(.*)", "koala.(.*)", "net.tslat.(.*)",
+            "com.ferreusveritas.(.*)", "harmonised.(.*)", "mod.acgaming.(.*)", "openeye.(.*)", "mods.flammpfeil.slashblade.(.*)"};
     public static final List<FieldNode> BadFields = new ArrayList<>();
     protected static final List<MethodNode> cached_methods = new ArrayList<>();
     protected static double possibility;

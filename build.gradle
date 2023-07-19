@@ -97,6 +97,7 @@ jar {
         ])
         attributes([
                 'TweakClass': 'miku.lib.core.MikuTweaker',
+                'TweakOrder': '0'
         ])
     }
     from{
