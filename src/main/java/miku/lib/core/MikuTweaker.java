@@ -18,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class MikuTweaker implements ITweaker {
-    public static List<IClassTransformer> transformers = null;
     public static Map<String, Class<?>> cachedClasses = null;
 
     public static TimerTask task = null;
@@ -45,16 +44,21 @@ public class MikuTweaker implements ITweaker {
             System.out.println("MikuLib has just extracted the sqlite loader of it. Please restart the game.");
             FMLCommonHandler.instance().exitJava(0, true);
         }
-        Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
         cachedClasses.setAccessible(true);
-        transformers.setAccessible(true);
-        MikuTweaker.transformers = (List<IClassTransformer>) transformers.get(Launch.classLoader);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
         Timer timer = new Timer(false);
         task = new TimerTask() {
             public void run() {
-                MikuTweaker.transformers.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));//Fuck other transformers.
+                try {
+                    Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
+                    transformers.setAccessible(true);
+                    List<IClassTransformer> t = (List<IClassTransformer>) transformers.get(Launch.classLoader);
+                    t.removeIf(transformer -> !ASMUtil.isGoodClass(transformer.getClass().toString().substring(5).trim()));//Fuck other transformers.
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         };
         timer.schedule(task, 0);
