@@ -208,13 +208,16 @@ public class MikuTransformer implements IClassTransformer {
                 s.contains("[recreatePlayerEntity]") || s.contains("[readPlayerData]") || s.contains("[writePlayerData]") || s.contains("[shouldRender]") || s.contains("[bindEntityTexture]") || s.contains("[doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V]") || s.contains("[displayGuiScreen]") ||
                 s.contains("[removeEntityFromWorld]") || s.contains("[post]") || s.contains("[setCount]") || s.contains("[getCount]") || s.contains("[isItemStackDamageable]") || s.contains("[isItemDamaged]") || s.contains("[setItemDamage]") || s.contains("[getItemDamage]") || s.contains("[getMaxDamage]") ||
                 s.contains("[attemptDamageItem]") || s.contains("[canDestroy]") || s.contains("[onLivingUpdate]") || s.contains("[onUpdate]") || s.contains("[writeEntityToNBT]") || s.contains("[readEntityFromNBT]") || s.contains("[canDespawn]") || s.contains("[updateEntityActionState]") || s.contains("[getItemStackFromSlot]") ||
-                s.contains("[setItemStackToSlot]") || s.contains("[setNoAI]");
+                s.contains("[setItemStackToSlot]") || s.contains("[setNoAI]") || s.contains("[addEventListener]") || s.contains("[removeEventListener]") || s.contains("[updateEntities]") || s.contains("[tickPlayers]") || s.contains("[updateEntity]") || s.contains("[updateEntityWithOptionalForce]") || s.contains("[tick]") ||
+                s.contains("[getLoadedEntityList]") || s.contains("[loadEntities]") || s.contains("[unloadEntities]");
     }
 
     private static boolean isBadOverwrite(String s){
         return s.equals("func_174812_G") || s.equals("func_70106_y") || s.equals("func_70097_a") || s.equals("func_71019_a") || s.equals("func_71040_bB") || s.equals("func_145779_a") || s.equals("func_70099_a") || s.equals("func_70089_S") || s.equals("func_70609_aI") || s.equals("func_130011_c") ||
                 s.equals("func_110143_aJ") || s.equals("func_70606_j") || s.equals("func_70645_a") || s.equals("func_70665_d") || s.equals("func_110138_aP") || s.equals("func_70103_a") || s.equals("func_70610_aX") || s.equals("func_70659_e") || s.equals("func_70689_ay") || s.equals("func_70652_k") ||
-                s.equals("func_70071_h_") || s.equals("func_70014_b") || s.equals("func_70037_a") || s.equals("func_70636_d") || s.equals("func_70692_ba") ||s.equals("func_70626_be") || s.equals("func_184582_a") || s.equals("func_184201_a") || s.equals("func_174820_d") || s.equals("func_94061_f");
+                s.equals("func_70071_h_") || s.equals("func_70014_b") || s.equals("func_70037_a") || s.equals("func_70636_d") || s.equals("func_70692_ba") || s.equals("func_70626_be") || s.equals("func_184582_a") || s.equals("func_184201_a") || s.equals("func_174820_d") || s.equals("func_94061_f") ||
+                s.equals("func_72838_d") || s.equals("func_72923_a") || s.equals("func_72847_b") || s.equals("func_72900_e") || s.equals("func_72973_f") || s.equals("func_72954_a") || s.equals("func_72848_b") || s.equals("func_72939_s") || s.equals("func_184147_l") || s.equals("func_72870_g") ||
+                s.equals("func_72866_a") || s.equals("func_72835_b") || s.equals("func_72910_y") || s.equals("func_175650_b") || s.equals("func_175681_c");
     }
 
     private static void FuckMixinClass(ClassNode cn){
