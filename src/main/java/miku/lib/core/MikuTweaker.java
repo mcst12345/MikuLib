@@ -1,6 +1,8 @@
 package miku.lib.core;
 
 import miku.lib.thread.TransformerFucker;
+import miku.lib.util.MikuArrayListForTransformer;
+import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
@@ -22,10 +24,21 @@ public class MikuTweaker implements ITweaker {
 
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
         InitSqlite();
+        Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
+        transformers.setAccessible(true);
+        List<IClassTransformer> t = (List<IClassTransformer>) transformers.get(Launch.classLoader);
+        if (!(t instanceof MikuArrayListForTransformer)) {
+            MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<IClassTransformer>(2);
+            for (IClassTransformer i : t) {
+                fucked.add(i);
+            }
+            transformers.set(Launch.classLoader, fucked);
+        }
+
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
-        fucker.start();
+        //fucker.start();
     }
 
     protected void InitSqlite() throws IOException {
