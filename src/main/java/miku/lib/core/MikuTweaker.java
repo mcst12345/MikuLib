@@ -82,7 +82,7 @@ public class MikuTweaker implements ITweaker {
 
         //Add our transformer
         classLoader.registerTransformer("miku.lib.core.MikuTransformer");
-        classLoader.registerTransformer("miku.lib.core.AccessTransformer");
+        //classLoader.registerTransformer("miku.lib.core.AccessTransformer");
         try {
             CoreModManager.getIgnoredMods().remove(new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getName());
             //remove us from the CoreMod ignored list.
