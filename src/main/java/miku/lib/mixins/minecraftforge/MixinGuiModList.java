@@ -52,8 +52,7 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
      * @reason ...
      */
     @Overwrite
-    private void updateCache()
-    {
+    public void updateCache() {
         configModButton.visible = false;
         disableModButton.visible = false;
         modInfo = null;
@@ -61,7 +60,7 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
         if (selectedMod == null)
             return;
 
-        System.out.println("Mod id is:"+selectedMod.getModId());
+        System.out.println("Mod id is:" + selectedMod.getModId());
 
         boolean miku = Objects.equals(selectedMod.getModId(), "mikulib");
 

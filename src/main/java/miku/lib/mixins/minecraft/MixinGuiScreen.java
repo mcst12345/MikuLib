@@ -17,14 +17,12 @@ public abstract class MixinGuiScreen extends Gui {
      * @reason F
      */
     @Overwrite
-    protected void keyTyped(char typedChar, int keyCode) {
-        if (keyCode == 1)
-        {
+    public void keyTyped(char typedChar, int keyCode) {
+        if (keyCode == 1) {
             this.mc.displayGuiScreen(null);
 
-            if (this.mc.currentScreen == null)
-            {
-                ((iMinecraft)this.mc).SET_INGAME_FOCUS();
+            if (this.mc.currentScreen == null) {
+                ((iMinecraft) this.mc).SET_INGAME_FOCUS();
             }
         }
     }

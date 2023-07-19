@@ -110,7 +110,7 @@ public abstract class MixinItemStack {
      */
     @Nullable
     @Overwrite(remap = false)
-    private Item getItemRaw(){
+    public Item getItemRaw() {
         return Sqlite.IS_ITEM_BANNED(this.item) ? null : this.item;
     }
 

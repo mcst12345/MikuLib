@@ -43,13 +43,12 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
      * @reason ...
      */
     @Overwrite
-    protected void tickPlayers()
-    {
+    public void tickPlayers() {
         super.tickPlayers();
         this.profiler.endStartSection("players");
 
         for (Entity entity : this.playerEntities) {
-            if(SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity))continue;
+            if (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity)) continue;
             Entity entity1 = entity.getRidingEntity();
 
             if (entity1 != null) {

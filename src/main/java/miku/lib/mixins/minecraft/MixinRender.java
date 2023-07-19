@@ -18,8 +18,8 @@ public abstract class MixinRender<T extends Entity> {
         if(EntityUtil.isProtected(livingEntity) && (livingEntity instanceof EntityPlayer))cir.setReturnValue(true);
     }
 
-    @Inject(at=@At("HEAD"),method = "bindEntityTexture", cancellable = true)
-    protected void bindEntityTexture(T entity, CallbackInfoReturnable<Boolean> cir){
-        if(EntityUtil.isDEAD(entity))cir.setReturnValue(true);
+    @Inject(at = @At("HEAD"), method = "bindEntityTexture", cancellable = true)
+    public void bindEntityTexture(T entity, CallbackInfoReturnable<Boolean> cir) {
+        if (EntityUtil.isDEAD(entity)) cir.setReturnValue(true);
     }
 }

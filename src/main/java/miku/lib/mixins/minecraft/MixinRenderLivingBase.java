@@ -20,14 +20,13 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
         super(renderManager);
     }
 
-    @Inject(at=@At("HEAD"),method = "applyRotations")
-    protected void applyRotations(T entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci){
-        if(EntityUtil.isProtected(entityLiving)){
+    @Inject(at = @At("HEAD"), method = "applyRotations")
+    public void applyRotations(T entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci) {
+        if (EntityUtil.isProtected(entityLiving)) {
             GlStateManager.rotate(180.0F - rotationYaw, 0.0F, 1.0F, 0.0F);
             String s = TextFormatting.getTextWithoutFormattingCodes(entityLiving.getName());
 
-            if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof EntityPlayer) || ((EntityPlayer) entityLiving).isWearing(EnumPlayerModelParts.CAPE)))
-            {
+            if (("Dinnerbone".equals(s) || "Grumm".equals(s)) && (!(entityLiving instanceof EntityPlayer) || ((EntityPlayer) entityLiving).isWearing(EnumPlayerModelParts.CAPE))) {
                 GlStateManager.translate(0.0F, entityLiving.height + 0.1F, 0.0F);
                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
             }

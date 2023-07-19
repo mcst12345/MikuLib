@@ -38,14 +38,12 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
      * @reason For MikuEffect
      */
     @Overwrite
-    private void drawActivePotionEffects()
-    {
+    public void drawActivePotionEffects() {
         int i = this.guiLeft - 124;
         int j = this.guiTop;
         Collection<PotionEffect> collection = this.mc.player.getActivePotionEffects();
 
-        if (!collection.isEmpty())
-        {
+        if (!collection.isEmpty()) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.disableLighting();
             int l = 33;

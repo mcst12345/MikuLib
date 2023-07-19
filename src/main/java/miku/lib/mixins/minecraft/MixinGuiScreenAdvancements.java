@@ -15,15 +15,11 @@ public abstract class MixinGuiScreenAdvancements extends GuiScreen{
      * @reason F
      */
     @Overwrite
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
-    {
-        if (keyCode == this.mc.gameSettings.keyBindAdvancements.getKeyCode())
-        {
+    public void keyTyped(char typedChar, int keyCode) throws IOException {
+        if (keyCode == this.mc.gameSettings.keyBindAdvancements.getKeyCode()) {
             this.mc.displayGuiScreen(null);
-            ((iMinecraft)this.mc).SET_INGAME_FOCUS();
-        }
-        else
-        {
+            ((iMinecraft) this.mc).SET_INGAME_FOCUS();
+        } else {
             super.keyTyped(typedChar, keyCode);
         }
     }

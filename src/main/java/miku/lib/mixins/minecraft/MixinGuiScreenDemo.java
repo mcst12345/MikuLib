@@ -21,14 +21,12 @@ public abstract class MixinGuiScreenDemo extends GuiScreen{
      * @reason F
      */
     @Overwrite
-    protected void actionPerformed(GuiButton button) {
-        switch (button.id)
-        {
+    public void actionPerformed(GuiButton button) {
+        switch (button.id) {
             case 1:
                 button.enabled = false;
 
-                try
-                {
+                try {
                     Class<?> oclass = Class.forName("java.awt.Desktop");
                     Object object = oclass.getMethod("getDesktop").invoke(null);
                     oclass.getMethod("browse", URI.class).invoke(object, new URI("http://www.minecraft.net/store?source=demo"));

@@ -15,9 +15,8 @@ public abstract class MixinGuiIngameMenu extends GuiScreen{
      * @reason F
      */
     @Overwrite
-    protected void actionPerformed(GuiButton button) {
-        switch (button.id)
-        {
+    public void actionPerformed(GuiButton button) {
+        switch (button.id) {
             case 0:
                 this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
                 break;
