@@ -1,6 +1,5 @@
 package miku.lib.core;
 
-import miku.lib.thread.TransformerFucker;
 import miku.lib.util.MikuArrayListForTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.ITweaker;
@@ -19,7 +18,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class MikuTweaker implements ITweaker {
-    public static final TransformerFucker fucker = new TransformerFucker();
     public static Map<String, Class<?>> cachedClasses = null;
 
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -32,7 +30,7 @@ public class MikuTweaker implements ITweaker {
             for (IClassTransformer i : t) {
                 fucked.add(i);
             }
-            transformers.set(Launch.classLoader, fucked);
+            transformers.set(Launch.classLoader, fucked);//Fuck other transformers.
         }
 
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");

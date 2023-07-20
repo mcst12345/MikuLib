@@ -5,6 +5,7 @@
   "mixins": [
     "MixinCommandSetDimension",
     "MixinEventBus",
+    "MixinFMLModContainer",
     "MixinForgeCommandHandler",
     "MixinForgeHooks",
     "MixinGuiModList",

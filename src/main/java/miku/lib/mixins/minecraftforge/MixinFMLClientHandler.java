@@ -46,7 +46,6 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
     @Overwrite
     public void beginMinecraftLoading(Minecraft minecraft, List<IResourcePack> resourcePackList, IReloadableResourceManager resourceManager, MetadataSerializer metaSerializer)
     {
-        //MikuTweaker.fucker.stop();
         MikuTweaker.cachedClasses.clear();
         detectOptifine();
         SplashProgress.start();
