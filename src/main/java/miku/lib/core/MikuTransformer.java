@@ -27,7 +27,7 @@ public class MikuTransformer implements IClassTransformer {
             "ic2.(.*)", "com.vicmatskiv.(.*)", "com.shinoow.(.*)", "morph.(.*)", "appeng.(.*)", "com.lucunji.(.*)", "software.bernie.(.*)",
             "com.enderio.(.*)", "forestry.(.*)", "com.pam.harvestcraft.(.*)", "slimeknights.(.*)", "com.rwtema.(.*)", "cn.mcmod.(.*)",
             "cn.mcmod_mmf.(.*)", "galaxyspace.(.*)", "com.gildedgames.(.*)", "blusunrize.(.*)", "com.mega.(.*)", "koala.(.*)", "net.tslat.(.*)",
-            "com.ferreusveritas.(.*)", "harmonised.(.*)", "mod.acgaming.(.*)", "openeye.(.*)", "mods.flammpfeil.slashblade.(.*)"};
+            "com.ferreusveritas.(.*)", "harmonised.(.*)", "mod.acgaming.(.*)", "openeye.(.*)", "mods.flammpfeil.slashblade.(.*)", "crazypants.(.*)"};
 
     public MikuTransformer(){
         try {
