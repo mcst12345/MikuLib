@@ -33,7 +33,7 @@ public class ASMUtil {
         }
 
         if (clazz.matches("(.*)mixin(.*)") && !clazz.matches("(.*)org.spongepowered.(.*)") && !clazz.matches("(.*).mixinbooter.(.*)")) {
-            return =false;
+            result = false;
         }
 
         if (result) {
