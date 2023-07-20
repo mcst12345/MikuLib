@@ -1,6 +1,6 @@
 package miku.lib.util.transform;
 
-import miku.lib.core.CodeDecompiler;
+import miku.lib.core.InvokeDecompiler;
 import miku.lib.core.MikuTransformer;
 import miku.lib.sqlite.Sqlite;
 import org.objectweb.asm.Attribute;
@@ -65,7 +65,7 @@ public class ASMUtil {
     public static boolean isBadMethod(MethodNode method, String className) {
         boolean result = false;
         try {
-            List<String> codes = CodeDecompiler.diagnose(className, method);
+            List<String> codes = InvokeDecompiler.diagnose(className, method);
             int number = 0;
             for (String s : codes) {
                 if (BadInvoke(s)) number++;

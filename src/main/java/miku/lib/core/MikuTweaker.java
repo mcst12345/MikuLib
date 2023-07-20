@@ -7,6 +7,9 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.CoreModManager;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
@@ -16,8 +19,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class MikuTweaker implements ITweaker {
+    //Holy Fuck. Well,at least this is better than that package-based whitelist.
+    protected static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
+            "tickdynamic", "sweetmagic", "stevekung's_lib", "srparasites", "spaceambient", "smoothfont", "flammpfeil.slashblade", "shutupmodelloader", "scp", "redstoneflux", "randompatches", "projecteintegration",
+            "projecte", "placebo", "phosphor-lighting", "performant", "patchouli", "particleculling", "openterraingenerator", "oldjava", "neid", "non_update", "moreplanets", "testdummy", "mikulib", "mikulib_sqlite",
+            "miku", "memorycleaner", "maze", "matteroverdrive", "manaita_plus", "lovely_robot", "lostcities", "letmedespawn", "jeid", "rejoymod", "ic2", "ilib", "hammercore", "getittogetherdrops", "galaxyspace",
+            "galacticraftcore", "fpsreducer", "foamfix", "fastbench", "fastfurnace", "expequiv", "entityculling", "ageofminecraft", "ageofabyssalcraft", "ageofchaos", "ageofmutants", "enderio", "enderiobase",
+            "enderioconduits", "enderiopowertools", "enderioconduitsappliedenergistics", "enderioconduitsopencomputers", "enderioconduitsrefinedstorage", "enderiointegrationforestry", "enderiointegrationtic",
+            "enderiointegrationticlate", "enderioinvpanel", "enderiomachines", "endercore", "draconicevolution", "customnpcsfix", "customnpcs", "ctm", "codechickenlib", "clumps", "clearwater", "loliasm", "brandonscore",
+            "betterbiomeblend", "bedbreakbegone", "avaritia", "asmodeuscore", "appliedenergistics2", "aiimprovements", "abyssalcraft", "magic_maid"};
+    protected static final List<String> TransformerExclusions = new ArrayList<>();
     public static Map<String, Class<?>> cachedClasses = null;
 
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -33,6 +48,64 @@ public class MikuTweaker implements ITweaker {
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
+
+        for (File file : Objects.requireNonNull(new File("mods").listFiles())) {
+            if (file.getName().matches("(.*).jar")) {
+                try (JarFile jar = new JarFile(file)) {
+                    System.out.println("Reading jar file:" + jar.getName());
+                    List<String> classes = new ArrayList<>();
+                    boolean good = false;
+                    Enumeration<JarEntry> entries = jar.entries();
+                    while (entries.hasMoreElements()) {
+                        JarEntry jarEntry = entries.nextElement();
+                        if (!jarEntry.isDirectory()) { //是否为一个文件夹
+                            if (jarEntry.getName().matches("(.*).class")) {
+                                //System.out.println("Reading class:"+jarEntry.getName());
+                                classes.add(jarEntry.getName());
+                                InputStream classStream = jar.getInputStream(jarEntry);
+                                if (classStream == null) continue;
+                                //File classFile = new File("tmp/tmp.class");
+                                //FileUtils.copyInputStreamToFile(classStream,classFile);
+                                try {
+                                    ClassReader cr = new ClassReader(classStream);
+                                    ClassNode cn = new ClassNode();
+                                    cr.accept(cn, 0);
+                                    if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
+                                        if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
+                                            //System.out.println(an.values.toString());
+                                            boolean flag = false;
+                                            String modid = null;
+                                            for (Object o : an.values) {
+                                                if (flag) modid = (String) o;
+                                                if (o.equals("modid")) flag = true;
+                                            }
+                                            if (modid == null) {
+                                                System.out.println("The fuck?");
+                                                FMLCommonHandler.instance().exitJava(0, true);
+                                            } else {
+                                                for (String s : mod_id_white_list) {
+                                                    if (s.equals(modid)) {
+                                                        good = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                } catch (Throwable e) {
+                                    System.out.println("Ignore class file:" + jarEntry.getName());
+                                }
+                            }
+                        }
+                    }
+                    if (good) {
+                        System.out.println("Adding mod " + jar.getName() + "to TransformerExclusions");
+                        TransformerExclusions.addAll(classes);
+                    }
+                }
+            }
+        }
     }
 
     protected void InitSqlite() throws IOException {
