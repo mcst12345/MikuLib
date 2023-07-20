@@ -58,14 +58,12 @@ public class MikuTweaker implements ITweaker {
                     Enumeration<JarEntry> entries = jar.entries();
                     while (entries.hasMoreElements()) {
                         JarEntry jarEntry = entries.nextElement();
-                        if (!jarEntry.isDirectory()) { //是否为一个文件夹
+                        if (!jarEntry.isDirectory()) {
                             if (jarEntry.getName().matches("(.*).class")) {
                                 //System.out.println("Reading class:"+jarEntry.getName());
                                 classes.add(jarEntry.getName());
                                 InputStream classStream = jar.getInputStream(jarEntry);
                                 if (classStream == null) continue;
-                                //File classFile = new File("tmp/tmp.class");
-                                //FileUtils.copyInputStreamToFile(classStream,classFile);
                                 try {
                                     ClassReader cr = new ClassReader(classStream);
                                     ClassNode cn = new ClassNode();
@@ -96,6 +94,8 @@ public class MikuTweaker implements ITweaker {
                                 } catch (Throwable e) {
                                     System.out.println("Ignore class file:" + jarEntry.getName());
                                 }
+                            } else if (jarEntry.getName().matches("(.*)mcmod.info")) {
+                                //TODO ?
                             }
                         }
                     }
@@ -170,5 +170,12 @@ public class MikuTweaker implements ITweaker {
     @Override
     public String[] getLaunchArguments() {
         return new String[0];
+    }
+
+    public static boolean isGoodClass(String s) {
+        for (String c : TransformerExclusions) {
+            if (s.matches("(.*)" + c + "(.*)")) return true;
+        }
+        return false;
     }
 }
