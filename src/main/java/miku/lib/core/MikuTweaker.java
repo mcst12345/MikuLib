@@ -27,9 +27,7 @@ public class MikuTweaker implements ITweaker {
         List<IClassTransformer> t = (List<IClassTransformer>) transformers.get(Launch.classLoader);
         if (!(t instanceof MikuArrayListForTransformer)) {
             MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<IClassTransformer>(2);
-            for (IClassTransformer i : t) {
-                fucked.add(i);
-            }
+            for (IClassTransformer i : t) fucked.add(i);
             transformers.set(Launch.classLoader, fucked);//Fuck other transformers.
         }
 
@@ -90,8 +88,6 @@ public class MikuTweaker implements ITweaker {
         Mixins.addConfiguration("mixins.minecraft.json");
         Mixins.addConfiguration("mixins.mikulib.json");
         Mixins.addConfiguration("mixins.forge.json");
-
-
     }
 
     @Override
