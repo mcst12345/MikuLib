@@ -69,15 +69,18 @@ public class MikuTweaker implements ITweaker {
                                     ClassNode cn = new ClassNode();
                                     cr.accept(cn, 0);
                                     if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
-                                        boolean flag = false;
                                         if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
+                                            boolean flag = false;
                                             //System.out.println(an.values.toString());
                                             String modid = null;
                                             for (Object o : an.values) {
                                                 String s = (String) o;
                                                 System.out.println(s);
-                                                if (flag) modid = s;
-                                                if (s.matches("(.*)modid(.*)")) {
+                                                if (flag) {
+                                                    modid = s;
+                                                    break;
+                                                }
+                                                if (s.equals("modid")) {
                                                     flag = true;
                                                 }
                                             }
