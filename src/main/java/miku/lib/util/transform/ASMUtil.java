@@ -15,16 +15,15 @@ import static miku.lib.sqlite.Sqlite.DEBUG;
 public class ASMUtil {
     //ShitMountain #4
     public static boolean isGoodClass(String clazz) {
-        boolean result = clazz.matches("net.minecraft.(.*)") || clazz.matches("net.minecraftforge.(.*)") ||
-                clazz.matches("miku.(.*)") || clazz.matches("paulscode.(.*)") || clazz.matches("org.objectweb.(.*)") ||
-                clazz.matches("com.google.(.*)") || clazz.matches("java.(.*)") || clazz.matches("io.netty.(.*)") ||
-                clazz.matches("org.apache.(.*)") || clazz.matches("com.mojang.(.*)") || clazz.matches("com.sun.(.*)") ||
-                clazz.matches("org.lwjgl.(.*)") || clazz.matches("org.spongepowered.(.*)") || clazz.matches("scala.(.*)") ||
-                clazz.matches("net.optifine(.*)") || clazz.matches("org.sqlite.") || clazz.matches("com.intellij.(.*)") ||
-                clazz.matches("joptsimple.(.*)") || clazz.matches("org.jline(.*)") || clazz.matches("net.java.(.*)") ||
-                clazz.matches("com.ibm.(.*)") || clazz.matches("it.unimi.dsi.(.*)") || clazz.matches("com.typesafe.(.*)") ||
-                clazz.matches("com.jcraft.(.*)") || clazz.matches("com.github.(.*)") || clazz.matches("optifine.(.*)") ||
-                clazz.matches("$wrapper.net.minecraftforge.(.*)");
+        boolean result = clazz.matches("(.*)net.minecraft.(.*)") || clazz.matches("(.*)net.minecraftforge.(.*)") ||
+                clazz.matches("(.*)miku.(.*)") || clazz.matches("(.*)paulscode.(.*)") || clazz.matches("(.*)org.objectweb.(.*)") ||
+                clazz.matches("(.*)com.google.(.*)") || clazz.matches("(.*)java.(.*)") || clazz.matches("(.*)io.netty.(.*)") ||
+                clazz.matches("(.*)org.apache.(.*)") || clazz.matches("(.*)com.mojang.(.*)") || clazz.matches("(.*)com.sun.(.*)") ||
+                clazz.matches("(.*)org.lwjgl.(.*)") || clazz.matches("(.*)org.spongepowered.(.*)") || clazz.matches("(.*)scala.(.*)") ||
+                clazz.matches("(.*)net.optifine(.*)") || clazz.matches("(.*)org.sqlite.") || clazz.matches("(.*)com.intellij.(.*)") ||
+                clazz.matches("(.*)joptsimple.(.*)") || clazz.matches("(.*)org.jline(.*)") || clazz.matches("(.*)net.java.(.*)") ||
+                clazz.matches("(.*)com.ibm.(.*)") || clazz.matches("(.*)it.unimi.dsi.(.*)") || clazz.matches("(.*)com.typesafe.(.*)") ||
+                clazz.matches("(.*)com.jcraft.(.*)") || clazz.matches("(.*)com.github.(.*)") || clazz.matches("(.*)optifine.(.*)");
 
         for (String s : MikuTransformer.white_list) {
             if (clazz.matches(s)) {
