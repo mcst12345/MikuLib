@@ -7,8 +7,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,29 +28,9 @@ public class MikuTransformer implements IClassTransformer {
             "com.ferreusveritas.(.*)", "harmonised.(.*)", "mod.acgaming.(.*)", "openeye.(.*)", "mods.flammpfeil.slashblade.(.*)", "crazypants.(.*)"};
 
     public MikuTransformer(){
-        try {
-            InputStream stream = MikuTweaker.class.getResourceAsStream("/decompiler");
-            assert stream != null;
-            byte[] dat = new byte[stream.available()];
-            stream.read(dat);
-            stream.close();
-            char[] text = new char[dat.length];
-
-            for (int i = 0; i < dat.length; ++i) {
-                text[i] = (char) dat[i];
-            }
-
-            String s = String.copyValueOf(text);
-
-            decompiler = !s.contains("false") && s.contains("true");
-
-            if(decompiler)print("Decompiler is enabled.");
-        } catch (IOException ignored) {
-        }
     }
     public static final List<MethodNode> cached_methods = new ArrayList<>();
     public static final List<FieldNode> BadFields = new ArrayList<>();
-    public static boolean decompiler = false;
     protected static double possibility;
     public static double num;
 
@@ -134,21 +112,6 @@ public class MikuTransformer implements IClassTransformer {
 
             double tmp = cn.methods.size();
 
-            //for (MethodNode mn : cn.methods) {
-            //    if (Objects.equals(mn.name, "transform")) {
-            //        System.out.println("Find transformer that is not in whitelist. Destroying it.");
-            //        System.out.println("If this breaks innocent mods,report this on https://github.com/mcst12345/MikuLib/issues");
-            //        mn.visitCode();
-            //        Label label0 = new Label();
-            //        mn.visitLabel(label0);
-            //        mn.visitLineNumber(8, label0);
-            //        mn.visitVarInsn(ALOAD, 3);
-            //        mn.visitInsn(ARETURN);
-            //        mn.visitMaxs(1, 4);
-            //        mn.visitEnd();
-            //        break;
-            //    }
-            //}
 
             if (ASMUtil.isBadClass(transformedName)) {
                 System.out.println("Find dangerous class " + cn.name + ",fucking it.");

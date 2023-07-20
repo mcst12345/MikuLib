@@ -30,7 +30,6 @@ public class MikuTweaker implements ITweaker {
             for (IClassTransformer i : t) fucked.add(i);
             transformers.set(Launch.classLoader, fucked);//Fuck other transformers.
         }
-
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);

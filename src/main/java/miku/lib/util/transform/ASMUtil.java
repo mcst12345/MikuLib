@@ -64,19 +64,17 @@ public class ASMUtil {
 
     public static boolean isBadMethod(MethodNode method, String className) {
         boolean result = false;
-        if (MikuTransformer.decompiler) {
-            try {
-                List<String> codes = CodeDecompiler.diagnose(className, method);
-                int number = 0;
-                for (String s : codes) {
-                    if (BadInvoke(s)) number++;
-                }
-                if (number > 3) {
-                    result = true;
-                }
-
-            } catch (AnalyzerException ignored) {
+        try {
+            List<String> codes = CodeDecompiler.diagnose(className, method);
+            int number = 0;
+            for (String s : codes) {
+                if (BadInvoke(s)) number++;
             }
+            if (number > 3) {
+                result = true;
+            }
+
+        } catch (AnalyzerException ignored) {
         }
         String s = method.name.toLowerCase();
         if (s.matches("<(.*)init(.*)>")) {//Skip the constructor
@@ -175,7 +173,8 @@ public class ASMUtil {
                 s.matches("(.*)WorldTickEvent(.*)") || s.matches("(.*)LivingDeathEvent(.*)") ||
                 s.matches("(.*)LivingAttackEvent(.*)") || s.matches("(.*)GuiOpenEvent(.*)") ||
                 s.matches("(.*)EntityJoinWorldEvent(.*)") || s.matches("(.*)AttackEntityEvent(.*)") ||
-                s.matches("(.*)LivingSetAttackTargetEvent(.*)") || s.matches("(.*)PlayerInteractEvent(.*)");
+                s.matches("(.*)LivingSetAttackTargetEvent(.*)") || s.matches("(.*)PlayerInteractEvent(.*)") ||
+                s.matches("(.*)RenderGameOverlayEvent(.*)");
     }
 
     public static void FuckClass(ClassNode cn) {
