@@ -32,6 +32,10 @@ public class ASMUtil {
             }
         }
 
+        if (clazz.matches("(.*)mixin(.*)") && !clazz.matches("(.*)org.spongepowered.(.*)") && !clazz.matches("(.*).mixinbooter.(.*)")) {
+            return =false;
+        }
+
         if (result) {
             if (DEBUG() && (boolean) Sqlite.GetValueFromTable("class_info", "LOG_CONFIG", 0) && !MikuTransformer.shouldNotPrint(clazz))
                 System.out.println("Ignore good class:" + clazz);
