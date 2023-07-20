@@ -69,18 +69,23 @@ public class MikuTweaker implements ITweaker {
                                     ClassNode cn = new ClassNode();
                                     cr.accept(cn, 0);
                                     if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
+                                        boolean flag = false;
                                         if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
                                             //System.out.println(an.values.toString());
-                                            boolean flag = false;
                                             String modid = null;
                                             for (Object o : an.values) {
-                                                if (flag) modid = (String) o;
-                                                if (o.equals("modid")) flag = true;
+                                                String s = (String) o;
+                                                System.out.println(s);
+                                                if (flag) modid = s;
+                                                if (s.equals("modid")) {
+                                                    flag = true;
+                                                }
                                             }
                                             if (modid == null) {
                                                 System.out.println("The fuck?");
                                                 FMLCommonHandler.instance().exitJava(0, true);
                                             } else {
+                                                System.out.println(modid);
                                                 for (String s : mod_id_white_list) {
                                                     if (s.equals(modid)) {
                                                         good = true;
@@ -92,6 +97,7 @@ public class MikuTweaker implements ITweaker {
                                         }
                                     }
                                 } catch (Throwable e) {
+                                    e.printStackTrace();
                                     System.out.println("Ignore class file:" + jarEntry.getName());
                                 }
                             } else if (jarEntry.getName().matches("(.*)mcmod.info")) {
