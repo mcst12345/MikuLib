@@ -77,7 +77,7 @@ public class MikuTweaker implements ITweaker {
                                                 String s = (String) o;
                                                 System.out.println(s);
                                                 if (flag) modid = s;
-                                                if (s.equals("modid")) {
+                                                if (s.matches("(.*)modid(.*)")) {
                                                     flag = true;
                                                 }
                                             }
