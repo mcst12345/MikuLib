@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipException;
 
 public class MikuTweaker implements ITweaker {
     //Holy Fuck. Well,at least this is better than that package-based whitelist.
@@ -93,6 +94,8 @@ public class MikuTweaker implements ITweaker {
                     }
                 }
             }
+        } catch (ZipException e) {
+            System.out.println("Ignore file:" + file.getName());
         }
     }
 
