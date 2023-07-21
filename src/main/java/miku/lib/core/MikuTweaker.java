@@ -53,11 +53,9 @@ public class MikuTweaker implements ITweaker {
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
-        //System.out.println(System.getProperty("user.dir"));
+        System.out.println(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
 
-        //System.out.println(System.getProperty("minecraft.client.jar"));
-
-        File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar"));
+        File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         AddJarToTransformerExclusions(minecraft, MinecraftClasses);
 
         File libraires = new File("libraries");
