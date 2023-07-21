@@ -53,6 +53,8 @@ public class MikuTweaker implements ITweaker {
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
+        System.out.println(System.getProperty("minecraft.client.jar"));
+
         File minecraft = new File(System.getProperty("minecraft.client.jar"));
         AddJarToTransformerExclusions(minecraft, MinecraftClasses);
 
