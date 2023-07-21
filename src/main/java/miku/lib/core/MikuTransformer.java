@@ -42,8 +42,9 @@ public class MikuTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        System.out.println(name);
-        if (!ASMUtil.isGoodClass(transformedName)) {
+        if (!MikuTweaker.isGoodClass(transformedName)) {
+            System.out.println("Examine class:" + transformedName);
+
             cached_methods.clear();
             num = 0.0d;
 

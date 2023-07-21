@@ -50,6 +50,10 @@ public class MikuTweaker implements ITweaker {
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
+        File minecraft = new File(System.getProperty("minecraft.client.jar"));
+        AddJarToTransformerExclusions(minecraft);
+
+
         File mods = new File("mods");
         if (!mods.exists()) {
             if (mods.mkdir()) return;
@@ -64,6 +68,22 @@ public class MikuTweaker implements ITweaker {
 
     }
 
+    private static void AddJarToTransformerExclusions(File file) throws IOException {
+        try (JarFile jar = new JarFile(file)) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry jarEntry = entries.nextElement();
+                if (!jarEntry.isDirectory()) {
+                    if (jarEntry.getName().matches("(.*).class")) {
+                        String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
+                        if (clazz.equals("module-info")) continue;
+                        TransformerExclusions.add(clazz);
+                    }
+                }
+            }
+        }
+    }
+
     protected static void ScanJarFile(File file) throws IOException {
         if (file.getName().matches("(.*).jar")) {
             try (JarFile jar = new JarFile(file)) {
@@ -76,6 +96,7 @@ public class MikuTweaker implements ITweaker {
                     if (!jarEntry.isDirectory()) {
                         if (jarEntry.getName().matches("(.*).class")) {
                             String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
+                            if (clazz.equals("module-info")) continue;
                             classes.add(clazz);
                             InputStream classStream = jar.getInputStream(jarEntry);
                             if (classStream == null) continue;
