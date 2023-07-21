@@ -33,6 +33,7 @@ public class MikuTweaker implements ITweaker {
             "enderiointegrationticlate", "enderioinvpanel", "enderiomachines", "endercore", "draconicevolution", "customnpcsfix", "customnpcs", "ctm", "codechickenlib", "clumps", "clearwater", "loliasm", "brandonscore",
             "betterbiomeblend", "bedbreakbegone", "avaritia", "asmodeuscore", "appliedenergistics2", "aiimprovements", "abyssalcraft", "magic_maid"};
     protected static final List<String> TransformerExclusions = new ArrayList<>();
+    protected static final List<String> MinecraftClasses = new ArrayList<>();
     public static Map<String, Class<?>> cachedClasses = null;
 
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -51,7 +52,7 @@ public class MikuTweaker implements ITweaker {
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
         File minecraft = new File(System.getProperty("minecraft.client.jar"));
-        AddJarToTransformerExclusions(minecraft);
+        AddMinecraftJarToTransformerExclusions(minecraft);
 
 
         File mods = new File("mods");
@@ -68,7 +69,7 @@ public class MikuTweaker implements ITweaker {
 
     }
 
-    private static void AddJarToTransformerExclusions(File file) throws IOException {
+    private static void AddMinecraftJarToTransformerExclusions(File file) throws IOException {
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -77,7 +78,7 @@ public class MikuTweaker implements ITweaker {
                     if (jarEntry.getName().matches("(.*).class")) {
                         String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
                         if (clazz.equals("module-info")) continue;
-                        TransformerExclusions.add(clazz);
+                        MikuTweaker.MinecraftClasses.add(clazz);
                     }
                 }
             }
@@ -227,7 +228,18 @@ public class MikuTweaker implements ITweaker {
 
     public static boolean isGoodClass(String s) {
         for (String c : TransformerExclusions) {
-            if (s.matches("(.*)" + c + "(.*)")) return true;
+            if (s.matches("(.*)" + c + "(.*)")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isMinecraftClass(String s) {
+        for (String c : MinecraftClasses) {
+            if (s.matches("(.*)" + c + "(.*)")) {
+                return true;
+            }
         }
         return false;
     }

@@ -30,13 +30,15 @@ public class MikuArrayListForTransformer<E> extends ArrayList<E> {
 
     @Override
     public boolean add(E var1) {
+        if (var1 == null) return false;
+        String s = var1.getClass().toString().substring(5).trim();
         if (var1 instanceof IClassTransformer) {
-            String s = var1.getClass().toString().substring(5).trim();
             if (!MikuTweaker.isGoodClass(s) && !isGoodTransformer(var1)) {
                 System.out.println(s);
                 return false;
             }
         }
+        System.out.println("Adding transformer:" + s);
         return super.add(var1);
     }
 }

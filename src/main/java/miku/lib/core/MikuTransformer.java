@@ -42,7 +42,9 @@ public class MikuTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (!MikuTweaker.isGoodClass(transformedName)) {
+        //System.out.println("transformedName:"+transformedName);
+        //System.out.println("Name:"+name);
+        if (!MikuTweaker.isGoodClass(transformedName) && !MikuTweaker.isMinecraftClass(name)) {
             System.out.println("Examine class:" + transformedName);
 
             cached_methods.clear();
