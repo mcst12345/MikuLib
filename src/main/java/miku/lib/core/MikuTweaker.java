@@ -52,8 +52,19 @@ public class MikuTweaker implements ITweaker {
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
         File minecraft = new File(System.getProperty("minecraft.client.jar"));
-        AddMinecraftJarToTransformerExclusions(minecraft);
+        AddJarToTransformerExclusions(minecraft, MinecraftClasses);
 
+        File libraires = new File("libraries");
+        if (!libraires.exists()) {
+            if (libraires.mkdir()) return;
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
+        } else if (!libraires.isDirectory()) {
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
+        }
+
+        ScanLibraries(libraires);
 
         File mods = new File("mods");
         if (!mods.exists()) {
@@ -69,7 +80,7 @@ public class MikuTweaker implements ITweaker {
 
     }
 
-    private static void AddMinecraftJarToTransformerExclusions(File file) throws IOException {
+    private static void AddJarToTransformerExclusions(File file, List<String> list) throws IOException {
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -78,14 +89,14 @@ public class MikuTweaker implements ITweaker {
                     if (jarEntry.getName().matches("(.*).class")) {
                         String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
                         if (clazz.equals("module-info")) continue;
-                        MikuTweaker.MinecraftClasses.add(clazz);
+                        list.add(clazz);
                     }
                 }
             }
         }
     }
 
-    protected static void ScanJarFile(File file) throws IOException {
+    protected static void ScanModJarFile(File file) throws IOException {
         if (file.getName().matches("(.*).jar")) {
             try (JarFile jar = new JarFile(file)) {
                 System.out.println("Reading jar file:" + jar.getName());
@@ -153,12 +164,21 @@ public class MikuTweaker implements ITweaker {
         }
     }
 
+    protected static void ScanLibraries(File directory) throws IOException {
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
+            if (file.isDirectory()) {
+                System.out.println("Scanning directory:" + file.getName());
+                ScanLibraries(file);
+            } else AddJarToTransformerExclusions(file, TransformerExclusions);
+        }
+    }
+
     protected static void ScanMods(File directory) throws IOException {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.isDirectory()) {
                 System.out.println("Scanning directory:" + file.getName());
                 ScanMods(file);
-            } else ScanJarFile(file);
+            } else ScanModJarFile(file);
         }
     }
 
@@ -229,6 +249,8 @@ public class MikuTweaker implements ITweaker {
     public static boolean isGoodClass(String s) {
         for (String c : TransformerExclusions) {
             if (s.matches("(.*)" + c + "(.*)")) {
+                System.out.println(s);
+                System.out.println(c);
                 return true;
             }
         }
@@ -237,7 +259,7 @@ public class MikuTweaker implements ITweaker {
 
     public static boolean isMinecraftClass(String s) {
         for (String c : MinecraftClasses) {
-            if (s.matches("(.*)" + c + "(.*)")) {
+            if (s.equals(c)) {
                 return true;
             }
         }
