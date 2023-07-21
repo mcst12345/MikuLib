@@ -49,6 +49,11 @@ public class MikuTweaker implements ITweaker {
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
+        ScanMods();
+
+    }
+
+    protected static void ScanMods() throws IOException {
         for (File file : Objects.requireNonNull(new File("mods").listFiles())) {
             if (file.getName().matches("(.*).jar")) {
                 try (JarFile jar = new JarFile(file)) {
@@ -75,7 +80,6 @@ public class MikuTweaker implements ITweaker {
                                             String modid = null;
                                             for (Object o : an.values) {
                                                 String s = (String) o;
-                                                System.out.println(s);
                                                 if (flag) {
                                                     modid = s;
                                                     break;
@@ -99,6 +103,7 @@ public class MikuTweaker implements ITweaker {
 
                                         }
                                     }
+
                                 } catch (Throwable e) {
                                     e.printStackTrace();
                                     System.out.println("Ignore class file:" + jarEntry.getName());

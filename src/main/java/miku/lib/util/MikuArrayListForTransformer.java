@@ -14,7 +14,7 @@ public class MikuArrayListForTransformer<E> extends ArrayList<E> {
         String s = var1.getClass().toString().substring(5).trim();
         return s.matches("(.*)guichaguri.betterfps.tweaker.BetterFpsTweaker(.*)") || s.matches("(.*)org.spongepowered.asm.launch.MixinTweaker(.*)") ||
                 s.matches("(.*)miku.lib.core.MikuTweaker(.*)") || s.matches("(.*)optifine.OptiFineForgeTweaker(.*)") || s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker(.*)") ||
-                s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLTweaker(.*)");
+                s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLTweaker(.*)") || s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLDeobfTweaker(.*)");
     }
 
     @Override
