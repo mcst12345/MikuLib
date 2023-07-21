@@ -14,18 +14,6 @@ import java.util.Objects;
 import static miku.lib.sqlite.Sqlite.DEBUG;
 
 public class MikuTransformer implements IClassTransformer {
-    //ShitMountain #1
-    public static final String[] white_list = new String[]{"zone.rong.(.*)", "pl.asie.(.*)", "micdoodle8.(.*)",
-            "noppes.(.*)", "mezz.(.*)", "com.brandon3055.(.*)", "codechicken.(.*)", "twilightforest.(.*)",
-            "moze_intel.(.*),", "cofh.(.*)", "alexiy.(.*)", "vazkii.(.*)", "sweetmagic.(.*)", "stevekung.(.*)",
-            "com.dhanantry.(.*)", "com.therandomlabs.(.*)", "thebetweenlands.(.*)", "java.com.pg85.otg.forge.(.*)",
-            "com.gildedgames.(.*)", "com.lulan.shincolle.(.*)", "net.blay09.mods.waystones.(.*)", "com.xwm.(.*)",
-            "snownee.(.*)", "mcp.mobius.waila.(.*)", "matteroverdrive.(.*)", "com.mrcrayfish.(.*)", "gregtech.(.*)",
-            "xaero.(.*)", "com.sci.(.*)", "com.lilacmods.(.*)", "cn.academy.(.*)", "tragicneko.(.*)", "com.github.alexthe666.(.*)",
-            "ic2.(.*)", "com.vicmatskiv.(.*)", "com.shinoow.(.*)", "morph.(.*)", "appeng.(.*)", "com.lucunji.(.*)", "software.bernie.(.*)",
-            "com.enderio.(.*)", "forestry.(.*)", "com.pam.harvestcraft.(.*)", "slimeknights.(.*)", "com.rwtema.(.*)", "cn.mcmod.(.*)",
-            "cn.mcmod_mmf.(.*)", "galaxyspace.(.*)", "com.gildedgames.(.*)", "blusunrize.(.*)", "com.mega.(.*)", "koala.(.*)", "net.tslat.(.*)",
-            "com.ferreusveritas.(.*)", "harmonised.(.*)", "mod.acgaming.(.*)", "openeye.(.*)", "mods.flammpfeil.slashblade.(.*)", "crazypants.(.*)"};
 
     public MikuTransformer(){
     }
@@ -34,17 +22,9 @@ public class MikuTransformer implements IClassTransformer {
     protected static double possibility;
     public static double num;
 
-    //ShitMountain #5
-    public static boolean shouldNotPrint(String s) {
-        return s.matches("net.minecraft.(.*)") || s.matches("net.optifine.(.*)") || s.matches("com.google.(.*)") || s.matches("com.sun.(.*)") || s.matches("java.(.*)") || s.matches("it.unimi.dsi.(.*)") ||
-                s.matches("paulscode.(.*)") || s.matches("io.netty.(.*)") || s.matches("com.mojang.(.*)") || s.matches("miku.(.*)") || s.matches("joptsimple.(.*)");
-    }
-
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        //System.out.println("transformedName:"+transformedName);
-        //System.out.println("Name:"+name);
-        if (!MikuTweaker.isGoodClass(transformedName) && !MikuTweaker.isMinecraftClass(name)) {
+        if (!MikuTweaker.isGoodClass(name) && !MikuTweaker.isMinecraftClass(name) && !MikuTweaker.isLibraryClass(name)) {
             System.out.println("Examine class:" + transformedName);
 
             cached_methods.clear();

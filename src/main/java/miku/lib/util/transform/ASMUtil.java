@@ -13,40 +13,6 @@ import java.util.List;
 import static miku.lib.sqlite.Sqlite.DEBUG;
 
 public class ASMUtil {
-    //ShitMountain #4
-    public static boolean isGoodClass(String clazz) {
-        boolean result = clazz.matches("(.*)net.minecraft.(.*)") || clazz.matches("(.*)net.minecraftforge.(.*)") ||
-                clazz.matches("(.*)miku.(.*)") || clazz.matches("(.*)paulscode.(.*)") || clazz.matches("(.*)org.objectweb.(.*)") ||
-                clazz.matches("(.*)com.google.(.*)") || clazz.matches("(.*)java.(.*)") || clazz.matches("(.*)io.netty.(.*)") ||
-                clazz.matches("(.*)org.apache.(.*)") || clazz.matches("(.*)com.mojang.(.*)") || clazz.matches("(.*)com.sun.(.*)") ||
-                clazz.matches("(.*)org.lwjgl.(.*)") || clazz.matches("(.*)org.spongepowered.(.*)") || clazz.matches("(.*)scala.(.*)") ||
-                clazz.matches("(.*)net.optifine(.*)") || clazz.matches("(.*)org.sqlite.") || clazz.matches("(.*)com.intellij.(.*)") ||
-                clazz.matches("(.*)joptsimple.(.*)") || clazz.matches("(.*)org.jline(.*)") || clazz.matches("(.*)net.java.(.*)") ||
-                clazz.matches("(.*)com.ibm.(.*)") || clazz.matches("(.*)it.unimi.dsi.(.*)") || clazz.matches("(.*)com.typesafe.(.*)") ||
-                clazz.matches("(.*)com.jcraft.(.*)") || clazz.matches("(.*)com.github.(.*)") || clazz.matches("(.*)optifine.(.*)");
-
-        for (String s : MikuTransformer.white_list) {
-            if (clazz.matches(s)) {
-                result = true;
-                break;
-            }
-        }
-
-        if (clazz.matches("(.*)mixin(.*)") && !clazz.matches("(.*)org.spongepowered.(.*)") && !clazz.matches("(.*).mixinbooter.(.*)")) {
-            result = false;
-        }
-
-        if (result) {
-            if (DEBUG() && (boolean) Sqlite.GetValueFromTable("class_info", "LOG_CONFIG", 0) && !MikuTransformer.shouldNotPrint(clazz))
-                System.out.println("Ignore good class:" + clazz);
-        } else {
-            if (DEBUG() && (boolean) Sqlite.GetValueFromTable("class_info", "LOG_CONFIG", 0) && !MikuTransformer.shouldNotPrint(clazz)) {
-                System.out.println("Examine class:" + clazz);
-            }
-        }
-
-        return result;
-    }
 
     //ShitMountain #2
     private static boolean BadInvoke(String str) {

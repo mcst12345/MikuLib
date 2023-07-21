@@ -34,7 +34,7 @@ public class MikuArrayListForTransformer<E> extends ArrayList<E> {
         String s = var1.getClass().toString().substring(5).trim();
         if (var1 instanceof IClassTransformer) {
             if (!MikuTweaker.isGoodClass(s) && !isGoodTransformer(var1)) {
-                System.out.println(s);
+                System.out.println("Ignore transformer:" + s);
                 return false;
             }
         }

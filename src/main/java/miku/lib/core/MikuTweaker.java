@@ -35,6 +35,7 @@ public class MikuTweaker implements ITweaker {
             "betterbiomeblend", "bedbreakbegone", "avaritia", "asmodeuscore", "appliedenergistics2", "aiimprovements", "abyssalcraft", "magic_maid"};
     protected static final List<String> TransformerExclusions = new ArrayList<>();
     protected static final List<String> MinecraftClasses = new ArrayList<>();
+    protected static final List<String> LibraryClasses = new ArrayList<>();
     public static Map<String, Class<?>> cachedClasses = null;
 
     public MikuTweaker() throws IOException, NoSuchFieldException, IllegalAccessException {
@@ -173,7 +174,7 @@ public class MikuTweaker implements ITweaker {
                 System.out.println("Scanning directory:" + file.getName());
                 ScanLibraries(file);
             } else {
-                if (file.getName().matches("(.*).jar")) AddJarToTransformerExclusions(file, TransformerExclusions);
+                if (file.getName().matches("(.*).jar")) AddJarToTransformerExclusions(file, LibraryClasses);
             }
         }
     }
@@ -254,8 +255,6 @@ public class MikuTweaker implements ITweaker {
     public static boolean isGoodClass(String s) {
         for (String c : TransformerExclusions) {
             if (s.matches("(.*)" + c + "(.*)")) {
-                System.out.println(s);
-                System.out.println(c);
                 return true;
             }
         }
@@ -264,6 +263,15 @@ public class MikuTweaker implements ITweaker {
 
     public static boolean isMinecraftClass(String s) {
         for (String c : MinecraftClasses) {
+            if (s.equals(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isLibraryClass(String s) {
+        for (String c : LibraryClasses) {
             if (s.equals(c)) {
                 return true;
             }
