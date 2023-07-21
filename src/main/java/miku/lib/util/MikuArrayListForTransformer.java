@@ -14,7 +14,11 @@ public class MikuArrayListForTransformer<E> extends ArrayList<E> {
         String s = var1.getClass().toString().substring(5).trim();
         return s.matches("(.*)guichaguri.betterfps.tweaker.BetterFpsTweaker(.*)") || s.matches("(.*)org.spongepowered.asm.launch.MixinTweaker(.*)") ||
                 s.matches("(.*)miku.lib.core.MikuTweaker(.*)") || s.matches("(.*)optifine.OptiFineForgeTweaker(.*)") || s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker(.*)") ||
-                s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLTweaker(.*)") || s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLDeobfTweaker(.*)");
+                s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLTweaker(.*)") || s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLDeobfTweaker(.*)") ||
+                s.matches("(.*)net.minecraft.launchwrapper.AlphaVanillaTweaker(.*)") || s.matches("(.*)org.spongepowered.asm.mixin.EnvironmentStateTweaker(.*)") ||
+                s.matches("(.*)net.minecraftforge.fml.relauncher.CoreModManager.FMLPluginWrapper(.*)") || s.matches("(.*)net.minecraftforge.fml.common.launcher.FMLServerTweaker(.*)") ||
+                s.matches("(.*)net.minecraft.launchwrapper.IndevVanillaTweaker(.*)") || s.matches("(.*)net.minecraftforge.fml.common.launcher.TerminalTweaker(.*)") ||
+                s.matches("(.*)net.minecraft.launchwrapper.VanillaTweaker(.*)");
     }
 
     @Override
