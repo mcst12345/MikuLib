@@ -43,6 +43,7 @@ public class MikuTweaker implements ITweaker {
         if (!(t instanceof MikuArrayListForTransformer)) {
             MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<IClassTransformer>(2);
             for (IClassTransformer i : t) fucked.add(i);
+            System.out.println("Fucking LaunchClassLoader.");
             transformers.set(Launch.classLoader, fucked);//Fuck other transformers.
         }
         Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
@@ -50,14 +51,6 @@ public class MikuTweaker implements ITweaker {
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
         File mods = new File("mods");
-        if (!mods.exists()) {
-            if (mods.mkdir()) return;
-            System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
-        } else if (!mods.isDirectory()) {
-            System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
-        }
 
         ScanMods(mods);
 
@@ -133,8 +126,9 @@ public class MikuTweaker implements ITweaker {
     protected static void ScanMods(File directory) throws IOException {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.isDirectory()) {
+                System.out.println("Scanning directory:" + file.getName());
                 ScanMods(file);
-            } else ScanJarFile(directory);
+            } else ScanJarFile(file);
         }
     }
 
