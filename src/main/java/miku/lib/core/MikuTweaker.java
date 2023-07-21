@@ -49,76 +49,92 @@ public class MikuTweaker implements ITweaker {
         cachedClasses.setAccessible(true);
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
-        ScanMods();
+        File mods = new File("mods");
+        if (!mods.exists()) {
+            if (mods.mkdir()) return;
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
+        } else if (!mods.isDirectory()) {
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
+        }
+
+        ScanMods(mods);
 
     }
 
-    protected static void ScanMods() throws IOException {
-        for (File file : Objects.requireNonNull(new File("mods").listFiles())) {
-            if (file.getName().matches("(.*).jar")) {
-                try (JarFile jar = new JarFile(file)) {
-                    System.out.println("Reading jar file:" + jar.getName());
-                    List<String> classes = new ArrayList<>();
-                    boolean good = false;
-                    Enumeration<JarEntry> entries = jar.entries();
-                    while (entries.hasMoreElements()) {
-                        JarEntry jarEntry = entries.nextElement();
-                        if (!jarEntry.isDirectory()) {
-                            if (jarEntry.getName().matches("(.*).class")) {
-                                //System.out.println("Reading class:"+jarEntry.getName());
-                                classes.add(jarEntry.getName());
-                                InputStream classStream = jar.getInputStream(jarEntry);
-                                if (classStream == null) continue;
-                                try {
-                                    ClassReader cr = new ClassReader(classStream);
-                                    ClassNode cn = new ClassNode();
-                                    cr.accept(cn, 0);
-                                    if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
-                                        if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
-                                            boolean flag = false;
-                                            //System.out.println(an.values.toString());
-                                            String modid = null;
-                                            for (Object o : an.values) {
-                                                String s = (String) o;
-                                                if (flag) {
-                                                    modid = s;
+    protected static void ScanJarFile(File file) throws IOException {
+        if (file.getName().matches("(.*).jar")) {
+            try (JarFile jar = new JarFile(file)) {
+                System.out.println("Reading jar file:" + jar.getName());
+                List<String> classes = new ArrayList<>();
+                boolean good = false;
+                Enumeration<JarEntry> entries = jar.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry jarEntry = entries.nextElement();
+                    if (!jarEntry.isDirectory()) {
+                        if (jarEntry.getName().matches("(.*).class")) {
+                            String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
+                            classes.add(clazz);
+                            InputStream classStream = jar.getInputStream(jarEntry);
+                            if (classStream == null) continue;
+                            try {
+                                ClassReader cr = new ClassReader(classStream);
+                                ClassNode cn = new ClassNode();
+                                cr.accept(cn, 0);
+                                if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
+                                    if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
+                                        boolean flag = false;
+                                        //System.out.println(an.values.toString());
+                                        String modid = null;
+                                        for (Object o : an.values) {
+                                            String s = (String) o;
+                                            if (flag) {
+                                                modid = s;
+                                                break;
+                                            }
+                                            if (s.equals("modid")) {
+                                                flag = true;
+                                            }
+                                        }
+                                        if (modid == null) {
+                                            System.out.println("The fuck?");
+                                            FMLCommonHandler.instance().exitJava(0, true);
+                                        } else {
+                                            System.out.println(modid);
+                                            for (String s : mod_id_white_list) {
+                                                if (s.equals(modid)) {
+                                                    good = true;
                                                     break;
                                                 }
-                                                if (s.equals("modid")) {
-                                                    flag = true;
-                                                }
                                             }
-                                            if (modid == null) {
-                                                System.out.println("The fuck?");
-                                                FMLCommonHandler.instance().exitJava(0, true);
-                                            } else {
-                                                System.out.println(modid);
-                                                for (String s : mod_id_white_list) {
-                                                    if (s.equals(modid)) {
-                                                        good = true;
-                                                        break;
-                                                    }
-                                                }
-                                            }
-
                                         }
-                                    }
 
-                                } catch (Throwable e) {
-                                    e.printStackTrace();
-                                    System.out.println("Ignore class file:" + jarEntry.getName());
+                                    }
                                 }
-                            } else if (jarEntry.getName().matches("(.*)mcmod.info")) {
-                                //TODO ?
+
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                                System.out.println("Ignore class file:" + clazz);
                             }
+                        } else if (jarEntry.getName().matches("(.*)mcmod.info")) {
+                            //TODO ?
                         }
                     }
-                    if (good) {
-                        System.out.println("Adding mod " + jar.getName() + "to TransformerExclusions");
-                        TransformerExclusions.addAll(classes);
-                    }
+                }
+                if (good) {
+                    System.out.println("Adding mod " + jar.getName() + "to TransformerExclusions");
+                    TransformerExclusions.addAll(classes);
                 }
             }
+        }
+    }
+
+    protected static void ScanMods(File directory) throws IOException {
+        for (File file : Objects.requireNonNull(directory.listFiles())) {
+            if (file.isDirectory()) {
+                ScanMods(file);
+            } else ScanJarFile(directory);
         }
     }
 
