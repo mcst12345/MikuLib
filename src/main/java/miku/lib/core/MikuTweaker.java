@@ -51,6 +51,14 @@ public class MikuTweaker implements ITweaker {
         MikuTweaker.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
         File mods = new File("mods");
+        if (!mods.exists()) {
+            if (mods.mkdir()) return;
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
+        } else if (!mods.isDirectory()) {
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
+        }
 
         ScanMods(mods);
 
@@ -116,7 +124,7 @@ public class MikuTweaker implements ITweaker {
                     }
                 }
                 if (good) {
-                    System.out.println("Adding mod " + jar.getName() + "to TransformerExclusions");
+                    System.out.println("Adding mod " + jar.getName() + " to TransformerExclusions");
                     TransformerExclusions.addAll(classes);
                 }
             }
