@@ -172,7 +172,9 @@ public class MikuTweaker implements ITweaker {
             if (file.isDirectory()) {
                 System.out.println("Scanning directory:" + file.getName());
                 ScanLibraries(file);
-            } else AddJarToTransformerExclusions(file, TransformerExclusions);
+            } else {
+                if (file.getName().matches("(.*).jar")) AddJarToTransformerExclusions(file, TransformerExclusions);
+            }
         }
     }
 
