@@ -5,16 +5,14 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
-import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
 public class ClassUtil {
+
     //Holy Fuck. Well,at least this is better than that package-based whitelist.
     public static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
             "tickdynamic", "sweetmagic", "stevekung's_lib", "srparasites", "spaceambient", "smoothfont", "flammpfeil.slashblade", "shutupmodelloader", "scp", "redstoneflux", "randompatches", "projecteintegration",
@@ -52,13 +50,7 @@ public class ClassUtil {
             boolean fucked = false;
             try (JarFile jar = new JarFile(file)) {
                 System.out.println("Reading jar file:" + jar.getName());
-                if (jar.getManifest() != null)
-                    if (jar.getManifest().getMainAttributes() != null)
-                        if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")) != null) {
-                            System.out.println(jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")));
-                            if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")).equals("true"))
-                                fucked = true;
-                        }
+
                 List<String> classes = new ArrayList<>();
                 boolean good = false;
                 Enumeration<JarEntry> entries = jar.entries();
@@ -110,6 +102,16 @@ public class ClassUtil {
                             }
                         } else if (jarEntry.getName().matches("(.*)mcmod.info")) {
                             //TODO ?
+                        } else if (jarEntry.getName().equals("META-INF/MANIFEST.MF")) {
+                            try (InputStream is = jar.getInputStream(jarEntry)) {
+                                InputStreamReader isr = new InputStreamReader(is);
+                                BufferedReader br = new BufferedReader(isr);
+                                String str;
+                                while ((str = br.readLine()) != null) {
+                                    str = str + "\n";
+                                    if (str.contains("Fucked: true")) fucked = true;
+                                }
+                            }
                         }
                     }
                 }

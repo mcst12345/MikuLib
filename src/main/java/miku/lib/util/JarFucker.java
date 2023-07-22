@@ -48,7 +48,7 @@ public class JarFucker {
                             }
                         }
 
-                        String fucked = "fucked: true";
+                        String fucked = "Fucked: true";
                         jos.write(fucked.getBytes());
                         br.close();
                         isr.close();
