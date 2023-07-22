@@ -65,6 +65,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         }
 
         ClassUtil.ScanMods(mods);
+
         InitLib();
         try {
             Launch.classLoader.addURL((new File("sqlite-jdbc-3.42.0.0.jar")).toURI().toURL());

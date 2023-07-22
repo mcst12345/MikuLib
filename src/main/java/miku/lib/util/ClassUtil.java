@@ -109,7 +109,7 @@ public class ClassUtil {
                 if (good) {
                     System.out.println("Adding mod " + jar.getName() + " to TransformerExclusions");
                     TransformerExclusions.addAll(classes);
-                }
+                } else JarFucker.FuckJar(jar);
             }
         }
     }
