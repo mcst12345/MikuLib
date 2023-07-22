@@ -14,7 +14,7 @@ import java.util.zip.ZipException;
 public class ClassUtil {
 
     //Holy Fuck. Well,at least this is better than that package-based whitelist.
-    public static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
+    protected static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
             "tickdynamic", "sweetmagic", "stevekung's_lib", "srparasites", "spaceambient", "smoothfont", "flammpfeil.slashblade", "shutupmodelloader", "scp", "redstoneflux", "randompatches", "projecteintegration",
             "projecte", "placebo", "phosphor-lighting", "performant", "patchouli", "particleculling", "openterraingenerator", "oldjava", "neid", "non_update", "moreplanets", "testdummy", "mikulib", "mikulib_sqlite",
             "miku", "memorycleaner", "maze", "matteroverdrive", "manaita_plus", "lovely_robot", "lostcities", "letmedespawn", "jeid", "rejoymod", "ic2", "ilib", "hammercore", "getittogetherdrops", "galaxyspace",
@@ -28,6 +28,8 @@ public class ClassUtil {
             "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft", "gamestages", "serenetweaks", "vampirism_integrations", "ichunutil", "morphspellpack", "baubles", "thaumcraft", "botania",
             "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft",
             "harvestcraft"};
+
+    protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update"};
     public static final List<String> TransformerExclusions = new ArrayList<>();
     public static final List<String> MinecraftClasses = new ArrayList<>();
     public static final List<String> LibraryClasses = new ArrayList<>();
@@ -73,6 +75,13 @@ public class ClassUtil {
                                 ClassReader cr = new ClassReader(classStream);
                                 ClassNode cn = new ClassNode();
                                 cr.accept(cn, 0);
+                                if (cn.interfaces != null) {
+                                    for (String s : cn.interfaces) {
+                                        System.out.println(s);
+                                        //TODO
+                                    }
+                                }
+
                                 if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
                                     //System.out.println(cn.name+":::"+an.desc);
                                     if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
@@ -103,10 +112,17 @@ public class ClassUtil {
 
                                     } else {
                                         if (an.desc.equals("Lnet/minecraftforge/fml/relauncher/IFMLLoadingPlugin$Name;")) {
-                                            System.out.println(an.values.toString());
+                                            for (Object o : an.values) {
+                                                String s = o.toString();
+                                                if (isGoodCoremod(s)) {
+                                                    good = true;
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
                                 }
+
 
                             } catch (Throwable e) {
                                 System.out.println("Ignore class file:" + clazz);
@@ -136,10 +152,17 @@ public class ClassUtil {
                 } else if (!fucked) {
                     JarFucker.FuckJar(jar);
                 } else {
-                    System.out.println(jar.getName() + " has already be fucked.");
+                    System.out.println(jar.getName() + " has already being fucked.");
                 }
             }
         }
+    }
+
+    protected static boolean isGoodCoremod(String s) {
+        for (String c : coremod_white_list) {
+            if (c.equals(s)) return true;
+        }
+        return false;
     }
 
     protected static boolean LOADED = false;
