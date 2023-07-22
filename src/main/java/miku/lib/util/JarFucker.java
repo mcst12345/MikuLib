@@ -14,7 +14,9 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 public class JarFucker {
+    protected static boolean shouldRestart = false;
     public static void FuckJar(JarFile jar) {
+        shouldRestart = true;
         System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
         System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
         try {
@@ -65,5 +67,9 @@ public class JarFucker {
         return s.contains("FMLCorePlugin") || s.contains("FMLCorePluginContainsFMLMod") || s.contains("TweakClass") ||
                 s.contains("ForceLoadAsMod") || s.contains("Name:") || s.contains("SHA-256-Digest:") || s.contains("Premain-Class") ||
                 s.contains("Agent-Class:");
+    }
+
+    public static boolean shouldRestart() {
+        return shouldRestart;
     }
 }
