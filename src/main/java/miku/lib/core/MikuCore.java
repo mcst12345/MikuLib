@@ -43,6 +43,8 @@ public class MikuCore implements IFMLLoadingPlugin {
 
         if (JarFucker.shouldRestart()) {
             System.out.println("MikuLib has completed its file injection.\nPlease restart the game.");
+            Runtime.getRuntime().halt(0);
+            Runtime.getRuntime().exit(0);
             FMLCommonHandler.instance().exitJava(0, true);
         }
 
