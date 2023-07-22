@@ -15,6 +15,8 @@ import java.util.zip.ZipEntry;
 
 public class JarFucker {
     public static void FuckJar(JarFile jar) {
+        System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
+        System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
         try {
             JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
             for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
