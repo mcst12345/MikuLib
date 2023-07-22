@@ -52,8 +52,9 @@ public class ClassUtil {
             boolean fucked = false;
             try (JarFile jar = new JarFile(file)) {
                 System.out.println("Reading jar file:" + jar.getName());
-                if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")).equals("true"))
-                    fucked = true;
+                if (jar.getManifest() != null) if (jar.getManifest().getMainAttributes() != null)
+                    if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")).equals("true"))
+                        fucked = true;
                 List<String> classes = new ArrayList<>();
                 boolean good = false;
                 Enumeration<JarEntry> entries = jar.entries();
@@ -101,7 +102,6 @@ public class ClassUtil {
                                 }
 
                             } catch (Throwable e) {
-                                e.printStackTrace();
                                 System.out.println("Ignore class file:" + clazz);
                             }
                         } else if (jarEntry.getName().matches("(.*)mcmod.info")) {
