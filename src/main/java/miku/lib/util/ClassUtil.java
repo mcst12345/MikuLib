@@ -74,6 +74,7 @@ public class ClassUtil {
                                 ClassNode cn = new ClassNode();
                                 cr.accept(cn, 0);
                                 if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
+                                    //System.out.println(cn.name+":::"+an.desc);
                                     if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
                                         boolean flag = false;
                                         String modid = null;
@@ -100,6 +101,10 @@ public class ClassUtil {
                                             }
                                         }
 
+                                    } else {
+                                        if (an.desc.equals("Lnet/minecraftforge/fml/relauncher/IFMLLoadingPlugin$Name;")) {
+                                            System.out.println(an.values.toString());
+                                        }
                                     }
                                 }
 
