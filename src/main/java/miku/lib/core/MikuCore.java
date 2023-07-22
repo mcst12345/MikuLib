@@ -7,7 +7,6 @@ import miku.lib.util.JarFucker;
 import miku.lib.util.MikuArrayListForTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -42,10 +41,12 @@ public class MikuCore implements IFMLLoadingPlugin {
         ClassUtil.Init();
 
         if (JarFucker.shouldRestart()) {
-            System.out.println("MikuLib has completed its file injection.\nPlease restart the game.");
-            Runtime.getRuntime().halt(0);
+            System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            try {
+                Thread.sleep(Long.MAX_VALUE);
+            } catch (InterruptedException ignored) {
+            }
             Runtime.getRuntime().exit(0);
-            FMLCommonHandler.instance().exitJava(0, true);
         }
 
         InitLib();

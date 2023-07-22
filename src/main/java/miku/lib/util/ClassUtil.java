@@ -1,6 +1,5 @@
 package miku.lib.util;
 
-import miku.lib.MikuLib;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -124,8 +123,10 @@ public class ClassUtil {
         }
     }
 
+    protected static boolean LOADED = false;
+
     public static boolean Init() throws IOException {
-        if (MikuLib.LOADED) return false;
+        if (LOADED) return false;
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses);
 
@@ -138,7 +139,7 @@ public class ClassUtil {
         CreateDirectory(mods);
 
         ClassUtil.ScanMods(mods);
-        MikuLib.LOADED = true;
+        LOADED = true;
         return true;
     }
 
