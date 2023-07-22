@@ -116,6 +116,8 @@ public class ClassUtil {
                     TransformerExclusions.addAll(classes);
                 } else if (!fucked) {
                     JarFucker.FuckJar(jar);
+                } else {
+                    System.out.println(jar.getName() + " has already be fucked.");
                 }
             }
         }
