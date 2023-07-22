@@ -96,9 +96,10 @@ jar {
 
         ])
         attributes([
-//                'TweakClass': 'miku.lib.core.MikuTweaker',
-"FMLCorePlugin"              : "miku.lib.core.MikuCore",
-"FMLCorePluginContainsFMLMod": "true"
+                'TweakClass'                 : 'org.spongepowered.asm.launch.MixinTweaker',
+                'ForceLoadAsMod'             : 'true',
+                "FMLCorePlugin"              : "miku.lib.core.MikuCore",
+                "FMLCorePluginContainsFMLMod": "true"
         ])
     }
     from{
