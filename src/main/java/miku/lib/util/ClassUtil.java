@@ -25,7 +25,8 @@ public class ClassUtil {
             "thebetweenlands", "forestry", "skillful", "skillsvanilla", "musicplayer", "projectex", "extendedexchange", "tamedmonster", "hormone", "brownmooshrooms", "pubgmc", "configuration", "vanillafix", "surge", "gregtech",
             "mwc", "inputmethodblocker", "mts", "mtsofficalpack", "overlast", "farlanders", "srmonstress", "scapeandrunvaccine", "wyrmsofnyrus", "roughmobsrevamped", "sereneseasons", "immersive-intelligence", "immersiveintelligence",
             "immersiveengineering", "techguns", "synlib", "geckolib3", "thermalfoundation", "cofhworld", "thermaldynamics", "thermalinnovation", "thermalcultivation", "thermalexpansion", "evilcraft", "bloodmagic", "moarsigns", "botania",
-            "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft"};
+            "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft", "gamestages", "serenetweaks", "vampirism_integrations",
+            "vampiresneedumbrellas", "consecration", "xreliquary"};
     public static final List<String> TransformerExclusions = new ArrayList<>();
     public static final List<String> MinecraftClasses = new ArrayList<>();
     public static final List<String> LibraryClasses = new ArrayList<>();
