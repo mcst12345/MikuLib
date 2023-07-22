@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
@@ -48,8 +49,11 @@ public class ClassUtil {
 
     public static void ScanModJarFile(File file) throws IOException {
         if (file.getName().matches("(.*).jar")) {
+            boolean fucked = false;
             try (JarFile jar = new JarFile(file)) {
                 System.out.println("Reading jar file:" + jar.getName());
+                if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")).equals("true"))
+                    fucked = true;
                 List<String> classes = new ArrayList<>();
                 boolean good = false;
                 Enumeration<JarEntry> entries = jar.entries();
@@ -69,7 +73,6 @@ public class ClassUtil {
                                 if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
                                     if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
                                         boolean flag = false;
-                                        //System.out.println(an.values.toString());
                                         String modid = null;
                                         for (Object o : an.values) {
                                             String s = (String) o;
@@ -109,7 +112,9 @@ public class ClassUtil {
                 if (good) {
                     System.out.println("Adding mod " + jar.getName() + " to TransformerExclusions");
                     TransformerExclusions.addAll(classes);
-                } else JarFucker.FuckJar(jar);
+                } else if (!fucked) {
+                    JarFucker.FuckJar(jar);
+                }
             }
         }
     }
