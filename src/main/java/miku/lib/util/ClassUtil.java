@@ -120,7 +120,11 @@ public class ClassUtil {
                                 String str;
                                 while ((str = br.readLine()) != null) {
                                     str = str + "\n";
-                                    if (str.contains("Fucked: true")) fucked = true;
+                                    if (str.contains("Fucked: true")) {
+                                        fucked = true;
+                                        good = false;
+                                        break;
+                                    }
                                 }
                             }
                         }
