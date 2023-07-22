@@ -25,7 +25,7 @@ public class JarFucker {
             JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
             for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
                 JarEntry entry = entries.nextElement();
-                if (entry.getName().equals("META-INF/MUMFREY.RSA") || entry.getName().equals("META-INF/MUMFREY.SF") || entry.getName().equals("SIGNFILE.DSA") || entry.getName().equals("SIGNFILE.SF"))
+                if (entry.getName().equals("META-INF/MUMFREY.RSA") || entry.getName().equals("META-INF/MUMFREY.SF") || entry.getName().equals("META-INF/SIGNFILE.DSA") || entry.getName().equals("META-INF/SIGNFILE.SF"))
                     continue;
                 try (InputStream is = jar.getInputStream(entry)) {
                     if (entry.getName().equals("META-INF/MANIFEST.MF")) {
@@ -74,7 +74,7 @@ public class JarFucker {
     protected static boolean BadMANIFEST(String s) {
         return s.contains("FMLCorePlugin") || s.contains("FMLCorePluginContainsFMLMod") || s.contains("TweakClass") ||
                 s.contains("ForceLoadAsMod") || s.contains("Name:") || s.contains("SHA-256-Digest:") || s.contains("Premain-Class") ||
-                s.contains("Agent-Class:") || s.matches("(.*).class");
+                s.contains("Agent-Class:") || s.matches("(.*).class") || s.trim().length() <= 5;
     }
 
     public static boolean shouldRestart() {

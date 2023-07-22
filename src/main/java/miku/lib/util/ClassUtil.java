@@ -30,6 +30,10 @@ public class ClassUtil {
             "harvestcraft"};
 
     protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update"};
+
+    protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
+
+
     public static final List<String> TransformerExclusions = new ArrayList<>();
     public static final List<String> MinecraftClasses = new ArrayList<>();
     public static final List<String> LibraryClasses = new ArrayList<>();
@@ -75,12 +79,6 @@ public class ClassUtil {
                                 ClassReader cr = new ClassReader(classStream);
                                 ClassNode cn = new ClassNode();
                                 cr.accept(cn, 0);
-                                if (cn.interfaces != null) {
-                                    for (String s : cn.interfaces) {
-                                        System.out.println(s);
-                                        //TODO
-                                    }
-                                }
 
                                 if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
                                     //System.out.println(cn.name+":::"+an.desc);
@@ -123,6 +121,16 @@ public class ClassUtil {
                                     }
                                 }
 
+                                if (cn.interfaces != null) {
+                                    for (String s : cn.interfaces) {
+                                        if (s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin")) {
+                                            if (isGoodCoremodClass(cn.name)) {
+                                                good = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
 
                             } catch (Throwable e) {
                                 System.out.println("Ignore class file:" + clazz);
@@ -156,6 +164,13 @@ public class ClassUtil {
                 }
             }
         }
+    }
+
+    protected static boolean isGoodCoremodClass(String s) {
+        for (String c : coremod_class_white_list) {
+            if (c.equals(s)) return true;
+        }
+        return false;
     }
 
     protected static boolean isGoodCoremod(String s) {
