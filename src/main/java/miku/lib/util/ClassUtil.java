@@ -54,9 +54,11 @@ public class ClassUtil {
                 System.out.println("Reading jar file:" + jar.getName());
                 if (jar.getManifest() != null)
                     if (jar.getManifest().getMainAttributes() != null)
-                        if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")) != null)
+                        if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")) != null) {
+                            System.out.println(jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")));
                             if (jar.getManifest().getMainAttributes().getValue(new Attributes.Name("fucked")).equals("true"))
                                 fucked = true;
+                        }
                 List<String> classes = new ArrayList<>();
                 boolean good = false;
                 Enumeration<JarEntry> entries = jar.entries();

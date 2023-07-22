@@ -7,7 +7,9 @@ import sun.misc.IOUtils;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -31,11 +33,22 @@ public class JarFucker {
                         InputStreamReader isr = new InputStreamReader(is);
                         BufferedReader br = new BufferedReader(isr);
                         String str;
+                        List<String> tmp = new ArrayList<>();
                         while ((str = br.readLine()) != null) {
-                            str = str + "\n";
-                            if (!BadMANIFEST(str)) jos.write(str.getBytes());
+                            //str = str + "\n";
+                            if (!BadMANIFEST(str)) tmp.add(str);
                         }
-                        String fucked = "\bfucked: true";
+
+                        for (int i = 0; i < tmp.size(); i++) {
+                            if (i == tmp.size() - 1) {
+                                jos.write(tmp.get(i).getBytes());
+                            } else {
+                                String s = tmp.get(i) + "\n";
+                                jos.write(s.getBytes());
+                            }
+                        }
+
+                        String fucked = "fucked: true";
                         jos.write(fucked.getBytes());
                         br.close();
                         isr.close();
