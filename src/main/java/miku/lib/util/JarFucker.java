@@ -9,7 +9,7 @@ public class JarFucker {
         Enumeration<JarEntry> entries = jar.entries();
         while (entries.hasMoreElements()) {
             JarEntry jarEntry = entries.nextElement();
-            if (jarEntry.getName().equals("MANIFEST.MF")) {
+            if (jarEntry.getName().equals("META-INF/MANIFEST.MF")) {
                 System.out.println("Find MANIFEST.MF of " + jar.getName() + ",fucking it.");
             }
         }
