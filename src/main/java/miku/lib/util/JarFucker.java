@@ -35,10 +35,8 @@ public class JarFucker {
                         String str;
                         List<String> tmp = new ArrayList<>();
                         while ((str = br.readLine()) != null) {
-                            //str = str + "\n";
                             if (!BadMANIFEST(str)) tmp.add(str);
                         }
-
                         for (int i = 0; i < tmp.size(); i++) {
                             if (i == tmp.size() - 1) {
                                 jos.write(tmp.get(i).getBytes());
@@ -47,13 +45,10 @@ public class JarFucker {
                                 jos.write(s.getBytes());
                             }
                         }
-
                         String fucked = "Fucked: true";
                         jos.write(fucked.getBytes());
                         br.close();
                         isr.close();
-
-
                     } else {
                         jos.putNextEntry(new JarEntry(entry.getName()));
                         jos.write(IOUtils.readNBytes(is, is.available()));

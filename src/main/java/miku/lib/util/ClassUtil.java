@@ -21,7 +21,8 @@ public class ClassUtil {
             "galacticraftcore", "fpsreducer", "foamfix", "fastbench", "fastfurnace", "expequiv", "entityculling", "ageofminecraft", "ageofabyssalcraft", "ageofchaos", "ageofmutants", "enderio", "enderiobase",
             "enderioconduits", "enderiopowertools", "enderioconduitsappliedenergistics", "enderioconduitsopencomputers", "enderioconduitsrefinedstorage", "enderiointegrationforestry", "enderiointegrationtic",
             "enderiointegrationticlate", "enderioinvpanel", "enderiomachines", "endercore", "draconicevolution", "customnpcsfix", "customnpcs", "ctm", "codechickenlib", "clumps", "clearwater", "loliasm", "brandonscore",
-            "betterbiomeblend", "bedbreakbegone", "avaritia", "asmodeuscore", "appliedenergistics2", "aiimprovements", "abyssalcraft", "magic_maid"};
+            "betterbiomeblend", "bedbreakbegone", "avaritia", "asmodeuscore", "appliedenergistics2", "aiimprovements", "abyssalcraft", "magic_maid", "iceandfire", "llibrary", "carianstyle", "avp", "mdxlib", "endermail",
+            "thebetweenlands", "forestry", "skillful", "skillsvanilla", "musicplayer", "projectex", "extendedexchange", "tamedmonster", "hormone", "brownmooshrooms"};
     public static final List<String> TransformerExclusions = new ArrayList<>();
     public static final List<String> MinecraftClasses = new ArrayList<>();
     public static final List<String> LibraryClasses = new ArrayList<>();
