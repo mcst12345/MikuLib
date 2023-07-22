@@ -35,7 +35,7 @@ public class JarFucker {
                             str = str + "\n";
                             if (!BadMANIFEST(str)) jos.write(str.getBytes());
                         }
-                        String fucked = "fucked: true";
+                        String fucked = "\bfucked: true";
                         jos.write(fucked.getBytes());
                         br.close();
                         isr.close();
