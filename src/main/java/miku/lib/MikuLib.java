@@ -1,11 +1,14 @@
 package miku.lib;
 
 import miku.lib.proxy.CommonProxy;
+import miku.lib.util.ClassUtil;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 
 @Mod(
@@ -19,7 +22,8 @@ public class MikuLib {
     public static final String NAME = "MikuLib";
     public static final String VERSION = "1.8.1";
 
-    public MikuLib() {
+    public MikuLib() throws IOException {
+        ClassUtil.Init();
     }
 
     @SidedProxy(

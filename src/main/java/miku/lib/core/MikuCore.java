@@ -6,7 +6,6 @@ import miku.lib.util.HashUtil;
 import miku.lib.util.MikuArrayListForTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -39,32 +38,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         ClassUtil.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
 
-        File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
-        ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses);
-
-        File libraires = new File("libraries");
-        if (!libraires.exists()) {
-            if (libraires.mkdir()) return;
-            System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
-        } else if (!libraires.isDirectory()) {
-            System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
-        }
-
-        ClassUtil.ScanLibraries(libraires);
-
-        File mods = new File("mods");
-        if (!mods.exists()) {
-            if (mods.mkdir()) return;
-            System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
-        } else if (!mods.isDirectory()) {
-            System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
-        }
-
-        ClassUtil.ScanMods(mods);
+        ClassUtil.Init();
 
         InitLib();
         try {

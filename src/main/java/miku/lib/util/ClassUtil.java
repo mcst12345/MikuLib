@@ -1,5 +1,6 @@
 package miku.lib.util;
 
+import miku.lib.MikuLib;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -120,6 +121,35 @@ public class ClassUtil {
                     System.out.println(jar.getName() + " has already be fucked.");
                 }
             }
+        }
+    }
+
+    public static boolean Init() throws IOException {
+        if (MikuLib.LOADED) return false;
+        File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
+        ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses);
+
+        File libraires = new File("libraries");
+        CreateDirectory(libraires);
+
+        ClassUtil.ScanLibraries(libraires);
+
+        File mods = new File("mods");
+        CreateDirectory(mods);
+
+        ClassUtil.ScanMods(mods);
+        MikuLib.LOADED = true;
+        return true;
+    }
+
+    private static void CreateDirectory(File d) {
+        if (!d.exists()) {
+            if (d.mkdir()) return;
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
+        } else if (!d.isDirectory()) {
+            System.out.println("The fuck?");
+            FMLCommonHandler.instance().exitJava(0, true);
         }
     }
 
