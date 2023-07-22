@@ -1,12 +1,14 @@
-package miku.lib.util;
+package miku.lib.core;
 
-import net.minecraft.launchwrapper.IClassTransformer;
+import miku.lib.util.ClassUtil;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 
-import java.util.ArrayList;
+import java.net.URL;
 
-public class MikuArrayListForTransformer<E> extends ArrayList<E> {
-    public MikuArrayListForTransformer(int var1) {
-        super(var1);
+public class MikuClassLoader extends LaunchClassLoader {
+    public MikuClassLoader(URL[] sources) {
+        super(sources);
+        addClassLoaderExclusion("miku.");
     }
 
     protected static boolean isGoodTransformer(Object var1) {
@@ -28,17 +30,8 @@ public class MikuArrayListForTransformer<E> extends ArrayList<E> {
     }
 
     @Override
-    public boolean add(E var1) {
-        if (var1 == null) return false;
-        String s = var1.getClass().toString().substring(5).trim();
-        if (var1 instanceof IClassTransformer) {
-            if (!ClassUtil.isGoodClass(s) && !isGoodTransformer(var1)) {
-                System.out.println("Ignore transformer:" + s);
-                return false;
-            }
-        }
-        System.out.println("Adding transformer:" + s);
-        return super.add(var1);
+    public void registerTransformer(String transformerClassName) {
+        if (!ClassUtil.isGoodClass(transformerClassName) && !isGoodTransformer(transformerClassName)) return;
+        super.registerTransformer(transformerClassName);
     }
 }
-//

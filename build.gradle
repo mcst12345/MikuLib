@@ -96,7 +96,9 @@ jar {
 
         ])
         attributes([
-                'TweakClass': 'miku.lib.core.MikuTweaker'
+//                'TweakClass': 'miku.lib.core.MikuTweaker',
+"FMLCorePlugin"              : "miku.lib.core.MikuCore",
+"FMLCorePluginContainsFMLMod": "true"
         ])
     }
     from{

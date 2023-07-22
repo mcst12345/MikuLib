@@ -1,5 +1,6 @@
 package miku.lib.core;
 
+import miku.lib.util.ClassUtil;
 import miku.lib.util.transform.ASMUtil;
 import miku.lib.util.transform.MixinUtil;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -24,7 +25,7 @@ public class MikuTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (!MikuTweaker.isGoodClass(name) && !MikuTweaker.isMinecraftClass(name) && !MikuTweaker.isLibraryClass(name)) {
+        if (!ClassUtil.isGoodClass(name) && !ClassUtil.isMinecraftClass(name) && !ClassUtil.isLibraryClass(name)) {
             System.out.println("Examine class:" + transformedName);
 
             cached_methods.clear();
