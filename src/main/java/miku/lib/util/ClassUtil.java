@@ -24,9 +24,10 @@ public class ClassUtil {
             "betterbiomeblend", "bedbreakbegone", "avaritia", "asmodeuscore", "appliedenergistics2", "aiimprovements", "abyssalcraft", "magic_maid", "iceandfire", "llibrary", "carianstyle", "avp", "mdxlib", "endermail",
             "thebetweenlands", "forestry", "skillful", "skillsvanilla", "musicplayer", "projectex", "extendedexchange", "tamedmonster", "hormone", "brownmooshrooms", "pubgmc", "configuration", "vanillafix", "surge", "gregtech",
             "mwc", "inputmethodblocker", "mts", "mtsofficalpack", "overlast", "farlanders", "srmonstress", "scapeandrunvaccine", "wyrmsofnyrus", "roughmobsrevamped", "sereneseasons", "immersive-intelligence", "immersiveintelligence",
-            "immersiveengineering", "techguns", "synlib", "geckolib3", "thermalfoundation", "cofhworld", "thermaldynamics", "thermalinnovation", "thermalcultivation", "thermalexpansion", "evilcraft", "bloodmagic", "moarsigns", "botania",
-            "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft", "gamestages", "serenetweaks", "vampirism_integrations",
-            "vampiresneedumbrellas", "consecration", "xreliquary"};
+            "immersiveengineering", "techguns", "synlib", "geckolib3", "thermalfoundation", "cofhworld", "thermaldynamics", "thermalinnovation", "thermalcultivation", "thermalexpansion", "evilcraft", "bloodmagic", "moarsigns",
+            "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft", "gamestages", "serenetweaks", "vampirism_integrations", "ichunutil", "morphspellpack", "baubles", "thaumcraft", "botania",
+            "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft",
+            "harvestcraft"};
     public static final List<String> TransformerExclusions = new ArrayList<>();
     public static final List<String> MinecraftClasses = new ArrayList<>();
     public static final List<String> LibraryClasses = new ArrayList<>();
