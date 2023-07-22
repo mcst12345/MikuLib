@@ -72,11 +72,10 @@ public class MikuCore implements IFMLLoadingPlugin {
             throw new RuntimeException(e);
         }
         Sqlite.CoreInit();
-        Launch.classLoader = (MikuClassLoader) Launch.classLoader;
         System.out.println("Add MikuTransformer");
 
         //Add our transformer
-        ((MikuClassLoader) Launch.classLoader).registerTransformer("miku.lib.core.MikuTransformer");
+        Launch.classLoader.registerTransformer("miku.lib.core.MikuTransformer");
 
         System.out.println("Init mixins");
 
