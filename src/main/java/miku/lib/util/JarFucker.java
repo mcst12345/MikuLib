@@ -54,21 +54,33 @@ public class JarFucker {
             jos.closeEntry();
             jos.close();
 
+            OverwriteFile(new File(jar.getName() + ".fucked"), new File(jar.getName()), true);
 
-            if (new File(jar.getName()).renameTo(new File(jar.getName() + ".backup"))) {
-                if (new File(jar.getName() + ".fucked").renameTo(new File(jar.getName()))) {
-                    return;
-                }
-            }
+            //if (new File(jar.getName()).renameTo(new File(jar.getName() + ".backup"))) {
+            //    if (new File(jar.getName() + ".fucked").renameTo(new File(jar.getName()))) {
+            //        return;
+            //    }
+            //}
 
-            System.out.println("The Fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
+            //System.out.println("The Fuck?");
+            //FMLCommonHandler.instance().exitJava(0, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected static void OverwriteFile(File source, File target, boolean backup) {
+    protected static void OverwriteFile(File source, File target, boolean backup) throws IOException {
+        if (backup) Files.copy(target.toPath(), Paths.get(target.toURI() + ".backup"));
+        System.gc();
+        if (target.delete()) {
+            System.gc();
+            if (source.renameTo(new File(target.getName()))) {
+                return;
+            }
+        }
+
+        System.out.println("The Fuck?");
+        FMLCommonHandler.instance().exitJava(0, true);
 
     }
 
