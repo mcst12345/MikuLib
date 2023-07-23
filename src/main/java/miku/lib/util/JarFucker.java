@@ -75,7 +75,9 @@ public class JarFucker {
                 fd.sync();
             }
             System.gc();
-            source.delete();
+            if (!source.delete()) {
+                System.out.println("Holy Shit? " + source.getName() + " cannot be deleted! Well,ignoring it.");
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             System.out.println("The Fuck?");
