@@ -144,7 +144,7 @@ public class MikuTransformer implements IClassTransformer {
 
 
     public static void print(String s){
-        if(s.matches("(.*):null(.*)"))return;
+        if (s.contains(":null")) return;
         System.out.println(s);
     }
 }

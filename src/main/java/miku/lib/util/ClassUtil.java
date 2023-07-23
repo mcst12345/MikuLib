@@ -242,7 +242,7 @@ public class ClassUtil {
     public static boolean isGoodClass(String s) {
         if (GoodClassCache.containsKey(s)) return GoodClassCache.get(s);
         for (String c : TransformerExclusions) {
-            if (s.matches("(.*)" + c + "(.*)")) {
+            if (s.contains(c)) {
                 GoodClassCache.put(s, true);
                 return true;
             }

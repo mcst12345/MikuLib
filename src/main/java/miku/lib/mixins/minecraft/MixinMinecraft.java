@@ -212,7 +212,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             }
             if (guiScreenIn != null) {
                 if (guiScreenIn.toString() != null) {
-                    if (guiScreenIn.toString().toLowerCase().matches("(.*)dead(.*)") || guiScreenIn.toString().toLowerCase().matches("(.*)gameover(.*)")) {
+                    if (guiScreenIn.toString().toLowerCase().contains("dead") || guiScreenIn.toString().toLowerCase().contains("gameover")) {
                         return;
                     }
                 }
