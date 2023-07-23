@@ -29,7 +29,7 @@ public class ClassUtil {
             "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft",
             "harvestcraft"};
 
-    protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update"};
+    protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin"};
 
     protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
 
@@ -81,7 +81,6 @@ public class ClassUtil {
                                 cr.accept(cn, 0);
 
                                 if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
-                                    //System.out.println(cn.name+":::"+an.desc);
                                     if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
                                         boolean flag = false;
                                         String modid = null;
