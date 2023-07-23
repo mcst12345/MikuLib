@@ -35,14 +35,10 @@ public class JarFucker {
                         String str;
                         List<String> tmp = new ArrayList<>();
                         while ((str = br.readLine()) != null) {
-                            if (!BadMANIFEST(str)) tmp.add(str);
-                        }
-                        for (int i = 0; i < tmp.size(); i++) {
-                            if (i == tmp.size() - 1) {
-                                jos.write(tmp.get(i).getBytes());
-                            } else {
-                                String s = tmp.get(i) + "\n";
-                                jos.write(s.getBytes());
+                            if (!BadMANIFEST(str)) {
+                                tmp.add(str);
+                                str = str + "\n";
+                                jos.write(str.getBytes());
                             }
                         }
                         String fucked = "Fucked: true";
@@ -58,6 +54,7 @@ public class JarFucker {
             jos.closeEntry();
             jos.close();
 
+
             if (new File(jar.getName()).renameTo(new File(jar.getName() + ".backup"))) {
                 if (new File(jar.getName() + ".fucked").renameTo(new File(jar.getName()))) {
                     return;
@@ -69,6 +66,10 @@ public class JarFucker {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected static void OverwriteFile(File source, File target, boolean backup) {
+
     }
 
     protected static boolean BadMANIFEST(String s) {
