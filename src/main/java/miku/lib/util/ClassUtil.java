@@ -7,11 +7,15 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
 public class ClassUtil {
+    protected static final Map<String, Boolean> GoodClassCache = new ConcurrentSkipListMap<>();
+    protected static final Map<String, Boolean> MinecraftClassCache = new ConcurrentSkipListMap<>();
+    protected static final Map<String, Boolean> LibraryClassCache = new ConcurrentSkipListMap<>();
 
     //Holy Fuck. Well,at least this is better than that package-based whitelist.
     protected static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
@@ -34,12 +38,12 @@ public class ClassUtil {
     protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
 
 
-    public static final List<String> TransformerExclusions = new ArrayList<>();
-    public static final List<String> MinecraftClasses = new ArrayList<>();
-    public static final List<String> LibraryClasses = new ArrayList<>();
+    protected static final List<String> TransformerExclusions = new ArrayList<>();
+    protected static final List<String> MinecraftClasses = new ArrayList<>();
+    protected static final List<String> LibraryClasses = new ArrayList<>();
     public static Map<String, Class<?>> cachedClasses = null;
 
-    public static void AddJarToTransformerExclusions(File file, List<String> list) throws IOException {
+    public static void AddJarToTransformerExclusions(File file, List<String> list, Map<String, Boolean> map) throws IOException {
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -49,6 +53,7 @@ public class ClassUtil {
                         String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
                         if (clazz.equals("module-info")) continue;
                         list.add(clazz);
+                        map.put(clazz, true);
                     }
                 }
             }
@@ -156,6 +161,9 @@ public class ClassUtil {
                 if (good) {
                     System.out.println("Adding mod " + jar.getName() + " to TransformerExclusions");
                     TransformerExclusions.addAll(classes);
+                    for (String str : classes) {
+                        GoodClassCache.put(str, true);
+                    }
                 } else if (!fucked) {
                     JarFucker.FuckJar(jar);
                 } else {
@@ -184,7 +192,7 @@ public class ClassUtil {
     public synchronized static boolean Init() throws IOException {
         if (LOADED) return false;
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
-        ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses);
+        ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses, MinecraftClassCache);
 
         File libraires = new File("libraries");
         CreateDirectory(libraires);
@@ -216,7 +224,8 @@ public class ClassUtil {
                 System.out.println("Scanning directory:" + file.getName());
                 ScanLibraries(file);
             } else {
-                if (file.getName().matches("(.*).jar")) AddJarToTransformerExclusions(file, LibraryClasses);
+                if (file.getName().matches("(.*).jar"))
+                    AddJarToTransformerExclusions(file, LibraryClasses, LibraryClassCache);
             }
         }
     }
@@ -231,20 +240,26 @@ public class ClassUtil {
     }
 
     public static boolean isGoodClass(String s) {
+        if (GoodClassCache.containsKey(s)) return GoodClassCache.get(s);
         for (String c : TransformerExclusions) {
             if (s.matches("(.*)" + c + "(.*)")) {
+                GoodClassCache.put(s, true);
                 return true;
             }
         }
+        GoodClassCache.put(s, false);
         return false;
     }
 
     public static boolean isMinecraftClass(String s) {
+        if (MinecraftClassCache.containsKey(s)) return MinecraftClassCache.get(s);
         for (String c : MinecraftClasses) {
             if (s.equals(c)) {
+                MinecraftClassCache.put(s, true);
                 return true;
             }
         }
+        MinecraftClassCache.put(s, false);
         return false;
     }
 
