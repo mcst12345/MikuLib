@@ -51,39 +51,36 @@ public class JarFucker {
 
             OverwriteFile(new File(jar.getName() + ".fucked"), new File(jar.getName()), true);
 
-            //if (new File(jar.getName()).renameTo(new File(jar.getName() + ".backup"))) {
-            //    if (new File(jar.getName() + ".fucked").renameTo(new File(jar.getName()))) {
-            //        return;
-            //    }
-            //}
-
-            //System.out.println("The Fuck?");
-            //FMLCommonHandler.instance().exitJava(0, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected synchronized static void OverwriteFile(File source, File target, boolean backup) throws IOException {
-        if (backup) {
-            File Backup = new File(target.toURI() + ".backup");
-            if (!Backup.exists()) if (!Backup.createNewFile()) {
-                System.out.println("The Fuck?");
-                Runtime.getRuntime().exit(0);
+    protected synchronized static void OverwriteFile(File source, File target, boolean backup) {
+        try {
+            if (backup) {
+                System.gc();
+                try (FileOutputStream BACKUP = new FileOutputStream(target.getPath() + ".backup")) {
+                    BACKUP.write(Files.readAllBytes(target.toPath()));
+                    BACKUP.flush();
+                    FileDescriptor fd = BACKUP.getFD();
+                    fd.sync();
+                }
             }
-            Files.copy(target.toPath(), Paths.get(target.toURI() + ".backup"));
-        }
-        System.gc();
-        if (target.delete()) {
             System.gc();
-            if (source.renameTo(new File(target.getName()))) {
-                return;
+            try (FileOutputStream TARGET = new FileOutputStream(target)) {
+                TARGET.write(Files.readAllBytes(source.toPath()));
+                TARGET.flush();
+                FileDescriptor fd = TARGET.getFD();
+                fd.sync();
             }
+            System.gc();
+            source.delete();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            System.out.println("The Fuck?");
+            Runtime.getRuntime().exit(0);
         }
-
-        System.out.println("The Fuck?");
-        Runtime.getRuntime().exit(0);
-
     }
 
     protected static boolean BadMANIFEST(String s) {
