@@ -264,11 +264,14 @@ public class ClassUtil {
     }
 
     public static boolean isLibraryClass(String s) {
+        if (LibraryClassCache.containsKey(s)) return LibraryClassCache.get(s);
         for (String c : LibraryClasses) {
             if (s.equals(c)) {
+                LibraryClassCache.put(s, true);
                 return true;
             }
         }
+        LibraryClassCache.put(s, false);
         return false;
     }
 }
