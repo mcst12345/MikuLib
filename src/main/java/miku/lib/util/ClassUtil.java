@@ -57,7 +57,7 @@ public class ClassUtil {
         }
     }
 
-    public static void ScanModJarFile(File file) throws IOException {
+    public synchronized static void ScanModJarFile(File file) throws IOException {
         if (file.getName().matches("(.*).jar")) {
             boolean fucked = false;
             try (JarFile jar = new JarFile(file)) {
@@ -181,7 +181,7 @@ public class ClassUtil {
 
     protected static boolean LOADED = false;
 
-    public static boolean Init() throws IOException {
+    public synchronized static boolean Init() throws IOException {
         if (LOADED) return false;
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses);
@@ -199,7 +199,7 @@ public class ClassUtil {
         return true;
     }
 
-    private static void CreateDirectory(File d) {
+    private synchronized static void CreateDirectory(File d) {
         if (!d.exists()) {
             if (d.mkdir()) return;
             System.out.println("The fuck?");
@@ -210,7 +210,7 @@ public class ClassUtil {
         }
     }
 
-    public static void ScanLibraries(File directory) throws IOException {
+    public synchronized static void ScanLibraries(File directory) throws IOException {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.isDirectory()) {
                 System.out.println("Scanning directory:" + file.getName());
@@ -221,7 +221,7 @@ public class ClassUtil {
         }
     }
 
-    public static void ScanMods(File directory) throws IOException {
+    public synchronized static void ScanMods(File directory) throws IOException {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.isDirectory()) {
                 System.out.println("Scanning directory:" + file.getName());

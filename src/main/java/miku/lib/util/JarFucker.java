@@ -1,15 +1,12 @@
 package miku.lib.util;
 
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import sun.misc.IOUtils;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -17,7 +14,7 @@ import java.util.zip.ZipEntry;
 
 public class JarFucker {
     protected static boolean shouldRestart = false;
-    public static void FuckJar(JarFile jar) {
+    public synchronized static void FuckJar(JarFile jar) {
         shouldRestart = true;
         System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
         System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
@@ -33,10 +30,8 @@ public class JarFucker {
                         InputStreamReader isr = new InputStreamReader(is);
                         BufferedReader br = new BufferedReader(isr);
                         String str;
-                        List<String> tmp = new ArrayList<>();
                         while ((str = br.readLine()) != null) {
                             if (!BadMANIFEST(str)) {
-                                tmp.add(str);
                                 str = str + "\n";
                                 jos.write(str.getBytes());
                             }
@@ -69,8 +64,15 @@ public class JarFucker {
         }
     }
 
-    protected static void OverwriteFile(File source, File target, boolean backup) throws IOException {
-        if (backup) Files.copy(target.toPath(), Paths.get(target.toURI() + ".backup"));
+    protected synchronized static void OverwriteFile(File source, File target, boolean backup) throws IOException {
+        if (backup) {
+            File Backup = new File(target.toURI() + ".backup");
+            if (!Backup.exists()) if (!Backup.createNewFile()) {
+                System.out.println("The Fuck?");
+                Runtime.getRuntime().exit(0);
+            }
+            Files.copy(target.toPath(), Paths.get(target.toURI() + ".backup"));
+        }
         System.gc();
         if (target.delete()) {
             System.gc();
@@ -80,7 +82,7 @@ public class JarFucker {
         }
 
         System.out.println("The Fuck?");
-        FMLCommonHandler.instance().exitJava(0, true);
+        Runtime.getRuntime().exit(0);
 
     }
 
