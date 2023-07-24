@@ -53,7 +53,17 @@ minecraft {
 
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+        java {
+            exclude 'net/minecraft/**'
+            exclude 'net/minecraftforge/**'
+        }
+    }
+}
 
 repositories {
     maven {

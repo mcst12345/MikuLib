@@ -247,6 +247,17 @@ public class JarFucker {
     }
 
     public synchronized static void FuckLaunchWrapper(File launch) {
+        try {
+            JarFile jar = new JarFile(launch);
+            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
 
+            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                JarEntry entry = entries.nextElement();
+            }
+
+            jos.closeEntry();
+            jos.close();
+        } catch (IOException ignored) {
+        }
     }
 }
