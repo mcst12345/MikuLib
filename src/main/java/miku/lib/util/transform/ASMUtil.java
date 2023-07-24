@@ -43,6 +43,7 @@ public class ASMUtil {
 
         } catch (AnalyzerException ignored) {
         }
+        if (method.name == null) return false;
         String s = method.name.toLowerCase();
         if (s.matches("<(.*)init(.*)>")) {//Skip the constructor
             return false;
