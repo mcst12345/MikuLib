@@ -12,7 +12,7 @@ plugins {
 
 
 group = 'miku'
-version = '1.9.1'
+version = ''
 
 java {
     archivesBaseName = '!!!MikuLib'
