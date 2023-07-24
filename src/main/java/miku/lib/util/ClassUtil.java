@@ -212,6 +212,9 @@ public class ClassUtil {
             System.out.println("The fuck? File launchwrapper-1.12.jar doesn't exists! That probably means that your game files are damged.");
         } else {
             if (!LaunchFucked(LAUNCH)) JarFucker.FuckLaunchWrapper(LAUNCH);
+            else {
+                return false;
+            }
         }
 
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
