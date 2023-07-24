@@ -40,15 +40,6 @@ public class MikuCore implements IFMLLoadingPlugin {
 
         ClassUtil.Init();
 
-        if (JarFucker.shouldRestart()) {
-            System.out.println("MikuLib has completed its file injection.Please restart the game.");
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException ignored) {
-            }
-            Runtime.getRuntime().exit(0);
-        }
-
         InitLib();
         try {
             Launch.classLoader.addURL((new File("sqlite-jdbc-3.42.0.0.jar")).toURI().toURL());
@@ -72,27 +63,46 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
+        if (JarFucker.shouldRestart()) {
+            System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            Runtime.getRuntime().exit(-39);
+        }
         return new String[0];
     }
 
     @Override
     public String getModContainerClass() {
+        if (JarFucker.shouldRestart()) {
+            System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            Runtime.getRuntime().exit(-39);
+        }
         return null;
     }
 
     @Nullable
     @Override
     public String getSetupClass() {
+        if (JarFucker.shouldRestart()) {
+            System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            Runtime.getRuntime().exit(-39);
+        }
         return null;
     }
 
     @Override
     public void injectData(Map<String, Object> data) {
-
+        if (JarFucker.shouldRestart()) {
+            System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            Runtime.getRuntime().exit(-39);
+        }
     }
 
     @Override
     public String getAccessTransformerClass() {
+        if (JarFucker.shouldRestart()) {
+            System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            Runtime.getRuntime().exit(-39);
+        }
         return null;
     }
 
