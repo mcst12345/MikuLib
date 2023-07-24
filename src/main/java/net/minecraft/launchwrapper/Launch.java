@@ -3,13 +3,13 @@ package net.minecraft.launchwrapper;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import miku.lib.util.ClassUtil;
 import org.apache.logging.log4j.Level;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -42,14 +42,7 @@ public class Launch {
                     if (mod.getName().toLowerCase().contains("mikulib")) {
                         MikuLib = mod;
                         classLoader.addURL(MikuLib.toURI().toURL());
-                        try {
-                            Class<?> ClassUtil = Class.forName("miku.lib.util.ClassUtil");
-                            Method init = ClassUtil.getMethod("Init");
-                            init.invoke(null);
-                        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
-                                 InvocationTargetException e) {
-                            throw new RuntimeException(e);
-                        }
+                        ClassUtil.Init();
                         MikuLibInstalled = true;
                         classLoader.init();
                     }
@@ -59,14 +52,7 @@ public class Launch {
                 }
             } else {
                 classLoader.addURL(MikuLib.toURI().toURL());
-                try {
-                    Class<?> ClassUtil = Class.forName("miku.lib.util.ClassUtil");
-                    Method init = ClassUtil.getMethod("Init");
-                    init.invoke(null);
-                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
-                         InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
+                ClassUtil.Init();
                 classLoader.init();
                 MikuLibInstalled = true;
             }
