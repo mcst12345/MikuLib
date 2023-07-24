@@ -166,7 +166,7 @@ public class ClassUtil {
                         GoodClassCache.put(str, true);
                     }
                 } else if (!fucked) {
-                    JarFucker.FuckJar(jar);
+                    JarFucker.FuckModJar(jar);
                 } else {
                     System.out.println(jar.getName() + " has already being fucked.");
                 }
@@ -192,6 +192,13 @@ public class ClassUtil {
 
     public synchronized static boolean Init() throws IOException {
         if (LOADED) return false;
+        File LAUNCH = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
+        if (!LAUNCH.exists()) {
+            System.out.println("The fuck? File launchwrapper-1.12.jar doesn't exists! That probably means that your game files are damged.");
+        } else {
+            JarFucker.FuckLaunchWrapper(LAUNCH);
+        }
+
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         minecraft.setReadable(true);
         minecraft.setWritable(true);

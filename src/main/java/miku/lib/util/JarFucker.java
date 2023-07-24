@@ -26,7 +26,7 @@ import static miku.lib.sqlite.Sqlite.DEBUG;
 public class JarFucker {
     protected static final IClassTransformer Miku = new MikuTransformer();
     protected static boolean shouldRestart = false;
-    public synchronized static void FuckJar(JarFile jar) {
+    public synchronized static void FuckModJar(JarFile jar) {
         boolean changed = false;
         System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
         System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
@@ -97,9 +97,11 @@ public class JarFucker {
     }
 
     protected synchronized static void OverwriteFile(File source, File target, boolean backup) {
+        source.setReadable(true);
+        source.setWritable(true);
+        target.setReadable(true);
+        target.setWritable(true);
         try {
-
-
             if (backup) {
                 System.gc();
                 try (FileOutputStream BACKUP = new FileOutputStream(target.getPath() + ".backup")) {
@@ -242,5 +244,9 @@ public class JarFucker {
         cn.accept(cw);
 
         return cw.toByteArray();
+    }
+
+    public synchronized static void FuckLaunchWrapper(File launch) {
+
     }
 }
