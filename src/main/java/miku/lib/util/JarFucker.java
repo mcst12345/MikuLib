@@ -136,7 +136,7 @@ public class JarFucker {
         return shouldRestart;
     }
 
-    protected static final byte[] transform(String transformedName, ClassNode cn) {
+    protected static byte[] transform(String transformedName, ClassNode cn) {
         System.out.println("Examine class:" + transformedName);
 
         cached_methods.clear();
