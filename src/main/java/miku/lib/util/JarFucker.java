@@ -17,7 +17,8 @@ import java.util.zip.ZipEntry;
 public class JarFucker {
     protected static boolean shouldRestart = false;
     public synchronized static void FuckJar(JarFile jar) {
-        shouldRestart = true;
+        //shouldRestart = true;
+        boolean changed = false;
         System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
         System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
         try {
@@ -37,6 +38,8 @@ public class JarFucker {
                             if (!BadMANIFEST(str)) {
                                 str = str + "\n";
                                 jos.write(str.getBytes());
+                            } else {
+                                changed = true;
                             }
                         }
                         String fucked = "Fucked: true";
@@ -49,6 +52,7 @@ public class JarFucker {
                         cr.accept(cn, 0);
                         if (cn.interfaces != null) for (String s : cn.interfaces) {
                             if (s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin") || s.equals("net/minecraft/launchwrapper/ITweaker")) {
+                                changed = true;
                                 continue loop;
                             }
                         }
@@ -63,7 +67,12 @@ public class JarFucker {
             jos.closeEntry();
             jos.close();
 
+            if (changed) {
+                shouldRestart = true;
+            }
+
             OverwriteFile(new File(jar.getName() + ".fucked"), new File(jar.getName()), true);
+
 
         } catch (IOException e) {
             throw new RuntimeException(e);
