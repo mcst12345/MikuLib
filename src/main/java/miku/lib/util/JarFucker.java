@@ -1,7 +1,6 @@
 package miku.lib.util;
 
 
-import miku.lib.MikuLib;
 import miku.lib.util.transform.ASMUtil;
 import miku.lib.util.transform.MixinUtil;
 import org.apache.commons.io.FileUtils;
@@ -251,7 +250,7 @@ public class JarFucker {
 
             FileUtils.copyFile(launch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
 
-            InputStream MikuLaunch = MikuLib.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
+            InputStream MikuLaunch = JarFucker.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
             assert MikuLaunch != null;
             FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
         } catch (IOException ignored) {
