@@ -48,7 +48,7 @@ public class JarFucker {
                         jos.write(fucked.getBytes());
                         br.close();
                         isr.close();
-                    } else if (entry.getName().matches("(.*).class")) {
+                    } else if (entry.getName().matches("(.*).class") && !entry.getName().contains("$")) {
                         byte[] original = new byte[is.available()];
                         is.read(original);
                         boolean shouldAdd = true;
