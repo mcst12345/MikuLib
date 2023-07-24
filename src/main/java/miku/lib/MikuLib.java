@@ -25,11 +25,7 @@ public class MikuLib {
         if (ClassUtil.Init()) {
             System.out.println("Well,if you see this message,that probably means someone fucked my coremod.\n" +
                     "Now I have fucked theirs.Restart the game.");
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException ignored) {
-            }
-            Runtime.getRuntime().exit(0);
+            Runtime.getRuntime().exit(-39);
         }
     }
 
