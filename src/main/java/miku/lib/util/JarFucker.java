@@ -4,7 +4,6 @@ package miku.lib.util;
 import miku.lib.core.MikuTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import sun.misc.IOUtils;
 
@@ -65,9 +64,7 @@ public class JarFucker {
                             }
                         }
                         if (shouldAdd) {
-                            ClassWriter cw = new ClassWriter(0);
-                            cn.accept(cw);
-                            byte[] fucked = Miku.transform(null, null, cw.toByteArray());
+                            byte[] fucked = Miku.transform(null, null, original);
                             if (fucked != original) changed = true;
                             jos.putNextEntry(new JarEntry(entry.getName()));
                             jos.write(fucked);
