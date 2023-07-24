@@ -25,6 +25,14 @@ import java.util.Map;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public MikuCore() throws IOException, NoSuchFieldException, IllegalAccessException {
+        InitLib();
+        try {
+            Launch.classLoader.addURL((new File("sqlite-jdbc-3.42.0.0.jar")).toURI().toURL());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        Sqlite.CoreInit();
+
         Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
         transformers.setAccessible(true);
         List<IClassTransformer> t = (List<IClassTransformer>) transformers.get(Launch.classLoader);
@@ -39,14 +47,6 @@ public class MikuCore implements IFMLLoadingPlugin {
         ClassUtil.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
 
         ClassUtil.Init();
-
-        InitLib();
-        try {
-            Launch.classLoader.addURL((new File("sqlite-jdbc-3.42.0.0.jar")).toURI().toURL());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-        Sqlite.CoreInit();
         System.out.println("Add MikuTransformer");
 
         //Add our transformer
