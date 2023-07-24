@@ -38,6 +38,8 @@ public class MixinFMLModContainer {
                 }
             }
         } catch (Throwable t) {
+            if (t instanceof ClassCastException || t instanceof NoSuchFieldError || t instanceof NoSuchMethodError)
+                return;
             t.printStackTrace();
         }
     }

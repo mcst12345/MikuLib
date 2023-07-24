@@ -46,6 +46,7 @@ public class MixinEventBus {
         }
         catch (Throwable throwable)
         {
+            if (throwable instanceof NoSuchMethodError || throwable instanceof NoSuchFieldError) return false;
             throwable.printStackTrace();
         }
         return event.isCancelable() && event.isCanceled();
