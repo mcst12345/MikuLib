@@ -20,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class Launch {
+    protected static boolean MikuLibInstalled = false;
+
     private Launch() {
         final URLClassLoader ucl = (URLClassLoader) getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());
@@ -29,7 +31,6 @@ public class Launch {
         try {
             classLoader.addURL((new File("sqlite-jdbc-3.42.0.0.jar")).toURI().toURL());
             File MikuLib = new File("mods/!!!MikuLib.jar");
-            boolean MikuLibInstalled = false;
             if (!MikuLib.exists()) {
                 System.out.println("Holy Fuck. Did you modified the file name of MikuLib? Undo it before next launching.");
                 File mods = new File("mods");
@@ -50,11 +51,11 @@ public class Launch {
                             throw new RuntimeException(e);
                         }
                         MikuLibInstalled = true;
+                        classLoader.init();
                     }
                 }
                 if (!MikuLibInstalled) {
                     System.out.println("Can't find the file of MikuLib! Did you delete it?");
-                    return;
                 }
             } else {
                 classLoader.addURL(MikuLib.toURI().toURL());
@@ -66,10 +67,16 @@ public class Launch {
                          InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
+                classLoader.init();
+                MikuLibInstalled = true;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean isMikuLibInstalled() {
+        return MikuLibInstalled;
     }
 
     private String getHash(File file, String hashType) throws IOException, NoSuchAlgorithmException {

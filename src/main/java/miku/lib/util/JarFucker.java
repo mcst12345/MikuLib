@@ -253,6 +253,14 @@ public class JarFucker {
 
             for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
                 JarEntry entry = entries.nextElement();
+                System.out.println(entry.getName());
+                try (InputStream is = jar.getInputStream(entry)) {
+                    if (entry.getName().equals("net/minecraft/launchwrapper/Launch.class")) {
+                    } else {
+                        jos.putNextEntry(new JarEntry(entry.getName()));
+                        jos.write(IOUtils.readNBytes(is, is.available()));
+                    }
+                }
             }
 
             jos.closeEntry();

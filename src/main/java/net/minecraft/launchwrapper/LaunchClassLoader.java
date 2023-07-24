@@ -1,5 +1,6 @@
 package net.minecraft.launchwrapper;
 
+import miku.lib.util.MikuArrayListForTransformer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -29,7 +30,7 @@ public class LaunchClassLoader extends URLClassLoader {
     private static File tempFolder = null;
     private final List<URL> sources;
     private final ClassLoader parent = getClass().getClassLoader();
-    private final List<IClassTransformer> transformers = new ArrayList<>(2);
+    private List<IClassTransformer> transformers = new ArrayList<>(2);
     private final Map<String, Class<?>> cachedClasses = new ConcurrentHashMap<>();
     private final Set<String> invalidClasses = new HashSet<>(1000);
     private final Set<String> classLoaderExceptions = new HashSet<>();
@@ -39,6 +40,10 @@ public class LaunchClassLoader extends URLClassLoader {
     private final Set<String> negativeResourceCache = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final ThreadLocal<byte[]> loadBuffer = new ThreadLocal<>();
     private IClassNameTransformer renameTransformer;
+
+    public void init() {
+        this.transformers = new MikuArrayListForTransformer<>();
+    }
 
     public LaunchClassLoader(URL[] sources) {
         super(sources, null);
