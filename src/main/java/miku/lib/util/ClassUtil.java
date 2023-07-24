@@ -1,11 +1,13 @@
 package miku.lib.util;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.jar.JarEntry;
@@ -190,15 +192,15 @@ public class ClassUtil {
     protected static boolean LOADED = false;
 
     protected static boolean LaunchFucked(File file) throws IOException {
-        JarFile jar = new JarFile(file);
-        JarEntry manifest = jar.getJarEntry("META-INF/MANIFEST.MF");
-        try (InputStream is = jar.getInputStream(manifest)) {
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            String str;
-            while ((str = br.readLine()) != null) {
-                if (str.contains("Fucked: true")) {
-                    return true;
+        try (JarFile jar = new JarFile(file)) {
+            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                JarEntry entry = entries.nextElement();
+                try (InputStream is = jar.getInputStream(entry)) {
+                    if (entry.getName().equals("META-INF/MANIFEST.MF")) {
+                        String s = IOUtils.toString(is, (Charset) null);
+                        System.out.println(s);
+                        if (s.contains("Fucked: true")) return true;
+                    }
                 }
             }
         }
