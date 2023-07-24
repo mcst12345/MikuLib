@@ -29,6 +29,7 @@ public class ASMUtil {
     }
 
     public static boolean isBadMethod(MethodNode method, String className) {
+        if (method == null) return false;
         boolean result = false;
         try {
             List<String> codes = InvokeDecompiler.diagnose(className, method);
