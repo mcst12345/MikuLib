@@ -32,7 +32,6 @@ public class LaunchClassLoader extends URLClassLoader {
     private final ClassLoader parent = getClass().getClassLoader();
     private List<IClassTransformer> transformers = new ArrayList<>(2);
     private final Map<String, Class<?>> cachedClasses = new ConcurrentHashMap<>();
-    private final Set<String> invalidClasses = new HashSet<>(1000);
     private final Set<String> classLoaderExceptions = new HashSet<>();
     private final Set<String> transformerExceptions = new HashSet<>();
     private final Map<Package, Manifest> packageManifests = new ConcurrentHashMap<>();
@@ -104,9 +103,6 @@ public class LaunchClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> findClass(final String name) throws ClassNotFoundException {
-        if (invalidClasses.contains(name)) {
-            throw new ClassNotFoundException(name);
-        }
 
         for (final String exception : classLoaderExceptions) {
             if (name.startsWith(exception)) {
@@ -125,7 +121,6 @@ public class LaunchClassLoader extends URLClassLoader {
                     cachedClasses.put(name, clazz);
                     return clazz;
                 } catch (ClassNotFoundException e) {
-                    invalidClasses.add(name);
                     throw e;
                 }
             }
@@ -190,7 +185,6 @@ public class LaunchClassLoader extends URLClassLoader {
             cachedClasses.put(transformedName, clazz);
             return clazz;
         } catch (Throwable e) {
-            invalidClasses.add(name);
             if (DEBUG) {
                 LogWrapper.log(Level.TRACE, e, "Exception encountered attempting classloading of %s", name);
                 LogManager.getLogger("LaunchWrapper").log(Level.ERROR, "Exception encountered attempting classloading of %s", e);
