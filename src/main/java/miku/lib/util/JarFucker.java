@@ -1,6 +1,7 @@
 package miku.lib.util;
 
 
+import miku.lib.MikuLib;
 import miku.lib.core.MikuTransformer;
 import miku.lib.util.transform.ASMUtil;
 import miku.lib.util.transform.MixinUtil;
@@ -255,10 +256,34 @@ public class JarFucker {
                 JarEntry entry = entries.nextElement();
                 System.out.println(entry.getName());
                 try (InputStream is = jar.getInputStream(entry)) {
-                    if (entry.getName().equals("net/minecraft/launchwrapper/Launch.class")) {
-                    } else {
-                        jos.putNextEntry(new JarEntry(entry.getName()));
-                        jos.write(IOUtils.readNBytes(is, is.available()));
+                    switch (entry.getName()) {
+                        case "net/minecraft/launchwrapper/Launch.class":
+                            InputStream MikuLaunch = MikuLib.class.getResourceAsStream("class/Launch.class");
+                            jos.putNextEntry(new JarEntry(entry.getName()));
+                            assert MikuLaunch != null;
+                            jos.write(IOUtils.readNBytes(MikuLaunch, MikuLaunch.available()));
+                            break;
+                        case "net/minecraft/launchwrapper/LaunchClassLoader.class":
+                            InputStream MikuClassLoader = MikuLib.class.getResourceAsStream("class/LaunchClassLoader.class");
+                            jos.putNextEntry(new JarEntry(entry.getName()));
+                            assert MikuClassLoader != null;
+                            jos.write(IOUtils.readNBytes(MikuClassLoader, MikuClassLoader.available()));
+                            break;
+                        case "META-INF/MANIFEST.MF":
+                            InputStreamReader isr = new InputStreamReader(is);
+                            BufferedReader br = new BufferedReader(isr);
+                            String str;
+                            while ((str = br.readLine()) != null) {
+                                str = str + "\n";
+                                jos.write(str.getBytes());
+                            }
+                            String fuck = "Fucked: true";
+                            jos.write(fuck.getBytes());
+                            break;
+                        default:
+                            jos.putNextEntry(new JarEntry(entry.getName()));
+                            jos.write(IOUtils.readNBytes(is, is.available()));
+                            break;
                     }
                 }
             }
