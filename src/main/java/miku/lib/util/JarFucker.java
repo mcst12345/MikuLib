@@ -2,10 +2,9 @@ package miku.lib.util;
 
 
 import miku.lib.MikuLib;
-import miku.lib.core.MikuTransformer;
 import miku.lib.util.transform.ASMUtil;
 import miku.lib.util.transform.MixinUtil;
-import net.minecraft.launchwrapper.IClassTransformer;
+import org.apache.commons.io.FileUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -14,7 +13,6 @@ import sun.misc.IOUtils;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.jar.JarEntry;
@@ -26,7 +24,6 @@ import static miku.lib.core.MikuTransformer.*;
 import static miku.lib.sqlite.Sqlite.DEBUG;
 
 public class JarFucker {
-    protected static final IClassTransformer Miku = new MikuTransformer();
     protected static boolean shouldRestart = false;
     public synchronized static void FuckModJar(JarFile jar) {
         boolean changed = false;
@@ -250,17 +247,14 @@ public class JarFucker {
 
     public synchronized static void FuckLaunchWrapper(File launch) {
         try {
-            System.out.println(HashUtil.getHash(launch, "SHA-256"));
+            //57f42b626d16cc2705bf2a37add7adbb074f0ca3b312fa6e23aa303dae682f
+
+            FileUtils.copyFile(launch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
+
             InputStream MikuLaunch = MikuLib.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
             assert MikuLaunch != null;
-            byte[] file = new byte[MikuLaunch.available()];
-            MikuLaunch.read(file);
-            MikuLaunch.close();
-            FileOutputStream fuckedFile = new FileOutputStream(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.fucked");
-            fuckedFile.write(file);
-            fuckedFile.close();
-            OverwriteFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.fucked"), launch, true);
-        } catch (IOException | NoSuchAlgorithmException ignored) {
+            FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
+        } catch (IOException ignored) {
         }
     }
 }
