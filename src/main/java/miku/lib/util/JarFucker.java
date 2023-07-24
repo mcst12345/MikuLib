@@ -23,7 +23,6 @@ public class JarFucker {
         System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
         try {
             JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
-            loop:
             for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
                 JarEntry entry = entries.nextElement();
                 if (entry.getName().equals("META-INF/MUMFREY.RSA") || entry.getName().equals("META-INF/MUMFREY.SF") || entry.getName().equals("META-INF/SIGNFILE.DSA") || entry.getName().equals("META-INF/SIGNFILE.SF"))
@@ -47,17 +46,21 @@ public class JarFucker {
                         br.close();
                         isr.close();
                     } else if (entry.getName().matches("(.*).class")) {
+                        boolean shouldAdd = true;
                         ClassReader cr = new ClassReader(is);
                         ClassNode cn = new ClassNode();
                         cr.accept(cn, 0);
                         if (cn.interfaces != null) for (String s : cn.interfaces) {
                             if (s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin") || s.equals("net/minecraft/launchwrapper/ITweaker")) {
                                 changed = true;
-                                continue loop;
+                                shouldAdd = false;
+                                break;
                             }
                         }
-                        jos.putNextEntry(new JarEntry(entry.getName()));
-                        jos.write(IOUtils.readNBytes(is, is.available()));
+                        if (shouldAdd) {
+                            jos.putNextEntry(new JarEntry(entry.getName()));
+                            jos.write(IOUtils.readNBytes(is, is.available()));
+                        }
                     } else {
                         jos.putNextEntry(new JarEntry(entry.getName()));
                         jos.write(IOUtils.readNBytes(is, is.available()));
