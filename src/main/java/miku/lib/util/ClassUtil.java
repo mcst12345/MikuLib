@@ -148,7 +148,6 @@ public class ClassUtil {
                                 BufferedReader br = new BufferedReader(isr);
                                 String str;
                                 while ((str = br.readLine()) != null) {
-                                    str = str + "\n";
                                     if (str.contains("Fucked: true")) {
                                         fucked = true;
                                         good = false;
@@ -190,13 +189,29 @@ public class ClassUtil {
 
     protected static boolean LOADED = false;
 
+    protected static boolean LaunchFucked(File file) throws IOException {
+        JarFile jar = new JarFile(file);
+        JarEntry manifest = jar.getJarEntry("META-INF/MANIFEST.MF");
+        try (InputStream is = jar.getInputStream(manifest)) {
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String str;
+            while ((str = br.readLine()) != null) {
+                if (str.contains("Fucked: true")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public synchronized static boolean Init() throws IOException {
         if (LOADED) return false;
         File LAUNCH = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
         if (!LAUNCH.exists()) {
             System.out.println("The fuck? File launchwrapper-1.12.jar doesn't exists! That probably means that your game files are damged.");
         } else {
-            JarFucker.FuckLaunchWrapper(LAUNCH);
+            if (!LaunchFucked(LAUNCH)) JarFucker.FuckLaunchWrapper(LAUNCH);
         }
 
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));

@@ -14,6 +14,7 @@ import sun.misc.IOUtils;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.jar.JarEntry;
@@ -249,48 +250,17 @@ public class JarFucker {
 
     public synchronized static void FuckLaunchWrapper(File launch) {
         try {
-            JarFile jar = new JarFile(launch);
-            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
-
-            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
-                JarEntry entry = entries.nextElement();
-                System.out.println(entry.getName());
-                try (InputStream is = jar.getInputStream(entry)) {
-                    switch (entry.getName()) {
-                        case "net/minecraft/launchwrapper/Launch.class":
-                            InputStream MikuLaunch = MikuLib.class.getResourceAsStream("class/Launch.class");
-                            jos.putNextEntry(new JarEntry(entry.getName()));
-                            assert MikuLaunch != null;
-                            jos.write(IOUtils.readNBytes(MikuLaunch, MikuLaunch.available()));
-                            break;
-                        case "net/minecraft/launchwrapper/LaunchClassLoader.class":
-                            InputStream MikuClassLoader = MikuLib.class.getResourceAsStream("class/LaunchClassLoader.class");
-                            jos.putNextEntry(new JarEntry(entry.getName()));
-                            assert MikuClassLoader != null;
-                            jos.write(IOUtils.readNBytes(MikuClassLoader, MikuClassLoader.available()));
-                            break;
-                        case "META-INF/MANIFEST.MF":
-                            InputStreamReader isr = new InputStreamReader(is);
-                            BufferedReader br = new BufferedReader(isr);
-                            String str;
-                            while ((str = br.readLine()) != null) {
-                                str = str + "\n";
-                                jos.write(str.getBytes());
-                            }
-                            String fuck = "Fucked: true";
-                            jos.write(fuck.getBytes());
-                            break;
-                        default:
-                            jos.putNextEntry(new JarEntry(entry.getName()));
-                            jos.write(IOUtils.readNBytes(is, is.available()));
-                            break;
-                    }
-                }
-            }
-
-            jos.closeEntry();
-            jos.close();
-        } catch (IOException ignored) {
+            System.out.println(HashUtil.getHash(launch, "SHA-256"));
+            InputStream MikuLaunch = MikuLib.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
+            assert MikuLaunch != null;
+            byte[] file = new byte[MikuLaunch.available()];
+            MikuLaunch.read(file);
+            MikuLaunch.close();
+            FileOutputStream fuckedFile = new FileOutputStream(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.fucked");
+            fuckedFile.write(file);
+            fuckedFile.close();
+            OverwriteFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.fucked"), launch, true);
+        } catch (IOException | NoSuchAlgorithmException ignored) {
         }
     }
 }
