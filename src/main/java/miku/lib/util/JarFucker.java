@@ -64,7 +64,7 @@ public class JarFucker {
                             }
                         }
                         if (shouldAdd) {
-                            byte[] fucked = Miku.transform(null, null, original);
+                            byte[] fucked = Miku.transform(null, cn.name.replace("/", "."), original);
                             if (fucked != original) changed = true;
                             jos.putNextEntry(new JarEntry(entry.getName()));
                             jos.write(fucked);
