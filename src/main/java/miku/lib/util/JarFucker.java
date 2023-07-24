@@ -53,7 +53,8 @@ public class JarFucker {
                         byte[] original = new byte[is.available()];
                         is.read(original);
                         boolean shouldAdd = true;
-                        ClassReader cr = new ClassReader(is);
+                        InputStream is2 = jar.getInputStream(entry);
+                        ClassReader cr = new ClassReader(is2);
                         ClassNode cn = new ClassNode();
                         cr.accept(cn, 0);
                         if (cn.interfaces != null) for (String s : cn.interfaces) {
