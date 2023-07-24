@@ -240,6 +240,7 @@ public class ClassUtil {
     }
 
     public static boolean isGoodClass(String s) {
+        if (s == null) return false;
         if (GoodClassCache.containsKey(s)) return GoodClassCache.get(s);
         for (String c : TransformerExclusions) {
             if (s.contains(c)) {
@@ -252,6 +253,7 @@ public class ClassUtil {
     }
 
     public static boolean isMinecraftClass(String s) {
+        if (s == null) return false;
         if (MinecraftClassCache.containsKey(s)) return MinecraftClassCache.get(s);
         for (String c : MinecraftClasses) {
             if (s.equals(c)) {
@@ -264,6 +266,7 @@ public class ClassUtil {
     }
 
     public static boolean isLibraryClass(String s) {
+        if (s == null) return false;
         if (LibraryClassCache.containsKey(s)) return LibraryClassCache.get(s);
         for (String c : LibraryClasses) {
             if (s.contains(c)) {

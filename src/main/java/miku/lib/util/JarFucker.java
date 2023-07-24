@@ -1,7 +1,10 @@
 package miku.lib.util;
 
 
+import miku.lib.core.MikuTransformer;
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import sun.misc.IOUtils;
 
@@ -15,6 +18,7 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 public class JarFucker {
+    protected static final IClassTransformer Miku = new MikuTransformer();
     protected static boolean shouldRestart = false;
     public synchronized static void FuckJar(JarFile jar) {
         //shouldRestart = true;
@@ -46,6 +50,8 @@ public class JarFucker {
                         br.close();
                         isr.close();
                     } else if (entry.getName().matches("(.*).class")) {
+                        byte[] original = new byte[is.available()];
+                        is.read(original);
                         boolean shouldAdd = true;
                         ClassReader cr = new ClassReader(is);
                         ClassNode cn = new ClassNode();
@@ -58,8 +64,12 @@ public class JarFucker {
                             }
                         }
                         if (shouldAdd) {
+                            ClassWriter cw = new ClassWriter(0);
+                            cn.accept(cw);
+                            byte[] fucked = Miku.transform(null, null, cw.toByteArray());
+                            if (fucked != original) changed = true;
                             jos.putNextEntry(new JarEntry(entry.getName()));
-                            jos.write(IOUtils.readNBytes(is, is.available()));
+                            jos.write(fucked);
                         }
                     } else {
                         jos.putNextEntry(new JarEntry(entry.getName()));
