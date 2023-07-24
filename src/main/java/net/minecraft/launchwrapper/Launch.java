@@ -9,8 +9,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
@@ -28,8 +28,46 @@ public class Launch {
         InitLib();
         try {
             classLoader.addURL((new File("sqlite-jdbc-3.42.0.0.jar")).toURI().toURL());
-            classLoader.addURL((new File("mods/").toURI().toURL()));
-        } catch (MalformedURLException e) {
+            File MikuLib = new File("mods/!!!MikuLib.jar");
+            boolean MikuLibInstalled = false;
+            if (!MikuLib.exists()) {
+                System.out.println("Holy Fuck. Did you modified the file name of MikuLib? Undo it before next launching.");
+                File mods = new File("mods");
+                if (!mods.isDirectory()) {
+                    System.out.println("The Fuck?");
+                    Runtime.getRuntime().exit(0);
+                }
+                for (File mod : mods.listFiles()) {
+                    if (mod.getName().toLowerCase().contains("mikulib")) {
+                        MikuLib = mod;
+                        classLoader.addURL(MikuLib.toURI().toURL());
+                        try {
+                            Class<?> ClassUtil = Class.forName("miku.lib.util.ClassUtil");
+                            Method init = ClassUtil.getMethod("Init");
+                            init.invoke(null);
+                        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
+                                 InvocationTargetException e) {
+                            throw new RuntimeException(e);
+                        }
+                        MikuLibInstalled = true;
+                    }
+                }
+                if (!MikuLibInstalled) {
+                    System.out.println("Can't find the file of MikuLib! Did you delete it?");
+                    return;
+                }
+            } else {
+                classLoader.addURL(MikuLib.toURI().toURL());
+                try {
+                    Class<?> ClassUtil = Class.forName("miku.lib.util.ClassUtil");
+                    Method init = ClassUtil.getMethod("Init");
+                    init.invoke(null);
+                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
+                         InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
