@@ -13,6 +13,7 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
 public class ClassUtil {
+
     protected static final Map<String, Boolean> GoodClassCache = new ConcurrentSkipListMap<>();
     protected static final Map<String, Boolean> MinecraftClassCache = new ConcurrentSkipListMap<>();
     protected static final Map<String, Boolean> LibraryClassCache = new ConcurrentSkipListMap<>();
@@ -192,14 +193,20 @@ public class ClassUtil {
     public synchronized static boolean Init() throws IOException {
         if (LOADED) return false;
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
+        minecraft.setReadable(true);
+        minecraft.setWritable(true);
         ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses, MinecraftClassCache);
 
         File libraires = new File("libraries");
+        libraires.setWritable(true);
+        libraires.setWritable(true);
         CreateDirectory(libraires);
 
         ClassUtil.ScanLibraries(libraires);
 
         File mods = new File("mods");
+        mods.setReadable(true);
+        mods.setWritable(true);
         CreateDirectory(mods);
 
         ClassUtil.ScanMods(mods);
@@ -220,6 +227,8 @@ public class ClassUtil {
 
     public synchronized static void ScanLibraries(File directory) throws IOException {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
+            file.setReadable(true);
+            file.setWritable(true);
             if (file.isDirectory()) {
                 System.out.println("Scanning directory:" + file.getName());
                 ScanLibraries(file);
@@ -232,6 +241,8 @@ public class ClassUtil {
 
     public synchronized static void ScanMods(File directory) throws IOException {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
+            file.setReadable(true);
+            file.setWritable(true);
             if (file.isDirectory()) {
                 System.out.println("Scanning directory:" + file.getName());
                 ScanMods(file);
