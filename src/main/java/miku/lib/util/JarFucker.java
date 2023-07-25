@@ -1,9 +1,10 @@
 package miku.lib.util;
 
 
+import miku.lib.core.MikuTransformer;
 import miku.lib.util.transform.ASMUtil;
 import miku.lib.util.transform.MixinUtil;
-import org.apache.commons.io.FileUtils;
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -23,6 +24,7 @@ import static miku.lib.core.MikuTransformer.*;
 import static miku.lib.sqlite.Sqlite.DEBUG;
 
 public class JarFucker {
+    protected static final IClassTransformer Miku = new MikuTransformer();
     protected static boolean shouldRestart = false;
     public synchronized static void FuckModJar(JarFile jar) {
         boolean changed = false;
@@ -246,13 +248,15 @@ public class JarFucker {
 
     public synchronized static void FuckLaunchWrapper(File launch) {
         try {
-            //57f42b626d16cc2705bf2a37add7adbb074f0ca3b312fa6e23aa303dae682f
+            JarFile jar = new JarFile(launch);
+            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
 
-            FileUtils.copyFile(launch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
+            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                JarEntry entry = entries.nextElement();
+            }
 
-            InputStream MikuLaunch = JarFucker.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
-            assert MikuLaunch != null;
-            FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
+            jos.closeEntry();
+            jos.close();
         } catch (IOException ignored) {
         }
     }

@@ -1,13 +1,11 @@
 package miku.lib.util;
 
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.jar.JarEntry;
@@ -150,6 +148,7 @@ public class ClassUtil {
                                 BufferedReader br = new BufferedReader(isr);
                                 String str;
                                 while ((str = br.readLine()) != null) {
+                                    str = str + "\n";
                                     if (str.contains("Fucked: true")) {
                                         fucked = true;
                                         good = false;
@@ -191,25 +190,13 @@ public class ClassUtil {
 
     protected static boolean LOADED = false;
 
-    protected static boolean LaunchFucked() {
-        try {
-            Field field = Launch.class.getDeclaredField("MikuLibInstalled");
-            return true;
-        } catch (NoSuchFieldException e) {
-            return false;
-        }
-    }
-
     public synchronized static boolean Init() throws IOException {
         if (LOADED) return false;
         File LAUNCH = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
         if (!LAUNCH.exists()) {
             System.out.println("The fuck? File launchwrapper-1.12.jar doesn't exists! That probably means that your game files are damged.");
         } else {
-            if (!LaunchFucked()) JarFucker.FuckLaunchWrapper(LAUNCH);
-            else {
-                return false;
-            }
+            JarFucker.FuckLaunchWrapper(LAUNCH);
         }
 
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));

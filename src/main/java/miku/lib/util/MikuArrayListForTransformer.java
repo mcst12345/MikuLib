@@ -9,10 +9,6 @@ public class MikuArrayListForTransformer<E> extends ArrayList<E> {
         super(var1);
     }
 
-    public MikuArrayListForTransformer() {
-        super();
-    }
-
     protected static boolean isGoodTransformer(Object var1) {
         String s = var1.getClass().toString().substring(5).trim();
         return s.equals("guichaguri.betterfps.tweaker.BetterFpsTweaker") || s.equals("org.spongepowered.asm.launch.MixinTweaker") ||
