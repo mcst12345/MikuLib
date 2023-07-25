@@ -59,8 +59,7 @@ sourceSets {
             srcDir 'src/generated/resources'
         }
         java {
-            //exclude 'net/minecraft/**'
-            exclude 'net/minecraftforge/**'
+
         }
     }
 }
@@ -93,6 +92,9 @@ dependencies {
 
 }
 jar {
+
+    exclude 'net/minecraft/**'
+    exclude 'net/minecraftforge/**'
 
     manifest {
         attributes([

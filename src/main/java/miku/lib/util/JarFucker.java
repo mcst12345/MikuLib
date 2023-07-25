@@ -1,10 +1,8 @@
 package miku.lib.util;
 
 
-import miku.lib.core.MikuTransformer;
 import miku.lib.util.transform.ASMUtil;
 import miku.lib.util.transform.MixinUtil;
-import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -24,7 +22,6 @@ import static miku.lib.core.MikuTransformer.*;
 import static miku.lib.sqlite.Sqlite.DEBUG;
 
 public class JarFucker {
-    protected static final IClassTransformer Miku = new MikuTransformer();
     protected static boolean shouldRestart = false;
     public synchronized static void FuckModJar(JarFile jar) {
         boolean changed = false;
@@ -246,18 +243,4 @@ public class JarFucker {
         return cw.toByteArray();
     }
 
-    public synchronized static void FuckLaunchWrapper(File launch) {
-        try {
-            JarFile jar = new JarFile(launch);
-            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
-
-            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
-                JarEntry entry = entries.nextElement();
-            }
-
-            jos.closeEntry();
-            jos.close();
-        } catch (IOException ignored) {
-        }
-    }
 }
