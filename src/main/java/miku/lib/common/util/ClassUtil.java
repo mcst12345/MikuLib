@@ -34,7 +34,7 @@ public class ClassUtil {
             "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft",
             "harvestcraft"};
 
-    protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin"};
+    protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin", "RandomPatches"};
 
     protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
 
