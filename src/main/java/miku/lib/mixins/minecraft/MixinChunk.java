@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iChunk;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.iChunk;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ClassInheritanceMultiMap;
 import net.minecraft.world.chunk.Chunk;

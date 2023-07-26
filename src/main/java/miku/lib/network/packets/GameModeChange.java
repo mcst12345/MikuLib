@@ -1,8 +1,8 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
-import miku.lib.api.iEntityPlayer;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.iEntityPlayer;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;

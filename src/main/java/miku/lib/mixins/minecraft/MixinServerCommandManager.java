@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.command.MikuCommand;
-import miku.lib.util.Register;
+import miku.lib.common.command.MikuCommand;
+import miku.lib.common.util.Register;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.command.ServerCommandManager;

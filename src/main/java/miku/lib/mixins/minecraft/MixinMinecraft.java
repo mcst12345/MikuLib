@@ -1,11 +1,11 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iMinecraft;
-import miku.lib.gui.TheGui;
-import miku.lib.item.SpecialItem;
-import miku.lib.sqlite.Sqlite;
-import miku.lib.util.EntityUtil;
-import miku.lib.util.crashReportUtil;
+import miku.lib.client.gui.TheGui;
+import miku.lib.common.api.iMinecraft;
+import miku.lib.common.item.SpecialItem;
+import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.crashReportUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
@@ -41,7 +41,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-import static miku.lib.sqlite.Sqlite.DEBUG;
+import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
@@ -156,7 +156,9 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow public ParticleManager effectRenderer;
 
-    @Shadow @Nullable private NetworkManager networkManager;
+    @Shadow
+    @Final
+    public static boolean IS_RUNNING_ON_MAC;
 
     @Shadow
     long systemTime;
@@ -165,15 +167,13 @@ public abstract class MixinMinecraft implements iMinecraft {
     public static long getSystemTime() {
         return 0;
     }
+    @Shadow
+    private static Minecraft instance;
+    @Shadow
+    public GameSettings gameSettings;
 
     @Shadow
-    public static Minecraft getMinecraft() {
-        return null;
-    }
-
-    @Shadow public GameSettings gameSettings;
-
-    @Shadow public boolean skipRenderWorld;
+    public boolean skipRenderWorld;
 
 
     @Shadow
@@ -182,26 +182,40 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow public boolean inGameHasFocus;
 
     @Shadow public MouseHelper mouseHelper;
+    @Shadow
+    @Nullable
+    private NetworkManager networkManager;
 
-    @Shadow @Final public static boolean IS_RUNNING_ON_MAC;
+    /**
+     * @author mcst12345
+     * @reason ...
+     */
+    @Overwrite
+    public static Minecraft getMinecraft() {
+        //if(MikuMinecraft.Miku)return MikuMinecraft.getMinecraft();
+        return instance;
+    }
 
-    @Shadow protected abstract void init();
+    @Shadow
+    protected abstract void init();
 
-    @Shadow protected abstract void runGameLoop();
+    @Shadow
+    protected abstract void runGameLoop();
 
-    @Shadow public abstract void freeMemory();
+    @Shadow
+    public abstract void freeMemory();
 
-    @Shadow public abstract void shutdownMinecraftApplet();
+    @Shadow
+    public abstract void shutdownMinecraftApplet();
 
     /**
      * @author mcst12345
      * @reason F**k
      */
     @Overwrite
-    public void displayGuiScreen(@Nullable GuiScreen guiScreenIn)
-    {
+    public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {
         if (Sqlite.IS_GUI_BANNED(guiScreenIn)) {
-            if(DEBUG())System.out.println(guiScreenIn.getClass().toString()+" is banned");
+            if (DEBUG()) System.out.println(guiScreenIn.getClass().toString() + " is banned");
             guiScreenIn.onGuiClosed();
             return;
         }
@@ -285,11 +299,6 @@ public abstract class MixinMinecraft implements iMinecraft {
             SET_INGAME_FOCUS();
         }
         if(EntityUtil.isDEAD(player))this.gameSettings.hideGUI = false;
-    }
-
-    @Override
-    public ModelManager GetModelManager() {
-        return modelManager;
     }
 
     /**
@@ -583,7 +592,7 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void run()
     {
-        System.out.println("Successfully fucked Minecraft.");
+        System.out.println("Successfully fucked MikuMinecraft.");
 
         this.running = true;
 

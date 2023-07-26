@@ -1,6 +1,6 @@
 package miku.lib.mixins.minecraftforge;
 
-import miku.lib.util.EntityUtil;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.spongepowered.asm.mixin.Mixin;

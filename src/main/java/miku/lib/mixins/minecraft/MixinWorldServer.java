@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.item.SpecialItem;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;

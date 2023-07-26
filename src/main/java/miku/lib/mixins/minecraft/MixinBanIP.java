@@ -1,6 +1,6 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.util.EntityUtil;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.server.CommandBanIp;
 import net.minecraft.entity.player.EntityPlayerMP;

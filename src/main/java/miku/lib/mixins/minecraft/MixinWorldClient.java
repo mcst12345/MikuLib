@@ -1,9 +1,9 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iMinecraft;
-import miku.lib.api.iWorldClient;
-import miku.lib.item.SpecialItem;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.iMinecraft;
+import miku.lib.common.api.iWorldClient;
+import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.multiplayer.WorldClient;

@@ -1,6 +1,6 @@
 package miku.lib.mixins.minecraftforge;
 
-import miku.lib.util.EntityUtil;
+import miku.lib.common.util.EntityUtil;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;

@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iInventoryPlayer;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.iInventoryPlayer;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;

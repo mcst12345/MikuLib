@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iEnderInventory;
-import miku.lib.api.iInventoryBasic;
+import miku.lib.common.api.iEnderInventory;
+import miku.lib.common.api.iInventoryBasic;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;

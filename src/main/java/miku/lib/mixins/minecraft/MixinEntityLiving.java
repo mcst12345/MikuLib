@@ -1,8 +1,8 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iEntity;
-import miku.lib.api.iEntityLiving;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.iEntity;
+import miku.lib.common.api.iEntityLiving;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;

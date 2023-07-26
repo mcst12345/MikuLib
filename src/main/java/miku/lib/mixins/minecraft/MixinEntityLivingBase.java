@@ -1,10 +1,10 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iEntity;
-import miku.lib.api.iEntityLivingBase;
-import miku.lib.api.iWorld;
-import miku.lib.effect.MikuEffect;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.iEntity;
+import miku.lib.common.api.iEntityLivingBase;
+import miku.lib.common.api.iWorld;
+import miku.lib.common.effect.MikuEffect;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityTracker;
@@ -49,13 +49,13 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             for (int i = 0; i < MikuEffects.tagCount(); ++i){
                 NBTTagCompound MikuEffect = MikuEffects.getCompoundTagAt(i);
                 try {
-                    Class<? extends MikuEffect> EffectClass = (Class<? extends miku.lib.effect.MikuEffect>) Class.forName(MikuEffect.getString("class"));
-                    Constructor<? extends miku.lib.effect.MikuEffect> constructor = EffectClass.getConstructor(EntityLivingBase.class,int.class,int.class,int.class);
-                    miku.lib.effect.MikuEffect effect = constructor.newInstance(this, MikuEffect.getInteger("wait"),MikuEffect.getInteger("duration"),MikuEffect.getInteger("level"));
+                    Class<? extends MikuEffect> EffectClass = (Class<? extends miku.lib.common.effect.MikuEffect>) Class.forName(MikuEffect.getString("class"));
+                    Constructor<? extends miku.lib.common.effect.MikuEffect> constructor = EffectClass.getConstructor(EntityLivingBase.class, int.class, int.class, int.class);
+                    miku.lib.common.effect.MikuEffect effect = constructor.newInstance(this, MikuEffect.getInteger("wait"), MikuEffect.getInteger("duration"), MikuEffect.getInteger("level"));
 
                     effect.FromNBT(MikuEffect);
 
-                    ((iWorld)world).AddEffect(effect);
+                    ((iWorld) world).AddEffect(effect);
                 } catch (ClassNotFoundException e) {
                     System.out.println("WARN:Effect class "+MikuEffect.getString("class")+" not found.Skip it.");
                 } catch (ClassCastException e){

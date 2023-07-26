@@ -1,6 +1,6 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.util.EntityUtil;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;

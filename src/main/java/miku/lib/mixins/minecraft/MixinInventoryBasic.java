@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iInventoryBasic;
-import miku.lib.sqlite.Sqlite;
+import miku.lib.common.api.iInventoryBasic;
+import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;

@@ -1,11 +1,11 @@
 package miku.lib.client.event;
 
-import miku.lib.api.iEntityPlayer;
+import miku.lib.common.api.iEntityPlayer;
+import miku.lib.common.util.EntityUtil;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.GameModeChange;
 import miku.lib.network.packets.KillAllEntities;
 import miku.lib.network.packets.TimeStop;
-import miku.lib.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;

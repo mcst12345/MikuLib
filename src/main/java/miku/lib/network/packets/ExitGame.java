@@ -1,10 +1,10 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
-import miku.lib.api.iMinecraft;
-import miku.lib.sqlite.Sqlite;
-import miku.lib.util.EntityUtil;
-import miku.lib.util.SystemUtil;
+import miku.lib.common.api.iMinecraft;
+import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.SystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;

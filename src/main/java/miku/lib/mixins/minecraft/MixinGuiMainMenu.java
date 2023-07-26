@@ -3,7 +3,7 @@ package miku.lib.mixins.minecraft;
 //Holy Shit. I hate Gui.
 
 import com.google.common.collect.Lists;
-import miku.lib.api.iFontRenderer;
+import miku.lib.common.api.iFontRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;

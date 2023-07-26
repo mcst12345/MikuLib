@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraftforge;
 
-import miku.lib.item.SpecialItem;
-import miku.lib.sqlite.Sqlite;
+import miku.lib.common.item.SpecialItem;
+import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;

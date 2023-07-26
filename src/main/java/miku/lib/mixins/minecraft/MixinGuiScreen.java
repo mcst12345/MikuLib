@@ -1,6 +1,6 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iMinecraft;
+import miku.lib.common.api.iMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;

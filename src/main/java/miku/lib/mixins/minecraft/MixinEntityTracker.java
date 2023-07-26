@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.item.SpecialItem;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityTracker;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
-import miku.lib.item.SpecialItem;
+import miku.lib.common.item.SpecialItem;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.network.ServerStatusResponse;
 import net.minecraft.profiler.Profiler;

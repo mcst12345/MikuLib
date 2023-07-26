@@ -1,8 +1,8 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
-import miku.lib.api.iMinecraft;
-import miku.lib.gui.TheGui;
+import miku.lib.client.gui.TheGui;
+import miku.lib.common.api.iMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

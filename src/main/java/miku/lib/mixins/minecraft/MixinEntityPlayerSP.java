@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;

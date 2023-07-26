@@ -1,8 +1,8 @@
 package miku.lib.mixins.minecraftforge;
 
 import com.google.common.collect.Maps;
-import miku.lib.core.MikuTransformer;
-import miku.lib.sqlite.Sqlite;
+import miku.lib.common.core.MikuTransformer;
+import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourcePack;

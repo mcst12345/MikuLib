@@ -1,11 +1,11 @@
 package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.ImmutableSetMultimap;
-import miku.lib.api.*;
-import miku.lib.effect.MikuEffect;
-import miku.lib.item.SpecialItem;
-import miku.lib.sqlite.Sqlite;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.*;
+import miku.lib.common.effect.MikuEffect;
+import miku.lib.common.item.SpecialItem;
+import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
-import static miku.lib.sqlite.Sqlite.DEBUG;
+import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {

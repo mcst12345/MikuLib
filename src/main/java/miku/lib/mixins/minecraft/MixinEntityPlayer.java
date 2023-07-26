@@ -1,11 +1,11 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.ProtectedEntity;
-import miku.lib.api.iEnderInventory;
-import miku.lib.api.iEntityPlayer;
-import miku.lib.api.iInventoryPlayer;
-import miku.lib.item.SpecialItem;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.ProtectedEntity;
+import miku.lib.common.api.iEnderInventory;
+import miku.lib.common.api.iEntityPlayer;
+import miku.lib.common.api.iInventoryPlayer;
+import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

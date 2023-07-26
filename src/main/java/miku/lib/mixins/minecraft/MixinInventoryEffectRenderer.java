@@ -1,8 +1,8 @@
 package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Ordering;
-import miku.lib.api.iWorld;
-import miku.lib.effect.MikuEffect;
+import miku.lib.common.api.iWorld;
+import miku.lib.common.effect.MikuEffect;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.InventoryEffectRenderer;

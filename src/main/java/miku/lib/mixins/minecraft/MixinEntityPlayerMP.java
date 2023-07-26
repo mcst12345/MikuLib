@@ -1,9 +1,9 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
-import miku.lib.api.iEntityPlayer;
-import miku.lib.api.iEntityPlayerMP;
-import miku.lib.util.EntityUtil;
+import miku.lib.common.api.iEntityPlayer;
+import miku.lib.common.api.iEntityPlayerMP;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketChangeGameState;

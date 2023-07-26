@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraftforge;
 
-import miku.lib.core.MikuTransformer;
-import miku.lib.sqlite.Sqlite;
+import miku.lib.common.core.MikuTransformer;
+import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.IFMLSidedHandler;
 import net.minecraftforge.fml.common.Loader;

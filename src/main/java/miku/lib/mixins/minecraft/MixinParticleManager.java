@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.iMinecraft;
-import miku.lib.item.SpecialItem;
+import miku.lib.common.api.iMinecraft;
+import miku.lib.common.item.SpecialItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.Entity;

@@ -93,14 +93,14 @@ dependencies {
 }
 jar {
 
-    exclude 'net/minecraft/**'
-    exclude 'net/minecraftforge/**'
+    //exclude 'net/minecraft/**'
+    //exclude 'net/minecraftforge/**'
 
     manifest {
         attributes([
                 "Specification-Title"     : "mikulib",
                 "Specification-Vendor"    : "mcst12345",
-                "Specification-Version"   : "1.9.1",
+                "Specification-Version"   : "1.9.2",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "mcst12345",
@@ -108,9 +108,9 @@ jar {
 
         ])
         attributes([
-                'TweakClass'                 : 'org.spongepowered.asm.launch.MixinTweaker',
+                //        'TweakClass'                 : 'org.spongepowered.asm.launch.MixinTweaker',
                 'ForceLoadAsMod'             : 'true',
-                "FMLCorePlugin"              : "miku.lib.core.MikuCore",
+                "FMLCorePlugin"              : "miku.lib.common.core.MikuCore",
                 "FMLCorePluginContainsFMLMod": "true"
         ])
     }

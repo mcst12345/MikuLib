@@ -1,11 +1,11 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.api.*;
+import miku.lib.common.api.*;
+import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.util.EntityUtil;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.DisplayTheGui;
 import miku.lib.network.packets.ExitGame;
-import miku.lib.sqlite.Sqlite;
-import miku.lib.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;

@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.command.SQLOperation;
-import miku.lib.sqlite.Sqlite;
+import miku.lib.common.command.SQLOperation;
+import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.command.ICommand;

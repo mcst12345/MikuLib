@@ -3,8 +3,8 @@ package miku.lib.mixins.mikulib;
 import com.anotherstar.common.entity.EntityLoli;
 import com.chaoswither.entity.EntityChaosWither;
 import com.google.common.collect.Lists;
-import miku.lib.api.*;
-import miku.lib.item.SpecialItem;
+import miku.lib.common.api.*;
+import miku.lib.common.item.SpecialItem;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.KillEntity;
 import net.minecraft.client.Minecraft;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 
-@Mixin(value = miku.lib.util.EntityUtil.class,remap = false)
+@Mixin(value = miku.lib.common.util.EntityUtil.class, remap = false)
 public class EntityUtil {
     private static final List<UUID> Dead = new ArrayList<>();
     private static final List<Entity> DEAD = new ArrayList<>();
@@ -192,7 +192,7 @@ public class EntityUtil {
     @Overwrite
     public static void RangeKill(final Entity Player, int range){
         List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
-        list.removeIf(miku.lib.util.EntityUtil::isProtected);
+        list.removeIf(miku.lib.common.util.EntityUtil::isProtected);
         Kill(list);
     }
 
