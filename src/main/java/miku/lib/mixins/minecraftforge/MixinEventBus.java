@@ -52,6 +52,7 @@ public class MixinEventBus {
                 event.setCanceled(true);
             } catch (Throwable ignored) {
             }
+            return true;
         }
         return event.isCancelable() && event.isCanceled();
     }

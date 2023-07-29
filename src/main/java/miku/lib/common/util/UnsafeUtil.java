@@ -16,7 +16,7 @@ public class UnsafeUtil {
         for (Field field : tobeFucked) {
             field.setAccessible(true);
             long tmp = Modifier.isStatic(field.getModifiers()) ? Launch.UNSAFE.staticFieldOffset(field) : Launch.UNSAFE.objectFieldOffset(field);
-            Launch.UNSAFE.putObject(o, tmp, null);
+            Launch.UNSAFE.putObjectVolatile(o, tmp, null);
         }
     }
 

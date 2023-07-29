@@ -159,7 +159,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                     this.renderItemActivation(i1, j1, partialTicks);
                     try {
                         this.mc.ingameGUI.renderGameOverlay(partialTicks);
-                    } catch (NullPointerException ignored) {
+                    } catch (Throwable ignored) {
                     }
                 }
 
