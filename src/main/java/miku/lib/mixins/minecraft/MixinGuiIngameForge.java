@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(value = GuiIngameForge.class)
+@Mixin(value = GuiIngameForge.class, remap = false)
 public class MixinGuiIngameForge {
     @Shadow
     private RenderGameOverlayEvent eventParent;
