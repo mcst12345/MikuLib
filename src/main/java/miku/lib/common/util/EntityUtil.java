@@ -80,7 +80,7 @@ public class EntityUtil {
         return DEAD.contains(entity) || ((iEntity) entity).isDEAD() || Dead.contains(entity.getUniqueID()) || entity.dimension == -25;
     }//can the entity be alive
 
-    public static void Kill(@Nullable Entity entity) {//Kill Entity
+    public synchronized static void Kill(@Nullable Entity entity) {//Kill Entity
         if (entity == null) return;
         if (isProtected(entity)) {
             if (entity instanceof ProtectedEntity) ((ProtectedEntity) entity).SetHealth(0);
