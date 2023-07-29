@@ -23,6 +23,12 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 public class JarFucker {
     protected static boolean shouldRestart = false;
+
+    protected static boolean ShouldIgnore(String s) {
+        return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA")) ||
+                s.endsWith(".exe") || s.endsWith(".dll") || s.endsWith(".so");
+    }
+
     public synchronized static void FuckModJar(JarFile jar) {
         boolean changed = false;
         System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
@@ -31,7 +37,7 @@ public class JarFucker {
             JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
             for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
                 JarEntry entry = entries.nextElement();
-                if (entry.getName().equals("META-INF/MUMFREY.RSA") || entry.getName().equals("META-INF/MUMFREY.SF") || entry.getName().equals("META-INF/SIGNFILE.DSA") || entry.getName().equals("META-INF/SIGNFILE.SF"))
+                if (ShouldIgnore(entry.getName()))
                     continue;
                 try (InputStream is = jar.getInputStream(entry)) {
                     if (entry.getName().equals("META-INF/MANIFEST.MF")) {
