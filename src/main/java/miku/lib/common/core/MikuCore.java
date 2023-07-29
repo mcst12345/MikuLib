@@ -40,9 +40,6 @@ public class MikuCore implements IFMLLoadingPlugin {
         ClassUtil.Init();
         System.out.println("Add MikuTransformer");
 
-        //Add our transformer
-        Launch.classLoader.registerTransformer("miku.lib.common.core.MikuTransformer");
-
         System.out.println("Init mixins");
 
         try {

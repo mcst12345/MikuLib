@@ -23,6 +23,7 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 public class JarFucker {
     protected static boolean shouldRestart = false;
+    public static double num;
 
     protected static boolean ShouldIgnore(String s) {
         return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA")) ||
@@ -146,7 +147,7 @@ public class JarFucker {
         System.out.println("Examine class:" + transformedName);
 
         cached_methods.clear();
-        double num = 0.0d;
+        num = 0.0d;
 
         if (DEBUG()) {
             print("Class name:" + cn.name);

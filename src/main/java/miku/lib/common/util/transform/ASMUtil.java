@@ -3,6 +3,7 @@ package miku.lib.common.util.transform;
 import miku.lib.common.core.InvokeDecompiler;
 import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.util.JarFucker;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
@@ -100,6 +101,7 @@ public class ASMUtil {
                     if (isBadVariable(s)) {
                         System.out.println("Found bad variable:" + localVariable.name);
                         MikuTransformer.num++;
+                        JarFucker.num++;
                         MikuTransformer.cached_methods.add(method);
                         break;
                     }
