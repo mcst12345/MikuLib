@@ -24,7 +24,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ITeleporter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -266,9 +265,6 @@ public abstract class MixinEntity implements iEntity {
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
 
-    @Shadow
-    @Final
-    private static DataParameter<String> CUSTOM_NAME;
     protected boolean isTimeStop = false;
 
     @Override
@@ -479,13 +475,4 @@ public abstract class MixinEntity implements iEntity {
         return dataManager;
     }
 
-    /**
-     * @author mcst12345
-     * @reason HolyShit
-     */
-    @Overwrite
-    public boolean hasCustomName() {
-        if (this.dataManager == null) return false;
-        return !this.dataManager.get(CUSTOM_NAME).isEmpty();
-    }
 }
