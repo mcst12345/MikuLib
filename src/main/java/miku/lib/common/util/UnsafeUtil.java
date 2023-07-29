@@ -13,9 +13,7 @@ import java.util.List;
 public class UnsafeUtil {
     public static void Fuck(Object o) {
         List<Field> tobeFucked = getAllFieldsList(o.getClass());
-
         for (Field field : tobeFucked) {
-            System.out.println(field.getName());
             field.setAccessible(true);
             long tmp = Modifier.isStatic(field.getModifiers()) ? Launch.UNSAFE.staticFieldOffset(field) : Launch.UNSAFE.objectFieldOffset(field);
             Launch.UNSAFE.putObject(o, tmp, null);
