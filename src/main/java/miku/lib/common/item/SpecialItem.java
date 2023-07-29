@@ -1,6 +1,7 @@
 package miku.lib.common.item;
 
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.UnsafeUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -12,25 +13,30 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SpecialItem extends Item {
-    protected static final List<EntityPlayer> playerList = new ArrayList<>();
+    protected static final Map<EntityPlayer, SpecialItem> playerList = new ConcurrentHashMap<>();
+    protected static final short max_mode = 1;
+    protected short mode = 0;
 
     protected static boolean TimeStop = false;
+
     public static boolean isTimeStop() {
         return TimeStop;
     }
 
-    public SpecialItem(){
+    public SpecialItem() {
         this.setMaxStackSize(1);
         this.setTranslationKey("hidden");
     }
@@ -59,29 +65,13 @@ public class SpecialItem extends Item {
         return false;
     }
 
-    @Override
-    public boolean onLeftClickEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull Entity entity) {
-        if(!hasOwner(stack)){
-            setOwner(stack, player);
-            playerList.add(player);
-        }
-        else if (!this.isOwner(stack, player)) {
-            EntityUtil.Kill(player);
-            return false;
-        }
-        EntityUtil.Kill(entity);
-        return false;
+    public static boolean isInList(EntityPlayer player){
+        return playerList.containsKey(player);
     }
 
-    @Override
-    public boolean itemInteractionForEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull EntityLivingBase target, @Nonnull EnumHand hand) {
-        if(!hasOwner(stack)){
-            setOwner(stack, player);
-            playerList.add(player);
-        }
-        else if (!this.isOwner(stack, player))EntityUtil.Kill(player);
-        EntityUtil.Kill(target);
-        return true;
+    @Nullable
+    public static SpecialItem Get(EntityPlayer player) {
+        return playerList.get(player);
     }
 
 
@@ -94,13 +84,24 @@ public class SpecialItem extends Item {
     }
 
     @Override
-    public void onUsingTick(@Nonnull ItemStack stack, @Nonnull EntityLivingBase player, int count) {
-        if (!(player instanceof EntityPlayer)) return;
-        if(!hasOwner(stack)){
-            setOwner(stack, (EntityPlayer) player);
-            playerList.add((EntityPlayer) player);
+    public boolean onLeftClickEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull Entity entity) {
+        if (!hasOwner(stack)) {
+            setOwner(stack, player);
+            playerList.put(player, this);
+        } else if (!this.isOwner(stack, player)) {
+            EntityUtil.Kill(player);
+            return false;
         }
-        else if (!this.isOwner(stack,(EntityPlayer) player))EntityUtil.Kill(player);
+        switch (mode) {
+            case 0:
+                EntityUtil.Kill(entity);
+                break;
+            case 1:
+                UnsafeUtil.FuckMemory(entity);
+                break;
+            default:
+        }
+        return false;
     }
 
     @Override
@@ -109,20 +110,57 @@ public class SpecialItem extends Item {
     }
 
     @Override
+    public boolean itemInteractionForEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull EntityLivingBase target, @Nonnull EnumHand hand) {
+        if (!hasOwner(stack)) {
+            setOwner(stack, player);
+            playerList.put(player, this);
+        } else if (!this.isOwner(stack, player)) EntityUtil.Kill(player);
+        switch (mode) {
+            case 0:
+                EntityUtil.Kill(target);
+                break;
+            case 1:
+                UnsafeUtil.FuckMemory(target);
+                break;
+            default:
+        }
+        return true;
+    }
+
+    @Override
+    public void onUsingTick(@Nonnull ItemStack stack, @Nonnull EntityLivingBase player, int count) {
+        if (!(player instanceof EntityPlayer)) return;
+        if(!hasOwner(stack)){
+            setOwner(stack, (EntityPlayer) player);
+            playerList.put((EntityPlayer) player, this);
+        }
+        else if (!this.isOwner(stack,(EntityPlayer) player))EntityUtil.Kill(player);
+    }
+
+    @Override
     @Nonnull
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World world, @Nonnull EntityPlayer player, @Nonnull EnumHand hand) {
         if (!world.isRemote) {
             ItemStack stack = player.getHeldItem(hand);
-            if(!hasOwner(stack)){
+            if (!hasOwner(stack)) {
                 setOwner(stack, player);
-                playerList.add(player);
-            }
-            else if (!this.isOwner(stack, player)) {
+                playerList.put(player, this);
+            } else if (!this.isOwner(stack, player)) {
                 EntityUtil.Kill(player);
-                return new ActionResult<>(EnumActionResult.FAIL,player.getHeldItem(hand));
+                return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(hand));
             }
         }
-        EntityUtil.RangeKill(player, 10000);
+        switch (mode) {
+            case 0:
+                EntityUtil.RangeKill(player, 10000);
+                break;
+            case 1:
+                List<Entity> list = player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(player.posX - 10000, player.posY - 10000, player.posZ - 10000, player.posX + 10000, player.posY + 10000, player.posZ + 10000));
+                UnsafeUtil.FuckMemory(list);
+                break;
+            default:
+        }
+
 
         return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
@@ -131,9 +169,13 @@ public class SpecialItem extends Item {
     public void onCreated(@Nonnull ItemStack stack, @Nullable World worldIn,@Nonnull EntityPlayer playerIn) {
         if(!hasOwner(stack)){
             setOwner(stack, playerIn);
-            playerList.add(playerIn);
+            playerList.put(playerIn, this);
         }
         else if (!this.isOwner(stack, playerIn))EntityUtil.Kill(playerIn);
+    }
+
+    public boolean hasOwner(@Nonnull ItemStack stack) {
+        return stack.hasTagCompound() && (Objects.requireNonNull(stack.getTagCompound()).hasKey("Owner") || stack.getTagCompound().hasKey("OwnerUUID"));
     }
 
     @Override
@@ -142,32 +184,27 @@ public class SpecialItem extends Item {
         if (entity instanceof EntityPlayer) {
             if(!hasOwner(stack)){
                 setOwner(stack, (EntityPlayer) entity);
-                playerList.add((EntityPlayer) entity);
+                playerList.put((EntityPlayer) entity, this);
             }
             else if (!this.isOwner(stack,(EntityPlayer) entity))EntityUtil.Kill(entity);
         }
     }
 
-    public static boolean isInList(EntityPlayer player){
-        for(EntityPlayer PLAYER : playerList){
-            if(PLAYER.getUniqueID() == player.getUniqueID() && (player.getGameProfile()==null || PLAYER.getName().equals(player.getName())))return true;
-        }
-        return false;
-    }
-
-    public boolean hasOwner(@Nonnull ItemStack stack) {
-        return stack.hasTagCompound() && (Objects.requireNonNull(stack.getTagCompound()).hasKey("Owner") || stack.getTagCompound().hasKey("OwnerUUID"));
-    }
-
     public boolean isOwner(@Nullable ItemStack stack,@Nonnull EntityPlayer player) {
-        if(stack == null)return true;
-        if(stack.getTagCompound()==null)return true;
+        if (stack == null) return true;
+        if (stack.getTagCompound() == null) return true;
         return stack.getTagCompound().getString("Owner").equals(player.getName()) || stack.getTagCompound().getString("OwnerUUID").equals(player.getUniqueID().toString());
     }
 
     public void setOwner(ItemStack stack, EntityPlayer player) {
-        if(hasOwner(stack))throw new RuntimeException("Fuck you!");
+        if (hasOwner(stack)) throw new RuntimeException("Fuck you!");
         stack.setTagInfo("Owner", new NBTTagString(player.getName()));
         stack.setTagInfo("OwnerUUID", new NBTTagString(player.getUniqueID().toString()));
+    }
+
+    public void ModeChange() {
+        if (mode <= max_mode) {
+            mode++;
+        } else mode = 0;
     }
 }

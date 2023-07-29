@@ -1,6 +1,7 @@
 package miku.lib.client.event;
 
 import miku.lib.common.api.iEntityPlayer;
+import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.GameModeChange;
@@ -9,6 +10,7 @@ import miku.lib.network.packets.TimeStop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -24,23 +26,35 @@ import java.util.List;
 @SideOnly(Side.CLIENT)
 public class KeyBoardEvent {
     @SideOnly(Side.CLIENT)//key to stop the time
-    public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L,"key.category.miku");
+    public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L, "key.category.miku");
 
     @SideOnly(Side.CLIENT)//key to kill all entities
-    public static final KeyBinding KILL_ALL = new KeyBinding("key.miku.kill_all",KeyConflictContext.UNIVERSAL,KeyModifier.ALT,Keyboard.KEY_K,"key.category.miku");
+    public static final KeyBinding KILL_ALL = new KeyBinding("key.miku.kill_all", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_K, "key.category.miku");
 
     @SideOnly(Side.CLIENT)//key to change your game mode
-    public static final KeyBinding GAME_MODE = new KeyBinding("key.miku.game_mode",KeyConflictContext.UNIVERSAL,KeyModifier.ALT,Keyboard.KEY_M,"key.category.miku");
+    public static final KeyBinding GAME_MODE = new KeyBinding("key.miku.game_mode", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_M, "key.category.miku");
+
+
+    @SideOnly(Side.CLIENT)
+    public static final KeyBinding MIKU_MODE = new KeyBinding("key.miku.miku_mode", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_U, "key.category.miku");
+
+    @SideOnly(Side.CLIENT)
+    public static void Init(){
+        ClientRegistry.registerKeyBinding(TIME_STOP);
+        ClientRegistry.registerKeyBinding(KILL_ALL);
+        ClientRegistry.registerKeyBinding(GAME_MODE);
+        ClientRegistry.registerKeyBinding(MIKU_MODE);
+    }
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
-    public void onKeyPressed(InputEvent.KeyInputEvent event){
-        if(TIME_STOP.isPressed()){
-            if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
-                NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension,Minecraft.getMinecraft().player.getEntityId()));
+    public void onKeyPressed(InputEvent.KeyInputEvent event) {
+        if (TIME_STOP.isPressed()) {
+            if (EntityUtil.isProtected(Minecraft.getMinecraft().player)) {
+                NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
             }
         }
-        if(KILL_ALL.isPressed()){
+        if (KILL_ALL.isPressed()) {
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
                 NetworkHandler.INSTANCE.sendMessageToServer(new KillAllEntities(Minecraft.getMinecraft().player.dimension,Minecraft.getMinecraft().player.getEntityId()));
                 List<Entity> entities = new ArrayList<>(Minecraft.getMinecraft().player.world.loadedEntityList);
@@ -61,13 +75,11 @@ public class KeyBoardEvent {
                 NetworkHandler.INSTANCE.sendMessageToServer(new GameModeChange(mode, Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
             }
         }
-    }
-
-
-    @SideOnly(Side.CLIENT)
-    public static void Init(){
-        ClientRegistry.registerKeyBinding(TIME_STOP);
-        ClientRegistry.registerKeyBinding(KILL_ALL);
-        ClientRegistry.registerKeyBinding(GAME_MODE);
+        if (MIKU_MODE.isPressed()) {
+            EntityPlayer player = Minecraft.getMinecraft().player;
+            if (SpecialItem.Get(player) != null) {
+                SpecialItem item = SpecialItem.Get(player);
+            }
+        }
     }
 }
