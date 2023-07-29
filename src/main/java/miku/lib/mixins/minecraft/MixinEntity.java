@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ITeleporter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -265,7 +266,10 @@ public abstract class MixinEntity implements iEntity {
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
 
-    protected boolean isTimeStop=false;
+    @Shadow
+    @Final
+    private static DataParameter<String> CUSTOM_NAME;
+    protected boolean isTimeStop = false;
 
     @Override
     public void kill() {
@@ -464,14 +468,24 @@ public abstract class MixinEntity implements iEntity {
             List<Entity> list = world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB(posX - 20, posY - 20, posZ - 20, posX + 20, posY + 20, posZ + 20));
             EntityUtil.Kill(list);
         }
-        if(EntityUtil.isDEAD((Entity)(Object)this)) {
-            _dimension=-25;
+        if (EntityUtil.isDEAD((Entity) (Object) this)) {
+            _dimension = -25;
             dimension = -25;
         }
     }
 
     @Override
-    public EntityDataManager GetDataManager(){
+    public EntityDataManager GetDataManager() {
         return dataManager;
+    }
+
+    /**
+     * @author mcst12345
+     * @reason HolyShit
+     */
+    @Overwrite
+    public boolean hasCustomName() {
+        if (this.dataManager == null) return false;
+        return !this.dataManager.get(CUSTOM_NAME).isEmpty();
     }
 }
