@@ -1,4 +1,4 @@
-package miku.lib.mixins.minecraft;
+package miku.lib.mixins.minecraftforge;
 
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;

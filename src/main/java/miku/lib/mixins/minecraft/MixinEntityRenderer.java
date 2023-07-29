@@ -9,7 +9,6 @@ import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
-import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.util.ReportedException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -158,7 +157,10 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                     GlStateManager.alphaFunc(516, 0.1F);
                     this.setupOverlayRendering();
                     this.renderItemActivation(i1, j1, partialTicks);
-                    this.mc.ingameGUI.renderGameOverlay(partialTicks);
+                    try {
+                        this.mc.ingameGUI.renderGameOverlay(partialTicks);
+                    } catch (NullPointerException ignored) {
+                    }
                 }
 
                 this.mc.profiler.endSection();
@@ -184,21 +186,9 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                 } catch (Throwable throwable) {
                     CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering screen");
                     CrashReportCategory crashreportcategory = crashreport.makeCategory("Screen render details");
-                    crashreportcategory.addDetail("Screen name", new ICrashReportDetail<String>() {
-                        public String call() throws Exception {
-                            return MixinEntityRenderer.this.mc.currentScreen.getClass().getCanonicalName();
-                        }
-                    });
-                    crashreportcategory.addDetail("Mouse location", new ICrashReportDetail<String>() {
-                        public String call() throws Exception {
-                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d)", k1, l1, Mouse.getX(), Mouse.getY());
-                        }
-                    });
-                    crashreportcategory.addDetail("Screen size", new ICrashReportDetail<String>() {
-                        public String call() throws Exception {
-                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), MixinEntityRenderer.this.mc.displayWidth, MixinEntityRenderer.this.mc.displayHeight, scaledresolution.getScaleFactor());
-                        }
-                    });
+                    crashreportcategory.addDetail("Screen name", () -> MixinEntityRenderer.this.mc.currentScreen.getClass().getCanonicalName());
+                    crashreportcategory.addDetail("Mouse location", () -> String.format("Scaled: (%d, %d). Absolute: (%d, %d)", k1, l1, Mouse.getX(), Mouse.getY()));
+                    crashreportcategory.addDetail("Screen size", () -> String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), MixinEntityRenderer.this.mc.displayWidth, MixinEntityRenderer.this.mc.displayHeight, scaledresolution.getScaleFactor()));
                     throw new ReportedException(crashreport);
                 }
             }

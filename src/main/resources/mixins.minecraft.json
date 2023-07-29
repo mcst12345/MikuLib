@@ -29,7 +29,6 @@
     "ClientMixinEntityLivingBase",
     "MixinEntityRenderer",
     "MixinFontRenderer",
-    "MixinGuiIngameForge",
     "MixinGuiIngameMenu",
     "MixinGuiMainMenu",
     "MixinGuiScreen",

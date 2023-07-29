@@ -109,6 +109,8 @@ public class EntityUtil {
 
         UnsafeUtil.Fuck(entity);
 
+        System.gc();
+
         if (minecraftserver != null) {
             worldserver.resetUpdateEntityTick();
             worldserver1.resetUpdateEntityTick();

@@ -12,7 +12,8 @@
     "MixinItemStack"
   ],
   "client": [
-    "MixinFMLClientHandler"
+    "MixinFMLClientHandler",
+    "MixinGuiIngameForge"
   ],
   "server": [
     "MixinFMLServerHandler"
