@@ -30,7 +30,7 @@ public class UnsafeUtil {
     //https://victorfengming.gitee.io/cp/java/for-props/
     protected static List<Field> getAllFieldsList(final Class<?> cls) {
         Validate.isTrue(cls != null, "The class must not be null");
-        final List<Field> allFields = new ArrayList<Field>();
+        final List<Field> allFields = new ArrayList<>();
         Class<?> currentClass = cls;
         while (currentClass != null) {
             final Field[] declaredFields = currentClass.getDeclaredFields();
