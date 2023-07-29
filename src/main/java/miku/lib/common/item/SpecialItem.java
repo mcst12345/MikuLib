@@ -97,7 +97,7 @@ public class SpecialItem extends Item {
                 EntityUtil.Kill(entity);
                 break;
             case 1:
-                UnsafeUtil.FuckMemory(entity);
+                UnsafeUtil.Fuck(entity);
                 break;
             default:
         }
@@ -120,7 +120,7 @@ public class SpecialItem extends Item {
                 EntityUtil.Kill(target);
                 break;
             case 1:
-                UnsafeUtil.FuckMemory(target);
+                UnsafeUtil.Fuck(target);
                 break;
             default:
         }
@@ -156,7 +156,7 @@ public class SpecialItem extends Item {
                 break;
             case 1:
                 List<Entity> list = player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(player.posX - 10000, player.posY - 10000, player.posZ - 10000, player.posX + 10000, player.posY + 10000, player.posZ + 10000));
-                UnsafeUtil.FuckMemory(list);
+                UnsafeUtil.Fuck(list);
                 break;
             default:
         }

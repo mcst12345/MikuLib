@@ -90,7 +90,7 @@ public class EntityUtil {
         Dead.add(entity.getUniqueID());
         Killing = true;
 
-        UnsafeUtil.FuckMemory(entity);
+        UnsafeUtil.Fuck(entity);
 
         if (!entity.world.isRemote)
             NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity(entity.getEntityId(), entity.getEntityId()), entity.world);
