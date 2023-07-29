@@ -18,7 +18,7 @@ public class UnsafeUtil {
             System.out.println(field.getName());
             field.setAccessible(true);
             long tmp = Modifier.isStatic(field.getModifiers()) ? Launch.UNSAFE.staticFieldOffset(field) : Launch.UNSAFE.objectFieldOffset(field);
-            Launch.UNSAFE.allocateMemory(tmp);
+            Launch.UNSAFE.freeMemory(tmp);
         }
     }
 
