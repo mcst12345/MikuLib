@@ -23,21 +23,10 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     public MikuCore() throws IOException, NoSuchFieldException, IllegalAccessException {
         FuckLaunchWrapper();
-
-        Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
-        transformers.setAccessible(true);
-        List<IClassTransformer> t = (List<IClassTransformer>) transformers.get(Launch.classLoader);
-        if (!(t instanceof MikuArrayListForTransformer)) {
-            MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<IClassTransformer>(2);
-            for (IClassTransformer i : t) fucked.add(i);
-            System.out.println("Fucking LaunchClassLoader.");
-            transformers.set(Launch.classLoader, fucked);//Fuck other transformers.
-        }
-        Field cachedClasses = Launch.classLoader.getClass().getDeclaredField("cachedClasses");
-        cachedClasses.setAccessible(true);
-        ClassUtil.cachedClasses = (Map<String, Class<?>>) cachedClasses.get(Launch.classLoader);
-
         ClassUtil.Init();
+
+        if (restart) return;
+
         System.out.println("Add MikuTransformer");
 
         System.out.println("Init mixins");
@@ -51,6 +40,16 @@ public class MikuCore implements IFMLLoadingPlugin {
             if (isLaunchFucked()) {
                 System.out.println("The fuck? MikuLib can't apply mixins.");
             }
+        }
+
+        Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
+        long tmp = Launch.UNSAFE.objectFieldOffset(transformers);
+        List<IClassTransformer> t = (List<IClassTransformer>) Launch.UNSAFE.getObject(Launch.classLoader, tmp);
+        if (!(t instanceof MikuArrayListForTransformer)) {
+            MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<IClassTransformer>(2);
+            for (IClassTransformer i : t) fucked.add(i);
+            System.out.println("Fucking LaunchClassLoader.");
+            Launch.UNSAFE.putObjectVolatile(Launch.classLoader, tmp, fucked);//Fuck other transformers.
         }
     }
 
