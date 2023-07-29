@@ -4,13 +4,16 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.apache.logging.log4j.Level;
+import sun.misc.Unsafe;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.*;
 
 public class Launch {
+    public static Unsafe UNSAFE = null;
     protected static final boolean Miku = true;
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
     public static File minecraftHome;
@@ -19,6 +22,13 @@ public class Launch {
     public static LaunchClassLoader classLoader;
 
     private Launch() {
+        try {
+            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            UNSAFE = (Unsafe) field.get(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         final URLClassLoader ucl = (URLClassLoader) getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());
         blackboard = new HashMap<>();
@@ -29,7 +39,7 @@ public class Launch {
         new Launch().launch(args);
     }
 
-    protected boolean MikuLibInstalled() {
+    public static boolean MikuLibInstalled() {
         try {
             Class<?> MikuLib = Class.forName("miku.lib.common.core.MikuLib", false, classLoader);
             return true;
@@ -55,6 +65,7 @@ public class Launch {
         final List<String> tweakClassNames = new ArrayList<>(options.valuesOf(tweakClassOption));
 
         tweakClassNames.add("org.spongepowered.asm.launch.MixinTweaker");
+        tweakClassNames.add("net.minecraft.launchwrapper.MikuTweaker");
 
         final List<String> argumentList = new ArrayList<>();
         // This list of names will be interacted with through tweakers. They can append to this list
@@ -131,8 +142,12 @@ public class Launch {
 
             // Finally we turn to the primary tweaker, and let it tell us where to go to launch
             String launchTarget;
-            if (MikuLibInstalled()) launchTarget = "miku.lib.client.minecraft.Main";
-            else {
+            if (MikuLibInstalled()) {
+                launchTarget = "miku.lib.client.minecraft.Main";
+                Class<?> Sqlite = Class.forName("miku.lib.common.sqlite.Sqlite", false, classLoader);
+                Method init = Sqlite.getMethod("CoreInit");
+                init.invoke(null);
+            } else {
                 assert primaryTweaker != null;
                 launchTarget = primaryTweaker.getLaunchTarget();
             }

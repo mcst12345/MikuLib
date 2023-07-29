@@ -1,6 +1,5 @@
 package miku.lib.common.core;
 
-import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.HashUtil;
 import miku.lib.common.util.JarFucker;
@@ -29,13 +28,13 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     public MikuCore() throws IOException, NoSuchFieldException, IllegalAccessException {
         FuckLaunchWrapper();
-        InitLib();
+        //InitLib();
         try {
             Launch.classLoader.addURL((new File("sqlite-jdbc-3.42.0.0.jar")).toURI().toURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-        Sqlite.CoreInit();
+        //Sqlite.CoreInit();
 
         Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
         transformers.setAccessible(true);
@@ -58,11 +57,16 @@ public class MikuCore implements IFMLLoadingPlugin {
 
         System.out.println("Init mixins");
 
-        MixinBootstrap.init();
-        //Add Mixin configs.
-        Mixins.addConfiguration("mixins.minecraft.json");
-        Mixins.addConfiguration("mixins.mikulib.json");
-        Mixins.addConfiguration("mixins.forge.json");
+        try {
+            MixinBootstrap.init();
+            //Add Mixin configs.
+            Mixins.addConfiguration("mixins.minecraft.json");
+            Mixins.addConfiguration("mixins.forge.json");
+        } catch (Throwable e) {
+            if (isLaunchFucked()) {
+                System.out.println("The fuck? MikuLib can't apply mixins.");
+            }
+        }
     }
 
     protected synchronized static boolean isLaunchFucked() {

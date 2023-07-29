@@ -59,7 +59,8 @@ sourceSets {
             srcDir 'src/generated/resources'
         }
         java {
-
+            //exclude 'net/minecraft/**'
+            exclude 'net/minecraftforge/**'
         }
     }
 }
@@ -92,15 +93,11 @@ dependencies {
 
 }
 jar {
-
-    //exclude 'net/minecraft/**'
-    //exclude 'net/minecraftforge/**'
-
     manifest {
         attributes([
                 "Specification-Title"     : "mikulib",
                 "Specification-Vendor"    : "mcst12345",
-                "Specification-Version"   : "1.9.2",
+                "Specification-Version"   : "1.10",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "mcst12345",

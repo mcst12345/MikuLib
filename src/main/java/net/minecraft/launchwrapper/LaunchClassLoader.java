@@ -103,9 +103,6 @@ public class LaunchClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> findClass(final String name) throws ClassNotFoundException {
-        if (invalidClasses.contains(name)) {
-            throw new ClassNotFoundException(name);
-        }
 
         for (final String exception : classLoaderExceptions) {
             if (name.startsWith(exception)) {
@@ -190,7 +187,6 @@ public class LaunchClassLoader extends URLClassLoader {
             cachedClasses.put(transformedName, clazz);
             return clazz;
         } catch (Throwable e) {
-            invalidClasses.add(name);
             if (DEBUG) {
                 LogWrapper.log(Level.TRACE, e, "Exception encountered attempting classloading of %s", name);
                 LogManager.getLogger("LaunchWrapper").log(Level.ERROR, "Exception encountered attempting classloading of %s", e);
