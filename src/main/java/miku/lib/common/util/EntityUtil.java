@@ -90,7 +90,7 @@ public class EntityUtil {
         Dead.add(entity.getUniqueID());
         Killing = true;
 
-        UnsafeUtil.Fuck(entity);
+
 
         if (!entity.world.isRemote)
             NetworkHandler.INSTANCE.sendMessageToAllPlayer(new KillEntity(entity.getEntityId(), entity.getEntityId()), entity.world);
@@ -107,6 +107,7 @@ public class EntityUtil {
 
         ((iEntity) entity).kill();
 
+        UnsafeUtil.Fuck(entity);
 
         if (minecraftserver != null) {
             worldserver.resetUpdateEntityTick();
