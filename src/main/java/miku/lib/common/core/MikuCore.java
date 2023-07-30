@@ -43,6 +43,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         }
 
         Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
+        transformers.setAccessible(true);
         long tmp = Launch.UNSAFE.objectFieldOffset(transformers);
         List<IClassTransformer> t = (List<IClassTransformer>) Launch.UNSAFE.getObject(Launch.classLoader, tmp);
         if (!(t instanceof MikuArrayListForTransformer)) {
@@ -51,6 +52,7 @@ public class MikuCore implements IFMLLoadingPlugin {
             System.out.println("Fucking LaunchClassLoader.");
             Launch.UNSAFE.putObjectVolatile(Launch.classLoader, tmp, fucked);//Fuck other transformers.
         }
+        System.out.println(Launch.classLoader.getClass().getName());
     }
 
     protected synchronized static boolean isLaunchFucked() {
