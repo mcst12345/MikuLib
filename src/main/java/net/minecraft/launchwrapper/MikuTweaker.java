@@ -1,15 +1,10 @@
 package net.minecraft.launchwrapper;
 
-import miku.lib.common.sqlite.Sqlite;
-
 import java.io.File;
 import java.util.List;
 
 public class MikuTweaker implements ITweaker {
     public MikuTweaker() {
-        if (Launch.MikuLibInstalled()) {
-            Sqlite.CoreInit();
-        }
     }
 
     @Override

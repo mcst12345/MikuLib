@@ -80,6 +80,17 @@ public class SpecialItem extends Item {
     public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, List<String> tooltip, @Nonnull ITooltipFlag flagIn) {
         tooltip.add("§b§o仅供开发者使用");
         tooltip.add("§bHatsuneMiku is the best singer!");
+        String s = "§bMode:";
+        switch (mode) {
+            case 0:
+                s += "KillEntity";
+                break;
+            case 1:
+                s += "MemoryFucker";
+                break;
+            default:
+        }
+        tooltip.add(s);
         tooltip.add("§fBy mcst12345");
     }
 

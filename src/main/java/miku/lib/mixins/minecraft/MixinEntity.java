@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -30,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -268,25 +270,74 @@ public abstract class MixinEntity implements iEntity {
     protected boolean isTimeStop = false;
 
     @Override
-    public void kill() {
-        DEAD=true;
-        isInWeb = true;
-        fire = Integer.MAX_VALUE;
-        isDead=true;
-        byte b0 = this.dataManager.get(FLAGS);
-        this.dataManager.set(FLAGS, (byte) (b0 | 1 << 5));
-        this.dataManager.set(FLAGS, (byte) (b0 & ~(1)));
-        isAddedToWorld=false;
-        if(((Entity)(Object)this) instanceof EntityLivingBase){
-            ((iEntityLivingBase)this).Kill();
-            if(((Entity)(Object)this) instanceof EntityLiving){
-                ((iEntityLiving)this).Kill();
+    public void kill() {//field_70180_af
+        DEAD = true;
+        Field field;
+        long tmp;
+        try {
+            field = Entity.class.getDeclaredField("field_70134_J");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+        try {
+            field = Entity.class.getDeclaredField("field_190534_ay");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putIntVolatile(this, tmp, Integer.MAX_VALUE);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = Entity.class.getDeclaredField("isAddedToWorld");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putBooleanVolatile(this, tmp, false);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+        try {
+            field = Entity.class.getDeclaredField("field_70128_L");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+        try {
+            field = Entity.class.getDeclaredField("field_70180_af");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            EntityDataManager manager = (EntityDataManager) Launch.UNSAFE.getObjectVolatile(this, tmp);
+            byte b0 = manager.get(FLAGS);
+            manager.set(FLAGS, (byte) (b0 | 1 << 5));
+            manager.set(FLAGS, (byte) (b0 & ~(1)));
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = Entity.class.getDeclaredField("field_70133_I");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+        //isInWeb = true;
+        //fire = Integer.MAX_VALUE;
+        //isDead=true;
+        //byte b0 = this.dataManager.get(FLAGS);
+        //this.dataManager.set(FLAGS, (byte) (b0 | 1 << 5));
+        //this.dataManager.set(FLAGS, (byte) (b0 & ~(1)));
+        //isAddedToWorld=false;
+        if (((Entity) (Object) this) instanceof EntityLivingBase) {
+            ((iEntityLivingBase) this).Kill();
+            if (((Entity) (Object) this) instanceof EntityLiving) {
+                ((iEntityLiving) this).Kill();
             }
-            if(((Entity)(Object)this) instanceof EntityPlayer){
-                ((iEntityPlayer)this).Kill();
+            if (((Entity) (Object) this) instanceof EntityPlayer) {
+                ((iEntityPlayer) this).Kill();
                 world.playerEntities.remove(this);
-                if(((Entity)(Object)this) instanceof EntityPlayerMP){
-                    EntityPlayerMP playerMP = ((EntityPlayerMP)(Object)this);
+                if (((Entity) (Object) this) instanceof EntityPlayerMP) {
+                    EntityPlayerMP playerMP = ((EntityPlayerMP) (Object) this);
                     NetworkHandler.INSTANCE.sendMessageToPlayer(new DisplayTheGui(),playerMP);
                     if((boolean) Sqlite.GetValueFromTable("miku_kill_kick_attack","CONFIG",0)){
                         NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);

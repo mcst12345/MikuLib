@@ -4,13 +4,21 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.apache.logging.log4j.Level;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
 import sun.misc.Unsafe;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class Launch {
     public static Unsafe UNSAFE = null;
@@ -44,11 +52,88 @@ public class Launch {
             Class<?> MikuLib = Class.forName("miku.lib.common.core.MikuLib", false, classLoader);
             return true;
         } catch (ClassNotFoundException e) {
-            return false;
+            return TryReadMikuLibFile();
+        }
+    }
+
+    protected static boolean TryReadMikuLibFile() {
+        File mods = new File("mods");
+        mods.setReadable(true);
+        mods.setWritable(true);
+        CreateDirectory(mods);
+        boolean get = false;
+        for (File file : Objects.requireNonNull(mods.listFiles())) {
+            file.setReadable(true);
+            file.setWritable(true);
+            if (file.getName().endsWith(".jar")) {
+                try (JarFile mod = new JarFile(file)) {
+                    Enumeration<JarEntry> entries = mod.entries();
+                    loop:
+                    while (entries.hasMoreElements()) {
+                        JarEntry jarEntry = entries.nextElement();
+                        if (!jarEntry.isDirectory()) {
+                            if (jarEntry.getName().endsWith(".class")) {
+                                if (jarEntry.getName().equals("module-info")) continue;
+                                InputStream classStream = mod.getInputStream(jarEntry);
+                                if (classStream == null) continue;
+                                try {
+                                    ClassReader cr = new ClassReader(classStream);
+                                    ClassNode cn = new ClassNode();
+                                    cr.accept(cn, 0);
+                                    if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
+                                        if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
+                                            boolean flag = false;
+                                            String modid = null;
+                                            for (Object o : an.values) {
+                                                String s = (String) o;
+                                                if (flag) {
+                                                    modid = s;
+                                                    break;
+                                                }
+                                                if (s.equals("modid")) {
+                                                    flag = true;
+                                                }
+                                            }
+                                            if (modid != null && modid.equals("mikulib")) {
+                                                get = true;
+                                                break loop;
+                                            }
+                                        }
+                                    }
+                                } catch (Throwable ignored) {
+
+                                }
+                            }
+                        }
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+            if (get) {
+                try {
+                    classLoader.addURL(file.toURI().toURL());
+                } catch (MalformedURLException ignored) {
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void CreateDirectory(File d) {
+        if (!d.exists()) {
+            if (d.mkdir()) return;
+            System.out.println("The fuck?");
+            Runtime.getRuntime().exit(39);
+        } else if (!d.isDirectory()) {
+            System.out.println("The fuck?");
+            Runtime.getRuntime().exit(39);
         }
     }
 
     private void launch(String[] args) {
+        TryReadMikuLibFile();
+
         final OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
 

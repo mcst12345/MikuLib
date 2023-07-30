@@ -64,7 +64,7 @@ public class ClassUtil {
     }
 
     public synchronized static void ScanModJarFile(File file) throws IOException {
-        if (file.getName().matches("(.*).jar")) {
+        if (file.getName().endsWith(".jar")) {
             boolean fucked = false;
             try (JarFile jar = new JarFile(file)) {
                 System.out.println("Reading jar file:" + jar.getName());
@@ -75,7 +75,7 @@ public class ClassUtil {
                 while (entries.hasMoreElements()) {
                     JarEntry jarEntry = entries.nextElement();
                     if (!jarEntry.isDirectory()) {
-                        if (jarEntry.getName().matches("(.*).class")) {
+                        if (jarEntry.getName().endsWith(".class")) {
                             String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
                             if (clazz.equals("module-info")) continue;
                             classes.add(clazz);

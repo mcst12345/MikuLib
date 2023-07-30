@@ -10,15 +10,17 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityTracker;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
-import net.minecraft.entity.ai.attributes.AttributeMap;
+import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketCollectItem;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -36,8 +38,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
 
 @Mixin(value = EntityLivingBase.class)
@@ -194,57 +197,203 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Shadow public float moveStrafing;
 
-    @Shadow public float moveVertical;
+    @Shadow
+    public float moveVertical;
 
-    @Shadow public float moveForward;
+    @Shadow
+    public float moveForward;
 
-    @Shadow public float prevRotationYawHead;
+    @Shadow
+    public float prevRotationYawHead;
 
-    @Shadow public float prevCameraPitch;
+    @Shadow
+    public float prevCameraPitch;
 
-    @Shadow public float prevRenderYawOffset;
+    @Shadow
+    public float prevRenderYawOffset;
+
+    @Shadow
+    public float limbSwingAmount;
 
     public MixinEntityLivingBase(World worldIn) {
         super(worldIn);
     }
 
-    @Inject(at=@At("HEAD"),method = "addPotionEffect", cancellable = true)
-    public void addPotionEffect(PotionEffect potioneffectIn, CallbackInfo ci){
-        if(EntityUtil.isProtected(this))ci.cancel();
+    @Inject(at = @At("HEAD"), method = "addPotionEffect", cancellable = true)
+    public void addPotionEffect(PotionEffect potioneffectIn, CallbackInfo ci) {
+        if (EntityUtil.isProtected(this)) ci.cancel();
     }
 
     @Override
-    public void Kill(){
-        ((EntityLivingBase) (Object) this).limbSwingAmount = 1.5F;
-        this.idleTime = 0;
-        this.damageShield(Float.MAX_VALUE);
-        this.lastDamage=Float.MAX_VALUE;
-        this.recentlyHit=60;
-        this.revengeTarget=null;
-        this.revengeTimer=0;
-        this.landMovementFactor = 0.0F;
-        Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
-        while (iterator.hasNext()) {
-            PotionEffect effect = iterator.next();
-            this.potionsNeedUpdate = true;
-            effect.getPotion().applyAttributesModifiersToEntity(((EntityLivingBase) (Object) this), ((EntityLivingBase) (Object) this).getAttributeMap(), effect.getAmplifier());
-            iterator.remove();
+    public void Kill() {
+        Field field;
+        long tmp;
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70721_aZ");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putFloatVolatile(this, tmp, 1.5F);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
         }
-        this.dataManager.set(HEALTH, 0.0f);
-        if (this.attributeMap == null) {
-            this.attributeMap = new AttributeMap();
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70708_bq");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putIntVolatile(this, tmp, 0);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
         }
-        IAttributeInstance Attribute = this.attributeMap.getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH);
-        Attribute.setBaseValue(0.0D);
-        Attribute = attributeMap.getAttributeInstance(SharedMonsterAttributes.MOVEMENT_SPEED);
-        Attribute.setBaseValue(0.0D);
-        this.dead=true;
-        this.deathTime= Integer.MAX_VALUE;
-        this.attackingPlayer=null;
-        this.lastAttackedEntity=null;
-        this.lastAttackedEntityTime=0;
-        this.velocityChanged=true;
-        this.absorptionAmount=0;
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_110153_bc");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putFloatVolatile(this, tmp, Float.MAX_VALUE);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70718_bc");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putIntVolatile(this, tmp, 60);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70755_b");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putObjectVolatile(this, tmp, null);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70756_c");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putIntVolatile(this, tmp, 0);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70746_aG");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putFloatVolatile(this, tmp, 0.0f);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70713_bf");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putObjectVolatile(this, tmp, new HashMap<>());
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = Entity.class.getDeclaredField("field_70180_af");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            EntityDataManager manager = (EntityDataManager) Launch.UNSAFE.getObjectVolatile(this, tmp);
+            manager.set(HEALTH, 0.0f);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_110155_d");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            AbstractAttributeMap AttributeMap = (AbstractAttributeMap) Launch.UNSAFE.getObjectVolatile(this, tmp);
+            Field attributes = AbstractAttributeMap.class.getDeclaredField("field_111154_a");
+            tmp = Launch.UNSAFE.objectFieldOffset(attributes);
+            Map<IAttribute, IAttributeInstance> Attributes = (Map<IAttribute, IAttributeInstance>) Launch.UNSAFE.getObjectVolatile(AttributeMap, tmp);
+            IAttributeInstance Attribute = Attributes.get(SharedMonsterAttributes.MAX_HEALTH);
+            Attribute.setBaseValue(0.0D);
+            Attribute = Attributes.get(SharedMonsterAttributes.MOVEMENT_SPEED);
+            Attribute.setBaseValue(0.0D);
+            Attribute = Attributes.get(SharedMonsterAttributes.ARMOR);
+            Attribute.setBaseValue(0.0D);
+            Attribute = Attributes.get(SharedMonsterAttributes.LUCK);
+            Attribute.setBaseValue(0.0D);
+            Attribute = Attributes.get(SharedMonsterAttributes.ARMOR_TOUGHNESS);
+            Attribute.setBaseValue(0.0D);
+            Attribute = Attributes.get(SharedMonsterAttributes.ATTACK_DAMAGE);
+            Attribute.setBaseValue(0.0D);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        //this.limbSwingAmount = 1.5F;
+        //this.idleTime = 0;
+        //this.lastDamage=Float.MAX_VALUE;
+        //this.recentlyHit=60;
+        //this.revengeTarget=null;
+        //this.revengeTimer=0;
+        //this.landMovementFactor = 0.0F;
+        //Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
+        //while (iterator.hasNext()) {
+        //    PotionEffect effect = iterator.next();
+        //    this.potionsNeedUpdate = true;
+        //    effect.getPotion().applyAttributesModifiersToEntity(((EntityLivingBase) (Object) this), ((EntityLivingBase) (Object) this).getAttributeMap(), effect.getAmplifier());
+        //    iterator.remove();
+        //}
+        //this.dataManager.set(HEALTH, 0.0f);
+        //if (this.attributeMap == null) {
+        //    this.attributeMap = new AttributeMap();
+        //}
+        //IAttributeInstance Attribute = this.attributeMap.getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH);
+        //Attribute.setBaseValue(0.0D);
+        //Attribute = attributeMap.getAttributeInstance(SharedMonsterAttributes.MOVEMENT_SPEED);
+        //Attribute.setBaseValue(0.0D);
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70729_aU");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70725_aQ");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putIntVolatile(this, tmp, Integer.MAX_VALUE);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_70717_bb");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putObjectVolatile(this, tmp, null);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_110150_bn");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putObjectVolatile(this, tmp, null);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_142016_bo");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putIntVolatile(this, tmp, 0);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        //this.dead=true;
+        //this.deathTime= Integer.MAX_VALUE;
+        //this.attackingPlayer=null;
+        //this.lastAttackedEntity=null;
+        //this.lastAttackedEntityTime=0;
+        //this.velocityChanged=true;
+        this.absorptionAmount = 0;
         combatTracker.reset();
         if (!this.world.isRemote) {
             int i = Integer.MAX_VALUE;

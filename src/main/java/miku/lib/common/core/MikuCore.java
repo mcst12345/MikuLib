@@ -14,14 +14,16 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
 public class MikuCore implements IFMLLoadingPlugin {
+    public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;
 
-    public MikuCore() throws IOException, NoSuchFieldException, IllegalAccessException {
+    public MikuCore() throws IOException, NoSuchFieldException {
         FuckLaunchWrapper();
         ClassUtil.Init();
 
@@ -69,7 +71,6 @@ public class MikuCore implements IFMLLoadingPlugin {
     public synchronized static void FuckLaunchWrapper() {
         if (isLaunchFucked()) return;
         try {
-            //57f42b626d16cc2705bf2a37add7adbb074f0ca3b312fa6e23aa303dae682f
 
             FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
 
@@ -85,6 +86,11 @@ public class MikuCore implements IFMLLoadingPlugin {
     public String[] getASMTransformerClass() {
         if (JarFucker.shouldRestart() || restart) {
             System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            try {
+                Runtime.getRuntime().exec("kill -9 " + PID);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Runtime.getRuntime().exit(-39);
         }
         return new String[0];
@@ -94,6 +100,11 @@ public class MikuCore implements IFMLLoadingPlugin {
     public String getModContainerClass() {
         if (JarFucker.shouldRestart() || restart) {
             System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            try {
+                Runtime.getRuntime().exec("kill -9 " + PID);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Runtime.getRuntime().exit(-39);
         }
         return null;
@@ -104,6 +115,11 @@ public class MikuCore implements IFMLLoadingPlugin {
     public String getSetupClass() {
         if (JarFucker.shouldRestart() || restart) {
             System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            try {
+                Runtime.getRuntime().exec("kill -9 " + PID);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Runtime.getRuntime().exit(-39);
         }
         return null;
@@ -113,6 +129,11 @@ public class MikuCore implements IFMLLoadingPlugin {
     public void injectData(Map<String, Object> data) {
         if (JarFucker.shouldRestart() || restart) {
             System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            try {
+                Runtime.getRuntime().exec("kill -9 " + PID);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Runtime.getRuntime().exit(-39);
         }
     }
@@ -121,6 +142,11 @@ public class MikuCore implements IFMLLoadingPlugin {
     public String getAccessTransformerClass() {
         if (JarFucker.shouldRestart() || restart) {
             System.out.println("MikuLib has completed its file injection.Please restart the game.");
+            try {
+                Runtime.getRuntime().exec("kill -9 " + PID);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Runtime.getRuntime().exit(-39);
         }
         return null;
