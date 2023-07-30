@@ -3,7 +3,6 @@ package net.minecraft.launchwrapper;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import miku.lib.common.core.MikuSecurityManager;
 import org.apache.logging.log4j.Level;
 import sun.misc.Unsafe;
 
@@ -144,9 +143,6 @@ public class Launch {
             // Finally we turn to the primary tweaker, and let it tell us where to go to launch
             String launchTarget;
             if (MikuLibInstalled()) {
-                Field secure = System.class.getDeclaredField("security");
-                long tmp = UNSAFE.staticFieldOffset(secure);
-                UNSAFE.putObjectVolatile(null, tmp, new MikuSecurityManager());
                 launchTarget = "miku.lib.client.minecraft.Main";
                 Class<?> Sqlite = Class.forName("miku.lib.common.sqlite.Sqlite", false, classLoader);
                 Method init = Sqlite.getMethod("CoreInit");
