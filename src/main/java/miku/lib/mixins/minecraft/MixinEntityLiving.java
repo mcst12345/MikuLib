@@ -3,9 +3,11 @@ package miku.lib.mixins.minecraft;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iEntityLiving;
 import miku.lib.common.util.EntityUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -19,6 +21,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.lang.reflect.Field;
 
 @Mixin(value = EntityLiving.class)
 public abstract class MixinEntityLiving extends EntityLivingBase implements iEntityLiving {
@@ -54,9 +58,16 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
     }
 
     @Override
-    public void ClearAI(){
-        byte b0 = ((iEntity) this).GetDataManager().get(AI_FLAGS);
-        ((iEntity) this).GetDataManager().set(AI_FLAGS, (byte) (b0 | 1));
+    public void ClearAI() {
+        try {
+            Field field = Entity.class.getDeclaredField("field_70180_af");
+            long tmp = Launch.UNSAFE.objectFieldOffset(field);
+            EntityDataManager manager = (EntityDataManager) Launch.UNSAFE.getObjectVolatile(this, tmp);
+            byte b0 = manager.get(AI_FLAGS);
+            manager.set(AI_FLAGS, (byte) (b0 | 1));
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
     }
 
     @Override

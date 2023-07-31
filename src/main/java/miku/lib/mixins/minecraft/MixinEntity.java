@@ -523,7 +523,13 @@ public abstract class MixinEntity implements iEntity {
 
     @Override
     public EntityDataManager GetDataManager() {
-        return dataManager;
+        try {
+            Field field = Entity.class.getDeclaredField("field_70180_af");
+            long tmp = Launch.UNSAFE.objectFieldOffset(field);
+            return (EntityDataManager) Launch.UNSAFE.getObjectVolatile(this, tmp);
+        } catch (NoSuchFieldException e) {
+            return dataManager;
+        }
     }
 
 }
