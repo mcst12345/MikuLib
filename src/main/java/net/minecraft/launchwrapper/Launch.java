@@ -43,25 +43,25 @@ public class Launch {
             nativeContext.setAccessible(true);
             Stack stack = (Stack) nativeContext.get(null);
             for (Object item : stack) {
-                System.out.println(item);
+                System.out.println(item.toString());
             }
             Field nativeLibraries = ClassLoader.class.getDeclaredField("nativeLibraries");
             nativeLibraries.setAccessible(true);
             Vector nativeLibrary = (Vector) nativeLibraries.get(Launch.class.getClassLoader());
             for (Object item : nativeLibrary) {
-                System.out.println(item);
+                System.out.println(item.toString());
             }
             Field systemNativeLibrary = ClassLoader.class.getDeclaredField("systemNativeLibraries");
             systemNativeLibrary.setAccessible(true);
             Vector systemNativeLibraries = (Vector) systemNativeLibrary.get(null);
             for (Object item : systemNativeLibraries) {
-                System.out.println(item);
+                System.out.println(item.toString());
             }
             Field loadedLibraryName = ClassLoader.class.getDeclaredField("loadedLibraryNames");
             loadedLibraryName.setAccessible(true);
             Vector loadedLibraryNames = (Vector) loadedLibraryName.get(null);
             for (Object item : loadedLibraryNames) {
-                System.out.println(item);
+                System.out.println(item.toString());
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -107,6 +107,7 @@ public class Launch {
         blackboard.put("ArgumentList", argumentList);
         Set<String> allTweakerNames = new HashSet<>();
         List<ITweaker> allTweakers = new ArrayList<>();
+        FuckNative();
         try {
             List<ITweaker> tweakers = new ArrayList<>(tweakClassNames.size() + 1);
             blackboard.put("Tweaks", tweakers);
