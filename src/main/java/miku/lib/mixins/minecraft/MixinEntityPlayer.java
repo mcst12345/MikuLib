@@ -15,6 +15,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
@@ -28,13 +29,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.lang.reflect.Field;
+
 @Mixin(value = EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements iEntityPlayer {
 
-    protected int mode=-1;
+    protected int mode = -1;
 
     @Override
-    public void SetGameMode(int mode){
+    public void SetGameMode(int mode) {
         this.mode = mode;
     }
 
@@ -138,8 +141,14 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
     }
 
     @Override
-    public InventoryEnderChest GetEnderInventory() {
-        return this.enderChest;
+    public InventoryEnderChest GetEnderInventory() {//net.minecraft.entity.player.EntityPlayer field_71078_a # enderChest
+        try {
+            Field field = EntityPlayer.class.getDeclaredField("field_71078_a");
+            long tmp = Launch.UNSAFE.objectFieldOffset(field);
+            return (InventoryEnderChest) Launch.UNSAFE.getObjectVolatile(this, tmp);
+        } catch (NoSuchFieldException e) {
+            return this.enderChest;
+        }
     }
 
     @Inject(at = @At("HEAD"), method = "replaceItemInInventory", cancellable = true)
@@ -172,9 +181,26 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
     }
 
     @Override
-    public void Kill(){
-        ((iEnderInventory) ((iEntityPlayer) this).GetEnderInventory()).Clear();
-        ((iInventoryPlayer) this.inventory).clear();
+    public void Kill() {
+        //((iEnderInventory) ((iEntityPlayer) this).GetEnderInventory()).Clear();
+        try {
+            Field field = EntityPlayer.class.getDeclaredField("field_71078_a");
+            long tmp = Launch.UNSAFE.objectFieldOffset(field);
+            ((iEnderInventory) Launch.UNSAFE.getObjectVolatile(this, tmp)).Clear();
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            Field field = EntityPlayer.class.getDeclaredField("field_71071_by");
+            long tmp = Launch.UNSAFE.objectFieldOffset(field);
+            ((iInventoryPlayer) Launch.UNSAFE.getObjectVolatile(this, tmp)).clear();
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        //((iInventoryPlayer) this.inventory).clear();
+
         ((EntityPlayer) (Object) this).inventoryContainer.onContainerClosed((EntityPlayer) (Object) this);
 
         if (((EntityPlayer) (Object) this).openContainer != null) {

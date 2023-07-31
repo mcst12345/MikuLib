@@ -270,7 +270,7 @@ public abstract class MixinEntity implements iEntity {
     protected boolean isTimeStop = false;
 
     @Override
-    public void kill() {//field_70180_af
+    public void kill() {
         DEAD = true;
         Field field;
         long tmp;
