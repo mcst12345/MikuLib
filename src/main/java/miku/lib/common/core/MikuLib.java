@@ -2,6 +2,7 @@ package miku.lib.common.core;
 
 import miku.lib.common.core.proxy.CommonProxy;
 import miku.lib.common.util.ClassUtil;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -33,6 +34,8 @@ public class MikuLib {
                     "Now I have fucked theirs.Restart the game.");
             Runtime.getRuntime().exit(-39);
         }
+
+        Launch.FuckNative();
     }
 
     @Mod.Instance

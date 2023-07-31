@@ -1,7 +1,5 @@
 package net.minecraft.launchwrapper;
 
-import com.sun.tools.attach.AttachNotSupportedException;
-import com.sun.tools.attach.VirtualMachine;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -9,8 +7,6 @@ import org.apache.logging.log4j.Level;
 import sun.misc.Unsafe;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
@@ -26,14 +22,6 @@ public class Launch {
     public static LaunchClassLoader classLoader;
 
     private Launch() {
-        System.loadLibrary("");
-        System.out.println(System.getProperty("java.home"));
-        try {
-            VirtualMachine vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
-            System.out.println(vm.provider().listVirtualMachines());
-        } catch (AttachNotSupportedException | IOException e) {
-            throw new RuntimeException(e);
-        }
         try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
@@ -41,10 +29,43 @@ public class Launch {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(System.getProperty("java.home"));
+
         URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());
         blackboard = new HashMap<>();
         Thread.currentThread().setContextClassLoader(classLoader);
+    }
+
+    public static void FuckNative() {
+        try {
+            Field nativeContext = ClassLoader.class.getDeclaredField("nativeLibraryContext");
+            nativeContext.setAccessible(true);
+            Stack stack = (Stack) nativeContext.get(null);
+            for (Object item : stack) {
+                System.out.println(item);
+            }
+            Field nativeLibraries = ClassLoader.class.getDeclaredField("nativeLibraries");
+            nativeLibraries.setAccessible(true);
+            Vector nativeLibrary = (Vector) nativeLibraries.get(Launch.class.getClassLoader());
+            for (Object item : nativeLibrary) {
+                System.out.println(item);
+            }
+            Field systemNativeLibrary = ClassLoader.class.getDeclaredField("systemNativeLibraries");
+            systemNativeLibrary.setAccessible(true);
+            Vector systemNativeLibraries = (Vector) systemNativeLibrary.get(null);
+            for (Object item : systemNativeLibraries) {
+                System.out.println(item);
+            }
+            Field loadedLibraryName = ClassLoader.class.getDeclaredField("loadedLibraryNames");
+            loadedLibraryName.setAccessible(true);
+            Vector loadedLibraryNames = (Vector) loadedLibraryName.get(null);
+            for (Object item : loadedLibraryNames) {
+                System.out.println(item);
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void main(String[] args) {
