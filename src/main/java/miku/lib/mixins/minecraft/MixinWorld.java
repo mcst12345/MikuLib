@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
@@ -32,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
@@ -103,20 +105,48 @@ public abstract class MixinWorld implements iWorld {
         effects.add(effect);
     }
 
-    public void remove(Entity entity){
-        this.loadedEntityList.remove(entity);
-        weatherEffects.remove(entity);
-        for (IWorldEventListener eventListener : this.eventListeners) {
-            eventListener.onEntityRemoved(entity);
+    public void remove(Entity entity) {
+        Field field;
+        long tmp;
+        try {
+            field = World.class.getDeclaredField("field_72996_f");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            ((List<Entity>) Launch.UNSAFE.getObjectVolatile(this, tmp)).remove(entity);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
         }
+        //this.loadedEntityList.remove(entity);
+        try {
+            field = World.class.getDeclaredField("field_73007_j");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            ((List<Entity>) Launch.UNSAFE.getObjectVolatile(this, tmp)).remove(entity);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+        //weatherEffects.remove(entity);
+        //net.minecraft.world.World field_73021_x # eventListeners
+
+        try {
+            field = World.class.getDeclaredField("field_73021_x");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            List<IWorldEventListener> list = (List<IWorldEventListener>) Launch.UNSAFE.getObjectVolatile(this, tmp);
+            for (IWorldEventListener eventListener : list) {
+                eventListener.onEntityRemoved(entity);
+            }
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        //for (IWorldEventListener eventListener : this.eventListeners) {
+        //    eventListener.onEntityRemoved(entity);
+        //}
         int i = entity.chunkCoordX;
         int j = entity.chunkCoordZ;
-        if (this.isChunkLoaded(i, j, true))
-        {
-            ((iChunk)this.getChunk(i, j)).remove(entity);
+        if (this.isChunkLoaded(i, j, true)) {
+            ((iChunk) this.getChunk(i, j)).remove(entity);
         }
-        if(isRemote){
-            ((iWorldClient)FMLClientHandler.instance().getWorldClient()).REMOVE(entity);
+        if (isRemote) {
+            ((iWorldClient) FMLClientHandler.instance().getWorldClient()).REMOVE(entity);
         }
     }
 

@@ -56,16 +56,16 @@ public abstract class MixinChunk implements iChunk {
     }
 
     @Override
-    public void remove(Entity entityIn) {
-        if ( entityIn.chunkCoordY < 0) {
-            entityIn.chunkCoordY = 0;
+    public void remove(Entity entity) {
+        if (entity.chunkCoordY < 0) {
+            entity.chunkCoordY = 0;
         }
 
-        if ( entityIn.chunkCoordY >= entityLists.length) {
-            entityIn.chunkCoordY = entityLists.length - 1;
+        if (entity.chunkCoordY >= entityLists.length) {
+            entity.chunkCoordY = entityLists.length - 1;
         }
 
-        entityLists[ entityIn.chunkCoordY].remove(entityIn);
+        entityLists[entity.chunkCoordY].remove(entity);
         ((Chunk) (Object) this).markDirty(); // Forge - ensure chunks are marked to save after entity removals
     }
 
