@@ -287,7 +287,6 @@ public class LaunchClassLoader extends URLClassLoader {
 
     @Override
     public void addURL(final URL url) {
-        if (sources.contains(url)) return;
         super.addURL(url);
         sources.add(url);
     }
