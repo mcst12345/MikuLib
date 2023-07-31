@@ -79,6 +79,9 @@ public class KeyBoardEvent {
             EntityPlayer player = Minecraft.getMinecraft().player;
             if (SpecialItem.Get(player) != null) {
                 SpecialItem item = SpecialItem.Get(player);
+                if (item != null) {
+                    item.ModeChange();
+                }
             }
         }
     }

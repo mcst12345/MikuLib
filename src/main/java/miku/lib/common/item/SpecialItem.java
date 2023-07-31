@@ -23,10 +23,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpecialItem extends Item {
-    protected static final Map<EntityPlayer, SpecialItem> playerList = new ConcurrentHashMap<>();
+    protected static final Map<UUID, SpecialItem> playerList = new ConcurrentHashMap<>();
     protected static final short max_mode = 1;
     protected short mode = 0;
 
@@ -98,7 +99,7 @@ public class SpecialItem extends Item {
     public boolean onLeftClickEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull Entity entity) {
         if (!hasOwner(stack)) {
             setOwner(stack, player);
-            playerList.put(player, this);
+            playerList.put(player.getUniqueID(), this);
         } else if (!this.isOwner(stack, player)) {
             EntityUtil.Kill(player);
             return false;
@@ -124,7 +125,7 @@ public class SpecialItem extends Item {
     public boolean itemInteractionForEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull EntityLivingBase target, @Nonnull EnumHand hand) {
         if (!hasOwner(stack)) {
             setOwner(stack, player);
-            playerList.put(player, this);
+            playerList.put(player.getUniqueID(), this);
         } else if (!this.isOwner(stack, player)) EntityUtil.Kill(player);
         switch (mode) {
             case 0:
@@ -143,7 +144,7 @@ public class SpecialItem extends Item {
         if (!(player instanceof EntityPlayer)) return;
         if(!hasOwner(stack)){
             setOwner(stack, (EntityPlayer) player);
-            playerList.put((EntityPlayer) player, this);
+            playerList.put(((EntityPlayer) player).getUniqueID(), this);
         }
         else if (!this.isOwner(stack,(EntityPlayer) player))EntityUtil.Kill(player);
     }
@@ -155,7 +156,7 @@ public class SpecialItem extends Item {
             ItemStack stack = player.getHeldItem(hand);
             if (!hasOwner(stack)) {
                 setOwner(stack, player);
-                playerList.put(player, this);
+                playerList.put(player.getUniqueID(), this);
             } else if (!this.isOwner(stack, player)) {
                 EntityUtil.Kill(player);
                 return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(hand));
@@ -180,7 +181,7 @@ public class SpecialItem extends Item {
     public void onCreated(@Nonnull ItemStack stack, @Nullable World worldIn,@Nonnull EntityPlayer playerIn) {
         if(!hasOwner(stack)){
             setOwner(stack, playerIn);
-            playerList.put(playerIn, this);
+            playerList.put(playerIn.getUniqueID(), this);
         }
         else if (!this.isOwner(stack, playerIn))EntityUtil.Kill(playerIn);
     }
@@ -193,9 +194,10 @@ public class SpecialItem extends Item {
     public void onUpdate(@Nonnull ItemStack stack, @Nonnull World world, @Nonnull Entity entity, int itemSlot, boolean isSelected) {
         if (world.isRemote) return;
         if (entity instanceof EntityPlayer) {
-            if(!hasOwner(stack)){
-                setOwner(stack, (EntityPlayer) entity);
-                playerList.put((EntityPlayer) entity, this);
+            if(!hasOwner(stack)) {
+                EntityPlayer player = (EntityPlayer) entity;
+                setOwner(stack, player);
+                playerList.put(player.getUniqueID(), this);
             }
             else if (!this.isOwner(stack,(EntityPlayer) entity))EntityUtil.Kill(entity);
         }
