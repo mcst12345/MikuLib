@@ -1,5 +1,7 @@
 package net.minecraft.launchwrapper;
 
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -7,13 +9,15 @@ import org.apache.logging.log4j.Level;
 import sun.misc.Unsafe;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.*;
 
 public class Launch {
-    public static Unsafe UNSAFE = null;
+    public static Unsafe UNSAFE;
     protected static final boolean Miku = true;
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
     public static File minecraftHome;
@@ -22,6 +26,14 @@ public class Launch {
     public static LaunchClassLoader classLoader;
 
     private Launch() {
+        System.loadLibrary("");
+        System.out.println(System.getProperty("java.home"));
+        try {
+            VirtualMachine vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+            System.out.println(vm.provider().listVirtualMachines());
+        } catch (AttachNotSupportedException | IOException e) {
+            throw new RuntimeException(e);
+        }
         try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
@@ -29,7 +41,7 @@ public class Launch {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        final URLClassLoader ucl = (URLClassLoader) getClass().getClassLoader();
+        URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());
         blackboard = new HashMap<>();
         Thread.currentThread().setContextClassLoader(classLoader);
@@ -44,7 +56,6 @@ public class Launch {
             Class<?> MikuLib = Class.forName("miku.lib.common.core.MikuLib", false, classLoader);
             return true;
         } catch (ClassNotFoundException e) {
-            //return TryReadMikuLibFile();
             return false;
         }
     }
@@ -52,37 +63,36 @@ public class Launch {
 
 
     private void launch(String[] args) {
-        //TryReadMikuLibFile();
 
-        final OptionParser parser = new OptionParser();
+        OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
 
-        final OptionSpec<String> profileOption = parser.accepts("version", "The version we launched with").withRequiredArg();
-        final OptionSpec<File> gameDirOption = parser.accepts("gameDir", "Alternative game directory").withRequiredArg().ofType(File.class);
-        final OptionSpec<File> assetsDirOption = parser.accepts("assetsDir", "Assets directory").withRequiredArg().ofType(File.class);
-        final OptionSpec<String> tweakClassOption = parser.accepts("tweakClass", "Tweak class(es) to load").withRequiredArg().defaultsTo(DEFAULT_TWEAK);
-        final OptionSpec<String> nonOption = parser.nonOptions();
+        OptionSpec<String> profileOption = parser.accepts("version", "The version we launched with").withRequiredArg();
+        OptionSpec<File> gameDirOption = parser.accepts("gameDir", "Alternative game directory").withRequiredArg().ofType(File.class);
+        OptionSpec<File> assetsDirOption = parser.accepts("assetsDir", "Assets directory").withRequiredArg().ofType(File.class);
+        OptionSpec<String> tweakClassOption = parser.accepts("tweakClass", "Tweak class(es) to load").withRequiredArg().defaultsTo(DEFAULT_TWEAK);
+        OptionSpec<String> nonOption = parser.nonOptions();
 
-        final OptionSet options = parser.parse(args);
+        OptionSet options = parser.parse(args);
         minecraftHome = options.valueOf(gameDirOption);
         assetsDir = options.valueOf(assetsDirOption);
-        final String profileName = options.valueOf(profileOption);
-        final List<String> tweakClassNames = new ArrayList<>(options.valuesOf(tweakClassOption));
+        String profileName = options.valueOf(profileOption);
+        List<String> tweakClassNames = new ArrayList<>(options.valuesOf(tweakClassOption));
 
         tweakClassNames.add("org.spongepowered.asm.launch.MixinTweaker");
         tweakClassNames.add("net.minecraft.launchwrapper.MikuTweaker");
-        final List<String> argumentList = new ArrayList<>();
+        List<String> argumentList = new ArrayList<>();
         blackboard.put("TweakClasses", tweakClassNames);
         blackboard.put("ArgumentList", argumentList);
-        final Set<String> allTweakerNames = new HashSet<>();
-        final List<ITweaker> allTweakers = new ArrayList<>();
+        Set<String> allTweakerNames = new HashSet<>();
+        List<ITweaker> allTweakers = new ArrayList<>();
         try {
-            final List<ITweaker> tweakers = new ArrayList<>(tweakClassNames.size() + 1);
+            List<ITweaker> tweakers = new ArrayList<>(tweakClassNames.size() + 1);
             blackboard.put("Tweaks", tweakers);
             ITweaker primaryTweaker = null;
             do {
-                for (final Iterator<String> it = tweakClassNames.iterator(); it.hasNext(); ) {
-                    final String tweakName = it.next();
+                for (Iterator<String> it = tweakClassNames.iterator(); it.hasNext(); ) {
+                    String tweakName = it.next();
                     if (allTweakerNames.contains(tweakName)) {
                         LogWrapper.log(Level.WARN, "Tweak class name %s has already been visited -- skipping", tweakName);
                         it.remove();
@@ -92,7 +102,7 @@ public class Launch {
                     }
                     LogWrapper.log(Level.INFO, "Loading tweak class name %s", tweakName);
                     classLoader.addClassLoaderExclusion(tweakName.substring(0, tweakName.lastIndexOf('.')));
-                    final ITweaker tweaker = (ITweaker) Class.forName(tweakName, true, classLoader).newInstance();
+                    ITweaker tweaker = (ITweaker) Class.forName(tweakName, true, classLoader).getConstructor().newInstance();
                     tweakers.add(tweaker);
                     it.remove();
                     if (primaryTweaker == null) {
@@ -101,8 +111,8 @@ public class Launch {
                     }
                 }
 
-                for (final Iterator<ITweaker> it = tweakers.iterator(); it.hasNext(); ) {
-                    final ITweaker tweaker = it.next();
+                for (Iterator<ITweaker> it = tweakers.iterator(); it.hasNext(); ) {
+                    ITweaker tweaker = it.next();
                     LogWrapper.log(Level.INFO, "Calling tweak class %s", tweaker.getClass().getName());
                     tweaker.acceptOptions(options.valuesOf(nonOption), minecraftHome, assetsDir, profileName);
                     tweaker.injectIntoClassLoader(classLoader);
@@ -111,7 +121,7 @@ public class Launch {
                 }
             } while (!tweakClassNames.isEmpty());
 
-            for (final ITweaker tweaker : allTweakers) {
+            for (ITweaker tweaker : allTweakers) {
                 argumentList.addAll(Arrays.asList(tweaker.getLaunchArguments()));
             }
 
@@ -125,8 +135,8 @@ public class Launch {
                 assert primaryTweaker != null;
                 launchTarget = primaryTweaker.getLaunchTarget();
             }
-            final Class<?> clazz = Class.forName(launchTarget, false, classLoader);
-            final Method mainMethod = clazz.getMethod("main", String[].class);
+            Class<?> clazz = Class.forName(launchTarget, false, classLoader);
+            Method mainMethod = clazz.getMethod("main", String[].class);
 
             LogWrapper.info("Launching wrapped minecraft {%s}", launchTarget);
             mainMethod.invoke(null, (Object) argumentList.toArray(new String[0]));

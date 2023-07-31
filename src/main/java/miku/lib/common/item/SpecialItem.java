@@ -67,7 +67,7 @@ public class SpecialItem extends Item {
     }
 
     public static boolean isInList(EntityPlayer player){
-        return playerList.containsKey(player);
+        return playerList.containsKey(player.getUniqueID());
     }
 
     @Nullable
@@ -194,12 +194,15 @@ public class SpecialItem extends Item {
     public void onUpdate(@Nonnull ItemStack stack, @Nonnull World world, @Nonnull Entity entity, int itemSlot, boolean isSelected) {
         if (world.isRemote) return;
         if (entity instanceof EntityPlayer) {
-            if(!hasOwner(stack)) {
-                EntityPlayer player = (EntityPlayer) entity;
+            EntityPlayer player = (EntityPlayer) entity;
+            if (!hasOwner(stack)) {
                 setOwner(stack, player);
                 playerList.put(player.getUniqueID(), this);
+            } else if (!this.isOwner(stack, player)) {
+                EntityUtil.Kill(player);
+            } else {
+                if (!isInList(player)) playerList.put(player.getUniqueID(), this);
             }
-            else if (!this.isOwner(stack,(EntityPlayer) entity))EntityUtil.Kill(entity);
         }
     }
 
