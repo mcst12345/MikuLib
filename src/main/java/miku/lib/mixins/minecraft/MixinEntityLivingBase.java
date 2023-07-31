@@ -387,14 +387,30 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             System.out.println(e.getLocalizedMessage());
         }
 
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_110151_bq");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putIntVolatile(this, tmp, 0);
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        try {
+            field = EntityLivingBase.class.getDeclaredField("field_94063_bt");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            Launch.UNSAFE.putObjectVolatile(this, tmp, new CombatTracker((EntityLivingBase) (Object) this));
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
         //this.dead=true;
         //this.deathTime= Integer.MAX_VALUE;
         //this.attackingPlayer=null;
         //this.lastAttackedEntity=null;
         //this.lastAttackedEntityTime=0;
         //this.velocityChanged=true;
-        this.absorptionAmount = 0;
-        combatTracker.reset();
+        //this.absorptionAmount = 0;
+        //combatTracker.reset();
         if (!this.world.isRemote) {
             int i = Integer.MAX_VALUE;
             captureDrops = true;
