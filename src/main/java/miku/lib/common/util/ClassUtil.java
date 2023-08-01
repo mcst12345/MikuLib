@@ -210,7 +210,7 @@ public class ClassUtil {
         libraires.setWritable(true);
         CreateDirectory(libraires);
 
-        ScanLibraries(libraires);
+        ScanLibraries();
 
         File mods = new File("mods");
         mods.setReadable(true);
@@ -233,10 +233,12 @@ public class ClassUtil {
         }
     }
 
-    public synchronized static void ScanLibraries(File directory) throws IOException {
+    public synchronized static void ScanLibraries() throws IOException {
         for (String path : System.getProperty("java.class.path").split(File.pathSeparator)){
             System.out.println(path);
+            if(path.endsWith("1.12.2.jar"))continue;
             File file = new File(path);
+            AddJarToTransformerExclusions(file,LibraryClasses,LibraryClassCache);
         }
     }
 
