@@ -54,7 +54,6 @@ public class ClassUtil {
                         String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
                         if (clazz.equals("module-info")) continue;
                         list.add(clazz);
-                        if(clazz.length()<6)System.out.println("Adding class "+clazz+"to transformer exclusions");
                         map.put(clazz, true);
                     }
                 }
@@ -235,8 +234,8 @@ public class ClassUtil {
 
     public synchronized static void ScanLibraries() throws IOException {
         for (String path : System.getProperty("java.class.path").split(File.pathSeparator)){
-            System.out.println(path);
             if(path.endsWith("1.12.2.jar"))continue;
+            System.out.println("Adding "+path+" to transformer exclusions");
             File file = new File(path);
             AddJarToTransformerExclusions(file,LibraryClasses,LibraryClassCache);
         }
