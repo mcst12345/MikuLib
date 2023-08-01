@@ -243,6 +243,9 @@ public class ClassUtil {
             } else {
                 if (file.getName().endsWith(".jar")) {
                     System.out.println(file.getAbsolutePath());
+                    if(file.getName().contains("net/minecraft/client")){
+                        continue;
+                    }
                     AddJarToTransformerExclusions(file, LibraryClasses, LibraryClassCache);
                 }
             }
