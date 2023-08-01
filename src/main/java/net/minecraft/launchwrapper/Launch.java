@@ -1,5 +1,9 @@
 package net.minecraft.launchwrapper;
 
+import com.sun.tools.attach.AgentInitializationException;
+import com.sun.tools.attach.AgentLoadException;
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -8,6 +12,8 @@ import org.apache.logging.log4j.Level;
 import sun.misc.Unsafe;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -118,10 +124,18 @@ public class Launch {
         }
     }
 
-
-
+    protected static void LoadMixin(){
+        try {
+            System.out.println("Loading mixin in javaagent mode.");
+            VirtualMachine vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
+            vm.loadAgent(System.getProperty("user.dir")+"/libraries/mixin.jar");
+            System.out.println("Success!");
+        } catch (AgentLoadException | IOException | AgentInitializationException | AttachNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private void launch(String[] args) {
-
+        LoadMixin();
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
 
@@ -136,8 +150,6 @@ public class Launch {
         assetsDir = options.valueOf(assetsDirOption);
         String profileName = options.valueOf(profileOption);
         List<String> tweakClassNames = new ArrayList<>(options.valuesOf(tweakClassOption));
-
-        tweakClassNames.add("org.spongepowered.asm.launch.MixinTweaker");
         tweakClassNames.add("net.minecraft.launchwrapper.MikuTweaker");
         List<String> argumentList = new ArrayList<>();
         blackboard.put("TweakClasses", tweakClassNames);
