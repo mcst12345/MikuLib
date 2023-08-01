@@ -30,8 +30,6 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -46,7 +44,6 @@ import java.io.IOException;
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = Minecraft.class)
-@SideOnly(Side.CLIENT)
 public abstract class MixinMinecraft implements iMinecraft {
     protected String LastPrint;
     public void Stop(){
