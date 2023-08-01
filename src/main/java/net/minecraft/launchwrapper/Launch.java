@@ -132,7 +132,6 @@ public class Launch {
             VirtualMachine vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
             vm.loadAgent(System.getProperty("user.dir")+"/libraries/mixin.jar");
             System.out.println("Success!");
-            MixinBootstrap.init();
         } catch (AgentLoadException | IOException | AgentInitializationException | AttachNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -201,6 +200,8 @@ public class Launch {
                     it.remove();
                 }
             } while (!tweakClassNames.isEmpty());
+
+            MixinBootstrap.init();
 
             if(MikuLibInstalled()) {
                 try {
