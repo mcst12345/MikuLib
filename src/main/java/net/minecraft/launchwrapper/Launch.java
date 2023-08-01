@@ -7,8 +7,10 @@ import com.sun.tools.attach.VirtualMachine;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import miku.lib.common.core.MikuCore;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
+import org.spongepowered.asm.launch.MixinBootstrap;
 import sun.misc.Unsafe;
 
 import java.io.File;
@@ -130,6 +132,7 @@ public class Launch {
             VirtualMachine vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
             vm.loadAgent(System.getProperty("user.dir")+"/libraries/mixin.jar");
             System.out.println("Success!");
+            MixinBootstrap.init();
         } catch (AgentLoadException | IOException | AgentInitializationException | AttachNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -198,6 +201,16 @@ public class Launch {
                     it.remove();
                 }
             } while (!tweakClassNames.isEmpty());
+
+            if(MikuLibInstalled()) {
+                try {
+                    Class<?> MikuCore = Class.forName("miku.lib.common.core.MikuCore",false,classLoader);
+                    Method InitMixin = MikuCore.getDeclaredMethod("InitMixin");
+                    InitMixin.invoke(null);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             for (ITweaker tweaker : allTweakers) {
                 argumentList.addAll(Arrays.asList(tweaker.getLaunchArguments()));

@@ -23,7 +23,7 @@ public class MikuCore implements IFMLLoadingPlugin {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;
 
-    public MikuCore() throws IOException, NoSuchFieldException {
+    public MikuCore() throws IOException {
         FuckLaunchWrapper();
         ClassUtil.Init();
 
@@ -32,17 +32,6 @@ public class MikuCore implements IFMLLoadingPlugin {
         System.out.println("Add MikuTransformer");
 
         System.out.println("Init mixins");
-
-        try {
-            MixinBootstrap.init();
-            //Add Mixin configs.
-            Mixins.addConfiguration("mixins.minecraft.json");
-            Mixins.addConfiguration("mixins.forge.json");
-        } catch (Throwable e) {
-            if (isLaunchFucked()) {
-                System.out.println("The fuck? MikuLib can't apply mixins.");
-            }
-        }
 
         Launch.Transformers.setAccessible(true);
         long tmp = Launch.UNSAFE.objectFieldOffset(Launch.Transformers);
@@ -57,6 +46,17 @@ public class MikuCore implements IFMLLoadingPlugin {
         System.out.println(Launch.classLoader.getClass().toString());
     }
 
+    public static void InitMixin(){
+        try {
+            //Add Mixin configs.
+            Mixins.addConfiguration("mixins.minecraft.json");
+            Mixins.addConfiguration("mixins.forge.json");
+        } catch (Throwable e) {
+            if (isLaunchFucked()) {
+                System.out.println("The fuck? MikuLib can't apply mixins.");
+            }
+        }
+    }
     protected synchronized static boolean isLaunchFucked() {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
