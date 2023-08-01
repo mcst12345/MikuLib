@@ -27,7 +27,7 @@ public class MikuTransformer implements IClassTransformer {
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         System.out.println("isGoodClass:" + ClassUtil.isGoodClass(name));
         System.out.println("isMinecraftClass:" + ClassUtil.isMinecraftClass(name));
-        System.out.println("isLibraryClass" + ClassUtil.isLibraryClass(name));
+        System.out.println("isLibraryClass" + (!ClassUtil.isMinecraftClass(name) && !name.equals(transformedName)));
         if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name) && (!ClassUtil.isMinecraftClass(name) && !name.equals(transformedName))) {
             System.out.println("Examine class:" + transformedName);
 
