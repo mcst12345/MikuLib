@@ -37,13 +37,6 @@ public class Launch {
 
         URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());
-        try {
-            Transformers = classLoader.getClass().getDeclaredField("transformers");
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-        NoReflection(LaunchClassLoader.class);
-        NoReflection(CoreModManager.class);
         blackboard = new HashMap<>();
         Thread.currentThread().setContextClassLoader(classLoader);
 
@@ -152,6 +145,13 @@ public class Launch {
         Set<String> allTweakerNames = new HashSet<>();
         List<ITweaker> allTweakers = new ArrayList<>();
         FuckNative();
+        try {
+            Transformers = classLoader.getClass().getDeclaredField("transformers");
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        NoReflection(LaunchClassLoader.class);
+        NoReflection(CoreModManager.class);
         try {
             List<ITweaker> tweakers = new ArrayList<>(tweakClassNames.size() + 1);
             blackboard.put("Tweaks", tweakers);

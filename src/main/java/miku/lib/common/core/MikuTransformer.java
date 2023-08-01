@@ -1,5 +1,6 @@
 package miku.lib.common.core;
 
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.transform.ASMUtil;
 import miku.lib.common.util.transform.MixinUtil;
@@ -146,7 +147,7 @@ public class MikuTransformer implements IClassTransformer {
 
             return cw.toByteArray();
         }
-        System.out.println("Ignore class:" + transformedName);
+        if(Sqlite.DEBUG())System.out.println("Ignore class:" + transformedName);
         return basicClass;
     }
 
