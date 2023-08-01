@@ -167,6 +167,11 @@ public class Launch {
         NoReflection(LaunchClassLoader.class);
         NoReflection(CoreModManager.class);
         try {
+            Class<?> Shutdown = Class.forName("java.lang.Shutdown");
+            NoReflection(Shutdown);
+        } catch (ClassNotFoundException ignored) {
+        }
+        try {
             List<ITweaker> tweakers = new ArrayList<>(tweakClassNames.size() + 1);
             blackboard.put("Tweaks", tweakers);
             ITweaker primaryTweaker = null;

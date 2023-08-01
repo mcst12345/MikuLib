@@ -51,7 +51,7 @@ public class ASMUtil {
         }
 
         //ShitMountain #3
-        result = s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)") ||
+        result = s.contains("kill") || s.contains("attack") ||
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                 s.matches("(.*)entity(.*)remove(.*)") || result;
@@ -138,13 +138,13 @@ public class ASMUtil {
 
     //ShitMountain #6
     public static boolean isBadVariable(String s) {
-        return s.matches("(.*)LivingUpdateEvent(.*)") || s.matches("(.*)ServerTickEvent(.*)") ||
-                s.matches("(.*)LivingHurtEvent(.*)") || s.matches("(.*)PlayerTickEvent(.*)") ||
-                s.matches("(.*)WorldTickEvent(.*)") || s.matches("(.*)LivingDeathEvent(.*)") ||
-                s.matches("(.*)LivingAttackEvent(.*)") || s.matches("(.*)GuiOpenEvent(.*)") ||
-                s.matches("(.*)EntityJoinWorldEvent(.*)") || s.matches("(.*)AttackEntityEvent(.*)") ||
-                s.matches("(.*)LivingSetAttackTargetEvent(.*)") || s.matches("(.*)PlayerInteractEvent(.*)") ||
-                s.matches("(.*)RenderGameOverlayEvent(.*)");
+        return s.contains("LivingUpdateEvent") || s.contains("ServerTickEvent") ||
+                s.contains("LivingHurtEvent") || s.contains("PlayerTickEvent") ||
+                s.contains("WorldTickEvent") || s.contains("LivingDeathEvent") ||
+                s.contains("LivingAttackEvent") || s.contains("GuiOpenEvent") ||
+                s.contains("EntityJoinWorldEvent") || s.contains("AttackEntityEvent") ||
+                s.contains("LivingSetAttackTargetEvent") || s.contains("PlayerInteractEvent") ||
+                s.contains("RenderGameOverlayEvent");
     }
 
     public static void FuckClass(ClassNode cn) {
@@ -154,10 +154,11 @@ public class ASMUtil {
     //ShitMountain #7
     public static boolean isBadClass(@Nonnull String s) {
         s = s.toLowerCase();
-        return s.matches("(.*)kill(.*)") || s.matches("(.*)attack(.*)entity(.*)") ||
+        return s.contains("kill") || s.matches("(.*)attack(.*)entity(.*)") ||
                 s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
                 s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
                 s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)entity(.*)util(.*)") ||
-                s.matches("(.*)entity(.*)tool(.*)") || s.matches("(.*)entity(.*)helper(.*)");
+                s.matches("(.*)entity(.*)tool(.*)") || s.matches("(.*)entity(.*)helper(.*)") || s.contains("lwjgl") ||
+                s.contains("opengl");
     }
 }
