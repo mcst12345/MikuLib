@@ -54,6 +54,7 @@ public class ClassUtil {
                         String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
                         if (clazz.equals("module-info")) continue;
                         list.add(clazz);
+                        System.out.println("Adding class "+clazz+"to transformer exclusions");
                         map.put(clazz, true);
                     }
                 }
@@ -240,8 +241,10 @@ public class ClassUtil {
                 System.out.println("Scanning directory:" + file.getName());
                 ScanLibraries(file);
             } else {
-                if (file.getName().matches("(.*).jar"))
+                if (file.getName().endsWith(".jar")) {
+                    System.out.println(file.getAbsolutePath());
                     AddJarToTransformerExclusions(file, LibraryClasses, LibraryClassCache);
+                }
             }
         }
     }
@@ -288,6 +291,8 @@ public class ClassUtil {
         if (LibraryClassCache.containsKey(s)) return LibraryClassCache.get(s);
         for (String c : LibraryClasses) {
             if (s.contains(c)) {
+                System.out.println(s);
+                System.out.println(c);
                 LibraryClassCache.put(s, true);
                 return true;
             }
