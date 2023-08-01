@@ -3,11 +3,13 @@ package net.minecraft.launchwrapper;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
 import sun.misc.Unsafe;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -20,6 +22,7 @@ public class Launch {
     public static File assetsDir;
     public static Map<String, Object> blackboard;
     public static LaunchClassLoader classLoader;
+    public static Field Transformers;
 
     private Launch() {
         try {
@@ -29,12 +32,53 @@ public class Launch {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         System.out.println(System.getProperty("java.home"));
 
         URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());
+        try {
+            Transformers = classLoader.getClass().getDeclaredField("transformers");
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        NoReflection(LaunchClassLoader.class);
+        NoReflection(CoreModManager.class);
         blackboard = new HashMap<>();
         Thread.currentThread().setContextClassLoader(classLoader);
+
+
+    }
+
+    public static void NoReflection(Class<?> clazz){
+        try {
+            Method method = Class.class.getDeclaredMethod("reflectionData");
+            method.setAccessible(true);
+            Object DATA = method.invoke(clazz);
+            Class<?> ReflectionData = Class.forName("java.lang.Class$ReflectionData");
+            Field declaredFields = ReflectionData.getDeclaredField("declaredFields");
+            Field publicFields = ReflectionData.getDeclaredField("publicFields");
+            Field declaredPublicFields = ReflectionData.getDeclaredField("declaredPublicFields");
+            Field declaredMethods = ReflectionData.getDeclaredField("declaredMethods");
+            Field publicMethods = ReflectionData.getDeclaredField("publicMethods");
+            Field declaredPublicMethods = ReflectionData.getDeclaredField("declaredPublicMethods");
+            long tmp;
+            tmp = UNSAFE.objectFieldOffset(declaredFields);
+            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            tmp = UNSAFE.objectFieldOffset(publicFields);
+            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            tmp = UNSAFE.objectFieldOffset(declaredPublicFields);
+            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            tmp = UNSAFE.objectFieldOffset(declaredMethods);
+            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            tmp = UNSAFE.objectFieldOffset(publicMethods);
+            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            tmp = UNSAFE.objectFieldOffset(declaredPublicMethods);
+            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+        } catch (NoSuchMethodException | ClassNotFoundException | NoSuchFieldException | InvocationTargetException |
+                 IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void FuckNative() {

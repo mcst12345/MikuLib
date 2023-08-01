@@ -44,9 +44,8 @@ public class MikuCore implements IFMLLoadingPlugin {
             }
         }
 
-        Field transformers = Launch.classLoader.getClass().getDeclaredField("transformers");
-        transformers.setAccessible(true);
-        long tmp = Launch.UNSAFE.objectFieldOffset(transformers);
+        Launch.Transformers.setAccessible(true);
+        long tmp = Launch.UNSAFE.objectFieldOffset(Launch.Transformers);
         List<IClassTransformer> t = (List<IClassTransformer>) Launch.UNSAFE.getObject(Launch.classLoader, tmp);
         if (!(t instanceof MikuArrayListForTransformer)) {
             MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<IClassTransformer>(2);
