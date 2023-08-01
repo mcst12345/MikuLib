@@ -1,8 +1,10 @@
 package miku.lib.mixins.minecraftforge;
 
+import miku.lib.common.api.iEventBus;
 import miku.lib.common.util.EntityUtil;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.eventhandler.IEventExceptionHandler;
@@ -12,13 +14,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(value = EventBus.class,remap = false)
-public class MixinEventBus {
-    @Shadow private boolean shutdown;
+@Mixin(value = EventBus.class, remap = false)
+public class MixinEventBus implements iEventBus {
+    @Shadow
+    private boolean shutdown;
 
-    @Shadow private IEventExceptionHandler exceptionHandler;
+    @Shadow
+    private IEventExceptionHandler exceptionHandler;
 
-    @Shadow @Final private int busID;
+    @Shadow
+    @Final
+    private int busID;
 
     /**
      * @author mcst12345
@@ -55,5 +61,19 @@ public class MixinEventBus {
             return true;
         }
         return event.isCancelable() && event.isCanceled();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason fuck you all
+     */
+    @Overwrite
+    public void shutdown() {
+    }
+
+    @Override
+    public void Shutdown() {
+        FMLLog.log.warn("EventBus {} shutting down - future events will not be posted.", busID);
+        shutdown = true;
     }
 }
