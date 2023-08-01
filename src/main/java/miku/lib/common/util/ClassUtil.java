@@ -242,10 +242,11 @@ public class ClassUtil {
                 ScanLibraries(file);
             } else {
                 if (file.getName().endsWith(".jar")) {
-                    System.out.println(file.getAbsolutePath());
                     if(file.getName().contains("net/minecraft/client")){
+                        System.out.println("ignore file:"+file.getName());
                         continue;
                     }
+                    System.out.println(file.getAbsolutePath());
                     AddJarToTransformerExclusions(file, LibraryClasses, LibraryClassCache);
                 }
             }
