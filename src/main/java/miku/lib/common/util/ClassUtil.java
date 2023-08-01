@@ -191,27 +191,27 @@ public class ClassUtil {
 
     protected static boolean LOADED = false;
 
-    public synchronized static boolean Init() throws IOException {
+    public static synchronized boolean Init() throws IOException {
         if (LOADED) return false;
 
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         minecraft.setReadable(true);
         minecraft.setWritable(true);
-        ClassUtil.AddJarToTransformerExclusions(minecraft, ClassUtil.MinecraftClasses, MinecraftClassCache);
+        AddJarToTransformerExclusions(minecraft, MinecraftClasses, MinecraftClassCache);
 
         File libraires = new File("libraries");
         libraires.setWritable(true);
         libraires.setWritable(true);
         CreateDirectory(libraires);
 
-        ClassUtil.ScanLibraries(libraires);
+        ScanLibraries(libraires);
 
         File mods = new File("mods");
         mods.setReadable(true);
         mods.setWritable(true);
         CreateDirectory(mods);
 
-        ClassUtil.ScanMods(mods);
+        ScanMods(mods);
         LOADED = true;
         return true;
     }
