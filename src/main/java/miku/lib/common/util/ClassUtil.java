@@ -63,6 +63,24 @@ public class ClassUtil {
         }
     }
 
+    protected static boolean DisablejarFucker = false;
+
+    protected static boolean isGoodCoremodClass(String s) {
+        for (String c : coremod_class_white_list) {
+            if (c.equals(s)) return true;
+        }
+        return false;
+    }
+
+    protected static boolean isGoodCoremod(String s) {
+        for (String c : coremod_white_list) {
+            if (c.equals(s)) return true;
+        }
+        return false;
+    }
+
+    protected static boolean LOADED = false;
+
     public synchronized static void ScanModJarFile(File file) throws IOException {
         if (file.getName().endsWith(".jar")) {
             boolean fucked = false;
@@ -166,7 +184,7 @@ public class ClassUtil {
                     for (String str : classes) {
                         GoodClassCache.put(str, true);
                     }
-                } else if (!fucked) {
+                } else if (!fucked && !DisablejarFucker) {
                     JarFucker.FuckModJar(jar);
                 } else {
                     System.out.println(jar.getName() + " has already being fucked.");
@@ -175,24 +193,11 @@ public class ClassUtil {
         }
     }
 
-    protected static boolean isGoodCoremodClass(String s) {
-        for (String c : coremod_class_white_list) {
-            if (c.equals(s)) return true;
-        }
-        return false;
-    }
-
-    protected static boolean isGoodCoremod(String s) {
-        for (String c : coremod_white_list) {
-            if (c.equals(s)) return true;
-        }
-        return false;
-    }
-
-    protected static boolean LOADED = false;
-
     public static synchronized boolean Init() throws IOException {
         if (LOADED) return false;
+        if (System.getProperty("DisableJarFucker").equals("true")) {
+            DisablejarFucker = true;
+        }
 
         File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         minecraft.setReadable(true);
