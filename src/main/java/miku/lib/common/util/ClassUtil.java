@@ -54,7 +54,7 @@ public class ClassUtil {
                         String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
                         if (clazz.equals("module-info")) continue;
                         list.add(clazz);
-                        System.out.println("Adding class "+clazz+"to transformer exclusions");
+                        if(clazz.length()<6)System.out.println("Adding class "+clazz+"to transformer exclusions");
                         map.put(clazz, true);
                     }
                 }
@@ -234,22 +234,9 @@ public class ClassUtil {
     }
 
     public synchronized static void ScanLibraries(File directory) throws IOException {
-        for (File file : Objects.requireNonNull(directory.listFiles())) {
-            file.setReadable(true);
-            file.setWritable(true);
-            if (file.isDirectory()) {
-                System.out.println("Scanning directory:" + file.getName());
-                ScanLibraries(file);
-            } else {
-                if (file.getName().endsWith(".jar")) {
-                    if(file.getName().contains("net/minecraft/client")){
-                        System.out.println("ignore file:"+file.getName());
-                        continue;
-                    }
-                    System.out.println(file.getAbsolutePath());
-                    AddJarToTransformerExclusions(file, LibraryClasses, LibraryClassCache);
-                }
-            }
+        for (String path : System.getProperty("java.class.path").split(File.pathSeparator)){
+            System.out.println(path);
+            File file = new File(path);
         }
     }
 
