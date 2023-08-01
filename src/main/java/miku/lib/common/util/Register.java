@@ -68,6 +68,10 @@ public class Register {
     public static void RegisterEntity(String entity,Class<? extends Entity> c,String name,int id){
         EntityRegistry.registerModEntity(new ResourceLocation("miku",entity), c,name,id, Miku.INSTANCE,80,3,true);
     }
+
+    public static void RegisterEntity(String entity,Class<? extends Entity> c,String name,int id,Object mod){
+        EntityRegistry.registerModEntity(new ResourceLocation("miku",entity), c,name,id, mod,80,3,true);
+    }
     public static void RegisterEntity(String mod,String entity,Class<? extends Entity> c,String name,int id,Object MOD){
         EntityRegistry.registerModEntity(new ResourceLocation(mod,entity), c,name,id, MOD,80,3,true);
     }
