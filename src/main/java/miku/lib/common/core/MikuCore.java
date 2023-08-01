@@ -61,7 +61,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
             miku.setAccessible(true);
-            return true;
+            return Launch.version.equals("1.0");
         } catch (NoSuchFieldException e) {
             return false;
         }

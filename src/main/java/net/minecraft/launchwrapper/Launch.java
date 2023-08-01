@@ -23,7 +23,7 @@ public class Launch {
     public static Map<String, Object> blackboard;
     public static LaunchClassLoader classLoader;
     public static Field Transformers;
-
+    public static final String version = "1.0";
     private Launch() {
         try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
