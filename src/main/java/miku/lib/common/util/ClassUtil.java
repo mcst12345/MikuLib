@@ -72,6 +72,7 @@ public class ClassUtil {
                 List<String> classes = new ArrayList<>();
                 boolean good = false;
                 Enumeration<JarEntry> entries = jar.entries();
+                loop:
                 while (entries.hasMoreElements()) {
                     JarEntry jarEntry = entries.nextElement();
                     if (!jarEntry.isDirectory()) {
@@ -119,7 +120,7 @@ public class ClassUtil {
                                                 String s = o.toString();
                                                 if (isGoodCoremod(s)) {
                                                     good = true;
-                                                    break;
+                                                    break loop;
                                                 }
                                             }
                                         }
