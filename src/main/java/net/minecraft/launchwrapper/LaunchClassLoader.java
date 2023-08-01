@@ -279,7 +279,11 @@ public class LaunchClassLoader extends URLClassLoader {
             LogWrapper.finest("Ending transform of {%s (%s)} Start Length: %d", name, transformedName, (basicClass == null ? 0 : basicClass.length));
         } else {
             for (final IClassTransformer transformer : transformers) {
-                basicClass = transformer.transform(name, transformedName, basicClass);
+                try {
+                    basicClass = transformer.transform(name, transformedName, basicClass);
+                } catch (Throwable e) {
+                    return basicClass;
+                }
             }
         }
         return basicClass;
