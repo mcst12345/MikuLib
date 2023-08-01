@@ -25,10 +25,14 @@ public class MikuTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        System.out.println("isGoodClass:" + ClassUtil.isGoodClass(name));
-        System.out.println("isMinecraftClass:" + ClassUtil.isMinecraftClass(name));
-        System.out.println("isLibraryClass" + (!ClassUtil.isMinecraftClass(name) && !name.equals(transformedName)));
-        if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name) && (!ClassUtil.isMinecraftClass(name) && !name.equals(transformedName))) {
+        if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name)) {
+            if(!name.equals(transformedName)){
+                if(ClassUtil.isMinecraftClass(name)){
+                    System.out.println("Ignore class:" + transformedName);
+                    return basicClass;
+                }
+            }
+
             System.out.println("Examine class:" + transformedName);
 
             cached_methods.clear();
@@ -141,10 +145,9 @@ public class MikuTransformer implements IClassTransformer {
             cn.accept(cw);
 
             return cw.toByteArray();
-        } else {
-            System.out.println("Ignore class:" + transformedName);
-            return basicClass;
         }
+        System.out.println("Ignore class:" + transformedName);
+        return basicClass;
     }
 
 
