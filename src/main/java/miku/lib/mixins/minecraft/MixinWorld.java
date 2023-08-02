@@ -480,6 +480,7 @@ public abstract class MixinWorld implements iWorld {
                     try {
                         entityIn.onUpdate();
                     } catch (Throwable e) {
+                        System.out.println("Catch exception at entityIn.onUpdate();");
                         e.printStackTrace();
                     }
                 }
