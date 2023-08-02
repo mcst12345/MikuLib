@@ -4,7 +4,6 @@ import miku.lib.client.gui.TheGui;
 import miku.lib.common.api.iMinecraft;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
-import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.crashReportUtil;
 import net.minecraft.client.Minecraft;
@@ -12,7 +11,6 @@ import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.*;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.ParticleManager;
@@ -210,11 +208,6 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow
     public abstract void shutdownMinecraftApplet();
 
-    private static boolean GoodGui(Object o){
-        System.out.println(o.toString());
-        return ClassUtil.isMinecraftClass(o.toString()) || o instanceof GuiContainer;
-    }
-
     /**
      * @author mcst12345
      * @reason F**k
@@ -234,12 +227,6 @@ public abstract class MixinMinecraft implements iMinecraft {
             if (guiScreenIn != null) {
                 if (guiScreenIn.toString() != null) {
                     if (guiScreenIn.toString().toLowerCase().contains("dead") || guiScreenIn.toString().toLowerCase().contains("over")) {
-                        return;
-                    }
-                }
-                if(this.currentScreen == null){
-                    if(!GoodGui(guiScreenIn)){
-                        System.out.println("Ignore gui:"+ guiScreenIn);
                         return;
                     }
                 }

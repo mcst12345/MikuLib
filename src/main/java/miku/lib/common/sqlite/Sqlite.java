@@ -28,11 +28,12 @@ public class Sqlite {
     protected static Connection c;
     protected static Statement stmt;
 
-    public static boolean isLoaded(){
+    public static synchronized boolean isLoaded() {
         return loaded;
     }
 
-    public static void CoreInit(){
+    public static synchronized void CoreInit() {
+        if (loaded) return;
         loaded = true;
         try {
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
@@ -40,9 +41,9 @@ public class Sqlite {
             System.out.println("Connected to database.");
             try {
                 System.out.println("Creating tables.");
-                CreateTable("CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
-                CreateTable("HIDDEN_MODS","ID TEXT PRIMARY KEY    NOT NULL");
-                CreateTable("BANNED_MODS","ID TEXT PRIMARY KEY    NOT NULL");
+                CreateTable("CONFIG", "NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
+                CreateTable("HIDDEN_MODS", "ID TEXT PRIMARY KEY    NOT NULL");
+                CreateTable("BANNED_MODS", "ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_GUIS","ID TEXT PRIMARY KEY    NOT NULL");
@@ -212,17 +213,17 @@ public class Sqlite {
         return gui != null && BANNED_GUIS.contains(gui.getClass());
     }
 
-    public static void Init(){
-        GetClassFromTable("BANNED_MOBS","ID",BANNED_MOBS);
-        GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
-        GetClassFromTable("BANNED_GUIS","ID",BANNED_GUIS);
+    public static synchronized void Init() {
+        GetClassFromTable("BANNED_MOBS", "ID", BANNED_MOBS);
+        GetClassFromTable("BANNED_ITEMS", "ID", BANNED_ITEMS);
+        GetClassFromTable("BANNED_GUIS", "ID", BANNED_GUIS);
 
-        if(DEBUG()){
-            for(Object o : BANNED_MOBS){
-                System.out.println("Mob "+o.toString()+" is banned.");
+        if (DEBUG()) {
+            for (Object o : BANNED_MOBS) {
+                System.out.println("Mob " + o.toString() + " is banned.");
             }
-            for(Object o : BANNED_ITEMS){
-                System.out.println("Item "+o.toString()+" is banned.");
+            for (Object o : BANNED_ITEMS) {
+                System.out.println("Item " + o.toString() + " is banned.");
             }
             for(Object o : BANNED_GUIS){
                 System.out.println("GUI "+o.toString()+" is banned.");
@@ -277,11 +278,10 @@ public class Sqlite {
     }
 
     @Nullable
-    public static ResultSet ExecuteSQL(String s) throws SQLException {
-        if(hasReturn(s)){
+    public static synchronized ResultSet ExecuteSQL(String s) throws SQLException {
+        if (hasReturn(s)) {
             return stmt.executeQuery(s);
-        }
-        else {
+        } else {
             stmt.executeUpdate(s);
             return null;
         }
