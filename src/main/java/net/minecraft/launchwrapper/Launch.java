@@ -7,7 +7,6 @@ import com.sun.tools.attach.VirtualMachine;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import miku.lib.common.core.MikuCore;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -40,6 +39,7 @@ public class Launch {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        NoReflection(Unsafe.class);
 
         System.out.println(System.getProperty("java.home"));
 
