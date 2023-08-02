@@ -14,8 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 
-import static miku.lib.common.core.MikuCore.PID;
-
 
 @Mod(
         modid = MikuLib.MODID,
@@ -75,10 +73,7 @@ public class MikuLib {
                 String command = LAUNCH.toString().replace(",", "");
                 Runtime.getRuntime().exec(command);
                 System.out.println("MikuLib has completed its file injection.Now restarting the game.");
-                try {
-                    Runtime.getRuntime().exec("kill -9 " + PID);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                while (true) {
                 }
                 Runtime.getRuntime().exit(-39);
             } catch (Throwable e) {
