@@ -60,15 +60,15 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
      */
     @Overwrite
     public void beginMinecraftLoading(Minecraft minecraft, List<IResourcePack> resourcePackList, IReloadableResourceManager resourceManager, MetadataSerializer metaSerializer) {
-        //MikuTweaker.cachedClasses.clear();
+        Launch.NoReflection(Minecraft.class);
+        Launch.NoReflection(FMLClientHandler.class);
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
         this.resourcePackList = resourcePackList;
         this.metaSerializer = metaSerializer;
         this.resourcePackMap = Maps.newHashMap();
-        if (minecraft.isDemo())
-        {
+        if (minecraft.isDemo()) {
             FMLLog.log.fatal("DEMO MODE DETECTED, FML will not work. Finishing now.");
             haltGame("FML will not run in demo mode", new RuntimeException());
             return;
