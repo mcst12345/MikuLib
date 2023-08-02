@@ -68,16 +68,11 @@ public class MikuCore implements IFMLLoadingPlugin {
                 String command = LAUNCH.toString().replace(",", "");
                 Runtime.getRuntime().exec(command);
                 System.out.println("MikuLib has completed its file injection.Now restarting the game.");
-                try {
-                    Runtime.getRuntime().exec("kill -9 " + PID);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                while (true) {
                 }
-                Runtime.getRuntime().exit(-39);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-            return;
         }
 
         System.out.println("Add MikuTransformer");
