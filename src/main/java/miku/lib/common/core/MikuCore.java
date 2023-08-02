@@ -36,8 +36,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                 }
                 LAUNCH.insert(0, "-cp ");
 
-                String USERNAME = RandomStringUtils.randomAscii(8);
-                String UUID = RandomStringUtils.randomAscii(32);
+                String USERNAME = RandomStringUtils.randomAlphanumeric(8);
+                String UUID = RandomStringUtils.randomAlphanumeric(32);
 
                 System.out.println(System.getProperty("username"));
                 LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --tweakClass optifine.OptiFineForgeTweaker --username " + USERNAME);
