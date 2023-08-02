@@ -75,7 +75,6 @@ public class MikuLib {
                 System.out.println("MikuLib has completed its file injection.Now restarting the game.");
                 while (true) {
                 }
-                Runtime.getRuntime().exit(-39);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }

@@ -11,9 +11,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.spongepowered.asm.mixin.Mixins;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.util.List;
@@ -66,7 +64,18 @@ public class MikuCore implements IFMLLoadingPlugin {
                     }
                 }
                 String command = LAUNCH.toString().replace(",", "");
-                Runtime.getRuntime().exec(command);
+                System.out.println(command);
+                Process mc = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", command}, null, null);
+                InputStream is = mc.getInputStream();
+                String line;
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+                mc.waitFor();
+                is.close();
+                reader.close();
                 System.out.println("MikuLib has completed its file injection.Now restarting the game.");
                 while (true) {
                 }
