@@ -96,11 +96,17 @@ public abstract class MixinMinecraftServer {
     public void tick()
     {
         long i = System.nanoTime();
-        if(!SpecialItem.isTimeStop())net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreServerTick();
-        if(!SpecialItem.isTimeStop())++this.tickCounter;
+        if (!SpecialItem.isTimeStop()) {
+            try {
+                net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreServerTick();
+            } catch (Throwable e) {
+                System.out.println("Catch exception at onPreServerTick.");
+                e.printStackTrace();
+            }
+        }
+        if (!SpecialItem.isTimeStop()) ++this.tickCounter;
 
-        if (this.startProfiling)
-        {
+        if (this.startProfiling) {
             this.startProfiling = false;
             this.profiler.profilingEnabled = true;
             this.profiler.clearProfiling();
@@ -144,14 +150,20 @@ public abstract class MixinMinecraftServer {
             this.usageSnooper.startSnooper();
         }
 
-        if (this.tickCounter % 6000 == 0 && !SpecialItem.isTimeStop())
-        {
+        if (this.tickCounter % 6000 == 0 && !SpecialItem.isTimeStop()) {
             this.usageSnooper.addMemoryStatsToSnooper();
         }
 
         this.profiler.endSection();
         this.profiler.endSection();
-        if(!SpecialItem.isTimeStop())net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
+        if (!SpecialItem.isTimeStop()) {
+            try {
+                net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
+            } catch (Throwable t) {
+                System.out.println("Warn:catch exception at onPostServerTick");
+                t.printStackTrace();
+            }
+        }
     }
 
     /**
