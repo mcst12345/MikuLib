@@ -11,25 +11,33 @@ import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.ModelManager;
+import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.tutorial.Tutorial;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.profiler.Profiler;
-import net.minecraft.util.MouseHelper;
-import net.minecraft.util.ReportedException;
+import net.minecraft.profiler.Snooper;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -40,6 +48,8 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Queue;
+import java.util.concurrent.FutureTask;
 
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
@@ -200,13 +210,93 @@ public abstract class MixinMinecraft implements iMinecraft {
     protected abstract void init();
 
     @Shadow
-    protected abstract void runGameLoop();
-
-    @Shadow
     public abstract void freeMemory();
 
     @Shadow
     public abstract void shutdownMinecraftApplet();
+
+    @Shadow
+    public abstract void shutdown();
+
+    @Shadow
+    @Final
+    private Timer timer;
+
+    @Shadow
+    @Final
+    private Queue<FutureTask<?>> scheduledTasks;
+
+    @Shadow
+    @Final
+    private static Logger LOGGER;
+
+    @Shadow
+    protected abstract void checkGLError(String message);
+
+    @Shadow
+    @Nullable
+    public abstract Entity getRenderViewEntity();
+
+    @Shadow
+    private Framebuffer framebuffer;
+
+    @Shadow
+    private float renderPartialTicksPaused;
+
+    @Shadow
+    @Final
+    private GuiToast toastGui;
+
+    @Shadow
+    protected abstract void displayDebugInfo(long elapsedTicksTime);
+
+    @Shadow
+    private long prevFrameTime;
+
+    @Shadow
+    public int displayWidth;
+
+    @Shadow
+    public int displayHeight;
+
+    @Shadow
+    public abstract void updateDisplay();
+
+    @Shadow
+    private int fpsCounter;
+
+    @Shadow
+    public abstract boolean isSingleplayer();
+
+    @Shadow
+    @Nullable
+    private IntegratedServer integratedServer;
+
+    @Shadow
+    @Final
+    public FrameTimer frameTimer;
+
+    @Shadow
+    private long startNanoTime;
+
+    @Shadow
+    private long debugUpdateTime;
+
+    @Shadow
+    private static int debugFPS;
+
+    @Shadow
+    public String debug;
+
+    @Shadow
+    @Final
+    private Snooper usageSnooper;
+
+    @Shadow
+    public abstract boolean isFramerateLimitBelowMax();
+
+    @Shadow
+    public abstract int getLimitFramerate();
 
     /**
      * @author mcst12345
@@ -315,6 +405,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         try {
             net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreClientTick();
         } catch (Throwable e) {
+            System.out.println("MikuWarn:Catch exception at onPreClientTick");
             e.printStackTrace();
         }
 
@@ -518,6 +609,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         try {
             net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
         } catch (Throwable e) {
+            System.out.println("MikuWarn:catch exception at onPostClientTick");
             e.printStackTrace();
         }
         this.systemTime = getSystemTime();
@@ -597,7 +689,7 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void run()
     {
-        System.out.println("Successfully fucked MikuMinecraft.");
+        System.out.println("Successfully fucked Minecraft.");
 
         this.running = true;
 
@@ -607,6 +699,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
         catch (Throwable e)
         {
+            System.out.println("MikuWarn:Catch exception when init Minecraft.");
             e.printStackTrace();
         }
 
@@ -627,20 +720,149 @@ public abstract class MixinMinecraft implements iMinecraft {
                         System.gc();
                     }
                     catch (Throwable e){
+                        System.out.println("MikuWarn:catch exception when running game loop.");
                         e.printStackTrace();
                     }
                 }
-            }
-            catch (Throwable throwable1)
-            {
-                throwable1.printStackTrace();
-            }
-            finally
-            {
+            } finally {
                 this.shutdownMinecraftApplet();
             }
 
             return;
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Holy Fuck
+     */
+    @Overwrite
+    private void runGameLoop() throws IOException {
+        long i = System.nanoTime();
+        this.profiler.startSection("root");
+
+        if (Display.isCreated() && Display.isCloseRequested()) {
+            this.shutdown();
+        }
+
+        this.timer.updateTimer();
+        this.profiler.startSection("scheduledExecutables");
+
+        synchronized (this.scheduledTasks) {
+            while (!this.scheduledTasks.isEmpty()) {
+                try {
+                    Util.runTask(this.scheduledTasks.poll(), LOGGER);
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Catch exception when running scheduledTasks.");
+                    t.printStackTrace();
+                }
+            }
+        }
+
+        this.profiler.endSection();
+        long l = System.nanoTime();
+        this.profiler.startSection("tick");
+
+        for (int j = 0; j < Math.min(10, this.timer.elapsedTicks); ++j) {
+            this.runTick();
+        }
+
+        this.profiler.endStartSection("preRenderErrors");
+        long i1 = System.nanoTime() - l;
+        this.checkGLError("Pre render");
+        this.profiler.endStartSection("sound");
+        this.soundHandler.setListener(this.getRenderViewEntity(), this.timer.renderPartialTicks); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
+        this.profiler.endSection();
+        this.profiler.startSection("render");
+        GlStateManager.pushMatrix();
+        GlStateManager.clear(16640);
+        this.framebuffer.bindFramebuffer(true);
+        this.profiler.startSection("display");
+        GlStateManager.enableTexture2D();
+        this.profiler.endSection();
+
+        if (!this.skipRenderWorld) {
+            try {
+                net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at onRenderTickStart");
+                t.printStackTrace();
+            }
+            this.profiler.endStartSection("gameRenderer");
+            this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.renderPartialTicksPaused : this.timer.renderPartialTicks, i);
+            this.profiler.endStartSection("toasts");
+            this.toastGui.drawToast(new ScaledResolution((Minecraft) (Object) this));
+            this.profiler.endSection();
+            try {
+                net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickEnd(this.timer.renderPartialTicks);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at onRenderTickEnd");
+                t.printStackTrace();
+            }
+        }
+
+        this.profiler.endSection();
+
+        if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart && !this.gameSettings.hideGUI) {
+            if (!this.profiler.profilingEnabled) {
+                this.profiler.clearProfiling();
+            }
+
+            this.profiler.profilingEnabled = true;
+            this.displayDebugInfo(i1);
+        } else {
+            this.profiler.profilingEnabled = false;
+            this.prevFrameTime = System.nanoTime();
+        }
+
+        this.framebuffer.unbindFramebuffer();
+        GlStateManager.popMatrix();
+        GlStateManager.pushMatrix();
+        this.framebuffer.framebufferRender(this.displayWidth, this.displayHeight);
+        GlStateManager.popMatrix();
+        GlStateManager.pushMatrix();
+        this.entityRenderer.renderStreamIndicator(this.timer.renderPartialTicks);
+        GlStateManager.popMatrix();
+        this.profiler.startSection("root");
+        this.updateDisplay();
+        Thread.yield();
+        this.checkGLError("Post render");
+        ++this.fpsCounter;
+        boolean flag = this.isSingleplayer() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame() && !this.integratedServer.getPublic();
+
+        if (this.isGamePaused != flag) {
+            if (this.isGamePaused) {
+                this.renderPartialTicksPaused = this.timer.renderPartialTicks;
+            } else {
+                this.timer.renderPartialTicks = this.renderPartialTicksPaused;
+            }
+
+            this.isGamePaused = flag;
+        }
+
+        long k = System.nanoTime();
+        this.frameTimer.addFrame(k - this.startNanoTime);
+        this.startNanoTime = k;
+
+        while (getSystemTime() >= this.debugUpdateTime + 1000L) {
+            debugFPS = this.fpsCounter;
+            this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", debugFPS, RenderChunk.renderChunksUpdated, RenderChunk.renderChunksUpdated == 1 ? "" : "s", (float) this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : this.gameSettings.limitFramerate, this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : "");
+            RenderChunk.renderChunksUpdated = 0;
+            this.debugUpdateTime += 1000L;
+            this.fpsCounter = 0;
+            this.usageSnooper.addMemoryStatsToSnooper();
+
+            if (!this.usageSnooper.isSnooperRunning()) {
+                this.usageSnooper.startSnooper();
+            }
+        }
+
+        if (this.isFramerateLimitBelowMax()) {
+            this.profiler.startSection("fpslimit_wait");
+            Display.sync(this.getLimitFramerate());
+            this.profiler.endSection();
+        }
+
+        this.profiler.endSection();
     }
 }
