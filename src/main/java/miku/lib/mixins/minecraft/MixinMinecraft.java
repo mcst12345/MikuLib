@@ -211,7 +211,8 @@ public abstract class MixinMinecraft implements iMinecraft {
     public abstract void shutdownMinecraftApplet();
 
     private static boolean GoodGui(Object o){
-        return ClassUtil.isMinecraftClass(o.getClass().toString().substring(5).trim()) || o instanceof GuiContainer;
+        System.out.println(o.toString());
+        return ClassUtil.isMinecraftClass(o.toString()) || o instanceof GuiContainer;
     }
 
     /**
