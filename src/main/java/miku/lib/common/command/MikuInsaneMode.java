@@ -28,8 +28,7 @@ public class MikuInsaneMode extends CommandBase {
             MikuInsaneMode = !MikuInsaneMode;
         } else {
             String s = args[0];
-            boolean flag = Boolean.parseBoolean(s);
-            MikuInsaneMode = flag;
+            MikuInsaneMode = Boolean.parseBoolean(s);
         }
         sender.sendMessage(new TextComponentString("MikuInsaneMode:" + MikuInsaneMode));
     }
