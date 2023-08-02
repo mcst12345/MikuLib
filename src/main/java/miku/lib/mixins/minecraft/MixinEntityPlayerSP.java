@@ -152,7 +152,12 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         boolean flag1 = this.movementInput.sneak;
         boolean flag2 = this.movementInput.moveForward >= 0.8F;
         this.movementInput.updatePlayerMoveState();
-        net.minecraftforge.client.ForgeHooksClient.onInputUpdate(this, this.movementInput);
+        try {
+            net.minecraftforge.client.ForgeHooksClient.onInputUpdate(this, this.movementInput);
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception at onInputUpdate");
+            t.printStackTrace();
+        }
         this.mc.getTutorial().handleMovement(this.movementInput);
 
         if (this.isHandActive() && !this.isRiding()) {
