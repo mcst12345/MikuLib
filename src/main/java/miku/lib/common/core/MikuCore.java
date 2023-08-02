@@ -57,8 +57,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                         LAUNCH.insert(0, JAVA + "/bin/java ");
                     }
                 }
-                System.out.println(LAUNCH);
-                System.out.println(System.getProperty("java.home"));
+                String command = LAUNCH.toString().replace(",", "");
+                System.out.println(command);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
