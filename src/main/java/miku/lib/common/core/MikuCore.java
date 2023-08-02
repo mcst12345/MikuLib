@@ -31,7 +31,6 @@ public class MikuCore implements IFMLLoadingPlugin {
             try {
                 StringBuilder LAUNCH = new StringBuilder();
                 for (String s : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
-                    System.out.println(s);
                     if (s.contains("=")) {
                         LAUNCH.append('"');
                         LAUNCH.append(s);
@@ -67,7 +66,14 @@ public class MikuCore implements IFMLLoadingPlugin {
                     }
                 }
                 String command = LAUNCH.toString().replace(",", "");
-                System.out.println(command);
+                Runtime.getRuntime().exec(command);
+                System.out.println("MikuLib has completed its file injection.Now restarting the game.");
+                try {
+                    Runtime.getRuntime().exec("kill -9 " + PID);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Runtime.getRuntime().exit(-39);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
@@ -131,71 +137,26 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     @Override
     public String[] getASMTransformerClass() {
-        if (JarFucker.shouldRestart() || restart) {
-            System.out.println("MikuLib has completed its file injection.Please restart the game.");
-            try {
-                Runtime.getRuntime().exec("kill -9 " + PID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Runtime.getRuntime().exit(-39);
-        }
         return new String[0];
     }
 
     @Override
     public String getModContainerClass() {
-        if (JarFucker.shouldRestart() || restart) {
-            System.out.println("MikuLib has completed its file injection.Please restart the game.");
-            try {
-                Runtime.getRuntime().exec("kill -9 " + PID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Runtime.getRuntime().exit(-39);
-        }
         return null;
     }
 
     @Nullable
     @Override
     public String getSetupClass() {
-        if (JarFucker.shouldRestart() || restart) {
-            System.out.println("MikuLib has completed its file injection.Please restart the game.");
-            try {
-                Runtime.getRuntime().exec("kill -9 " + PID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Runtime.getRuntime().exit(-39);
-        }
         return null;
     }
 
     @Override
     public void injectData(Map<String, Object> data) {
-        if (JarFucker.shouldRestart() || restart) {
-            System.out.println("MikuLib has completed its file injection.Please restart the game.");
-            try {
-                Runtime.getRuntime().exec("kill -9 " + PID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Runtime.getRuntime().exit(-39);
-        }
     }
 
     @Override
     public String getAccessTransformerClass() {
-        if (JarFucker.shouldRestart() || restart) {
-            System.out.println("MikuLib has completed its file injection.Please restart the game.");
-            try {
-                Runtime.getRuntime().exec("kill -9 " + PID);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Runtime.getRuntime().exit(-39);
-        }
         return null;
     }
 
