@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraftforge;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.FOVUpdateEvent;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -23,4 +24,20 @@ public class MixinForgeHooksClient {
         }
         return fovUpdateEvent.getNewfov();
     }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public static boolean postMouseEvent() {
+        boolean result;
+        try {
+            result = MinecraftForge.EVENT_BUS.post(new MouseEvent());
+        } catch (Throwable ignored) {
+            result = false;
+        }
+        return result;
+    }
+
 }
