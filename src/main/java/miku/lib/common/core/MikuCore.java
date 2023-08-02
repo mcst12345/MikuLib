@@ -1,5 +1,6 @@
 package miku.lib.common.core;
 
+import com.sun.jna.Platform;
 import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.MikuArrayListForTransformer;
@@ -24,6 +25,28 @@ public class MikuCore implements IFMLLoadingPlugin {
     public MikuCore() throws IOException {
         FuckLaunchWrapper();
         ClassUtil.Init();
+
+        final boolean win = Platform.isWindows();
+        final boolean Linux = Platform.isLinux();
+        final boolean MacOS = Platform.isMac();
+        final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
+        final boolean Android = Platform.isAndroid();
+
+        if (win) {
+            System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");
+        }
+        if (Linux) {
+            System.out.println("MikuLib is running on Linux. Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee!");
+        }
+        if (MacOS) {
+            System.out.println("MikuLib has never been tested on MacOS. Good luck.");
+        }
+        if (BSD) {
+            System.out.println("MikuLib has never been tested on BSD. Good luck.");
+        }
+        if (Android) {
+            System.out.println("The FUCK? You are running MikuLib on Android?");
+        }
 
         if (restart || JarFucker.shouldRestart()) {
             try {
