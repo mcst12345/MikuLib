@@ -29,26 +29,32 @@ public class MikuCore implements IFMLLoadingPlugin {
 
         if (restart || JarFucker.shouldRestart()) {
             try {
-                StringBuilder LAUNCH = new StringBuilder(ManagementFactory.getRuntimeMXBean().getInputArguments().toString());
-                LAUNCH = new StringBuilder(LAUNCH.substring(1, LAUNCH.length() - 1));
-                LAUNCH.insert(0, " ");
-                boolean flag = false;
-                for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
-                    if (flag) LAUNCH.insert(0, path + ":");
-                    else LAUNCH.insert(0, path);
-                    flag = true;
+                StringBuilder LAUNCH = new StringBuilder();
+                for (String s : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
+                    System.out.println(s);
+                    if (s.contains("=")) {
+                        LAUNCH.append('"');
+                        LAUNCH.append(s);
+                        LAUNCH.append('"');
+                    } else LAUNCH.append(s);
+                    LAUNCH.append(' ');
                 }
-                LAUNCH.insert(0, "-cp ");
+
+                LAUNCH.append("-cp ");
+                for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
+                    LAUNCH.append(path).append(":");
+                }
+                LAUNCH = new StringBuilder(LAUNCH.substring(0, LAUNCH.length() - 1));
 
                 String USERNAME = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
                 String UUID = RandomStringUtils.randomAlphanumeric(32).toLowerCase();
 
-                LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --tweakClass optifine.OptiFineForgeTweaker --username " + USERNAME);
+                LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --tweakClass optifine.OptiFineForgeTweaker --username ").append(USERNAME);
                 LAUNCH.append(" --version 1.12.2");
-                LAUNCH.append(" --gameDir " + System.getProperty("user.dir"));
-                LAUNCH.append(" --assetsDir " + System.getProperty("user.dir") + "/assets");
+                LAUNCH.append(" --gameDir ").append(System.getProperty("user.dir"));
+                LAUNCH.append(" --assetsDir ").append(System.getProperty("user.dir")).append("/assets");
                 LAUNCH.append(" --assetIndex 1.12");
-                LAUNCH.append(" --uuid " + UUID);
+                LAUNCH.append(" --uuid ").append(UUID);
                 LAUNCH.append("  --accessToken HatsuneMiku");
                 LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
                 String JAVA = System.getProperty("java.home");
@@ -76,7 +82,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         long tmp = Launch.UNSAFE.objectFieldOffset(Launch.Transformers);
         List<IClassTransformer> t = (List<IClassTransformer>) Launch.UNSAFE.getObject(Launch.classLoader, tmp);
         if (!(t instanceof MikuArrayListForTransformer)) {
-            MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<IClassTransformer>(2);
+            MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<>(2);
             for (IClassTransformer i : t) fucked.add(i);
             System.out.println("Fucking LaunchClassLoader.");
             Launch.UNSAFE.putObjectVolatile(Launch.classLoader, tmp, fucked);//Fuck other transformers.
@@ -116,6 +122,7 @@ public class MikuCore implements IFMLLoadingPlugin {
             InputStream MIXIN = MikuCore.class.getResourceAsStream("/mixin-0.8.5-SNAPSHOT.jar");
             assert MikuLaunch != null;
             FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
+            assert MIXIN != null;
             FileUtils.copyInputStreamToFile(MIXIN,new File(System.getProperty("user.dir")+"/libraries/mixin.jar"));
         } catch (IOException ignored) {
         }
