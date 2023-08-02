@@ -88,17 +88,21 @@ public class MikuCore implements IFMLLoadingPlugin {
                 }
                 String command = LAUNCH.toString().replace(",", "");
                 System.out.println("MikuLib has completed its file injection.Now restarting the game.");
-                Process mc = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", command}, null, null);
-                InputStream is = mc.getInputStream();
-                String line;
+                if (win) {
+                    //TODO
+                } else {
+                    Process mc = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", command}, null, null);
+                    InputStream is = mc.getInputStream();
+                    String line;
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                    mc.waitFor();
+                    is.close();
+                    reader.close();
                 }
-                mc.waitFor();
-                is.close();
-                reader.close();
 
                 while (true) {
                 }
