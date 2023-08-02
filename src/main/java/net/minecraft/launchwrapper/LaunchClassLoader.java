@@ -32,7 +32,6 @@ public class LaunchClassLoader extends URLClassLoader {
     private final List<IClassTransformer> transformers = new ArrayList<>(2);
     protected final List<IClassTransformer> SafeTransformers = new ArrayList<>();
     private final Map<String, Class<?>> cachedClasses = new ConcurrentHashMap<>();
-    private final Set<String> invalidClasses = new HashSet<>(1000);
     private final Set<String> classLoaderExceptions = new HashSet<>();
     private final Set<String> transformerExceptions = new HashSet<>();
     private final Map<Package, Manifest> packageManifests = new ConcurrentHashMap<>();
@@ -123,8 +122,7 @@ public class LaunchClassLoader extends URLClassLoader {
                     cachedClasses.put(name, clazz);
                     return clazz;
                 } catch (ClassNotFoundException e) {
-                    invalidClasses.add(name);
-                    throw e;
+                    System.out.println("MikuWarn:Class " + name + " which is in transformerExceptions can't be found in URLClassLoader.");
                 }
             }
         }
