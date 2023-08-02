@@ -8,5 +8,6 @@ public class MikuCommand {
         Register.RegisterCommands(new SetHealth());
         Register.RegisterCommands(new ClearDBCache());
         Register.RegisterCommands(new SQLOperation());
+        Register.RegisterCommands(new MikuInsaneMode());
     }
 }
