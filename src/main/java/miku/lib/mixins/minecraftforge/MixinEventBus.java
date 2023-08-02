@@ -47,7 +47,11 @@ public class MixinEventBus implements iEventBus {
         {
             for (; index < listeners.length; index++)
             {
-                listeners[index].invoke(event);
+                try {
+                    listeners[index].invoke(event);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
         }
         catch (Throwable throwable)

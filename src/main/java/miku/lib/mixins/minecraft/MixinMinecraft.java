@@ -308,15 +308,18 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void runTick() throws IOException
     {
-        if (this.rightClickDelayTimer > 0)
-        {
+        if (this.rightClickDelayTimer > 0) {
             --this.rightClickDelayTimer;
         }
 
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreClientTick();
+        try {
+            net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreClientTick();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
-        if(EntityUtil.isProtected(player)){
-            player.isDead=false;
+        if (EntityUtil.isProtected(player)) {
+            player.isDead = false;
             if (!player.world.playerEntities.contains(player)) {
                 player.world.playerEntities.add(player);
                 player.world.onEntityAdded(player);
@@ -506,15 +509,17 @@ public abstract class MixinMinecraft implements iMinecraft {
             {
                 this.effectRenderer.updateEffects();
             }
-        }
-        else if (this.networkManager != null)
-        {
+        } else if (this.networkManager != null) {
             this.profiler.endStartSection("pendingConnection");
             this.networkManager.processReceivedPackets();
         }
 
         this.profiler.endSection();
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
+        try {
+            net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
         this.systemTime = getSystemTime();
     }
 

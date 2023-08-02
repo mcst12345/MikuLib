@@ -51,10 +51,8 @@ public class ASMUtil {
         }
 
         //ShitMountain #3
-        result = s.contains("kill") || s.contains("attack") ||
-                s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
-                s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
-                s.matches("(.*)entity(.*)remove(.*)") || result;
+        result = s.contains("kill") || s.contains("attack") || (s.contains("drop") && s.contains("item")) ||
+                (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) || result;
 
 
         if (DEBUG()) {
@@ -154,11 +152,10 @@ public class ASMUtil {
     //ShitMountain #7
     public static boolean isBadClass(@Nonnull String s) {
         s = s.toLowerCase();
-        return s.contains("kill") || s.matches("(.*)attack(.*)entity(.*)") ||
-                s.matches("(.*)attack(.*)player(.*)") || s.matches("(.*)drop(.*)item(.*)") ||
-                s.matches("(.*)clear(.*)inventory(.*)") || s.matches("(.*)remove(.*)entity(.*)") ||
-                s.matches("(.*)entity(.*)remove(.*)") || s.matches("(.*)entity(.*)util(.*)") ||
-                s.matches("(.*)entity(.*)tool(.*)") || s.matches("(.*)entity(.*)helper(.*)") || s.contains("lwjgl") ||
-                s.contains("opengl");
+        return s.contains("kill") || (s.contains("attack") && s.contains("entity")) ||
+                (s.contains("attack") && s.contains("player")) || (s.contains("drop") && s.contains("item")) ||
+                (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) ||
+                (s.contains("entity") && s.contains("util")) || (s.contains("entity") && s.contains("tool")) ||
+                (s.contains("entity") && s.contains("helper")) || s.contains("lwjgl") || s.contains("opengl");
     }
 }
