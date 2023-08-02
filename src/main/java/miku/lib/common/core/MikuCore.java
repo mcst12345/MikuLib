@@ -7,7 +7,7 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
-import org.spongepowered.asm.launch.MixinBootstrap;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.spongepowered.asm.mixin.Mixins;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,43 @@ public class MikuCore implements IFMLLoadingPlugin {
         FuckLaunchWrapper();
         ClassUtil.Init();
 
-        if (restart) return;
+        if (restart || JarFucker.shouldRestart()) {
+            try {
+                StringBuilder LAUNCH = new StringBuilder(ManagementFactory.getRuntimeMXBean().getInputArguments().toString());
+                LAUNCH = new StringBuilder(LAUNCH.substring(1, LAUNCH.length() - 1));
+                for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
+                    LAUNCH.insert(0, path + ":");
+                }
+                LAUNCH.insert(0, "-cp ");
+
+                String USERNAME = RandomStringUtils.randomAscii(8);
+                String UUID = RandomStringUtils.randomAscii(32);
+
+                System.out.println(System.getProperty("username"));
+                LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --tweakClass optifine.OptiFineForgeTweaker --username " + USERNAME);
+                LAUNCH.append(" --version 1.12.2");
+                LAUNCH.append(" --gameDir " + System.getProperty("user.dir"));
+                LAUNCH.append(" --assetsDir " + System.getProperty("user.dir") + "/assets");
+                LAUNCH.append(" --assetIndex 1.12");
+                LAUNCH.append(" --uuid " + UUID);
+                LAUNCH.append("  --accessToken HatsuneMiku");
+                LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
+                String JAVA = System.getProperty("java.home");
+                if (JAVA.endsWith("jre")) {
+                    File jdk = new File(JAVA.substring(0, JAVA.length() - 3) + "bin/java");
+                    if (jdk.exists()) {
+                        LAUNCH.insert(0, JAVA.substring(0, JAVA.length() - 3) + "bin/java ");
+                    } else {
+                        LAUNCH.insert(0, JAVA + "/bin/java ");
+                    }
+                }
+                System.out.println(LAUNCH);
+                System.out.println(System.getProperty("java.home"));
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            return;
+        }
 
         System.out.println("Add MikuTransformer");
 
