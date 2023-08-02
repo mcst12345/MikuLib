@@ -100,7 +100,7 @@ public abstract class MixinMinecraftServer {
             try {
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreServerTick();
             } catch (Throwable e) {
-                System.out.println("Catch exception at onPreServerTick.");
+                System.out.println("MikuWarn:Catch exception at onPreServerTick.");
                 e.printStackTrace();
             }
         }
@@ -160,7 +160,7 @@ public abstract class MixinMinecraftServer {
             try {
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
             } catch (Throwable t) {
-                System.out.println("Warn:catch exception at onPostServerTick");
+                System.out.println("MikuWarn:catch exception at onPostServerTick");
                 t.printStackTrace();
             }
         }
@@ -210,7 +210,7 @@ public abstract class MixinMinecraftServer {
                         try {
                             this.tick();
                         } catch (Throwable e) {
-                            System.out.println("WARN:catch exception:"+e);
+                            System.out.println("MikuWarn:catch exception when ticking:" + e);
                         }
                         i = 0L;
                     }
@@ -222,7 +222,7 @@ public abstract class MixinMinecraftServer {
                             try {
                                 this.tick();
                             } catch (Throwable e) {
-                                System.out.println("WARN:catch exception:"+e);
+                                System.out.println("MikuWarn:catch exception when ticking:" + e);
                             }
                         }
                     }
