@@ -34,7 +34,6 @@ public class Sqlite {
 
     public static synchronized void CoreInit() {
         if (loaded) return;
-        loaded = true;
         try {
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
             stmt = c.createStatement();
@@ -70,6 +69,7 @@ public class Sqlite {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        loaded = true;
     }
 
     public static void GetStringsFromTable(String TABLE, String KEY, ArrayList list){
