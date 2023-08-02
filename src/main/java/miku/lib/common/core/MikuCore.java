@@ -31,15 +31,18 @@ public class MikuCore implements IFMLLoadingPlugin {
             try {
                 StringBuilder LAUNCH = new StringBuilder(ManagementFactory.getRuntimeMXBean().getInputArguments().toString());
                 LAUNCH = new StringBuilder(LAUNCH.substring(1, LAUNCH.length() - 1));
+                LAUNCH.insert(0, " ");
+                boolean flag = false;
                 for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
-                    LAUNCH.insert(0, path + ":");
+                    if (flag) LAUNCH.insert(0, path + ":");
+                    else LAUNCH.insert(0, path);
+                    flag = true;
                 }
                 LAUNCH.insert(0, "-cp ");
 
                 String USERNAME = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
                 String UUID = RandomStringUtils.randomAlphanumeric(32).toLowerCase();
 
-                System.out.println(System.getProperty("username"));
                 LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --tweakClass optifine.OptiFineForgeTweaker --username " + USERNAME);
                 LAUNCH.append(" --version 1.12.2");
                 LAUNCH.append(" --gameDir " + System.getProperty("user.dir"));
