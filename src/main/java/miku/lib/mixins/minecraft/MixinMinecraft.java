@@ -1467,7 +1467,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason FUCK
      */
     @Overwrite
-    private void displayDebugInfo(long elapsedTicksTime) {
+    public void displayDebugInfo(long elapsedTicksTime) {
         if (this.MikuProfiler.profilingEnabled) {
             List<Profiler.Result> list = this.MikuProfiler.getProfilingData(this.debugProfilerName);
             Profiler.Result profiler$result = list.remove(0);
