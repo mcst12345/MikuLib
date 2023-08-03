@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-@Mixin(value = ModAccessTransformer.class)
+@Mixin(value = ModAccessTransformer.class, remap = false)
 public class MixinModAccessTransformer {
     @Shadow
     private static Map<String, String> embedded;
