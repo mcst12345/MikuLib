@@ -20,10 +20,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.client.CPacketCustomPayload;
-import net.minecraft.network.play.server.SPacketEntityStatus;
-import net.minecraft.network.play.server.SPacketJoinGame;
-import net.minecraft.network.play.server.SPacketMaps;
-import net.minecraft.network.play.server.SPacketRespawn;
+import net.minecraft.network.play.server.*;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.WorldSettings;
@@ -149,5 +146,32 @@ public abstract class MixinNetHandlerPlayClient {
 
         packetIn.setMapdataTo(mapdata);
         mapitemrenderer.updateMapTexture(mapdata);
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!!!!
+     */
+    @Overwrite
+    public void handleTimeUpdate(SPacketTimeUpdate packetIn) {
+        if (packetIn == null) return;
+        try {
+            PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, this.client);
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception at PacketThreadUtil.checkThreadAndEnqueue");
+            t.printStackTrace();
+        }
+        try {
+            this.client.world.setTotalWorldTime(packetIn.getTotalWorldTime());
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception at setTotalWorldTime");
+            t.printStackTrace();
+        }
+        try {
+            this.client.world.setWorldTime(packetIn.getWorldTime());
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception at setWorldTime");
+            t.printStackTrace();
+        }
     }
 }

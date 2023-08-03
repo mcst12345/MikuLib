@@ -22,6 +22,7 @@
     "MixinSaveHandler",
     "MixinServerCommandManager",
     "MixinSlot",
+    "MixinUtil",
     "MixinWorld",
     "MixinWorldServer"
   ],
