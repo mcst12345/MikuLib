@@ -197,7 +197,7 @@ public class ClassUtil {
 
     public static synchronized boolean Init() throws IOException {
         if (LOADED) return false;
-        if (System.getProperty("DisableJarFucker").equals("true")) {
+        if (System.getProperty("DisableJarFucker") != null) if (System.getProperty("DisableJarFucker").equals("true")) {
             DisablejarFucker = true;
         }
 
