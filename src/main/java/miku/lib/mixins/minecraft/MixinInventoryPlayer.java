@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.common.api.iInventoryPlayer;
+import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,9 +31,19 @@ public abstract class MixinInventoryPlayer implements iInventoryPlayer {
     @Final
     private List<NonNullList<ItemStack>> allInventories;
 
-    @Shadow public abstract int getFirstEmptyStack();
+    @Shadow
+    public abstract int getFirstEmptyStack();
 
-    @Shadow @Final public NonNullList<ItemStack> mainInventory;
+    @Shadow
+    @Final
+    public NonNullList<ItemStack> mainInventory;
+
+    @Shadow
+    @Final
+    public NonNullList<ItemStack> armorInventory;
+
+    @Shadow
+    public int currentItem;
 
     @Inject(at = @At("HEAD"), method = "clear", cancellable = true)
     public void clear(CallbackInfo ci) {
@@ -68,4 +80,35 @@ public abstract class MixinInventoryPlayer implements iInventoryPlayer {
         }
     }
 
+    /**
+     * @author mcst12345
+     * @reason FUCK
+     */
+    @Overwrite
+    public void decrementAnimations() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
+        for (NonNullList<ItemStack> nonnulllist : this.allInventories) {
+            for (int i = 0; i < nonnulllist.size(); ++i) {
+                if (!nonnulllist.get(i).isEmpty()) {
+                    try {
+                        nonnulllist.get(i).updateAnimation(this.player.world, this.player, i, this.currentItem == i);
+                    } catch (Throwable t) {
+                        System.out.println("MikuWarn:Catch exception when updatingItemAnimation,item:" + nonnulllist.get(i).getItem().getRegistryName());
+                        t.printStackTrace();
+                    }
+                }
+            }
+        }
+        for (ItemStack is : armorInventory) // FORGE: Tick armor on animation ticks
+        {
+            if (!is.isEmpty()) {
+                try {
+                    is.getItem().onArmorTick(player.world, player, is);
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Catch exception at onArmorTick,item:" + is.getItem().getRegistryName());
+                    t.printStackTrace();
+                }
+            }
+        }
+    }
 }
