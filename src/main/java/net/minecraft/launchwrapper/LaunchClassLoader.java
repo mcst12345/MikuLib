@@ -1,5 +1,6 @@
 package net.minecraft.launchwrapper;
 
+import miku.lib.common.util.ClassUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -52,16 +53,16 @@ public class LaunchClassLoader extends URLClassLoader {
         addClassLoaderExclusion("net.minecraft.launchwrapper.");
 
         // transformer exclusions
-        addTransformerExclusion("javax.");
-        addTransformerExclusion("argo.");
-        addTransformerExclusion("org.objectweb.asm.");
-        addTransformerExclusion("com.google.common.");
-        addTransformerExclusion("org.bouncycastle.");
-        addTransformerExclusion("net.minecraft.launchwrapper.injector.");
-        addTransformerExclusion("miku.lib.common.");
-        addTransformerExclusion("miku.lib.client.");
-        addTransformerExclusion("miku.lib.network.");
-        addTransformerExclusion("org.spongepowered.");
+        transformerExceptions.add("javax.");
+        transformerExceptions.add("argo.");
+        transformerExceptions.add("org.objectweb.asm.");
+        transformerExceptions.add("com.google.common.");
+        transformerExceptions.add("org.bouncycastle.");
+        transformerExceptions.add("net.minecraft.launchwrapper.injector.");
+        transformerExceptions.add("miku.lib.common.");
+        transformerExceptions.add("miku.lib.client.");
+        transformerExceptions.add("miku.lib.network.");
+        transformerExceptions.add("org.spongepowered.");
 
         if (DEBUG_SAVE) {
             int x = 1;
@@ -368,6 +369,13 @@ public class LaunchClassLoader extends URLClassLoader {
     }
 
     public void addTransformerExclusion(String toExclude) {
+        try {
+            if (!ClassUtil.isGoodClass(toExclude)) {
+                System.out.println(toExclude);
+                return;
+            }
+        } catch (Throwable ignored) {
+        }
         transformerExceptions.add(toExclude);
     }
 

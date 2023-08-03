@@ -1,6 +1,6 @@
 package miku.lib.common.command;
 
-import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.sqlite.SqliteCaches;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -26,6 +26,6 @@ public class ClearDBCache extends CommandBase {
 
     @Override
     public void execute(@Nonnull MinecraftServer server,@Nonnull ICommandSender sender,@Nonnull String[] args) {
-        Sqlite.ClearDBCache();
+        SqliteCaches.ClearDBCache();
     }
 }

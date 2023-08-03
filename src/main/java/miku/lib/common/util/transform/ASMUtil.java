@@ -4,6 +4,8 @@ import miku.lib.common.core.InvokeDecompiler;
 import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.JarFucker;
+import miku.lib.common.util.Misc;
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
@@ -55,46 +57,46 @@ public class ASMUtil {
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) || result;
 
 
-        if (DEBUG()) {
-            MikuTransformer.print("Method name:" + method.name);
+        if (Launch.sqliteLoaded) if (DEBUG()) {
+            Misc.print("Method name:" + method.name);
         }
 
         if (method.parameters != null) for (ParameterNode parameter : method.parameters) {
-            if (DEBUG()) {
-                MikuTransformer.print("parameter name:" + parameter.name);
+            if (Launch.sqliteLoaded) if (DEBUG()) {
+                Misc.print("parameter name:" + parameter.name);
             }
         }
         if (method.visibleTypeAnnotations != null)
             for (TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations) {
-                if (DEBUG()) {
-                    MikuTransformer.print("typeAnnotation desc:" + typeAnnotation.desc);
-                    MikuTransformer.print("typeAnnotation typePath:" + typeAnnotation.typePath.toString());
+                if (Launch.sqliteLoaded) if (DEBUG()) {
+                    Misc.print("typeAnnotation desc:" + typeAnnotation.desc);
+                    Misc.print("typeAnnotation typePath:" + typeAnnotation.typePath.toString());
                 }
             }
         if (method.invisibleTypeAnnotations != null)
             for (TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations) {
-                if (DEBUG()) {
-                    MikuTransformer.print("invisibleTypeAnnotation desc:" + invisibleTypeAnnotation.desc);
-                    MikuTransformer.print("invisibleTypeAnnotation typePath:" + invisibleTypeAnnotation.typePath.toString());
+                if (Launch.sqliteLoaded) if (DEBUG()) {
+                    Misc.print("invisibleTypeAnnotation desc:" + invisibleTypeAnnotation.desc);
+                    Misc.print("invisibleTypeAnnotation typePath:" + invisibleTypeAnnotation.typePath.toString());
                 }
             }
 
         if (method.attrs != null) {
             for (Attribute attr : method.attrs) {
-                if (DEBUG()) {
-                    MikuTransformer.print("attr type:" + attr.type);
+                if (Launch.sqliteLoaded) if (DEBUG()) {
+                    Misc.print("attr type:" + attr.type);
                 }
             }
         }
 
         if (method.localVariables != null) {
             for (LocalVariableNode localVariable : method.localVariables) {
-                if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG()) {
 
-                    MikuTransformer.print("localVariable name:" + localVariable.name);
+                    Misc.print("localVariable name:" + localVariable.name);
                     if (localVariable.signature != null)
                         System.out.println("localVariable sign:" + localVariable.signature);
-                    MikuTransformer.print("localVariable desc:" + localVariable.desc);
+                    Misc.print("localVariable desc:" + localVariable.desc);
                     s = localVariable.desc;
                     if (isBadVariable(s)) {
                         System.out.println("Found bad variable:" + localVariable.name);
@@ -120,10 +122,10 @@ public class ASMUtil {
 
         if (field.signature != null) {
             String s = field.signature.toLowerCase();
-            if (DEBUG() && (boolean) Sqlite.GetValueFromTable("field_info", "LOG_CONFIG", 0)) {
-                MikuTransformer.print("name:" + field.name);
-                MikuTransformer.print("sign:" + field.signature);
-                MikuTransformer.print("desc:" + field.desc);
+            if (Launch.sqliteLoaded) if (DEBUG() && (boolean) Sqlite.GetValueFromTable("field_info", "LOG_CONFIG", 0)) {
+                Misc.print("name:" + field.name);
+                Misc.print("sign:" + field.signature);
+                Misc.print("desc:" + field.desc);
             }
             result = (s.matches("(.*)/set(.*)entity(.*)") || s.matches("(.*)/list(.*)entity(.*)")) && !s.matches("(.*)net/minecraft/(.*)");
         }

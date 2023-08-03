@@ -1,6 +1,7 @@
 package miku.lib.common.util.transform;
 
-import miku.lib.common.core.MikuTransformer;
+import miku.lib.common.util.Misc;
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -63,9 +64,9 @@ public class MixinUtil {
             if (mn.invisibleTypeAnnotations != null) {
                 System.out.println("invisibleTypeAnnotations of " + mn.name);
                 for (TypeAnnotationNode an : mn.invisibleTypeAnnotations) {
-                    if (DEBUG()) {
-                        MikuTransformer.print(an.desc);
-                        if (an.values != null) MikuTransformer.print(an.values.toString());
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print(an.desc);
+                        if (an.values != null) Misc.print(an.values.toString());
                     }
                     if (Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/injection/Inject;")) {
                         if (an.values != null) {
@@ -90,18 +91,18 @@ public class MixinUtil {
             if (mn.visibleAnnotations != null) {
                 System.out.println("invisibleTypeAnnotations of " + mn.name);
                 for (AnnotationNode an : mn.visibleAnnotations) {
-                    if (DEBUG()) {
-                        MikuTransformer.print(an.desc);
-                        if (an.values != null) MikuTransformer.print(an.values.toString());
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print(an.desc);
+                        if (an.values != null) Misc.print(an.values.toString());
                     }
                 }
             }
             if (mn.invisibleAnnotations != null) {
                 System.out.println("invisibleAnnotations of " + mn.name);
                 for (AnnotationNode an : mn.invisibleAnnotations) {
-                    if (DEBUG()) {
-                        MikuTransformer.print(an.desc);
-                        if (an.values != null) MikuTransformer.print(an.values.toString());
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print(an.desc);
+                        if (an.values != null) Misc.print(an.values.toString());
                     }
                 }
             }

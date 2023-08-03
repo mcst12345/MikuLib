@@ -1,6 +1,5 @@
 package miku.lib.common.util;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -121,7 +120,6 @@ public class ClassUtil {
                                         }
                                         if (modid == null) {
                                             System.out.println("The fuck?");
-                                            FMLCommonHandler.instance().exitJava(0, true);
                                         } else {
                                             System.out.println(modid);
                                             for (String s : mod_id_white_list) {
@@ -229,10 +227,8 @@ public class ClassUtil {
         if (!d.exists()) {
             if (d.mkdir()) return;
             System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
         } else if (!d.isDirectory()) {
             System.out.println("The fuck?");
-            FMLCommonHandler.instance().exitJava(0, true);
         }
     }
 

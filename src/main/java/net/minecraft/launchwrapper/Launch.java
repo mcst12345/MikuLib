@@ -7,6 +7,7 @@ import com.sun.tools.attach.VirtualMachine;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import miku.lib.common.util.ClassUtil;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -31,7 +32,13 @@ public class Launch {
     public static LaunchClassLoader classLoader;
     public static Field Transformers;
     public static final String version = "1.0";
+    public static boolean sqliteLoaded;
+
     private Launch() {
+        try {
+            ClassUtil.Init();
+        } catch (IOException ignored) {
+        }
         try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);

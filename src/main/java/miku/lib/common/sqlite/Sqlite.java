@@ -3,6 +3,7 @@ package miku.lib.common.sqlite;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
@@ -17,13 +18,6 @@ import java.util.Objects;
 public class Sqlite {
 
     protected static boolean loaded = false;
-    protected static final HashMap<String,Object> Configs = new HashMap<>();
-    protected static final ArrayList<String> HIDDEN_MODS = new ArrayList<>();
-    protected static final ArrayList<Class<? extends Entity>> BANNED_MOBS = new ArrayList<>();
-    protected static final ArrayList<Class<? extends Item>> BANNED_ITEMS = new ArrayList<>();
-    protected static final ArrayList<Class<? extends Gui>> BANNED_GUIS = new ArrayList<>();
-    protected static final ArrayList<String> BANNED_MODS = new ArrayList<>();
-    protected static final ArrayList<String> BANNED_CLASS = new ArrayList<>();
 
     protected static Connection c;
     protected static Statement stmt;
@@ -49,19 +43,19 @@ public class Sqlite {
                 CreateTable("BANNED_CLASS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("LOG_CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 System.out.println("Init database.");
-                CreateConfigValue("auto_range_kill","CONFIG","true");
-                CreateConfigValue("debug","CONFIG","false");
-                CreateConfigValue("void_keep_loaded","CONFIG","true");
-                CreateConfigValue("miku_kill_exit_attack","CONFIG","true");
-                CreateConfigValue("miku_kill_kick_attack","CONFIG","true");
-                CreateConfigValue("class_info","LOG_CONFIG","true");
-                CreateConfigValue("method_info","LOG_CONFIG","true");
+                CreateConfigValue("auto_range_kill", "CONFIG", "true");
+                CreateConfigValue("debug", "CONFIG", "false");
+                CreateConfigValue("void_keep_loaded", "CONFIG", "true");
+                CreateConfigValue("miku_kill_exit_attack", "CONFIG", "true");
+                CreateConfigValue("miku_kill_kick_attack", "CONFIG", "true");
+                CreateConfigValue("class_info", "LOG_CONFIG", "true");
+                CreateConfigValue("method_info", "LOG_CONFIG", "true");
                 CreateConfigValue("field_info", "LOG_CONFIG", "true");
                 CreateConfigValue("ignore_info", "LOG_CONFIG", "false");
                 System.out.println("Reading lists.");
-                GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
-                GetStringsFromTable("BANNED_MODS","ID",BANNED_MODS);
-                GetStringsFromTable("BANNED_CLASS","ID",BANNED_CLASS);
+                GetStringsFromTable("HIDDEN_MODS", "ID", SqliteCaches.HIDDEN_MODS);
+                GetStringsFromTable("BANNED_MODS", "ID", SqliteCaches.BANNED_MODS);
+                GetStringsFromTable("BANNED_CLASS", "ID", SqliteCaches.BANNED_CLASS);
 
             } catch (Exception e){
                 e.printStackTrace();
@@ -71,6 +65,7 @@ public class Sqlite {
             throw new RuntimeException(e);
         }
         loaded = true;
+        Launch.sqliteLoaded = true;
     }
 
     public static void GetStringsFromTable(String TABLE, String KEY, ArrayList list){
@@ -105,7 +100,7 @@ public class Sqlite {
     }
         @Nullable
     public static Object GetValueFromTable(String NAME,String TABLE, int TYPE){// 0-bool 1-int 2-long 3-str
-        if(Configs.get(NAME)!=null)return Configs.get(NAME);
+            if (SqliteCaches.Configs.get(NAME) != null) return SqliteCaches.Configs.get(NAME);
         try {
             ResultSet rs = stmt.executeQuery("SELECT * FROM "+TABLE+";");
             String result = null;
@@ -114,19 +109,19 @@ public class Sqlite {
                     result = rs.getString("VALUE");
                     switch (TYPE){
                         case 0: {
-                            Configs.put(NAME,result.equals("true"));
+                            SqliteCaches.Configs.put(NAME, result.equals("true"));
                             break;
                         }
                         case 1: {
-                            Configs.put(NAME,Integer.parseInt(result));
+                            SqliteCaches.Configs.put(NAME, Integer.parseInt(result));
                             break;
                         }
                         case 2: {
-                            Configs.put(NAME,Long.parseLong(result));
+                            SqliteCaches.Configs.put(NAME, Long.parseLong(result));
                             break;
                         }
                         case 3: {
-                            Configs.put(NAME,result);
+                            SqliteCaches.Configs.put(NAME, result);
                             break;
                         }
                         default: {
@@ -183,17 +178,6 @@ public class Sqlite {
         }
     }
 
-    public static void ClearDBCache(){
-        Configs.clear();
-        BANNED_MOBS.clear();
-        GetClassFromTable("BANNED_MOBS","ID",BANNED_MOBS);
-        BANNED_ITEMS.clear();
-        GetClassFromTable("BANNED_ITEMS","ID",BANNED_ITEMS);
-        BANNED_GUIS.clear();
-        GetClassFromTable("BANNED_GUIS","ID",BANNED_GUIS);
-
-    }
-
     public static void CreateTable(String NAME,String VALUES){
         try {
             stmt.executeUpdate("CREATE TABLE IF NOT EXISTS "+NAME+
@@ -205,35 +189,35 @@ public class Sqlite {
     }
 
     public static boolean IS_MOB_BANNED(@Nullable Entity entity){
-        return entity != null && BANNED_MOBS.contains(entity.getClass());
+        return entity != null && SqliteCaches.BANNED_MOBS.contains(entity.getClass());
     }
     public static boolean IS_ITEM_BANNED(@Nullable Item item){
-        return item != null && BANNED_ITEMS.contains(item.getClass());
+        return item != null && SqliteCaches.BANNED_ITEMS.contains(item.getClass());
     }
     public static boolean IS_GUI_BANNED(@Nullable Gui gui){
-        return gui != null && BANNED_GUIS.contains(gui.getClass());
+        return gui != null && SqliteCaches.BANNED_GUIS.contains(gui.getClass());
     }
 
     public static synchronized void Init() {
-        GetClassFromTable("BANNED_MOBS", "ID", BANNED_MOBS);
-        GetClassFromTable("BANNED_ITEMS", "ID", BANNED_ITEMS);
-        GetClassFromTable("BANNED_GUIS", "ID", BANNED_GUIS);
+        GetClassFromTable("BANNED_MOBS", "ID", SqliteCaches.BANNED_MOBS);
+        GetClassFromTable("BANNED_ITEMS", "ID", SqliteCaches.BANNED_ITEMS);
+        GetClassFromTable("BANNED_GUIS", "ID", SqliteCaches.BANNED_GUIS);
 
         if (DEBUG()) {
-            for (Object o : BANNED_MOBS) {
+            for (Object o : SqliteCaches.BANNED_MOBS) {
                 System.out.println("Mob " + o.toString() + " is banned.");
             }
-            for (Object o : BANNED_ITEMS) {
+            for (Object o : SqliteCaches.BANNED_ITEMS) {
                 System.out.println("Item " + o.toString() + " is banned.");
             }
-            for(Object o : BANNED_GUIS){
-                System.out.println("GUI "+o.toString()+" is banned.");
+            for (Object o : SqliteCaches.BANNED_GUIS) {
+                System.out.println("GUI " + o.toString() + " is banned.");
             }
         }
 
-        for(String s : BANNED_CLASS){
-            if(isClassLoaded(s)){
-                System.out.println("Class "+s+" is banned. Exiting.");
+        for (String s : SqliteCaches.BANNED_CLASS) {
+            if (isClassLoaded(s)) {
+                System.out.println("Class " + s + " is banned. Exiting.");
                 Runtime.getRuntime().halt(39);
                 System.exit(0);
             }
@@ -250,11 +234,11 @@ public class Sqlite {
             System.out.println("Successfully get the object of namedMods.");
             Map<String, ModContainer> result = new HashMap<>();
             mods.forEach((key,value) -> {
-                if(!HIDDEN_MODS.contains(key)){
-                    result.put(key,value);
+                if (!SqliteCaches.HIDDEN_MODS.contains(key)) {
+                    result.put(key, value);
                 }
-                if(BANNED_MODS.contains(key)){
-                    System.out.println("Mod "+key+" is banned. Exiting.");
+                if (SqliteCaches.BANNED_MODS.contains(key)) {
+                    System.out.println("Mod " + key + " is banned. Exiting.");
                     Runtime.getRuntime().halt(39);
                     System.exit(0);
                 }

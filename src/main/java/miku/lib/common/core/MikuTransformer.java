@@ -1,10 +1,11 @@
 package miku.lib.common.core;
 
-import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.ClassUtil;
+import miku.lib.common.util.Misc;
 import miku.lib.common.util.transform.ASMUtil;
 import miku.lib.common.util.transform.MixinUtil;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -29,8 +30,6 @@ public class MikuTransformer implements IClassTransformer {
         if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name)) {
             if(!name.equals(transformedName)){
                 if(ClassUtil.isMinecraftClass(name)){
-                    if (Sqlite.DEBUG() && (boolean) Sqlite.GetValueFromTable("ignore_info", "LOG_CONFIG", 0))
-                        System.out.println("Ignore class:" + transformedName);
                     return basicClass;
                 }
             }
@@ -46,23 +45,23 @@ public class MikuTransformer implements IClassTransformer {
 
             cr.accept(cn, 0);
 
-            if (DEBUG()) {
-                print("Class name:" + cn.name);
-                print("Class sign:" + cn.signature);
-                print("outer class:" + cn.outerClass);
-                print("outer method:" + cn.outerMethod);
-                print("outer method desc:" + cn.outerMethodDesc);
+            if (Launch.sqliteLoaded) if (DEBUG()) {
+                Misc.print("Class name:" + cn.name);
+                Misc.print("Class sign:" + cn.signature);
+                Misc.print("outer class:" + cn.outerClass);
+                Misc.print("outer method:" + cn.outerMethod);
+                Misc.print("outer method desc:" + cn.outerMethodDesc);
                 System.out.println("Interfaces:");
                 for (String s : cn.interfaces) {
-                    print(s);
+                    Misc.print(s);
                 }
             }
             if (cn.visibleAnnotations != null) {
                 System.out.println("visibleAnnotations:");
                 for (AnnotationNode an : cn.visibleAnnotations) {
-                    if (DEBUG()) {
-                        print(an.desc);
-                        if (an.values != null) print(an.values.toString());
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print(an.desc);
+                        if (an.values != null) Misc.print(an.values.toString());
                     }
                 }
             }
@@ -70,9 +69,9 @@ public class MikuTransformer implements IClassTransformer {
             if (cn.visibleTypeAnnotations != null) for (TypeAnnotationNode an : cn.visibleTypeAnnotations) {
                 {
                     System.out.println("visibleTypeAnnotations:");
-                    if (DEBUG()) {
-                        print(an.desc);
-                        if (an.values != null) print(an.values.toString());
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print(an.desc);
+                        if (an.values != null) Misc.print(an.values.toString());
                     }
                 }
             }
@@ -80,9 +79,9 @@ public class MikuTransformer implements IClassTransformer {
             if (cn.invisibleAnnotations != null) {
                 System.out.println("invisibleAnnotations:");
                 for (AnnotationNode an : cn.invisibleAnnotations) {
-                    if (DEBUG()) {
-                        print(an.desc);
-                        if (an.values != null) print(an.values.toString());
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print(an.desc);
+                        if (an.values != null) Misc.print(an.values.toString());
                     }
                     if (Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")) {
                         System.out.println("Found mixin class:" + cn.name + ",fucking it.");
@@ -97,9 +96,9 @@ public class MikuTransformer implements IClassTransformer {
             if (cn.invisibleTypeAnnotations != null) {
                 System.out.println("invisibleTypeAnnotations:");
                 for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
-                    if (DEBUG()) {
-                        print(an.desc);
-                        print(an.values.toString());
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print(an.desc);
+                        Misc.print(an.values.toString());
                     }
                 }
             }
@@ -148,14 +147,8 @@ public class MikuTransformer implements IClassTransformer {
 
             return cw.toByteArray();
         }
-        if (Sqlite.DEBUG() && (boolean) Sqlite.GetValueFromTable("ignore_info", "LOG_CONFIG", 0))
-            System.out.println("Ignore class:" + transformedName);
         return basicClass;
     }
 
 
-    public static void print(String s){
-        if (s.contains(":null")) return;
-        System.out.println(s);
-    }
 }

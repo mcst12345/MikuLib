@@ -20,7 +20,8 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
-import static miku.lib.common.core.MikuTransformer.*;
+import static miku.lib.common.core.MikuTransformer.BadFields;
+import static miku.lib.common.core.MikuTransformer.cached_methods;
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 public class JarFucker {
@@ -157,22 +158,22 @@ public class JarFucker {
         num = 0.0d;
 
         if (DEBUG()) {
-            print("Class name:" + cn.name);
-            print("Class sign:" + cn.signature);
-            print("outer class:" + cn.outerClass);
-            print("outer method:" + cn.outerMethod);
-            print("outer method desc:" + cn.outerMethodDesc);
+            Misc.print("Class name:" + cn.name);
+            Misc.print("Class sign:" + cn.signature);
+            Misc.print("outer class:" + cn.outerClass);
+            Misc.print("outer method:" + cn.outerMethod);
+            Misc.print("outer method desc:" + cn.outerMethodDesc);
             System.out.println("Interfaces:");
             for (String s : cn.interfaces) {
-                print(s);
+                Misc.print(s);
             }
         }
         if (cn.visibleAnnotations != null) {
             System.out.println("visibleAnnotations:");
             for (AnnotationNode an : cn.visibleAnnotations) {
                 if (DEBUG()) {
-                    print(an.desc);
-                    if (an.values != null) print(an.values.toString());
+                    Misc.print(an.desc);
+                    if (an.values != null) Misc.print(an.values.toString());
                 }
             }
         }
@@ -181,8 +182,8 @@ public class JarFucker {
             {
                 System.out.println("visibleTypeAnnotations:");
                 if (DEBUG()) {
-                    print(an.desc);
-                    if (an.values != null) print(an.values.toString());
+                    Misc.print(an.desc);
+                    if (an.values != null) Misc.print(an.values.toString());
                 }
             }
         }
@@ -191,8 +192,8 @@ public class JarFucker {
             System.out.println("invisibleAnnotations:");
             for (AnnotationNode an : cn.invisibleAnnotations) {
                 if (DEBUG()) {
-                    print(an.desc);
-                    if (an.values != null) print(an.values.toString());
+                    Misc.print(an.desc);
+                    if (an.values != null) Misc.print(an.values.toString());
                 }
                 if (Objects.equals(an.desc, "Lorg/spongepowered/asm/mixin/Mixin;")) {
                     System.out.println("Found mixin class:" + cn.name + ",fucking it.");
@@ -208,8 +209,8 @@ public class JarFucker {
             System.out.println("invisibleTypeAnnotations:");
             for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
                 if (DEBUG()) {
-                    print(an.desc);
-                    print(an.values.toString());
+                    Misc.print(an.desc);
+                    Misc.print(an.values.toString());
                 }
             }
         }
