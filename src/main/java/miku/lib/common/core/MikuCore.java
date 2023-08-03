@@ -120,10 +120,6 @@ public class MikuCore implements IFMLLoadingPlugin {
             }
         }
 
-        System.out.println("Add MikuTransformer");
-
-        System.out.println("Init mixins");
-
         Launch.Transformers.setAccessible(true);
         long tmp = Launch.UNSAFE.objectFieldOffset(Launch.Transformers);
         List<IClassTransformer> t = (List<IClassTransformer>) Launch.UNSAFE.getObject(Launch.classLoader, tmp);

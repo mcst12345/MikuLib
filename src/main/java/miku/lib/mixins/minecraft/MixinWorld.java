@@ -6,6 +6,7 @@ import miku.lib.common.api.ProtectedEntity;
 import miku.lib.common.api.iChunk;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iWorld;
+import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
@@ -221,7 +222,8 @@ public abstract class MixinWorld implements iWorld {
 
             try
             {
-                if(entity.updateBlocked || ((iEntity)entity).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity))) continue;
+                if (entity.updateBlocked || ((iEntity) entity).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity)) || (MikuInsaneMode.isMikuInsaneMode() && !EntityUtil.isProtected(entity)))
+                    continue;
                 ++entity.ticksExisted;
                 entity.onUpdate();
             }
@@ -338,7 +340,7 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
 
-        if(!SpecialItem.isTimeStop()){
+        if (!SpecialItem.isTimeStop() && !MikuInsaneMode.isMikuInsaneMode()) {
             this.profiler.endStartSection("blockEntities");
 
             this.processingLoadedTiles = true; //FML Move above remove to prevent CMEs
@@ -425,7 +427,6 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
         this.profiler.endSection();
-        //if(MikuCore.RescueMode)EntityUtil.ClearBadEntities(((World) (Object) this));
         EntityUtil.REMOVE((World)(Object)this);
     }
 
