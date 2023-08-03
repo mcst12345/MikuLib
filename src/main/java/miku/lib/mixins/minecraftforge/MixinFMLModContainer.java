@@ -152,6 +152,14 @@ public abstract class MixinFMLModContainer implements ModContainer {
                     });
                     Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                 }
+                Field modController = Loader.class.getDeclaredField("modController");
+                tmp = Launch.UNSAFE.objectFieldOffset(modController);
+                LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                Field activeModList = LoadController.class.getDeclaredField("activeModList");
+                tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
+                List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
+                ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
+                Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 return;
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
@@ -223,6 +231,15 @@ public abstract class MixinFMLModContainer implements ModContainer {
                     });
                     Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                 }
+                Field modController = Loader.class.getDeclaredField("modController");
+                tmp = Launch.UNSAFE.objectFieldOffset(modController);
+                LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                Field activeModList = LoadController.class.getDeclaredField("activeModList");
+                tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
+                List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
+                ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
+                Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
+                return;
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
