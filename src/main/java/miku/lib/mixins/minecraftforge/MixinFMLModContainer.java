@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import miku.lib.common.core.MikuCore;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -153,14 +154,15 @@ public abstract class MixinFMLModContainer implements ModContainer {
                         });
                         Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                     }
-                    Field modController = Loader.class.getDeclaredField("modController");
-                    tmp = Launch.UNSAFE.objectFieldOffset(modController);
-                    LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                    Field activeModList = LoadController.class.getDeclaredField("activeModList");
-                    tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
-                    List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
-                    ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
-                    Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
+                    MikuCore.AddInvalidMod(getModId());
+                    //Field modController = Loader.class.getDeclaredField("modController");
+                    //tmp = Launch.UNSAFE.objectFieldOffset(modController);
+                    //LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    //Field activeModList = LoadController.class.getDeclaredField("activeModList");
+                    //tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
+                    //List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
+                    //ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
+                    //Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 }
                 return;
             } catch (Throwable throwable) {
@@ -234,14 +236,15 @@ public abstract class MixinFMLModContainer implements ModContainer {
                         });
                         Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                     }
-                    Field modController = Loader.class.getDeclaredField("modController");
-                    tmp = Launch.UNSAFE.objectFieldOffset(modController);
-                    LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                    Field activeModList = LoadController.class.getDeclaredField("activeModList");
-                    tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
-                    List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
-                    ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
-                    Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
+                    MikuCore.AddInvalidMod(getModId());
+                    //Field modController = Loader.class.getDeclaredField("modController");
+                    //tmp = Launch.UNSAFE.objectFieldOffset(modController);
+                    //LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    //Field activeModList = LoadController.class.getDeclaredField("activeModList");
+                    //tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
+                    //List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
+                    //ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
+                    //Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 }
                 return;
             } catch (Throwable throwable) {

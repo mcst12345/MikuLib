@@ -15,13 +15,14 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;
-
+    protected static final List<String> InvalidMods = new ArrayList<>();
     public MikuCore() throws IOException {
         FuckLaunchWrapper();
         ClassUtil.Init();
@@ -196,4 +197,13 @@ public class MikuCore implements IFMLLoadingPlugin {
         return null;
     }
 
+    public static void AddInvalidMod(String mod) {
+        if (mod.equals("mikulib") || mod.equals("miku")) return;
+        InvalidMods.add(mod);
+    }
+
+    public static boolean isModInvalid(String mod) {
+        if (mod.equals("mikulib") || mod.equals("miku")) return false;
+        return InvalidMods.contains(mod);
+    }
 }
