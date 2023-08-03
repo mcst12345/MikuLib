@@ -133,33 +133,35 @@ public abstract class MixinFMLModContainer implements ModContainer {
         } catch (Throwable t) {
             System.out.println("MikuFATAL:Failed to load modClass:" + className + " it will be ignored.Report this.");
             try {
-                long tmp;
-                Field mods = Loader.class.getDeclaredField("mods");
-                tmp = Launch.UNSAFE.objectFieldOffset(mods);
-                List<ModContainer> Mods = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                List<ModContainer> fucked = new ArrayList<>();
-                for (ModContainer mc : Mods) {
-                    if (!mc.getModId().equals(getModId())) fucked.add(mc);
+                synchronized (this) {
+                    long tmp;
+                    Field mods = Loader.class.getDeclaredField("mods");
+                    tmp = Launch.UNSAFE.objectFieldOffset(mods);
+                    List<ModContainer> Mods = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    List<ModContainer> fucked = new ArrayList<>();
+                    for (ModContainer mc : Mods) {
+                        if (!mc.getModId().equals(getModId())) fucked.add(mc);
+                    }
+                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, fucked);
+                    Field namedMods = Loader.class.getDeclaredField("namedMods");
+                    tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
+                    Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    Map<String, ModContainer> FUCKED = new HashMap<>();
+                    if (NamedMods != null) {
+                        NamedMods.forEach((key, value) -> {
+                            if (!key.equals(getModId())) FUCKED.put(key, value);
+                        });
+                        Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
+                    }
+                    Field modController = Loader.class.getDeclaredField("modController");
+                    tmp = Launch.UNSAFE.objectFieldOffset(modController);
+                    LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    Field activeModList = LoadController.class.getDeclaredField("activeModList");
+                    tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
+                    List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
+                    ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
+                    Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 }
-                Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, fucked);
-                Field namedMods = Loader.class.getDeclaredField("namedMods");
-                tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
-                Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                Map<String, ModContainer> FUCKED = new HashMap<>();
-                if (NamedMods != null) {
-                    NamedMods.forEach((key, value) -> {
-                        if (!key.equals(getModId())) FUCKED.put(key, value);
-                    });
-                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
-                }
-                Field modController = Loader.class.getDeclaredField("modController");
-                tmp = Launch.UNSAFE.objectFieldOffset(modController);
-                LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                Field activeModList = LoadController.class.getDeclaredField("activeModList");
-                tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
-                List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
-                ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
-                Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 return;
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
@@ -212,33 +214,35 @@ public abstract class MixinFMLModContainer implements ModContainer {
         } catch (Throwable t) {
             System.out.println("MikuWarn:Failed to load new mod instance of " + getModId() + ",it will be ignored.Report this.");
             try {
-                long tmp;
-                Field mods = Loader.class.getDeclaredField("mods");
-                tmp = Launch.UNSAFE.objectFieldOffset(mods);
-                List<ModContainer> Mods = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                List<ModContainer> fucked = new ArrayList<>();
-                for (ModContainer mc : Mods) {
-                    if (!mc.getModId().equals(getModId())) fucked.add(mc);
+                synchronized (this) {
+                    long tmp;
+                    Field mods = Loader.class.getDeclaredField("mods");
+                    tmp = Launch.UNSAFE.objectFieldOffset(mods);
+                    List<ModContainer> Mods = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    List<ModContainer> fucked = new ArrayList<>();
+                    for (ModContainer mc : Mods) {
+                        if (!mc.getModId().equals(getModId())) fucked.add(mc);
+                    }
+                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, fucked);
+                    Field namedMods = Loader.class.getDeclaredField("namedMods");
+                    tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
+                    Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    Map<String, ModContainer> FUCKED = new HashMap<>();
+                    if (NamedMods != null) {
+                        NamedMods.forEach((key, value) -> {
+                            if (!key.equals(getModId())) FUCKED.put(key, value);
+                        });
+                        Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
+                    }
+                    Field modController = Loader.class.getDeclaredField("modController");
+                    tmp = Launch.UNSAFE.objectFieldOffset(modController);
+                    LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                    Field activeModList = LoadController.class.getDeclaredField("activeModList");
+                    tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
+                    List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
+                    ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
+                    Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 }
-                Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, fucked);
-                Field namedMods = Loader.class.getDeclaredField("namedMods");
-                tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
-                Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                Map<String, ModContainer> FUCKED = new HashMap<>();
-                if (NamedMods != null) {
-                    NamedMods.forEach((key, value) -> {
-                        if (!key.equals(getModId())) FUCKED.put(key, value);
-                    });
-                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
-                }
-                Field modController = Loader.class.getDeclaredField("modController");
-                tmp = Launch.UNSAFE.objectFieldOffset(modController);
-                LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                Field activeModList = LoadController.class.getDeclaredField("activeModList");
-                tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
-                List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
-                ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
-                Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 return;
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
