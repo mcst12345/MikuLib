@@ -3,6 +3,7 @@ package miku.lib.common.util;
 
 import miku.lib.common.util.transform.ASMUtil;
 import miku.lib.common.util.transform.MixinUtil;
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
@@ -157,7 +158,7 @@ public class JarFucker {
         cached_methods.clear();
         num = 0.0d;
 
-        if (DEBUG()) {
+        if (Launch.sqliteLoaded) if (DEBUG()) {
             Misc.print("Class name:" + cn.name);
             Misc.print("Class sign:" + cn.signature);
             Misc.print("outer class:" + cn.outerClass);
@@ -171,7 +172,7 @@ public class JarFucker {
         if (cn.visibleAnnotations != null) {
             System.out.println("visibleAnnotations:");
             for (AnnotationNode an : cn.visibleAnnotations) {
-                if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG()) {
                     Misc.print(an.desc);
                     if (an.values != null) Misc.print(an.values.toString());
                 }
@@ -181,7 +182,7 @@ public class JarFucker {
         if (cn.visibleTypeAnnotations != null) for (TypeAnnotationNode an : cn.visibleTypeAnnotations) {
             {
                 System.out.println("visibleTypeAnnotations:");
-                if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG()) {
                     Misc.print(an.desc);
                     if (an.values != null) Misc.print(an.values.toString());
                 }
@@ -191,7 +192,7 @@ public class JarFucker {
         if (cn.invisibleAnnotations != null) {
             System.out.println("invisibleAnnotations:");
             for (AnnotationNode an : cn.invisibleAnnotations) {
-                if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG()) {
                     Misc.print(an.desc);
                     if (an.values != null) Misc.print(an.values.toString());
                 }
@@ -208,7 +209,7 @@ public class JarFucker {
         if (cn.invisibleTypeAnnotations != null) {
             System.out.println("invisibleTypeAnnotations:");
             for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
-                if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG()) {
                     Misc.print(an.desc);
                     Misc.print(an.values.toString());
                 }
