@@ -28,8 +28,8 @@ public abstract class MixinLayerCreeperCharge {
     private ModelCreeper creeperModel;
 
     /**
-     * @author
-     * @reason
+     * @author mcst12345
+     * @reason Fuck!
      */
     @Overwrite
     public void doRenderLayer(EntityCreeper entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
@@ -43,7 +43,6 @@ public abstract class MixinLayerCreeperCharge {
             GlStateManager.translate(f * 0.01F, f * 0.01F, 0.0F);
             GlStateManager.matrixMode(5888);
             GlStateManager.enableBlend();
-            float f1 = 0.5F;
             GlStateManager.color(0.5F, 0.5F, 0.5F, 1.0F);
             GlStateManager.disableLighting();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);

@@ -40,6 +40,7 @@
     "MixinItemRenderer",
     "MixinLayerArmorBase",
     "MixinLayerCreeperCharge",
+    "MixinLayerEnderDragonEyes",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinParticleManager",
