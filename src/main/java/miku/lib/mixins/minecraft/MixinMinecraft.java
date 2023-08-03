@@ -1287,7 +1287,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason Holy Fuck
      */
     @Overwrite
-    private void runGameLoop() throws IOException {
+    public void runGameLoop() throws IOException {
         long i = System.nanoTime();
         this.MikuProfiler.startSection("root");
 
