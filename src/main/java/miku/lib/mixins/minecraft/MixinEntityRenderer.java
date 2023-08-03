@@ -179,7 +179,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason FUCK
      */
     @Overwrite
-    private void renderWorldPass(int pass, float partialTicks, long finishTimeNano) {
+    public void renderWorldPass(int pass, float partialTicks, long finishTimeNano) {
         RenderGlobal renderglobal = this.mc.renderGlobal;
         ParticleManager particlemanager = this.mc.effectRenderer;
         boolean flag = this.isDrawBlockOutline();
