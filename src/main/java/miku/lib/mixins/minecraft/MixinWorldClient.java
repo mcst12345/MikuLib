@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.common.api.iMinecraft;
-import miku.lib.common.api.iWorldClient;
+import miku.lib.client.api.iMinecraft;
+import miku.lib.client.api.iWorldClient;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;

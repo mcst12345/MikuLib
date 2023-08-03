@@ -1,6 +1,6 @@
-package miku.lib.common.util;
+package miku.lib.client.util;
 
-import miku.lib.common.api.iGuiModList;
+import miku.lib.client.api.iGuiModList;
 import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

@@ -1,4 +1,4 @@
-package miku.lib.common.api;
+package miku.lib.client.api;
 
 public interface iFontRenderer {
     void EnableAlpha();

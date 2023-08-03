@@ -1,7 +1,11 @@
 package miku.lib.common.util;
 
 import com.google.common.collect.Lists;
-import miku.lib.common.api.*;
+import miku.lib.client.api.iMinecraft;
+import miku.lib.common.api.ProtectedEntity;
+import miku.lib.common.api.iEntity;
+import miku.lib.common.api.iEntityPlayer;
+import miku.lib.common.api.iInventoryPlayer;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.KillEntity;

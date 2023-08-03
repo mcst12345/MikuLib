@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.client.api.iMinecraft;
 import miku.lib.client.gui.TheGui;
-import miku.lib.common.api.iMinecraft;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
@@ -15,13 +15,11 @@ import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.shader.Framebuffer;
@@ -37,6 +35,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -48,6 +47,8 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.FutureTask;
 
@@ -55,16 +56,23 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
-    protected String LastPrint;
-    public void Stop(){
-        running=false;
+    public Profiler MikuProfiler() {
+        return MikuProfiler;
     }
-    public MixinMinecraft(){}
+
+    protected String LastPrint;
+
+    public void Stop() {
+        running = false;
+    }
+
+    public MixinMinecraft() {
+    }
+
     protected boolean protect = false;
 
-    public void SET_INGAME_FOCUS(){
-        if (Display.isActive())
-        {
+    public void SET_INGAME_FOCUS() {
+        if (Display.isActive()) {
             if (!this.inGameHasFocus)
             {
                 if (!IS_RUNNING_ON_MAC)
@@ -131,7 +139,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow private int rightClickDelayTimer;
 
-    @Shadow @Final public Profiler profiler;
+    protected Profiler MikuProfiler = new Profiler();
 
     @Shadow private boolean isGamePaused;
 
@@ -246,10 +254,6 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow
     @Final
     private GuiToast toastGui;
-
-    @Shadow
-    protected abstract void displayDebugInfo(long elapsedTicksTime);
-
     @Shadow
     private long prevFrameTime;
 
@@ -258,9 +262,6 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow
     public int displayHeight;
-
-    @Shadow
-    public abstract void updateDisplay();
 
     @Shadow
     private int fpsCounter;
@@ -297,6 +298,15 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow
     public abstract int getLimitFramerate();
+
+    @Shadow
+    protected abstract void checkWindowResize();
+
+    @Shadow
+    private String debugProfilerName;
+
+    @Shadow
+    public FontRenderer fontRenderer;
 
     /**
      * @author mcst12345
@@ -403,7 +413,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
 
         try {
-            net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreClientTick();
+            FMLCommonHandler.instance().onPreClientTick();
         } catch (Throwable e) {
             System.out.println("MikuWarn:Catch exception at onPreClientTick");
             e.printStackTrace();
@@ -417,7 +427,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             }
         }
 
-        this.profiler.startSection("gui");
+        this.MikuProfiler.startSection("gui");
 
         if (!this.isGamePaused)
         {
@@ -426,17 +436,17 @@ public abstract class MixinMinecraft implements iMinecraft {
             }
         }
 
-        this.profiler.endSection();
+        this.MikuProfiler.endSection();
         if(!(TimeStop && !EntityUtil.isProtected(player)))this.entityRenderer.getMouseOver(1.0F);
         if(!(TimeStop && !EntityUtil.isProtected(player)))this.tutorial.onMouseHover(this.world, this.objectMouseOver);
-        this.profiler.startSection("gameMode");
+        this.MikuProfiler.startSection("gameMode");
 
         if (!this.isGamePaused && this.world != null)
         {
             if(!(TimeStop && !EntityUtil.isProtected(player)))this.playerController.updateController();
         }
 
-        this.profiler.endStartSection("textures");
+        this.MikuProfiler.endStartSection("textures");
 
         if (this.world != null)
         {
@@ -495,7 +505,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
         if (this.currentScreen == null || this.currentScreen.allowUserInput || EntityUtil.isProtected(player))
         {
-            this.profiler.endStartSection("mouse");
+            this.MikuProfiler.endStartSection("mouse");
             this.runTickMouse();
 
             if (this.leftClickCounter > 0)
@@ -503,7 +513,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 --this.leftClickCounter;
             }
 
-            this.profiler.endStartSection("keyboard");
+            this.MikuProfiler.endStartSection("keyboard");
             this.runTickKeyboard();
         }
 
@@ -520,7 +530,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
 
-            this.profiler.endStartSection("gameRenderer");
+            this.MikuProfiler.endStartSection("gameRenderer");
 
             if (!this.isGamePaused && !TimeStop)
             {
@@ -528,14 +538,14 @@ public abstract class MixinMinecraft implements iMinecraft {
                 //TODO
             }
 
-            this.profiler.endStartSection("levelRenderer");
+            this.MikuProfiler.endStartSection("levelRenderer");
 
             if (!this.isGamePaused && !TimeStop && !SpecialItem.isTimeStop())
             {
                 this.renderGlobal.updateClouds();
             }
 
-            this.profiler.endStartSection("level");
+            this.MikuProfiler.endStartSection("level");
 
             if (!this.isGamePaused)
             {
@@ -587,27 +597,27 @@ public abstract class MixinMinecraft implements iMinecraft {
                 }
             }
 
-            this.profiler.endStartSection("animateTick");
+            this.MikuProfiler.endStartSection("animateTick");
 
             if (!this.isGamePaused && this.world != null && !TimeStop && !SpecialItem.isTimeStop())
             {
                 this.world.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
             }
 
-            this.profiler.endStartSection("particles");
+            this.MikuProfiler.endStartSection("particles");
 
             if (!this.isGamePaused && !TimeStop && !SpecialItem.isTimeStop())
             {
                 this.effectRenderer.updateEffects();
             }
         } else if (this.networkManager != null) {
-            this.profiler.endStartSection("pendingConnection");
+            this.MikuProfiler.endStartSection("pendingConnection");
             this.networkManager.processReceivedPackets();
         }
 
-        this.profiler.endSection();
+        this.MikuProfiler.endSection();
         try {
-            net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
+            FMLCommonHandler.instance().onPostClientTick();
         } catch (Throwable e) {
             System.out.println("MikuWarn:catch exception at onPostClientTick");
             e.printStackTrace();
@@ -739,14 +749,14 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     private void runGameLoop() throws IOException {
         long i = System.nanoTime();
-        this.profiler.startSection("root");
+        this.MikuProfiler.startSection("root");
 
         if (Display.isCreated() && Display.isCloseRequested()) {
             this.shutdown();
         }
 
         this.timer.updateTimer();
-        this.profiler.startSection("scheduledExecutables");
+        this.MikuProfiler.startSection("scheduledExecutables");
 
         synchronized (this.scheduledTasks) {
             while (!this.scheduledTasks.isEmpty()) {
@@ -759,59 +769,59 @@ public abstract class MixinMinecraft implements iMinecraft {
             }
         }
 
-        this.profiler.endSection();
+        this.MikuProfiler.endSection();
         long l = System.nanoTime();
-        this.profiler.startSection("tick");
+        this.MikuProfiler.startSection("tick");
 
         for (int j = 0; j < Math.min(10, this.timer.elapsedTicks); ++j) {
             this.runTick();
         }
 
-        this.profiler.endStartSection("preRenderErrors");
+        this.MikuProfiler.endStartSection("preRenderErrors");
         long i1 = System.nanoTime() - l;
         this.checkGLError("Pre render");
-        this.profiler.endStartSection("sound");
+        this.MikuProfiler.endStartSection("sound");
         this.soundHandler.setListener(this.getRenderViewEntity(), this.timer.renderPartialTicks); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
-        this.profiler.endSection();
-        this.profiler.startSection("render");
+        this.MikuProfiler.endSection();
+        this.MikuProfiler.startSection("render");
         GlStateManager.pushMatrix();
         GlStateManager.clear(16640);
         this.framebuffer.bindFramebuffer(true);
-        this.profiler.startSection("display");
+        this.MikuProfiler.startSection("display");
         GlStateManager.enableTexture2D();
-        this.profiler.endSection();
+        this.MikuProfiler.endSection();
 
         if (!this.skipRenderWorld) {
             try {
-                net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
+                FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Catch exception at onRenderTickStart");
                 t.printStackTrace();
             }
-            this.profiler.endStartSection("gameRenderer");
+            this.MikuProfiler.endStartSection("gameRenderer");
             this.entityRenderer.updateCameraAndRender(this.isGamePaused ? this.renderPartialTicksPaused : this.timer.renderPartialTicks, i);
-            this.profiler.endStartSection("toasts");
+            this.MikuProfiler.endStartSection("toasts");
             this.toastGui.drawToast(new ScaledResolution((Minecraft) (Object) this));
-            this.profiler.endSection();
+            this.MikuProfiler.endSection();
             try {
-                net.minecraftforge.fml.common.FMLCommonHandler.instance().onRenderTickEnd(this.timer.renderPartialTicks);
+                FMLCommonHandler.instance().onRenderTickEnd(this.timer.renderPartialTicks);
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Catch exception at onRenderTickEnd");
                 t.printStackTrace();
             }
         }
 
-        this.profiler.endSection();
+        this.MikuProfiler.endSection();
 
         if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart && !this.gameSettings.hideGUI) {
-            if (!this.profiler.profilingEnabled) {
-                this.profiler.clearProfiling();
+            if (!this.MikuProfiler.profilingEnabled) {
+                this.MikuProfiler.clearProfiling();
             }
 
-            this.profiler.profilingEnabled = true;
+            this.MikuProfiler.profilingEnabled = true;
             this.displayDebugInfo(i1);
         } else {
-            this.profiler.profilingEnabled = false;
+            this.MikuProfiler.profilingEnabled = false;
             this.prevFrameTime = System.nanoTime();
         }
 
@@ -823,7 +833,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         GlStateManager.pushMatrix();
         this.entityRenderer.renderStreamIndicator(this.timer.renderPartialTicks);
         GlStateManager.popMatrix();
-        this.profiler.startSection("root");
+        this.MikuProfiler.startSection("root");
         this.updateDisplay();
         Thread.yield();
         this.checkGLError("Post render");
@@ -858,11 +868,162 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
 
         if (this.isFramerateLimitBelowMax()) {
-            this.profiler.startSection("fpslimit_wait");
+            this.MikuProfiler.startSection("fpslimit_wait");
             Display.sync(this.getLimitFramerate());
-            this.profiler.endSection();
+            this.MikuProfiler.endSection();
         }
 
-        this.profiler.endSection();
+        this.MikuProfiler.endSection();
     }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public void updateDisplay() {
+        this.MikuProfiler.startSection("display_update");
+        Display.update();
+        this.MikuProfiler.endSection();
+        this.checkWindowResize();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    private void updateDebugProfilerName(int keyCount) {
+        List<Profiler.Result> list = this.MikuProfiler.getProfilingData(this.debugProfilerName);
+
+        if (!list.isEmpty()) {
+            Profiler.Result profiler$result = list.remove(0);
+
+            if (keyCount == 0) {
+                if (!profiler$result.profilerName.isEmpty()) {
+                    int i = this.debugProfilerName.lastIndexOf(46);
+
+                    if (i >= 0) {
+                        this.debugProfilerName = this.debugProfilerName.substring(0, i);
+                    }
+                }
+            } else {
+                --keyCount;
+
+                if (keyCount < list.size() && !"unspecified".equals((list.get(keyCount)).profilerName)) {
+                    if (!this.debugProfilerName.isEmpty()) {
+                        this.debugProfilerName = this.debugProfilerName + ".";
+                    }
+
+                    this.debugProfilerName = this.debugProfilerName + (list.get(keyCount)).profilerName;
+                }
+            }
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK
+     */
+    @Overwrite
+    private void displayDebugInfo(long elapsedTicksTime) {
+        if (this.MikuProfiler.profilingEnabled) {
+            List<Profiler.Result> list = this.MikuProfiler.getProfilingData(this.debugProfilerName);
+            Profiler.Result profiler$result = list.remove(0);
+            GlStateManager.clear(256);
+            GlStateManager.matrixMode(5889);
+            GlStateManager.enableColorMaterial();
+            GlStateManager.loadIdentity();
+            GlStateManager.ortho(0.0D, this.displayWidth, this.displayHeight, 0.0D, 1000.0D, 3000.0D);
+            GlStateManager.matrixMode(5888);
+            GlStateManager.loadIdentity();
+            GlStateManager.translate(0.0F, 0.0F, -2000.0F);
+            GlStateManager.glLineWidth(1.0F);
+            GlStateManager.disableTexture2D();
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferbuilder = tessellator.getBuffer();
+            int i = 160;
+            int j = this.displayWidth - 160 - 10;
+            int k = this.displayHeight - 320;
+            GlStateManager.enableBlend();
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            bufferbuilder.pos((float) j - 176.0F, (float) k - 96.0F - 16.0F, 0.0D).color(200, 0, 0, 0).endVertex();
+            bufferbuilder.pos((float) j - 176.0F, k + 320, 0.0D).color(200, 0, 0, 0).endVertex();
+            bufferbuilder.pos((float) j + 176.0F, k + 320, 0.0D).color(200, 0, 0, 0).endVertex();
+            bufferbuilder.pos((float) j + 176.0F, (float) k - 96.0F - 16.0F, 0.0D).color(200, 0, 0, 0).endVertex();
+            tessellator.draw();
+            GlStateManager.disableBlend();
+            double d0 = 0.0D;
+
+            for (int l = 0; l < list.size(); ++l) {
+                Profiler.Result profiler$result1 = list.get(l);
+                int i1 = MathHelper.floor(profiler$result1.usePercentage / 4.0D) + 1;
+                bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
+                int j1 = profiler$result1.getColor();
+                int k1 = j1 >> 16 & 255;
+                int l1 = j1 >> 8 & 255;
+                int i2 = j1 & 255;
+                bufferbuilder.pos(j, k, 0.0D).color(k1, l1, i2, 255).endVertex();
+
+                for (int j2 = i1; j2 >= 0; --j2) {
+                    float f = (float) ((d0 + profiler$result1.usePercentage * (double) j2 / (double) i1) * (Math.PI * 2D) / 100.0D);
+                    float f1 = MathHelper.sin(f) * 160.0F;
+                    float f2 = MathHelper.cos(f) * 160.0F * 0.5F;
+                    bufferbuilder.pos((float) j + f1, (float) k - f2, 0.0D).color(k1, l1, i2, 255).endVertex();
+                }
+
+                tessellator.draw();
+                bufferbuilder.begin(5, DefaultVertexFormats.POSITION_COLOR);
+
+                for (int i3 = i1; i3 >= 0; --i3) {
+                    float f3 = (float) ((d0 + profiler$result1.usePercentage * (double) i3 / (double) i1) * (Math.PI * 2D) / 100.0D);
+                    float f4 = MathHelper.sin(f3) * 160.0F;
+                    float f5 = MathHelper.cos(f3) * 160.0F * 0.5F;
+                    bufferbuilder.pos((float) j + f4, (float) k - f5, 0.0D).color(k1 >> 1, l1 >> 1, i2 >> 1, 255).endVertex();
+                    bufferbuilder.pos((float) j + f4, (float) k - f5 + 10.0F, 0.0D).color(k1 >> 1, l1 >> 1, i2 >> 1, 255).endVertex();
+                }
+
+                tessellator.draw();
+                d0 += profiler$result1.usePercentage;
+            }
+
+            DecimalFormat decimalformat = new DecimalFormat("##0.00");
+            GlStateManager.enableTexture2D();
+            String s = "";
+
+            if (!"unspecified".equals(profiler$result.profilerName)) {
+                s = s + "[0] ";
+            }
+
+            if (profiler$result.profilerName.isEmpty()) {
+                s = s + "ROOT ";
+            } else {
+                s = s + profiler$result.profilerName + ' ';
+            }
+
+            int l2 = 16777215;
+            this.fontRenderer.drawStringWithShadow(s, (float) (j - 160), (float) (k - 80 - 16), 16777215);
+            s = decimalformat.format(profiler$result.totalUsePercentage) + "%";
+            this.fontRenderer.drawStringWithShadow(s, (float) (j + 160 - this.fontRenderer.getStringWidth(s)), (float) (k - 80 - 16), 16777215);
+
+            for (int k2 = 0; k2 < list.size(); ++k2) {
+                Profiler.Result profiler$result2 = list.get(k2);
+                StringBuilder stringbuilder = new StringBuilder();
+
+                if ("unspecified".equals(profiler$result2.profilerName)) {
+                    stringbuilder.append("[?] ");
+                } else {
+                    stringbuilder.append("[").append(k2 + 1).append("] ");
+                }
+
+                String s1 = stringbuilder.append(profiler$result2.profilerName).toString();
+                this.fontRenderer.drawStringWithShadow(s1, (float) (j - 160), (float) (k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+                s1 = decimalformat.format(profiler$result2.usePercentage) + "%";
+                this.fontRenderer.drawStringWithShadow(s1, (float) (j + 160 - 50 - this.fontRenderer.getStringWidth(s1)), (float) (k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+                s1 = decimalformat.format(profiler$result2.totalUsePercentage) + "%";
+                this.fontRenderer.drawStringWithShadow(s1, (float) (j + 160 - this.fontRenderer.getStringWidth(s1)), (float) (k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+            }
+        }
+    }
+
 }

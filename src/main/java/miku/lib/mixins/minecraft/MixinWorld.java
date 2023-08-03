@@ -1,7 +1,11 @@
 package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.ImmutableSetMultimap;
-import miku.lib.common.api.*;
+import miku.lib.client.api.iWorldClient;
+import miku.lib.common.api.ProtectedEntity;
+import miku.lib.common.api.iChunk;
+import miku.lib.common.api.iEntity;
+import miku.lib.common.api.iWorld;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;

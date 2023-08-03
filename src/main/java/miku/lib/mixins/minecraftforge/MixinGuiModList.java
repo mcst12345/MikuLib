@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraftforge;
 
-import miku.lib.common.api.iGuiModList;
-import miku.lib.common.util.INFO;
+import miku.lib.client.api.iGuiModList;
+import miku.lib.client.util.INFO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;

@@ -1,4 +1,4 @@
-package miku.lib.common.api;
+package miku.lib.client.api;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

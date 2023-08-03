@@ -124,7 +124,6 @@ apply plugin: 'org.spongepowered.mixin'
 
 mixin {
     disableOverwriteChecker = true
-    config "mixins.mikulib.json"
     config "mixins.minecraft.json"
     config "mixins.forge.json"
 }

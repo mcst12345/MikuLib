@@ -1,6 +1,6 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.common.api.iMinecraft;
+import miku.lib.client.api.iMinecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,7 +1,7 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
-import miku.lib.common.api.iMinecraft;
+import miku.lib.client.api.iMinecraft;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.SystemUtil;
