@@ -18,6 +18,8 @@ import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.entity.Entity;
@@ -160,9 +162,6 @@ public abstract class MixinRenderGlobal {
     @Shadow
     private double prevRenderSortZ;
 
-    @Shadow
-    protected abstract void renderBlockLayer(BlockRenderLayer blockLayerIn);
-
     private List<ContainerLocalRenderInformation> RenderINFOS;
 
     /**
@@ -214,7 +213,7 @@ public abstract class MixinRenderGlobal {
             TileEntityRendererDispatcher.staticPlayerY = d4;
             TileEntityRendererDispatcher.staticPlayerZ = d5;
             this.renderManager.setRenderPosition(d3, d4, d5);
-            this.mc.entityRenderer.enableLightmap();
+            ((iMinecraft) this.mc).MikuEntityRenderer().enableLightmap();
             this.world.profiler.endStartSection("global");
             List<Entity> list = this.world.getLoadedEntityList();
             if (pass == 0) {
@@ -361,7 +360,7 @@ public abstract class MixinRenderGlobal {
             }
 
             this.postRenderDamagedBlocks();
-            this.mc.entityRenderer.disableLightmap();
+            ((iMinecraft) this.mc).MikuEntityRenderer().disableLightmap();
             ((iMinecraft) this.mc).MikuProfiler().endSection();
         }
     }
@@ -613,4 +612,48 @@ public abstract class MixinRenderGlobal {
         return l;
     }
 
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    @SuppressWarnings("incomplete-switch")
+    private void renderBlockLayer(BlockRenderLayer blockLayerIn) {
+        ((iMinecraft) this.mc).MikuEntityRenderer().enableLightmap();
+
+        if (OpenGlHelper.useVbo()) {
+            GlStateManager.glEnableClientState(32884);
+            OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+            GlStateManager.glEnableClientState(32888);
+            OpenGlHelper.setClientActiveTexture(OpenGlHelper.lightmapTexUnit);
+            GlStateManager.glEnableClientState(32888);
+            OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+            GlStateManager.glEnableClientState(32886);
+        }
+
+        this.renderContainer.renderChunkLayer(blockLayerIn);
+
+        if (OpenGlHelper.useVbo()) {
+            for (VertexFormatElement vertexformatelement : DefaultVertexFormats.BLOCK.getElements()) {
+                VertexFormatElement.EnumUsage vertexformatelement$enumusage = vertexformatelement.getUsage();
+                int k1 = vertexformatelement.getIndex();
+
+                switch (vertexformatelement$enumusage) {
+                    case POSITION:
+                        GlStateManager.glDisableClientState(32884);
+                        break;
+                    case UV:
+                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit + k1);
+                        GlStateManager.glDisableClientState(32888);
+                        OpenGlHelper.setClientActiveTexture(OpenGlHelper.defaultTexUnit);
+                        break;
+                    case COLOR:
+                        GlStateManager.glDisableClientState(32886);
+                        GlStateManager.resetColor();
+                }
+            }
+        }
+
+        ((iMinecraft) this.mc).MikuEntityRenderer().disableLightmap();
+    }
 }

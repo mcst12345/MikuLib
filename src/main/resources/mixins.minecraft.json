@@ -43,6 +43,7 @@
     "MixinParticleManager",
     "MixinRender",
     "MixinRenderGlobal",
+    "MixinRenderItemFrame",
     "MixinRenderLivingBase",
     "MixinViewFrustum",
     "MixinWorldClient"
