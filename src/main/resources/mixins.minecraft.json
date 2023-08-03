@@ -38,6 +38,7 @@
     "MixinGuiScreenDemo",
     "MixinInventoryEffectRenderer",
     "MixinItemRenderer",
+    "MixinLayerArmorBase",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinParticleManager",
