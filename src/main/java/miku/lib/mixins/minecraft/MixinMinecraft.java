@@ -76,10 +76,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.OpenGLException;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -732,6 +729,11 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Final
     private Proxy proxy;
 
+    @Mutable
+    @Shadow
+    @Final
+    public Profiler profiler;
+
     /**
      * @author mcst12345
      * @reason Fuck!
@@ -1235,9 +1237,12 @@ public abstract class MixinMinecraft implements iMinecraft {
             {
                 while (this.running)
                 {
-                    try
-                    {
+                    try {
+                        this.profiler = this.MikuProfiler;
+                        this.entityRenderer = this.MikuEntityRenderer;
                         this.runGameLoop();
+                        this.profiler = this.MikuProfiler;
+                        this.entityRenderer = this.MikuEntityRenderer;
                     }
                     catch (OutOfMemoryError var10)
                     {
