@@ -11,7 +11,8 @@
     "MixinForgeEventFactory",
     "MixinForgeHooks",
     "MixinGuiModList",
-    "MixinItemStack"
+    "MixinItemStack",
+    "MixinModAccessTransformer"
   ],
   "client": [
     "MixinFMLClientHandler",

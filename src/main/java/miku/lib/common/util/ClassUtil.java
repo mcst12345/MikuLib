@@ -184,13 +184,17 @@ public class ClassUtil {
                     for (String str : classes) {
                         GoodClassCache.put(str, true);
                     }
-                } else if (!fucked && !DisablejarFucker) {
+                } else if (!fucked) {
                     JarFucker.FuckModJar(jar);
                 } else {
                     System.out.println(jar.getName() + " has already being fucked.");
                 }
             }
         }
+    }
+
+    public static synchronized boolean JarFuckerDisabled() {
+        return DisablejarFucker;
     }
 
     public static synchronized boolean Init() throws IOException {

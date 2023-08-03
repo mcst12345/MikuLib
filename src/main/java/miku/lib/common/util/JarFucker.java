@@ -12,7 +12,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -24,13 +26,18 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 public class JarFucker {
     protected static boolean shouldRestart = false;
     public static double num;
-
+    protected static final Set<JarFile> BadJars = new HashSet<>();
     protected static boolean ShouldIgnore(String s) {
         return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA")) ||
                 s.endsWith(".exe") || s.endsWith(".dll") || s.endsWith(".so");
     }
 
     public synchronized static void FuckModJar(JarFile jar) {
+        BadJars.add(jar);
+        if (ClassUtil.DisablejarFucker) {
+            System.out.println("JarFucker is disabled. Continue.");
+            return;
+        }
         boolean changed = false;
         System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
         System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
@@ -250,4 +257,7 @@ public class JarFucker {
         return cw.toByteArray();
     }
 
+    public static synchronized boolean isBadJar(JarFile jarFile) {
+        return BadJars.contains(jarFile);
+    }
 }
