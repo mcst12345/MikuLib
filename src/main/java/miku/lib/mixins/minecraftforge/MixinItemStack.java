@@ -3,10 +3,12 @@ package miku.lib.mixins.minecraftforge;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -127,26 +129,31 @@ public abstract class MixinItemStack {
     public boolean isEmpty()
     {
         if(item instanceof SpecialItem)return false;
-        if(Sqlite.IS_ITEM_BANNED(item))return true;
-        if (((ItemStack)(Object)this) == EMPTY)
-        {
+        if (Sqlite.IS_ITEM_BANNED(item)) return true;
+        if ((Object) this == EMPTY) {
             return true;
-        }
-        else if (this.getItemRaw() != null && this.getItemRaw() != Items.AIR)
-        {
-            if (this.stackSize <= 0)
-            {
+        } else if (this.getItemRaw() != null && this.getItemRaw() != Items.AIR) {
+            if (this.stackSize <= 0) {
                 return true;
-            }
-            else
-            {
+            } else {
                 return this.itemDamage < -32768 || this.itemDamage > 65535;
             }
-        }
-        else
-        {
+        } else {
             return true;
         }
     }
 
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public void onPlayerStoppedUsing(World worldIn, EntityLivingBase entityLiving, int timeLeft) {
+        try {
+            this.getItem().onPlayerStoppedUsing((ItemStack) (Object) this, worldIn, entityLiving, timeLeft);
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception at onPlayerStoppedUsing,item:" + this.getItem().getRegistryName());
+            t.printStackTrace();
+        }
+    }
 }
