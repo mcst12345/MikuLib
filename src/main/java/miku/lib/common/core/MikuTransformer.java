@@ -29,7 +29,8 @@ public class MikuTransformer implements IClassTransformer {
         if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name)) {
             if(!name.equals(transformedName)){
                 if(ClassUtil.isMinecraftClass(name)){
-                    System.out.println("Ignore class:" + transformedName);
+                    if (Sqlite.DEBUG() && (boolean) Sqlite.GetValueFromTable("ignore_info", "LOG_CONFIG", 0))
+                        System.out.println("Ignore class:" + transformedName);
                     return basicClass;
                 }
             }
