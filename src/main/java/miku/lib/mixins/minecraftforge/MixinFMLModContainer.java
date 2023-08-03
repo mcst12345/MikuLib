@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -196,8 +197,11 @@ public abstract class MixinFMLModContainer implements ModContainer {
                 Field mods = Loader.class.getDeclaredField("mods");
                 tmp = Launch.UNSAFE.objectFieldOffset(mods);
                 List<ModContainer> Mods = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                Mods.removeIf(mc -> mc.getModId().equals(getModId()));
-                Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, Mods);
+                List<ModContainer> fucked = new ArrayList<>();
+                for (ModContainer mc : Mods) {
+                    if (!mc.getModId().equals(getModId())) fucked.add(mc);
+                }
+                Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, fucked);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
