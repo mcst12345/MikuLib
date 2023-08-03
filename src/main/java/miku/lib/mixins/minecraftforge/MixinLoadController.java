@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.List;
 
-@Mixin(value = LoadController.class)
+@Mixin(value = LoadController.class, remap = false)
 public class MixinLoadController {
     @Shadow
     private List<ModContainer> activeModList;
