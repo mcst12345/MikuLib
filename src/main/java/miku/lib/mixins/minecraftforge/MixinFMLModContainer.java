@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -24,6 +25,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.security.cert.Certificate;
@@ -132,6 +134,16 @@ public abstract class MixinFMLModContainer implements ModContainer {
             clazz = Class.forName(className, true, modClassLoader);
         } catch (Throwable t) {
             System.out.println("MikuFATAL:Failed to load modClass:" + className + " it will be ignored.Report this.");
+            try {
+                long tmp;
+                Field mods = Loader.class.getDeclaredField("mods");
+                tmp = Launch.UNSAFE.objectFieldOffset(mods);
+                List<ModContainer> Mods = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                Mods.removeIf(mc -> mc.getModId().equals(getModId()));
+                Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, Mods);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
             t.printStackTrace();
             return;
         }
@@ -179,6 +191,16 @@ public abstract class MixinFMLModContainer implements ModContainer {
             modInstance = languageAdapter.getNewInstance((FMLModContainer) (Object) this, clazz, modClassLoader, factoryMethod);
         } catch (Throwable t) {
             System.out.println("MikuWarn:Failed to load new mod instance of " + getModId() + ",it will be ignored.Report this.");
+            try {
+                long tmp;
+                Field mods = Loader.class.getDeclaredField("mods");
+                tmp = Launch.UNSAFE.objectFieldOffset(mods);
+                List<ModContainer> Mods = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                Mods.removeIf(mc -> mc.getModId().equals(getModId()));
+                Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, Mods);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
             t.printStackTrace();
         }
         NetworkRegistry.INSTANCE.register(this, clazz, (String) (descriptor.getOrDefault("acceptableRemoteVersions", null)), event.getASMHarvestedData());
