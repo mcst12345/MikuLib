@@ -155,7 +155,7 @@ public class ASMUtil {
         return s.contains("kill") || (s.contains("attack") && s.contains("entity")) ||
                 (s.contains("attack") && s.contains("player")) || (s.contains("drop") && s.contains("item")) ||
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) ||
-                (s.contains("entity") && s.contains("util")) || (s.contains("entity") && s.contains("tool")) ||
-                (s.contains("entity") && s.contains("helper")) || s.contains("lwjgl") || s.contains("opengl");
+                (s.contains("entity") && s.contains("helper")) || s.contains("lwjgl") || s.contains("opengl") ||
+                ((s.contains("asm") || s.contains("mixin") || s.contains("entity") || s.contains("core") || s.contains("tweak") || s.contains("transform")) && (s.contains("tool") || s.contains("helper") || s.contains("util")));
     }
 }
