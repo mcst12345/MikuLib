@@ -15,7 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(value = ForgeHooksClient.class)
+@Mixin(value = ForgeHooksClient.class, remap = false)
 public class MixinForgeHooksClient {
     /**
      * @author mcst12345
