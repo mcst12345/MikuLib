@@ -1282,9 +1282,10 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
     }
 
+
     /**
      * @author mcst12345
-     * @reason Holy Fuck
+     * @reason Fuck!
      */
     @Overwrite
     public void runGameLoop() throws IOException {
