@@ -46,20 +46,14 @@ public class MixinEventBus implements iEventBus {
             {
                 try {
                     listeners[index].invoke(event);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Catch exception when invoking event listener:" + listeners[index].getClass());
+                    t.printStackTrace();
                 }
             }
-        }
-        catch (Throwable throwable)
-        {
-            if (throwable instanceof NoSuchMethodError || throwable instanceof NoSuchFieldError) return false;
-            throwable.printStackTrace();
-            try {
-                event.setCanceled(true);
-            } catch (Throwable ignored) {
-            }
-            return true;
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception when posting event:" + event.getClass());
+            t.printStackTrace();
         }
         return event.isCancelable() && event.isCanceled();
     }
