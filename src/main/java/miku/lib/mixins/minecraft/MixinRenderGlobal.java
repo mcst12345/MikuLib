@@ -527,7 +527,12 @@ public abstract class MixinRenderGlobal {
     @Overwrite
     public void setWorldAndLoadRenderers(@Nullable WorldClient worldClientIn) {
         if (this.world != null) {
-            this.world.removeEventListener((RenderGlobal) (Object) this);
+            try {
+                this.world.removeEventListener((RenderGlobal) (Object) this);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at method:setWorldAndLoadRenderers:removeEventListener");
+                t.printStackTrace();
+            }
         }
 
         this.frustumUpdatePosX = Double.MIN_VALUE;
@@ -540,7 +545,12 @@ public abstract class MixinRenderGlobal {
         this.world = worldClientIn;
 
         if (worldClientIn != null) {
-            worldClientIn.addEventListener((RenderGlobal) (Object) this);
+            try {
+                worldClientIn.addEventListener((RenderGlobal) (Object) this);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at method:setWorldAndLoadRenderers:addEventListener");
+                t.printStackTrace();
+            }
             this.loadRenderers();
         } else {
             this.chunksToUpdate.clear();
