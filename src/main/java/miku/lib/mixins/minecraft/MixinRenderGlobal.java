@@ -162,7 +162,7 @@ public abstract class MixinRenderGlobal {
     @Shadow
     private double prevRenderSortZ;
 
-    private List<ContainerLocalRenderInformation> RenderINFOS;
+    private List<ContainerLocalRenderInformation> RenderINFOS = Lists.newArrayListWithCapacity(69696);
 
     /**
      * @author mcst12345
