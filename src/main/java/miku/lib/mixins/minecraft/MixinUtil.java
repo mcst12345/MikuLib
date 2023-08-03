@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.common.command.MikuInsaneMode;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +18,7 @@ public class MixinUtil {
     @Overwrite
     @Nullable
     public static <V> V runTask(FutureTask<V> task, Logger logger) {
-        if (task == null) return null;
+        if (task == null || MikuInsaneMode.isMikuInsaneMode()) return null;
         try {
             task.run();
             return task.get();

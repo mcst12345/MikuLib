@@ -6,10 +6,10 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.gui.TheGui;
+import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
-import miku.lib.common.util.crashReportUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
@@ -48,7 +48,6 @@ import net.minecraft.client.tutorial.Tutorial;
 import net.minecraft.client.util.RecipeBookClient;
 import net.minecraft.client.util.SearchTreeManager;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -955,7 +954,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             --this.rightClickDelayTimer;
         }
 
-        try {
+        if (!MikuInsaneMode.isMikuInsaneMode()) try {
             FMLCommonHandler.instance().onPreClientTick();
         } catch (Throwable e) {
             System.out.println("MikuWarn:Catch exception at onPreClientTick");
@@ -1022,13 +1021,9 @@ public abstract class MixinMinecraft implements iMinecraft {
             try
             {
                 this.currentScreen.handleInput();
-            }
-            catch (Throwable throwable1)
-            {
-                CrashReport crashreport = CrashReport.makeCrashReport(throwable1, "Updating screen events");
-                CrashReportCategory crashreportcategory = crashreport.makeCategory("Affected screen");
-                crashReportUtil.addDetail(crashreportcategory,"Screen name",getMinecraft());
-                throw new ReportedException(crashreport);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at currentScreen.handleInput()");
+                t.printStackTrace();
             }
 
             if (this.currentScreen != null)
@@ -1036,13 +1031,9 @@ public abstract class MixinMinecraft implements iMinecraft {
                 try
                 {
                     this.currentScreen.updateScreen();
-                }
-                catch (Throwable throwable)
-                {
-                    CrashReport crashreport1 = CrashReport.makeCrashReport(throwable, "Ticking screen");
-                    CrashReportCategory crashreportcategory1 = crashreport1.makeCategory("Affected screen");
-                    crashReportUtil.addDetail(crashreportcategory1,"Screen name",getMinecraft());
-                    throw new ReportedException(crashreport1);
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Catch exception at currentScreen.updateScreen()");
+                    t.printStackTrace();
                 }
             }
         }
@@ -1118,22 +1109,9 @@ public abstract class MixinMinecraft implements iMinecraft {
                 try
                 {
                     this.world.tick();
-                }
-                catch (Throwable throwable2)
-                {
-                    CrashReport crashreport2 = CrashReport.makeCrashReport(throwable2, "Exception in world tick");
-
-                    if (this.world == null)
-                    {
-                        CrashReportCategory crashreportcategory2 = crashreport2.makeCategory("Affected level");
-                        crashreportcategory2.addCrashSection("Problem", "Level is null!");
-                    }
-                    else
-                    {
-                        this.world.addWorldInfoToCrashReport(crashreport2);
-                    }
-
-                    throw new ReportedException(crashreport2);
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Catch exception when ticking worldClient");
+                    t.printStackTrace();
                 }
             }
 
@@ -1156,7 +1134,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
 
         this.MikuProfiler.endSection();
-        try {
+        if (!MikuInsaneMode.isMikuInsaneMode()) try {
             FMLCommonHandler.instance().onPostClientTick();
         } catch (Throwable e) {
             System.out.println("MikuWarn:catch exception at onPostClientTick");
@@ -1172,17 +1150,17 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void runTickMouse() throws IOException {
         while (Mouse.next()) {
-            if (net.minecraftforge.client.ForgeHooksClient.postMouseEvent()) continue;
+            if (!MikuInsaneMode.isMikuInsaneMode()) {
+                if (net.minecraftforge.client.ForgeHooksClient.postMouseEvent()) continue;
+            }
 
             int i = Mouse.getEventButton();
             KeyBinding.setKeyBindState(i - 100, Mouse.getEventButtonState());
 
             if (Mouse.getEventButtonState()) {
-                if (this.player.isSpectator() && i == 2)
-                {
+                if (this.player.isSpectator() && i == 2) {
                     this.ingameGUI.getSpectatorGui().onMiddleClick();
-                }
-                else
+                } else
                 {
                     KeyBinding.onTick(i - 100);
                 }
@@ -1218,17 +1196,15 @@ public abstract class MixinMinecraft implements iMinecraft {
 
                 if (this.currentScreen == null)
                 {
-                    if (!this.inGameHasFocus && Mouse.getEventButtonState())
-                    {
+                    if (!this.inGameHasFocus && Mouse.getEventButtonState()) {
                         SET_INGAME_FOCUS();
                     }
-                }
-                else if (this.currentScreen != null)
-                {
+                } else if (this.currentScreen != null) {
                     this.currentScreen.handleMouseInput();
                 }
             }
-            net.minecraftforge.fml.common.FMLCommonHandler.instance().fireMouseInput();
+            if (!MikuInsaneMode.isMikuInsaneMode())
+                net.minecraftforge.fml.common.FMLCommonHandler.instance().fireMouseInput();
         }
     }
 
@@ -1299,13 +1275,15 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.timer.updateTimer();
         this.MikuProfiler.startSection("scheduledExecutables");
 
-        synchronized (this.scheduledTasks) {
-            while (!this.scheduledTasks.isEmpty()) {
-                try {
-                    Util.runTask(this.scheduledTasks.poll(), LOGGER);
-                } catch (Throwable t) {
-                    System.out.println("MikuWarn:Catch exception when running scheduledTasks.");
-                    t.printStackTrace();
+        if (!MikuInsaneMode.isMikuInsaneMode()) {
+            synchronized (this.scheduledTasks) {
+                while (!this.scheduledTasks.isEmpty()) {
+                    try {
+                        Util.runTask(this.scheduledTasks.poll(), LOGGER);
+                    } catch (Throwable t) {
+                        System.out.println("MikuWarn:Catch exception when running scheduledTasks.");
+                        t.printStackTrace();
+                    }
                 }
             }
         }
@@ -1333,7 +1311,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.MikuProfiler.endSection();
 
         if (!this.skipRenderWorld) {
-            try {
+            if (!MikuInsaneMode.isMikuInsaneMode()) try {
                 FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Catch exception at onRenderTickStart");
@@ -1344,7 +1322,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.MikuProfiler.endStartSection("toasts");
             this.toastGui.drawToast(new ScaledResolution((Minecraft) (Object) this));
             this.MikuProfiler.endSection();
-            try {
+            if (!MikuInsaneMode.isMikuInsaneMode()) try {
                 FMLCommonHandler.instance().onRenderTickEnd(this.timer.renderPartialTicks);
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Catch exception at onRenderTickEnd");
