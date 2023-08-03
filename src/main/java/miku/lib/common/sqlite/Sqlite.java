@@ -164,7 +164,7 @@ public class Sqlite {
                 }
             }
         } catch (SQLException | NullPointerException e) {
-            if(e instanceof SQLException) {
+            if (e instanceof SQLException && loaded) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
