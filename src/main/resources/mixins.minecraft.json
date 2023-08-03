@@ -12,7 +12,6 @@
     "MixinEntityLivingBase",
     "MixinEntityPlayer",
     "MixinEntityPlayerMP",
-    "MixinEntityPlayerSP",
     "MixinEntityTracker",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
@@ -27,6 +26,7 @@
   ],
   "client": [
     "ClientMixinEntityLivingBase",
+    "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinFontRenderer",
     "MixinGuiIngame",
@@ -37,6 +37,7 @@
     "MixinGuiScreenAdvancements",
     "MixinGuiScreenDemo",
     "MixinInventoryEffectRenderer",
+    "MixinItemRenderer",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinParticleManager",
