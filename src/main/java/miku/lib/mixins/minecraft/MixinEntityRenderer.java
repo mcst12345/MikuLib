@@ -574,7 +574,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason FUCK
      */
     @Overwrite
-    private void updateLightmap(float partialTicks) {
+    public void updateLightmap(float partialTicks) {
         if (this.lightmapUpdateNeeded) {
             ((iMinecraft) this.mc).MikuProfiler().startSection("lightTex");
             World world = this.mc.world;
@@ -711,7 +711,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason Shit Fuck
      */
     @Overwrite
-    private void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass, double x, double y, double z) {
+    public void renderCloudsCheck(RenderGlobal renderGlobalIn, float partialTicks, int pass, double x, double y, double z) {
         if (this.mc.gameSettings.shouldRenderClouds() != 0) {
             ((iMinecraft) this.mc).MikuProfiler().endStartSection("clouds");
             GlStateManager.matrixMode(5889);
