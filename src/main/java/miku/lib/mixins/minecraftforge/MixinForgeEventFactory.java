@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 import java.util.List;
 
-@Mixin(value = ForgeEventFactory.class)
+@Mixin(value = ForgeEventFactory.class, remap = false)
 public class MixinForgeEventFactory {
     /**
      * @author mcst12345
