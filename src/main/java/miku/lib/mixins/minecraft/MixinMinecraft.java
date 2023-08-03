@@ -214,7 +214,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason Shit
      */
     @Overwrite
-    private void runTickKeyboard() throws IOException {
+    public void runTickKeyboard() throws IOException {
         while (Keyboard.next()) {
             int i = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
 
