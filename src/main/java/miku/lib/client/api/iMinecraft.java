@@ -1,5 +1,6 @@
 package miku.lib.client.api;
 
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.profiler.Profiler;
 
 public interface iMinecraft {
@@ -18,4 +19,6 @@ public interface iMinecraft {
     void SET_INGAME_NOT_FOCUS();
 
     Profiler MikuProfiler();
+
+    EntityRenderer MikuEntityRenderer();
 }
