@@ -145,6 +145,13 @@ public abstract class MixinFMLModContainer implements ModContainer {
                     if (!mc.getModId().equals(getModId())) fucked.add(mc);
                 }
                 Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, fucked);
+                Field namedMods = Loader.class.getDeclaredField("namedMods");
+                tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
+                Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                if (NamedMods != null) {
+                    NamedMods.put(getModId(), null);
+                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, NamedMods);
+                }
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -205,6 +212,13 @@ public abstract class MixinFMLModContainer implements ModContainer {
                     if (!mc.getModId().equals(getModId())) fucked.add(mc);
                 }
                 Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, fucked);
+                Field namedMods = Loader.class.getDeclaredField("namedMods");
+                tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
+                Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                if (NamedMods != null) {
+                    NamedMods.put(getModId(), null);
+                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, NamedMods);
+                }
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
