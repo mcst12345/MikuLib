@@ -360,7 +360,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason Fuck!
      */
     @Overwrite
-    private void init() throws LWJGLException {
+    public void init() throws LWJGLException {
         this.gameSettings = new GameSettings((Minecraft) (Object) this, this.gameDir);
         this.creativeSettings = new CreativeSettings((Minecraft) (Object) this, this.gameDir);
         this.defaultResourcePacks.add(this.defaultResourcePack);
