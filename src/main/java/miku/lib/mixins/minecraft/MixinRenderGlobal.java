@@ -563,16 +563,36 @@ public abstract class MixinRenderGlobal {
                 t.printStackTrace();
             }
         } else {
-            this.chunksToUpdate.clear();
-            this.RenderINFOS.clear();
+            try {
+                this.chunksToUpdate.clear();
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at method:chunksToUpdate.clear()");
+                t.printStackTrace();
+            }
+            try {
+                this.RenderINFOS.clear();
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at method:RenderINFOS.clear()");
+                t.printStackTrace();
+            }
 
             if (this.viewFrustum != null) {
-                this.viewFrustum.deleteGlResources();
+                try {
+                    this.viewFrustum.deleteGlResources();
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Catch exception at method:viewFrustum.deleteGlResources()");
+                    t.printStackTrace();
+                }
                 this.viewFrustum = null;
             }
 
             if (this.renderDispatcher != null) {
-                this.renderDispatcher.stopWorkerThreads();
+                try {
+                    this.renderDispatcher.stopWorkerThreads();
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Catch exception at method:renderDispatcher.stopWorkerThreads()");
+                    t.printStackTrace();
+                }
             }
 
             this.renderDispatcher = null;
