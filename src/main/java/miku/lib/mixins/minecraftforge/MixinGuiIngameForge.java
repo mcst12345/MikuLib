@@ -17,6 +17,9 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
@@ -78,6 +81,59 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
     @Shadow
     @Final
     private static int WHITE;
+
+    @Shadow
+    private ScaledResolution res;
+    @Shadow
+    public static boolean renderHealthMount;
+    @Shadow
+    public static boolean renderFood;
+    @Shadow
+    public static boolean renderJumpBar;
+    @Shadow
+    public static boolean renderVignette;
+    @Shadow
+    public static boolean renderHelmet;
+
+    @Shadow
+    protected abstract void renderHelmet(ScaledResolution res, float partialTicks);
+
+    @Shadow
+    public static boolean renderPortal;
+
+    @Shadow
+    protected abstract void renderPortal(ScaledResolution res, float partialTicks);
+
+    @Shadow
+    public static boolean renderHotbar;
+    @Shadow
+    public static boolean renderCrosshairs;
+
+    @Shadow
+    protected abstract void renderCrosshairs(float partialTicks);
+
+    @Shadow
+    public static boolean renderBossHealth;
+    @Shadow
+    public static boolean renderHealth;
+    @Shadow
+    public static boolean renderArmor;
+    @Shadow
+    public static boolean renderAir;
+    @Shadow
+    public static boolean renderExperiance;
+
+    @Shadow
+    protected abstract void renderPotionIcons(ScaledResolution resolution);
+
+    @Shadow
+    protected abstract void renderSubtitles(ScaledResolution resolution);
+
+    @Shadow
+    public static boolean renderObjective;
+
+    @Shadow
+    protected abstract void renderPlayerList(int width, int height);
 
     private GuiOverlayDebugForge DebugOverlay;
 
@@ -681,4 +737,102 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
         post(HEALTHMOUNT);
     }
 
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    @Override
+    public void renderGameOverlay(float partialTicks) {
+        res = new ScaledResolution(mc);
+        eventParent = new RenderGameOverlayEvent(partialTicks, res);
+        int width = res.getScaledWidth();
+        int height = res.getScaledHeight();
+        renderHealthMount = mc.player.getRidingEntity() instanceof EntityLivingBase;
+        renderFood = mc.player.getRidingEntity() == null;
+        renderJumpBar = mc.player.isRidingHorse();
+
+        right_height = 39;
+        left_height = 39;
+
+        if (pre(ALL)) return;
+
+        fontrenderer = mc.fontRenderer;
+        ((iMinecraft) mc).MikuEntityRenderer().setupOverlayRendering();
+        GlStateManager.enableBlend();
+
+        if (renderVignette && Minecraft.isFancyGraphicsEnabled()) {
+            renderVignette(mc.player.getBrightness(), res);
+        } else {
+            GlStateManager.enableDepth();
+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        }
+
+        if (renderHelmet) renderHelmet(res, partialTicks);
+
+        if (renderPortal && !mc.player.isPotionActive(MobEffects.NAUSEA)) {
+            renderPortal(res, partialTicks);
+        }
+
+        if (renderHotbar) renderHotbar(res, partialTicks);
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        zLevel = -90.0F;
+        rand.setSeed(updateCounter * 312871L);
+
+        if (renderCrosshairs) renderCrosshairs(partialTicks);
+        if (renderBossHealth) renderBossHealth();
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        if (this.mc.playerController.shouldDrawHUD() && this.mc.getRenderViewEntity() instanceof EntityPlayer) {
+            if (renderHealth) renderHealth(width, height);
+            if (renderArmor) renderArmor(width, height);
+            if (renderFood) renderFood(width, height);
+            if (renderHealthMount) renderHealthMount(width, height);
+            if (renderAir) renderAir(width, height);
+        }
+
+        renderSleepFade(width, height);
+
+        if (renderJumpBar) {
+            renderJumpBar(width, height);
+        } else if (renderExperiance) {
+            renderExperience(width, height);
+        }
+
+        renderToolHighlight(res);
+        renderHUDText(width, height);
+        renderFPSGraph();
+        renderPotionIcons(res);
+        renderRecordOverlay(width, height, partialTicks);
+        renderSubtitles(res);
+        renderTitle(width, height, partialTicks);
+
+
+        Scoreboard scoreboard = this.mc.world.getScoreboard();
+        ScoreObjective objective = null;
+        ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(mc.player.getName());
+        if (scoreplayerteam != null) {
+            int slot = scoreplayerteam.getColor().getColorIndex();
+            if (slot >= 0) objective = scoreboard.getObjectiveInDisplaySlot(3 + slot);
+        }
+        ScoreObjective scoreobjective1 = objective != null ? objective : scoreboard.getObjectiveInDisplaySlot(1);
+        if (renderObjective && scoreobjective1 != null) {
+            this.renderScoreboard(scoreobjective1, res);
+        }
+
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        GlStateManager.disableAlpha();
+
+        renderChat(width, height);
+
+        renderPlayerList(width, height);
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.disableLighting();
+        GlStateManager.enableAlpha();
+
+        post(ALL);
+    }
 }

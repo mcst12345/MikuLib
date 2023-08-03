@@ -15,6 +15,7 @@
     "MixinEntityTracker",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
+    "MixinLayerSpiderEyes",
     "MixinMinecraftServer",
     "MixinNetHandlerPlayServer",
     "MixinPlayerList",
@@ -42,6 +43,7 @@
     "MixinLayerCreeperCharge",
     "MixinLayerEnderDragonEyes",
     "MixinLayerEndermanEyes",
+    "MixinLayerWitherAura",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinParticleManager",
@@ -49,6 +51,7 @@
     "MixinRenderGlobal",
     "MixinRenderItemFrame",
     "MixinRenderLivingBase",
+    "MixinTileEntityEndPortalRenderer",
     "MixinViewFrustum",
     "MixinWorldClient"
   ],
