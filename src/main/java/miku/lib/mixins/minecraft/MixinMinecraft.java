@@ -347,7 +347,6 @@ public abstract class MixinMinecraft implements iMinecraft {
      */
     @Overwrite
     public static Minecraft getMinecraft() {
-        //if(MikuMinecraft.Miku)return MikuMinecraft.getMinecraft();
         return instance;
     }
 
