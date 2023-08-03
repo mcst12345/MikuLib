@@ -39,6 +39,7 @@
     "MixinInventoryEffectRenderer",
     "MixinItemRenderer",
     "MixinLayerArmorBase",
+    "MixinLayerCreeperCharge",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinParticleManager",
