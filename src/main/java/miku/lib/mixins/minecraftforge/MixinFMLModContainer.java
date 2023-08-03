@@ -152,6 +152,7 @@ public abstract class MixinFMLModContainer implements ModContainer {
                     NamedMods.put(getModId(), null);
                     Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, NamedMods);
                 }
+                return;
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
@@ -219,6 +220,7 @@ public abstract class MixinFMLModContainer implements ModContainer {
                     NamedMods.put(getModId(), null);
                     Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, NamedMods);
                 }
+                return;
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
