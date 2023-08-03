@@ -29,10 +29,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.security.cert.Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Mixin(value = FMLModContainer.class, remap = false)
 public abstract class MixinFMLModContainer implements ModContainer {
@@ -148,9 +145,12 @@ public abstract class MixinFMLModContainer implements ModContainer {
                 Field namedMods = Loader.class.getDeclaredField("namedMods");
                 tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
                 Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                Map<String, ModContainer> FUCKED = new HashMap<>();
                 if (NamedMods != null) {
-                    NamedMods.put(getModId(), null);
-                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, NamedMods);
+                    NamedMods.forEach((key, value) -> {
+                        if (!key.equals(getModId())) FUCKED.put(key, value);
+                    });
+                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                 }
                 return;
             } catch (Throwable throwable) {
@@ -216,11 +216,13 @@ public abstract class MixinFMLModContainer implements ModContainer {
                 Field namedMods = Loader.class.getDeclaredField("namedMods");
                 tmp = Launch.UNSAFE.objectFieldOffset(namedMods);
                 Map<String, ModContainer> NamedMods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
+                Map<String, ModContainer> FUCKED = new HashMap<>();
                 if (NamedMods != null) {
-                    NamedMods.put(getModId(), null);
-                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, NamedMods);
+                    NamedMods.forEach((key, value) -> {
+                        if (!key.equals(getModId())) FUCKED.put(key, value);
+                    });
+                    Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                 }
-                return;
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
