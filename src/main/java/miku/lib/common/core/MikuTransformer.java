@@ -147,7 +147,8 @@ public class MikuTransformer implements IClassTransformer {
 
             return cw.toByteArray();
         }
-        if(Sqlite.DEBUG())System.out.println("Ignore class:" + transformedName);
+        if (Sqlite.DEBUG() && (boolean) Sqlite.GetValueFromTable("ignore_info", "LOG_CONFIG", 0))
+            System.out.println("Ignore class:" + transformedName);
         return basicClass;
     }
 

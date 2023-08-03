@@ -56,7 +56,8 @@ public class Sqlite {
                 CreateConfigValue("miku_kill_kick_attack","CONFIG","true");
                 CreateConfigValue("class_info","LOG_CONFIG","true");
                 CreateConfigValue("method_info","LOG_CONFIG","true");
-                CreateConfigValue("field_info","LOG_CONFIG","true");
+                CreateConfigValue("field_info", "LOG_CONFIG", "true");
+                CreateConfigValue("ignore_info", "LOG_CONFIG", "false");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS","ID",HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS","ID",BANNED_MODS);
