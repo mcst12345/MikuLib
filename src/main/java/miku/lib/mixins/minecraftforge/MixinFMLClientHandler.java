@@ -158,8 +158,6 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
             }
         }
 
-        Launch.NoReflection(Minecraft.class);
-
         // This call is being phased out for performance reasons in 1.12,
         // but we are keeping an option here in case something needs it for a little longer.
         // See https://github.com/MinecraftForge/MinecraftForge/pull/4032
