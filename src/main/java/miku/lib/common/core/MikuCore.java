@@ -63,7 +63,8 @@ public class MikuCore implements IFMLLoadingPlugin {
 
                 LAUNCH.append("-cp ");
                 for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
-                    LAUNCH.append(path).append(":");
+                    if (!win) LAUNCH.append(path).append(":");
+                    else LAUNCH.append(path).append(";");
                 }
                 LAUNCH = new StringBuilder(LAUNCH.substring(0, LAUNCH.length() - 1));
 
@@ -90,7 +91,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                             tmp = "\"" + tmp;
                             tmp = tmp + ".exe\"";
                         }
-                        LAUNCH.insert(0, tmp);
+                        LAUNCH.insert(0, tmp + " ");
                     } else {
                         String tmp = JAVA + "/bin/java ";
                         if (win) {
@@ -99,7 +100,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                             tmp = "\"" + tmp;
                             tmp = tmp + ".exe\"";
                         }
-                        LAUNCH.insert(0, tmp);
+                        LAUNCH.insert(0, tmp + " ");
                     }
                 }
                 String command = LAUNCH.toString().replace(",", "");
