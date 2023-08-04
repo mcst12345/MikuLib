@@ -80,18 +80,22 @@ public class MikuCore implements IFMLLoadingPlugin {
                 LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
                 String JAVA = System.getProperty("java.home");
                 if (JAVA.endsWith("jre")) {
-                    File jdk = new File(JAVA.substring(0, JAVA.length() - 3) + "bin/java");
+                    String JavaHome = JAVA.substring(0, JAVA.length() - 3);
+                    File jdk = new File(JavaHome + "bin/java");
                     if (jdk.exists()) {
-                        LAUNCH.insert(0, JAVA.substring(0, JAVA.length() - 3) + "bin/java ");
+                        String tmp = JavaHome + "bin/java ";
+                        tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
+                        LAUNCH.insert(0, tmp);
                     } else {
-                        LAUNCH.insert(0, JAVA + "/bin/java ");
+                        String tmp = JAVA + "/bin/java ";
+                        tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
+                        LAUNCH.insert(0, tmp);
                     }
                 }
                 String command = LAUNCH.toString().replace(",", "");
                 System.out.println("MikuLib has completed its file injection.Now restarting the game.");
                 System.out.println("Command:\n" + command);
                 if (win) {
-                    command.replace("/", "\\\\");
                     ProcessBuilder process = new ProcessBuilder("cmd /c " + command);
                     process.redirectErrorStream(true);
                     Process mc = process.start();
