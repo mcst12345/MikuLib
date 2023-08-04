@@ -24,7 +24,7 @@ public abstract class MixinGuiIngameMenu extends GuiScreen{
                 boolean flag = this.mc.isIntegratedServerRunning();
                 boolean flag1 = this.mc.isConnectedToRealms();
                 button.enabled = false;
-                this.mc.world.sendQuittingDisconnectingPacket();
+                ((iMinecraft) (this.mc)).MikuWorld().sendQuittingDisconnectingPacket();
                 this.mc.loadWorld(null);
 
                 if (flag)
