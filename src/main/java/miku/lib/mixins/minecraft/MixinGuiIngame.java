@@ -5,8 +5,13 @@ import miku.lib.common.util.EntityUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -14,15 +19,20 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.FoodStats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.border.WorldBorder;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -39,8 +49,50 @@ public abstract class MixinGuiIngame extends Gui {
     @Shadow
     public abstract FontRenderer getFontRenderer();
 
-    @Shadow
-    protected abstract void renderVignette(float lightLevel, ScaledResolution scaledRes);
+    /**
+     * @author mcst12345
+     * @reason Shit
+     */
+    @Overwrite
+    protected void renderVignette(float lightLevel, ScaledResolution scaledRes) {
+        lightLevel = 1.0F - lightLevel;
+        lightLevel = MathHelper.clamp(lightLevel, 0.0F, 1.0F);
+        WorldBorder worldborder = ((iMinecraft) (this.mc)).MikuWorld().getWorldBorder();
+        float f = (float) worldborder.getClosestDistance(this.mc.player);
+        double d0 = Math.min(worldborder.getResizeSpeed() * (double) worldborder.getWarningTime() * 1000.0D, Math.abs(worldborder.getTargetSize() - worldborder.getDiameter()));
+        double d1 = Math.max(worldborder.getWarningDistance(), d0);
+
+        if ((double) f < d1) {
+            f = 1.0F - (float) ((double) f / d1);
+        } else {
+            f = 0.0F;
+        }
+
+        this.prevVignetteBrightness = (float) ((double) this.prevVignetteBrightness + (double) (lightLevel - this.prevVignetteBrightness) * 0.01D);
+        GlStateManager.disableDepth();
+        GlStateManager.depthMask(false);
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
+        if (f > 0.0F) {
+            GlStateManager.color(0.0F, f, f, 1.0F);
+        } else {
+            GlStateManager.color(this.prevVignetteBrightness, this.prevVignetteBrightness, this.prevVignetteBrightness, 1.0F);
+        }
+
+        this.mc.getTextureManager().bindTexture(VIGNETTE_TEX_PATH);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+        bufferbuilder.pos(0.0D, scaledRes.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
+        bufferbuilder.pos(scaledRes.getScaledWidth(), scaledRes.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
+        bufferbuilder.pos(scaledRes.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
+        bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.depthMask(true);
+        GlStateManager.enableDepth();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+    }
 
     @Shadow
     protected abstract void renderPumpkinOverlay(ScaledResolution scaledRes);
@@ -55,8 +107,71 @@ public abstract class MixinGuiIngame extends Gui {
     @Shadow
     protected abstract void renderHotbar(ScaledResolution sr, float partialTicks);
 
-    @Shadow
-    protected abstract void renderAttackIndicator(float partialTicks, ScaledResolution p_184045_2_);
+    /**
+     * @author mcst12345
+     * @reason FUCK
+     */
+    @Overwrite
+    protected void renderAttackIndicator(float partialTicks, ScaledResolution p_184045_2_) {
+        GameSettings gamesettings = this.mc.gameSettings;
+
+        if (gamesettings.thirdPersonView == 0) {
+            if (this.mc.playerController.isSpectator() && this.mc.pointedEntity == null) {
+                RayTraceResult raytraceresult = this.mc.objectMouseOver;
+
+                if (raytraceresult == null || raytraceresult.typeOfHit != RayTraceResult.Type.BLOCK) {
+                    return;
+                }
+
+                BlockPos blockpos = raytraceresult.getBlockPos();
+
+                net.minecraft.block.state.IBlockState state = ((iMinecraft) (this.mc)).MikuWorld().getBlockState(blockpos);
+                if (!state.getBlock().hasTileEntity(state) || !(((iMinecraft) (this.mc)).MikuWorld().getTileEntity(blockpos) instanceof IInventory)) {
+                    return;
+                }
+            }
+
+            int l = p_184045_2_.getScaledWidth();
+            int i1 = p_184045_2_.getScaledHeight();
+
+            if (gamesettings.showDebugInfo && !gamesettings.hideGUI && !this.mc.player.hasReducedDebug() && !gamesettings.reducedDebugInfo) {
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) (l / 2), (float) (i1 / 2), this.zLevel);
+                Entity entity = this.mc.getRenderViewEntity();
+                assert entity != null;
+                GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
+                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks, 0.0F, 1.0F, 0.0F);
+                GlStateManager.scale(-1.0F, -1.0F, -1.0F);
+                OpenGlHelper.renderDirections(10);
+                GlStateManager.popMatrix();
+            } else {
+                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+                GlStateManager.enableAlpha();
+                this.drawTexturedModalRect(l / 2 - 7, i1 / 2 - 7, 0, 0, 16, 16);
+
+                if (this.mc.gameSettings.attackIndicator == 1) {
+                    float f = this.mc.player.getCooledAttackStrength(0.0F);
+                    boolean flag = false;
+
+                    if (this.mc.pointedEntity != null && this.mc.pointedEntity instanceof EntityLivingBase && f >= 1.0F) {
+                        flag = this.mc.player.getCooldownPeriod() > 5.0F;
+                        flag = flag & this.mc.pointedEntity.isEntityAlive();
+                    }
+
+                    int i = i1 / 2 - 7 + 16;
+                    int j = l / 2 - 8;
+
+                    if (flag) {
+                        this.drawTexturedModalRect(j, i, 68, 94, 16, 16);
+                    } else if (f < 1.0F) {
+                        int k = (int) (f * 17.0F);
+                        this.drawTexturedModalRect(j, i, 36, 94, 16, 4);
+                        this.drawTexturedModalRect(j, i, 52, 94, k, 4);
+                    }
+                }
+            }
+        }
+    }
 
     @Shadow
     @Final
@@ -135,6 +250,13 @@ public abstract class MixinGuiIngame extends Gui {
     @Shadow
     @Final
     protected Random rand;
+
+    @Shadow
+    public float prevVignetteBrightness;
+
+    @Shadow
+    @Final
+    protected static ResourceLocation VIGNETTE_TEX_PATH;
 
     /**
      * @author mcst12345
@@ -300,7 +422,7 @@ public abstract class MixinGuiIngame extends Gui {
             ((iMinecraft) this.mc).MikuProfiler().endSection();
         }
 
-        Scoreboard scoreboard = this.mc.world.getScoreboard();
+        Scoreboard scoreboard = ((iMinecraft) (this.mc)).MikuWorld().getScoreboard();
         ScoreObjective scoreobjective = null;
         ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(this.mc.player.getName());
 
