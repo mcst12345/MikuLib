@@ -6,6 +6,7 @@ import miku.lib.common.api.ProtectedEntity;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iEntityPlayer;
 import miku.lib.common.api.iInventoryPlayer;
+import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.KillEntity;
@@ -32,7 +33,7 @@ public class EntityUtil {
 
     private static boolean Killing = false;
 
-    public static boolean isProtected(@Nullable Object object) {
+    public static synchronized boolean isProtected(@Nullable Object object) {
         if (!(object instanceof Entity)) return false;
         Entity entity = (Entity) object;
         if (entity instanceof EntityPlayer) {
@@ -79,14 +80,13 @@ public class EntityUtil {
         return false;
     }//is entity protected
 
-    public static boolean isDEAD(Entity entity) {
+    public static synchronized boolean isDEAD(Entity entity) {
         if (entity == null || isProtected(entity)) return false;
         return DEAD.contains(entity) || ((iEntity) entity).isDEAD() || Dead.contains(entity.getUniqueID()) || entity.dimension == -25;
     }//can the entity be alive
 
     public synchronized static void Kill(@Nullable Entity entity) {//Kill Entity
         if (entity == null) return;
-        System.out.println(entity.getName());
         if (isProtected(entity)) {
             if (entity instanceof ProtectedEntity) ((ProtectedEntity) entity).SetHealth(0);
             return;
@@ -112,7 +112,7 @@ public class EntityUtil {
 
         ((iEntity) entity).kill();
 
-        UnsafeUtil.Fuck(entity);
+        if (MikuInsaneMode.isMikuInsaneMode()) UnsafeUtil.Fuck(entity);
 
         System.gc();
 
@@ -123,23 +123,22 @@ public class EntityUtil {
         Killing = false;
     }
 
-    public static boolean isKilling() {
+    public static synchronized boolean isKilling() {
         return Killing;
     }
 
-    public static void RangeKill(World world, double x, double y, double z, double range) {
+    public static synchronized void RangeKill(World world, double x, double y, double z, double range) {
         List<Entity> list = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
         Kill(list);
     }
 
-    public static void Kill(Collection<Entity> entities) {//Kill a list if entity
+    public static synchronized void Kill(Collection<Entity> entities) {//Kill a list if entity
         for (Entity entity : entities) {
-            System.out.println(entity.getName());
             Kill(entity);
         }
     }
 
-    public static void KillNoSizeEntity(Entity entity) {
+    public static synchronized void KillNoSizeEntity(Entity entity) {
         List<Entity> entities = Lists.newArrayList();
         for (int dist = 0; dist <= 100; dist += 2) {
             AxisAlignedBB bb = entity.getEntityBoundingBox();
@@ -156,13 +155,13 @@ public class EntityUtil {
         Kill(entities);
     }
 
-    public static void RangeKill(final Entity Player, int range) {
+    public static synchronized void RangeKill(final Entity Player, int range) {
         List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
         list.removeIf(miku.lib.common.util.EntityUtil::isProtected);
         Kill(list);
     }
 
-    public static void REMOVE(World world) {//REMOVE dead entities from world
+    public static synchronized void REMOVE(World world) {//REMOVE dead entities from world
         world.loadedEntityList.removeAll(DEAD);
         world.loadedEntityList.removeIf(e -> Dead.contains(e.getUniqueID()));
     }
