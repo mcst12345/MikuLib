@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -40,16 +41,19 @@ public class MikuKill extends CommandBase {
             notifyCommandListener(sender, this, "commands.kill.successful", getCommandSenderAsPlayer(sender).getDisplayName());
         }
         else {
+            List<Entity> toKill = new ArrayList<>();
             if (Objects.equals(args[0], "@enp")) {
                 List<Entity> list = server.getEntityWorld().loadedEntityList;
-                list.remove(getCommandSenderAsPlayer(sender));
-                list.removeIf(e -> e instanceof EntityPlayer);
-                EntityUtil.Kill(list);
+                toKill.addAll(list);
+                toKill.remove(getCommandSenderAsPlayer(sender));
+                toKill.removeIf(e -> e instanceof EntityPlayer);
+                EntityUtil.Kill(toKill);
             } else if (Objects.equals(args[0], "@item")) {
                 List<Entity> list = server.getEntityWorld().loadedEntityList;
-                list.remove(getCommandSenderAsPlayer(sender));
-                list.removeIf(e -> !(e instanceof EntityItem));
-                EntityUtil.Kill(list);
+                toKill.addAll(list);
+                toKill.remove(getCommandSenderAsPlayer(sender));
+                toKill.removeIf(e -> !(e instanceof EntityItem));
+                EntityUtil.Kill(toKill);
             } else {
                 Entity entity = getEntity(server, sender, args[0]);
                 EntityUtil.Kill(entity);

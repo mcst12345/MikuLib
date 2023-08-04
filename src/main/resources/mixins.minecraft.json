@@ -35,6 +35,7 @@
     "MixinGuiIngame",
     "MixinGuiIngameMenu",
     "MixinGuiMainMenu",
+    "MixinGuiOptions",
     "MixinGuiOverlayDebug",
     "MixinGuiScreen",
     "MixinGuiScreenAdvancements",
