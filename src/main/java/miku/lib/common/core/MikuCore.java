@@ -23,15 +23,18 @@ public class MikuCore implements IFMLLoadingPlugin {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
+
+    static final boolean win = Platform.isWindows();
+    static final boolean Linux = Platform.isLinux();
+    static final boolean MacOS = Platform.isMac();
+    static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
+    static final boolean Android = Platform.isAndroid();
+
     public MikuCore() throws IOException {
+
+
         FuckLaunchWrapper();
         ClassUtil.Init();
-
-        final boolean win = Platform.isWindows();
-        final boolean Linux = Platform.isLinux();
-        final boolean MacOS = Platform.isMac();
-        final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
-        final boolean Android = Platform.isAndroid();
 
         if (win) {
             System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");
@@ -80,6 +83,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                 LAUNCH.append("  --accessToken HatsuneMiku");
                 LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
                 String JAVA = System.getProperty("java.home");
+                System.out.println("java.home:" + JAVA);
                 if (JAVA.endsWith("jre")) {
                     String JavaHome = JAVA.substring(0, JAVA.length() - 3);
                     File jdk = new File(JavaHome + "bin/java");
@@ -176,13 +180,15 @@ public class MikuCore implements IFMLLoadingPlugin {
         try {
 
             FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
-
-            InputStream MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
+            InputStream MikuLaunch;
+            if (win) {
+                MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked.win");
+            } else MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
             InputStream MIXIN = MikuCore.class.getResourceAsStream("/mixin-0.8.5-SNAPSHOT.jar");
             assert MikuLaunch != null;
             FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
             assert MIXIN != null;
-            FileUtils.copyInputStreamToFile(MIXIN,new File(System.getProperty("user.dir")+"/libraries/mixin.jar"));
+            FileUtils.copyInputStreamToFile(MIXIN, new File(System.getProperty("user.dir") + "/libraries/mixin.jar"));
         } catch (IOException ignored) {
         }
         restart = true;
