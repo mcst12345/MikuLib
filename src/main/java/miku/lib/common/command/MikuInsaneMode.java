@@ -1,7 +1,9 @@
 package miku.lib.common.command;
 
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
@@ -23,7 +25,11 @@ public class MikuInsaneMode extends CommandBase {
     }
 
     @Override
-    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, String[] args) {
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
+        try {
+            if (!EntityUtil.isProtected(getCommandSenderAsPlayer(sender))) return;
+        } catch (PlayerNotFoundException ignored) {
+        }
         if (args.length == 0) {
             MikuInsaneMode = !MikuInsaneMode;
         } else {
@@ -35,5 +41,10 @@ public class MikuInsaneMode extends CommandBase {
 
     public static boolean isMikuInsaneMode() {
         return MikuInsaneMode;
+    }
+
+    @Override
+    public int getRequiredPermissionLevel() {
+        return 3;
     }
 }
