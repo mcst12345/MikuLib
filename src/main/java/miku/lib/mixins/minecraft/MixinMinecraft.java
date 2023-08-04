@@ -58,6 +58,7 @@ import net.minecraft.profiler.Snooper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.management.PlayerProfileCache;
+import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.StatisticsManager;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.*;
@@ -66,6 +67,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.WorldProviderEnd;
+import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraft.world.storage.ISaveFormat;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -189,7 +192,9 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Shadow public WorldClient world;
 
-    @Shadow public RayTraceResult objectMouseOver;
+    protected WorldClient MikuWorld;
+    @Shadow
+    public RayTraceResult objectMouseOver;
 
     @Shadow
     public PlayerControllerMP playerController;
@@ -443,7 +448,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.populateSearchTreeManager();
         this.resourceManager.registerReloadListener(this.searchTreeManager);
         GlStateManager.viewport(0, 0, this.displayWidth, this.displayHeight);
-        this.effectRenderer = new ParticleManager(this.world, this.renderEngine);
+        this.effectRenderer = new ParticleManager(this.MikuWorld, this.renderEngine);
         net.minecraftforge.fml.client.SplashProgress.resume();
         net.minecraftforge.fml.common.ProgressManager.pop(bar);
         net.minecraftforge.fml.client.FMLClientHandler.instance().finishMinecraftLoading();
@@ -555,8 +560,6 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Shadow
     public abstract boolean isFramerateLimitBelowMax();
 
-    @Shadow
-    public abstract int getLimitFramerate();
 
     @Shadow
     protected abstract void checkWindowResize();
@@ -705,14 +708,58 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Nullable
     public abstract NetHandlerPlayClient getConnection();
 
-    @Shadow
-    protected abstract void clickMouse();
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    private void clickMouse() {
+        if (this.leftClickCounter <= 0) {
+            if (this.objectMouseOver == null) {
+                LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
 
-    @Shadow
-    protected abstract void middleClickMouse();
+                if (this.playerController.isNotCreative()) {
+                    this.leftClickCounter = 10;
+                }
+            } else if (!this.player.isRowingBoat()) {
+                switch (this.objectMouseOver.typeOfHit) {
+                    case ENTITY:
+                        this.playerController.attackEntity(this.player, this.objectMouseOver.entityHit);
+                        break;
+                    case BLOCK:
+                        BlockPos blockpos = this.objectMouseOver.getBlockPos();
 
-    @Shadow
-    protected abstract void sendClickBlockToController(boolean leftClick);
+                        if (!this.MikuWorld.isAirBlock(blockpos)) {
+                            this.playerController.clickBlock(blockpos, this.objectMouseOver.sideHit);
+                            break;
+                        }
+
+                    case MISS:
+
+                        if (this.playerController.isNotCreative()) {
+                            this.leftClickCounter = 10;
+                        }
+
+                        this.player.resetCooldown();
+                        net.minecraftforge.common.ForgeHooks.onEmptyLeftClick(this.player);
+                }
+
+                this.player.swingArm(EnumHand.MAIN_HAND);
+            }
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    private void middleClickMouse() {
+        if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) {
+            net.minecraftforge.common.ForgeHooks.onPickBlock(this.objectMouseOver, this.player, this.MikuWorld);
+        }
+    }
+
 
     @Shadow
     @Nullable
@@ -888,12 +935,9 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
         if(EntityUtil.isDEAD(player))this.gameSettings.hideGUI = false;
 
-        if (guiScreenIn == null && this.world == null)
-        {
+        if (guiScreenIn == null && this.MikuWorld == null) {
             guiScreenIn = new GuiMainMenu();
-        }
-        else if (guiScreenIn == null && this.player.getHealth() <= 0.0F)
-        {
+        } else if (guiScreenIn == null && this.player.getHealth() <= 0.0F) {
             guiScreenIn = new GuiGameOver(null);
         }
 
@@ -982,19 +1026,17 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.MikuProfiler.endSection();
         if (!(TimeStop && !EntityUtil.isProtected(player))) this.MikuEntityRenderer.getMouseOver(1.0F);
         if (!(TimeStop && !EntityUtil.isProtected(player)))
-            this.tutorial.onMouseHover(this.world, this.objectMouseOver);
+            this.tutorial.onMouseHover(this.MikuWorld, this.objectMouseOver);
         this.MikuProfiler.startSection("gameMode");
 
-        if (!this.isGamePaused && this.world != null)
-        {
-            if(!(TimeStop && !EntityUtil.isProtected(player)))this.playerController.updateController();
+        if (!this.isGamePaused && this.MikuWorld != null) {
+            if (!(TimeStop && !EntityUtil.isProtected(player))) this.playerController.updateController();
         }
 
         this.MikuProfiler.endStartSection("textures");
 
-        if (this.world != null)
-        {
-            if(!(TimeStop && !EntityUtil.isProtected(player)))this.renderEngine.tick();
+        if (this.MikuWorld != null) {
+            if (!(TimeStop && !EntityUtil.isProtected(player))) this.renderEngine.tick();
         }
 
         if (this.currentScreen == null && this.player != null)
@@ -1002,7 +1044,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             if(!(TimeStop && !EntityUtil.isProtected(player))){
                 if (!EntityUtil.isProtected(player) && this.player.getHealth() <= 0.0F && !(this.currentScreen instanceof GuiGameOver)) {
                     this.displayGuiScreen(null);
-                } else if (this.player.isPlayerSleeping() && this.world != null && !EntityUtil.isProtected(player)) {
+                } else if (this.player.isPlayerSleeping() && this.MikuWorld != null && !EntityUtil.isProtected(player)) {
                     this.displayGuiScreen(new GuiSleepMP());
                 }
             }
@@ -1053,16 +1095,13 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.runTickKeyboard();
         }
 
-        if (this.world != null)
-        {
-            if (this.player != null)
-            {
+        if (this.MikuWorld != null) {
+            if (this.player != null) {
                 ++this.joinPlayerCounter;
 
-                if (this.joinPlayerCounter == 30)
-                {
+                if (this.joinPlayerCounter == 30) {
                     this.joinPlayerCounter = 0;
-                    this.world.joinEntityInSurroundings(this.player);
+                    this.MikuWorld.joinEntityInSurroundings(this.player);
                 }
             }
 
@@ -1084,11 +1123,11 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.MikuProfiler.endStartSection("level");
 
             if (!this.isGamePaused) {
-                if (this.world.getLastLightningBolt() > 0 && !TimeStop && !SpecialItem.isTimeStop()) {
-                    this.world.setLastLightningBolt(this.world.getLastLightningBolt() - 1);
+                if (this.MikuWorld.getLastLightningBolt() > 0 && !TimeStop && !SpecialItem.isTimeStop()) {
+                    this.MikuWorld.setLastLightningBolt(this.MikuWorld.getLastLightningBolt() - 1);
                 }
 
-                this.world.updateEntities();
+                this.MikuWorld.updateEntities();
             }
         } else if (this.MikuEntityRenderer.isShaderActive() && !TimeStop && !SpecialItem.isTimeStop()) {
             this.MikuEntityRenderer.stopUseShader();
@@ -1100,16 +1139,13 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.soundHandler.update();
         }
 
-        if (this.world != null)
-        {
-            if (!this.isGamePaused && !SpecialItem.isTimeStop() && !TimeStop)
-            {
-                this.world.setAllowedSpawnTypes(this.world.getDifficulty() != EnumDifficulty.PEACEFUL, true);
+        if (this.MikuWorld != null) {
+            if (!this.isGamePaused && !SpecialItem.isTimeStop() && !TimeStop) {
+                this.MikuWorld.setAllowedSpawnTypes(this.MikuWorld.getDifficulty() != EnumDifficulty.PEACEFUL, true);
                 this.tutorial.update();
 
-                try
-                {
-                    this.world.tick();
+                try {
+                    this.MikuWorld.tick();
                 } catch (Throwable t) {
                     System.out.println("MikuWarn:Catch exception when ticking worldClient");
                     t.printStackTrace();
@@ -1118,9 +1154,8 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.MikuProfiler.endStartSection("animateTick");
 
-            if (!this.isGamePaused && this.world != null && !TimeStop && !SpecialItem.isTimeStop())
-            {
-                this.world.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
+            if (!this.isGamePaused && this.MikuWorld != null && !TimeStop && !SpecialItem.isTimeStop()) {
+                this.MikuWorld.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
             }
 
             this.MikuProfiler.endStartSection("particles");
@@ -1239,9 +1274,11 @@ public abstract class MixinMinecraft implements iMinecraft {
                     try {
                         this.profiler = this.MikuProfiler;
                         this.entityRenderer = this.MikuEntityRenderer;
+                        this.world = this.MikuWorld;
                         this.runGameLoop();
                         this.profiler = this.MikuProfiler;
                         this.entityRenderer = this.MikuEntityRenderer;
+                        this.world = this.MikuWorld;
                     }
                     catch (OutOfMemoryError var10)
                     {
@@ -1580,9 +1617,9 @@ public abstract class MixinMinecraft implements iMinecraft {
                             case BLOCK:
                                 BlockPos blockpos = this.objectMouseOver.getBlockPos();
 
-                                if (this.world.getBlockState(blockpos).getMaterial() != Material.AIR) {
+                                if (this.MikuWorld.getBlockState(blockpos).getMaterial() != Material.AIR) {
                                     int i = itemstack.getCount();
-                                    EnumActionResult enumactionresult = this.playerController.processRightClickBlock(this.player, this.world, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec, enumhand);
+                                    EnumActionResult enumactionresult = this.playerController.processRightClickBlock(this.player, this.MikuWorld, blockpos, this.objectMouseOver.sideHit, this.objectMouseOver.hitVec, enumhand);
 
                                     if (enumactionresult == EnumActionResult.SUCCESS) {
                                         this.player.swingArm(enumhand);
@@ -1599,7 +1636,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
                     if (itemstack.isEmpty() && (this.objectMouseOver == null || this.objectMouseOver.typeOfHit == RayTraceResult.Type.MISS))
                         net.minecraftforge.common.ForgeHooks.onEmptyClick(this.player, enumhand);
-                    if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.world, enumhand) == EnumActionResult.SUCCESS) {
+                    if (!itemstack.isEmpty() && this.playerController.processRightClick(this.player, this.MikuWorld, enumhand) == EnumActionResult.SUCCESS) {
                         this.MikuEntityRenderer.itemRenderer.resetEquippedProgress(enumhand);
                         return;
                     }
@@ -1627,7 +1664,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      */
     @Overwrite
     public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
-        if (world != null) {
+        if (MikuWorld != null) {
             try {
                 net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(world));
             } catch (Throwable t) {
@@ -1670,16 +1707,17 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.loadingScreen.displayLoadingString("");
         }
 
-        if (worldClientIn == null && this.world != null) {
+        if (worldClientIn == null && this.MikuWorld != null) {
             this.resourcePackRepository.clearResourcePack();
             this.ingameGUI.resetPlayersOverlayFooterHeader();
             this.setServerData(null);
             this.integratedServerIsRunning = false;
-            net.minecraftforge.fml.client.FMLClientHandler.instance().handleClientWorldClosing(this.world);
+            net.minecraftforge.fml.client.FMLClientHandler.instance().handleClientWorldClosing(this.MikuWorld);
         }
 
         this.soundHandler.stopSounds();
         this.world = worldClientIn;
+        this.MikuWorld = worldClientIn;
 
         if (this.renderGlobal != null) {
             this.renderGlobal.setWorldAndLoadRenderers(worldClientIn);
@@ -1730,5 +1768,100 @@ public abstract class MixinMinecraft implements iMinecraft {
     public void setRenderViewEntity(Entity viewingEntity) {
         this.renderViewEntity = viewingEntity;
         this.MikuEntityRenderer.loadEntityShader(viewingEntity);
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public int getLimitFramerate() {
+        return this.MikuWorld == null && this.currentScreen != null ? 30 : this.gameSettings.limitFramerate;
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    private void sendClickBlockToController(boolean leftClick) {
+        if (!leftClick) {
+            this.leftClickCounter = 0;
+        }
+
+        if (this.leftClickCounter <= 0 && !this.player.isHandActive()) {
+            if (leftClick && this.objectMouseOver != null && this.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
+                BlockPos blockpos = this.objectMouseOver.getBlockPos();
+
+                if (!this.MikuWorld.isAirBlock(blockpos) && this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit)) {
+                    this.effectRenderer.addBlockHitEffects(blockpos, this.objectMouseOver);
+                    this.player.swingArm(EnumHand.MAIN_HAND);
+                }
+            } else {
+                this.playerController.resetBlockRemoving();
+            }
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public void setDimensionAndSpawnPlayer(int dimension) {
+        this.MikuWorld.setInitialSpawnLocation();
+        this.MikuWorld.removeAllEntities();
+        int i = 0;
+        String s = null;
+
+        if (this.player != null) {
+            i = this.player.getEntityId();
+            this.MikuWorld.removeEntity(this.player);
+            s = this.player.getServerBrand();
+        }
+
+        this.renderViewEntity = null;
+        EntityPlayerSP entityplayersp = this.player;
+        this.player = this.playerController.createPlayer(this.MikuWorld, this.player == null ? new StatisticsManager() : this.player.getStatFileWriter(), this.player == null ? new RecipeBook() : this.player.getRecipeBook());
+        this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
+        this.player.updateSyncFields(entityplayersp); // Forge: fix MC-10657
+        this.player.dimension = dimension;
+        this.renderViewEntity = this.player;
+        this.player.preparePlayerToSpawn();
+        this.player.setServerBrand(s);
+        this.MikuWorld.spawnEntity(this.player);
+        this.playerController.flipPlayer(this.player);
+        this.player.movementInput = new MovementInputFromOptions(this.gameSettings);
+        this.player.setEntityId(i);
+        this.playerController.setPlayerCapabilities(this.player);
+        this.player.setReducedDebug(entityplayersp.hasReducedDebug());
+
+        if (this.currentScreen instanceof GuiGameOver) {
+            this.displayGuiScreen(null);
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public MusicTicker.MusicType getAmbientMusicType() {
+        if (this.currentScreen instanceof GuiWinGame) {
+            return MusicTicker.MusicType.CREDITS;
+        } else if (this.player != null) {
+            MusicTicker.MusicType type = this.MikuWorld.provider.getMusicType();
+            if (type != null) return type;
+
+            if (this.player.world.provider instanceof WorldProviderHell) {
+                return MusicTicker.MusicType.NETHER;
+            } else if (this.player.world.provider instanceof WorldProviderEnd) {
+                return this.ingameGUI.getBossOverlay().shouldPlayEndBossMusic() ? MusicTicker.MusicType.END_BOSS : MusicTicker.MusicType.END;
+            } else {
+                return this.player.capabilities.isCreativeMode && this.player.capabilities.allowFlying ? MusicTicker.MusicType.CREATIVE : MusicTicker.MusicType.GAME;
+            }
+        } else {
+            return MusicTicker.MusicType.MENU;
+        }
     }
 }
