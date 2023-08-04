@@ -60,7 +60,6 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
      */
     @Overwrite
     public void beginMinecraftLoading(Minecraft minecraft, List<IResourcePack> resourcePackList, IReloadableResourceManager resourceManager, MetadataSerializer metaSerializer) {
-        Launch.NoReflection(Minecraft.class);
         Launch.NoReflection(FMLClientHandler.class);
         detectOptifine();
         SplashProgress.start();
@@ -120,6 +119,7 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
             }
         }
 
+        Launch.NoReflection(Minecraft.class);
         @SuppressWarnings("unchecked")
         Map<String, Map<String,String>> sharedModList = (Map<String, Map<String, String>>) Launch.blackboard.get("modList");
         if (sharedModList == null)
