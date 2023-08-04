@@ -54,9 +54,9 @@ public class MikuCore implements IFMLLoadingPlugin {
                 StringBuilder LAUNCH = new StringBuilder();
                 for (String s : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
                     if (s.contains("=")) {
-                        LAUNCH.append('"');
+                        if (!win) LAUNCH.append('"');
                         LAUNCH.append(s);
-                        LAUNCH.append('"');
+                        if (!win) LAUNCH.append('"');
                     } else LAUNCH.append(s);
                     LAUNCH.append(' ');
                 }
@@ -85,6 +85,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                     if (jdk.exists()) {
                         String tmp = JavaHome + "bin/java ";
                         if (win) {
+                            tmp = tmp.trim();
                             tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
                             tmp = "\"" + tmp;
                             tmp = tmp + ".exe\"";
@@ -93,6 +94,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                     } else {
                         String tmp = JAVA + "/bin/java ";
                         if (win) {
+                            tmp = tmp.trim();
                             tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
                             tmp = "\"" + tmp;
                             tmp = tmp + ".exe\"";
