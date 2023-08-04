@@ -28,6 +28,8 @@
   ],
   "client": [
     "ClientMixinEntityLivingBase",
+    "MixinDebugRendererHeightMap",
+    "MixinDebugRendererNeighborsUpdate",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinFontRenderer",
@@ -41,6 +43,7 @@
     "MixinGuiScreen",
     "MixinGuiScreenAdvancements",
     "MixinGuiScreenDemo",
+    "MixinIntegratedServer",
     "MixinInventoryEffectRenderer",
     "MixinItemRenderer",
     "MixinLayerArmorBase",
@@ -59,6 +62,7 @@
     "MixinRenderLivingBase",
     "MixinTeleportToTeam",
     "MixinTileEntityEndPortalRenderer",
+    "MixinTutorial",
     "MixinViewFrustum",
     "MixinWorldClient"
   ],
