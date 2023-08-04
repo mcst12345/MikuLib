@@ -1,5 +1,6 @@
 package miku.lib.client.gui;
 
+import miku.lib.client.api.iMinecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -22,13 +23,10 @@ public class TheGui extends GuiScreen {
         this.buttonList.clear();
         this.enableButtonsTimer = 0;
 
-        if (this.mc.world.getWorldInfo().isHardcoreModeEnabled())
-        {
+        if (((iMinecraft) (this.mc)).MikuWorld().getWorldInfo().isHardcoreModeEnabled()) {
             this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 72, I18n.format("deathScreen.spectate")));
             this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 96, I18n.format("deathScreen." + (this.mc.isIntegratedServerRunning() ? "deleteWorld" : "leaveServer"))));
-        }
-        else
-        {
+        } else {
             this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 72, I18n.format("deathScreen.respawn")));
             this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 96, I18n.format("deathScreen.titleScreen")));
 
@@ -63,9 +61,8 @@ public class TheGui extends GuiScreen {
     {
         if (result)
         {
-            if (this.mc.world != null)
-            {
-                this.mc.world.sendQuittingDisconnectingPacket();
+            if (((iMinecraft) (this.mc)).MikuWorld() != null) {
+                ((iMinecraft) (this.mc)).MikuWorld().sendQuittingDisconnectingPacket();
             }
 
             this.mc.loadWorld(null);
@@ -80,7 +77,7 @@ public class TheGui extends GuiScreen {
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        boolean flag = this.mc.world.getWorldInfo().isHardcoreModeEnabled();
+        boolean flag = ((iMinecraft) (this.mc)).MikuWorld().getWorldInfo().isHardcoreModeEnabled();
         this.drawGradientRect(0, 0, this.width, this.height, 1615855616, -1602211792);
         GlStateManager.pushMatrix();
         GlStateManager.scale(2.0F, 2.0F, 2.0F);

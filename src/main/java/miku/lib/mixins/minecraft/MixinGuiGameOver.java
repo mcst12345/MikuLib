@@ -1,13 +1,13 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiGameOver;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+
+import java.io.IOException;
 
 @Mixin(value = GuiGameOver.class)
 public abstract class MixinGuiGameOver extends GuiScreen {
@@ -37,6 +37,29 @@ public abstract class MixinGuiGameOver extends GuiScreen {
 
         for (GuiButton guibutton : this.buttonList) {
             guibutton.enabled = false;
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK
+     */
+    @Overwrite
+    protected void actionPerformed(GuiButton button) throws IOException {
+        switch (button.id) {
+            case 0:
+                this.mc.player.respawnPlayer();
+                this.mc.displayGuiScreen(null);
+                break;
+            case 1:
+
+                if (((iMinecraft) (this.mc)).MikuWorld().getWorldInfo().isHardcoreModeEnabled()) {
+                    this.mc.displayGuiScreen(new GuiMainMenu());
+                } else {
+                    GuiYesNo guiyesno = new GuiYesNo(this, I18n.format("deathScreen.quit.confirm"), "", I18n.format("deathScreen.titleScreen"), I18n.format("deathScreen.respawn"), 0);
+                    this.mc.displayGuiScreen(guiyesno);
+                    guiyesno.setButtonDelay(20);
+                }
         }
     }
 }
