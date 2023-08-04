@@ -47,12 +47,14 @@ public class MikuKill extends CommandBase {
                 toKill.addAll(list);
                 toKill.remove(getCommandSenderAsPlayer(sender));
                 toKill.removeIf(e -> e instanceof EntityPlayer);
+                //System.out.println(toKill);
                 EntityUtil.Kill(toKill);
             } else if (Objects.equals(args[0], "@item")) {
                 List<Entity> list = server.getEntityWorld().loadedEntityList;
                 toKill.addAll(list);
                 toKill.remove(getCommandSenderAsPlayer(sender));
                 toKill.removeIf(e -> !(e instanceof EntityItem));
+                //System.out.println(toKill);
                 EntityUtil.Kill(toKill);
             } else {
                 Entity entity = getEntity(server, sender, args[0]);

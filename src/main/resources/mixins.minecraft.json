@@ -51,10 +51,12 @@
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinParticleManager",
+    "MixinPlayerControllerMP",
     "MixinRender",
     "MixinRenderGlobal",
     "MixinRenderItemFrame",
     "MixinRenderLivingBase",
+    "MixinTeleportToTeam",
     "MixinTileEntityEndPortalRenderer",
     "MixinViewFrustum",
     "MixinWorldClient"

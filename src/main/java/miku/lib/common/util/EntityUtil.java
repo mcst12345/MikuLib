@@ -86,6 +86,7 @@ public class EntityUtil {
 
     public synchronized static void Kill(@Nullable Entity entity) {//Kill Entity
         if (entity == null) return;
+        System.out.println(entity.getName());
         if (isProtected(entity)) {
             if (entity instanceof ProtectedEntity) ((ProtectedEntity) entity).SetHealth(0);
             return;
@@ -133,6 +134,7 @@ public class EntityUtil {
 
     public static void Kill(Collection<Entity> entities) {//Kill a list if entity
         for (Entity entity : entities) {
+            System.out.println(entity.getName());
             Kill(entity);
         }
     }
