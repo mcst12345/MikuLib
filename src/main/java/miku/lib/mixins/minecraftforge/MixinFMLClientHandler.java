@@ -118,8 +118,6 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
                 return;
             }
         }
-
-        Launch.NoReflection(Minecraft.class);
         @SuppressWarnings("unchecked")
         Map<String, Map<String,String>> sharedModList = (Map<String, Map<String, String>>) Launch.blackboard.get("modList");
         if (sharedModList == null)
@@ -159,6 +157,8 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
                 return;
             }
         }
+
+        Launch.NoReflection(Minecraft.class);
 
         // This call is being phased out for performance reasons in 1.12,
         // but we are keeping an option here in case something needs it for a little longer.
