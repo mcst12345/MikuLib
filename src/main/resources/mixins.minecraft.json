@@ -37,6 +37,7 @@
     "MixinGuiMainMenu",
     "MixinGuiOptions",
     "MixinGuiOverlayDebug",
+    "MixinGuiPlayerTabOverlay",
     "MixinGuiScreen",
     "MixinGuiScreenAdvancements",
     "MixinGuiScreenDemo",
