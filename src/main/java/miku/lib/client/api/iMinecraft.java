@@ -1,5 +1,6 @@
 package miku.lib.client.api;
 
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.profiler.Profiler;
 
@@ -21,4 +22,6 @@ public interface iMinecraft {
     Profiler MikuProfiler();
 
     EntityRenderer MikuEntityRenderer();
+
+    WorldClient MikuWorld();
 }
