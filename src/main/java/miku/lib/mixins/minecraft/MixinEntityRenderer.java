@@ -167,7 +167,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
         GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(((iMinecraft) this.mc).MikuWorld(), entity, partialTicks);
-        float hook = net.minecraftforge.client.ForgeHooksClient.getFogDensity((EntityRenderer) (Object) this, entity, iblockstate, partialTicks, 0.1F)
+        float hook = net.minecraftforge.client.ForgeHooksClient.getFogDensity((EntityRenderer) (Object) this, entity, iblockstate, partialTicks, 0.1F);
         if (hook >= 0) GlStateManager.setFogDensity(hook);
         else if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPotionActive(MobEffects.BLINDNESS)) {
             float f1 = 5.0F;
@@ -228,7 +228,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                 GlStateManager.setFogStart(f * 0.05F);
                 GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
             }
-            net.minecraftforge.client.ForgeHooksClient.onFogRender((EntityRenderer) (Object) this, entity, iblockstate, partialTicks, startCoords, f)
+            net.minecraftforge.client.ForgeHooksClient.onFogRender((EntityRenderer) (Object) this, entity, iblockstate, partialTicks, startCoords, f);
         }
 
         GlStateManager.enableColorMaterial();
