@@ -89,8 +89,9 @@ public class MikuCore implements IFMLLoadingPlugin {
                 }
                 String command = LAUNCH.toString().replace(",", "");
                 System.out.println("MikuLib has completed its file injection.Now restarting the game.");
+                System.out.println("Command:\n" + command);
                 if (win) {
-                    //TODO
+                    command.replace("/", "\\\\");
                     ProcessBuilder process = new ProcessBuilder("cmd /c " + command);
                     process.redirectErrorStream(true);
                     Process mc = process.start();
