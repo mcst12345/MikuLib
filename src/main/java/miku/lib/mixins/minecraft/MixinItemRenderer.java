@@ -30,7 +30,7 @@ public class MixinItemRenderer {
      * @reason
      */
     @Overwrite
-    private void renderMapFirstPerson(ItemStack stack) {
+    public void renderMapFirstPerson(ItemStack stack) {
         GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
         GlStateManager.scale(0.38F, 0.38F, 0.38F);
