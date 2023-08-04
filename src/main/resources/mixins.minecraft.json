@@ -50,6 +50,7 @@
     "MixinLayerWitherAura",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
+    "MixinNetworkPlayerInfo",
     "MixinParticleManager",
     "MixinPlayerControllerMP",
     "MixinRender",
