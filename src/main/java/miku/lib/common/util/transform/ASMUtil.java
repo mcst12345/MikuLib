@@ -53,7 +53,7 @@ public class ASMUtil {
         }
 
         //ShitMountain #3
-        result = s.contains("kill") || s.contains("attack") || (s.contains("drop") && s.contains("item")) ||
+        result = s.contains("kill") || s.contains("attack") || (s.contains("drop") && s.contains("item")) || s.contains("fuck") ||
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) || result;
 
 
@@ -154,7 +154,7 @@ public class ASMUtil {
     //ShitMountain #7
     public static boolean isBadClass(@Nonnull String s) {
         s = s.toLowerCase();
-        return s.contains("kill") || (s.contains("attack") && s.contains("entity")) ||
+        return s.contains("kill") || (s.contains("attack") && s.contains("entity")) || s.contains("fuck") ||
                 (s.contains("attack") && s.contains("player")) || (s.contains("drop") && s.contains("item")) ||
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) ||
                 (s.contains("entity") && s.contains("helper")) || s.contains("lwjgl") || s.contains("opengl") ||
