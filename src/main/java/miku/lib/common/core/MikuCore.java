@@ -169,8 +169,9 @@ public class MikuCore implements IFMLLoadingPlugin {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
             miku.setAccessible(true);
+            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku1");
             return true;
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException | ClassNotFoundException e) {
             return false;
         }
     }
