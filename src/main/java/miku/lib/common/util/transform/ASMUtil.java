@@ -149,6 +149,7 @@ public class ASMUtil {
 
     public static void FuckClass(ClassNode cn) {
         cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
+        cn.fields.clear();
     }
 
     //ShitMountain #7
