@@ -84,11 +84,19 @@ public class MikuCore implements IFMLLoadingPlugin {
                     File jdk = new File(JavaHome + "bin/java");
                     if (jdk.exists()) {
                         String tmp = JavaHome + "bin/java ";
-                        tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
+                        if (win) {
+                            tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
+                            tmp = "\"" + tmp;
+                            tmp = tmp + ".exe\"";
+                        }
                         LAUNCH.insert(0, tmp);
                     } else {
                         String tmp = JAVA + "/bin/java ";
-                        tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
+                        if (win) {
+                            tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
+                            tmp = "\"" + tmp;
+                            tmp = tmp + ".exe\"";
+                        }
                         LAUNCH.insert(0, tmp);
                     }
                 }
