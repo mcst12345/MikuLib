@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.nio.ByteBuffer;
 
-@Mixin(value = CloudRenderer.class)
+@Mixin(value = CloudRenderer.class, remap = false)
 public abstract class MixinCloudRenderer implements ISelectiveResourceReloadListener {
     @Shadow
     @Final

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(value = GuiScrollingList.class)
+@Mixin(value = GuiScrollingList.class, remap = false)
 public abstract class MixinGuiScrollingList {
     @Shadow
     protected int mouseX;

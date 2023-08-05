@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Function;
 
-@Mixin(value = AnimationItemOverrideList.class)
+@Mixin(value = AnimationItemOverrideList.class, remap = false)
 public abstract class MixinAnimationItemOverrideList extends ItemOverrideList {
 
     @Shadow

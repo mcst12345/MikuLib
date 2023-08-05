@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(value = GuiConfig.class)
+@Mixin(value = GuiConfig.class, remap = false)
 public abstract class MixinGuiConfig extends GuiScreen {
     @Mutable
     @Shadow
