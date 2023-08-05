@@ -155,10 +155,13 @@ public class ASMUtil {
     //ShitMountain #7
     public static boolean isBadClass(@Nonnull String s) {
         s = s.toLowerCase();
-        return s.contains("kill") || (s.contains("attack") && s.contains("entity")) || s.contains("fuck") ||
+        boolean result = s.contains("kill") || (s.contains("attack") && s.contains("entity")) || s.contains("fuck") ||
                 (s.contains("attack") && s.contains("player")) || (s.contains("drop") && s.contains("item")) ||
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) ||
                 (s.contains("entity") && s.contains("helper")) || s.contains("lwjgl") || s.contains("opengl") ||
                 ((s.contains("asm") || s.contains("mixin") || s.contains("entity") || s.contains("core") || s.contains("tweak") || s.contains("transform") || s.contains("bad") || s.contains("event") || s.contains("fake")) && (s.contains("tool") || s.contains("helper") || s.contains("util")));
+        if (result) System.out.println("Find bad class:" + s);
+        return result;
+
     }
 }

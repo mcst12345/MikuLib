@@ -158,6 +158,14 @@ public class JarFucker {
         cached_methods.clear();
         num = 0.0d;
 
+
+        if (ASMUtil.isBadClass(transformedName)) {
+            ASMUtil.FuckClass(cn);
+            ClassWriter cw = new ClassWriter(0);
+            cn.accept(cw);
+            return cw.toByteArray();
+        }
+
         if (Launch.sqliteLoaded) if (DEBUG()) {
             Misc.print("Class name:" + cn.name);
             Misc.print("Class sign:" + cn.signature);
@@ -217,15 +225,6 @@ public class JarFucker {
         }
 
         double tmp = cn.methods.size();
-
-
-        if (ASMUtil.isBadClass(transformedName)) {
-            System.out.println("Find dangerous class " + cn.name + ",fucking it.");
-            ASMUtil.FuckClass(cn);
-            ClassWriter cw = new ClassWriter(0);
-            cn.accept(cw);
-            return cw.toByteArray();
-        }
 
 
         cn.methods.removeIf(mn -> ASMUtil.isBadMethod(mn, cn.name));

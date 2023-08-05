@@ -772,7 +772,12 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                 }
 
                 if (OpenGlHelper.shadersSupported) {
-                    this.mc.renderGlobal.renderEntityOutlineFramebuffer();
+                    try {
+                        this.mc.renderGlobal.renderEntityOutlineFramebuffer();
+                    } catch (Throwable t) {
+                        System.out.println("MikuWarn:Catch exception at renderEntityOutlineFramebuffer");
+                        t.printStackTrace();
+                    }
 
                     if (this.shaderGroup != null && this.useShader) {
                         GlStateManager.matrixMode(5890);
@@ -794,7 +799,9 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                     this.renderItemActivation(i1, j1, partialTicks);
                     try {
                         this.mc.ingameGUI.renderGameOverlay(partialTicks);
-                    } catch (Throwable ignored) {
+                    } catch (Throwable t) {
+                        System.out.println("MikuWarn:Catch exception at renderGameOverlay");
+                        t.printStackTrace();
                     }
                 }
 

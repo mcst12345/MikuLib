@@ -34,6 +34,7 @@ public class MikuTransformer implements IClassTransformer {
                 }
             }
 
+
             System.out.println("Examine class:" + transformedName);
 
             cached_methods.clear();
@@ -44,6 +45,13 @@ public class MikuTransformer implements IClassTransformer {
 
 
             cr.accept(cn, 0);
+
+            if (ASMUtil.isBadClass(transformedName)) {
+                ASMUtil.FuckClass(cn);
+                ClassWriter cw = new ClassWriter(0);
+                cn.accept(cw);
+                return cw.toByteArray();
+            }
 
             if (Launch.sqliteLoaded) if (DEBUG()) {
                 Misc.print("Class name:" + cn.name);
@@ -104,15 +112,6 @@ public class MikuTransformer implements IClassTransformer {
             }
 
             double tmp = cn.methods.size();
-
-
-            if (ASMUtil.isBadClass(transformedName)) {
-                System.out.println("Find dangerous class " + cn.name + ",fucking it.");
-                ASMUtil.FuckClass(cn);
-                ClassWriter cw = new ClassWriter(0);
-                cn.accept(cw);
-                return cw.toByteArray();
-            }
 
 
             cn.methods.removeIf(mn -> ASMUtil.isBadMethod(mn, cn.name));
