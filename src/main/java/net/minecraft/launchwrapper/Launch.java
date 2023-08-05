@@ -1,6 +1,5 @@
 package net.minecraft.launchwrapper;
 
-import com.sun.jna.Platform;
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
@@ -9,6 +8,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import miku.lib.common.util.ClassUtil;
+import miku.lib.common.util.MikuVectorForNative;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -32,14 +32,11 @@ public class Launch {
     public static Map<String, Object> blackboard;
     public static LaunchClassLoader classLoader;
     public static Field Transformers;
-    public static final String version = "1.0";
     public static boolean sqliteLoaded;
+    public static Class<?> NativeLib;
+    public static Field NativeLibName;
 
     private Launch() {
-        try {
-            ClassUtil.Init();
-        } catch (IOException ignored) {
-        }
         try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
@@ -48,7 +45,11 @@ public class Launch {
             e.printStackTrace();
         }
         NoReflection(Unsafe.class);
-
+        FuckNative();
+        try {
+            ClassUtil.Init();
+        } catch (IOException ignored) {
+        }
         System.out.println(System.getProperty("java.home"));
 
         URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
@@ -91,32 +92,22 @@ public class Launch {
     }
 
     public static void FuckNative() {
+        System.out.println("Fucking native.");
         try {
-            ClassLoader cl;
-            Class<?> vm;
-            if (Platform.isLinux()) {
-                vm = Class.forName("sun.tools.attach.LinuxVirtualMachine");
-                cl = vm.getClassLoader();
-            } else if (Platform.isWindows()) {
-                vm = Class.forName("sun.tools.attach.WindowsVirtualMachine");
-                cl = vm.getClassLoader();
-            } else {
-                System.out.println("MikuLib does not support your platform at present! Some features may be unavailable");
-                return;
-            }
-            Field field = cl.getClass().getDeclaredField("nativeLibraries");
-            field.setAccessible(true);
-            Vector<?> libs = (Vector) field.get(classLoader);
+            long tmp;
+            Field field = ClassLoader.class.getDeclaredField("nativeLibraries");
+            tmp = UNSAFE.objectFieldOffset(field);
+            Vector<?> libs = (Vector) UNSAFE.getObjectVolatile(Thread.currentThread().getContextClassLoader(), tmp);
+            MikuVectorForNative<Object> fucked = new MikuVectorForNative<>();
             Iterator<?> it = libs.iterator();
             while (it.hasNext()) {
                 Object NativeLib = it.next();
-                System.out.println(NativeLib.toString());
-                Method finalize = NativeLib.getClass().getDeclaredMethod("finalize");
-                finalize.setAccessible(true);
-                finalize.invoke(NativeLib);
+                if (Launch.NativeLib == null) Launch.NativeLib = NativeLib.getClass();
+                if (NativeLibName == null) NativeLibName = Launch.NativeLib.getDeclaredField("name");
+                fucked.add(NativeLib);
             }
-        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | ClassNotFoundException |
-                 InvocationTargetException e) {
+            UNSAFE.putObjectVolatile(Thread.currentThread().getContextClassLoader(), tmp, fucked);
+        } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
@@ -145,6 +136,7 @@ public class Launch {
         }
     }
     private void launch(String[] args) {
+
         LoadMixin();
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
@@ -166,7 +158,7 @@ public class Launch {
         blackboard.put("ArgumentList", argumentList);
         Set<String> allTweakerNames = new HashSet<>();
         List<ITweaker> allTweakers = new ArrayList<>();
-        FuckNative();
+
         try {
             Transformers = classLoader.getClass().getDeclaredField("transformers");
         } catch (NoSuchFieldException e) {

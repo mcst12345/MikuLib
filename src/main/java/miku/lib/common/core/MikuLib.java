@@ -3,7 +3,6 @@ package miku.lib.common.core;
 import com.sun.jna.Platform;
 import miku.lib.common.core.proxy.CommonProxy;
 import miku.lib.common.util.ClassUtil;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -141,8 +140,6 @@ public class MikuLib {
                 throw new RuntimeException(e);
             }
         }
-
-        Launch.FuckNative();
     }
 
     @Mod.Instance
