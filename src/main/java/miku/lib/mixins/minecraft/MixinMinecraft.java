@@ -717,7 +717,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason FUCK!
      */
     @Overwrite
-    private void clickMouse() {
+    public void clickMouse() {
         if (this.leftClickCounter <= 0) {
             if (this.objectMouseOver == null) {
                 LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
@@ -758,7 +758,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason FUCK!
      */
     @Overwrite
-    private void middleClickMouse() {
+    public void middleClickMouse() {
         if (this.objectMouseOver != null && this.objectMouseOver.typeOfHit != RayTraceResult.Type.MISS) {
             net.minecraftforge.common.ForgeHooks.onPickBlock(this.objectMouseOver, this.player, this.MikuWorld);
         }
@@ -789,7 +789,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason Fuck!
      */
     @Overwrite
-    private void processKeyBinds() {
+    public void processKeyBinds() {
         for (; this.gameSettings.keyBindTogglePerspective.isPressed(); this.renderGlobal.setDisplayListEntitiesDirty()) {
             ++this.gameSettings.thirdPersonView;
 
@@ -1458,7 +1458,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason Fuck
      */
     @Overwrite
-    private void updateDebugProfilerName(int keyCount) {
+    public void updateDebugProfilerName(int keyCount) {
         List<Profiler.Result> list = this.MikuProfiler.getProfilingData(this.debugProfilerName);
 
         if (!list.isEmpty()) {
@@ -1594,7 +1594,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      */
     @Overwrite
     @SuppressWarnings("incomplete-switch")
-    private void rightClickMouse() {
+    public void rightClickMouse() {
         if (!this.playerController.getIsHittingBlock()) {
             this.rightClickDelayTimer = 4;
 
@@ -1655,7 +1655,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason Fuck!
      */
     @Overwrite
-    private void updateFramebufferSize() {
+    public void updateFramebufferSize() {
         this.framebuffer.createBindFramebuffer(this.displayWidth, this.displayHeight);
 
         if (this.MikuEntityRenderer != null) {
@@ -1789,7 +1789,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      * @reason Fuck!
      */
     @Overwrite
-    private void sendClickBlockToController(boolean leftClick) {
+    public void sendClickBlockToController(boolean leftClick) {
         if (!leftClick) {
             this.leftClickCounter = 0;
         }
