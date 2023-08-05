@@ -45,15 +45,30 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
-    protected final HashSet<Entity> protected_entities  = new HashSet<>();
-    public boolean HasEffect(EntityLivingBase entity){
-        for(MikuEffect effect : effects){
-            if(effect.entity == entity)return true;
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public void immediateBlockTick(BlockPos pos, IBlockState state, Random random) {
+        if (MikuInsaneMode.isMikuInsaneMode() || SpecialItem.isTimeStop()) return;
+        this.scheduledUpdatesAreImmediate = true;
+        state.getBlock().updateTick((World) (Object) this, pos, state, random);
+        this.scheduledUpdatesAreImmediate = false;
+    }
+
+    protected final HashSet<Entity> protected_entities = new HashSet<>();
+
+    public boolean HasEffect(EntityLivingBase entity) {
+        for (MikuEffect effect : effects) {
+            if (effect.entity == entity) return true;
         }
         return false;
     }
+
     private static final List<MikuEffect> effects = new ArrayList<>();
-    @Shadow protected List<IWorldEventListener> eventListeners;
+    @Shadow
+    protected List<IWorldEventListener> eventListeners;
 
     @Shadow protected abstract boolean isChunkLoaded(int x, int z, boolean allowEmpty);
 
@@ -96,17 +111,26 @@ public abstract class MixinWorld implements iWorld {
 
     @Shadow public abstract boolean addTileEntity(TileEntity tile);
 
-    @Shadow public abstract void notifyBlockUpdate(BlockPos pos, IBlockState oldState, IBlockState newState, int flags);
+    @Shadow
+    public abstract void notifyBlockUpdate(BlockPos pos, IBlockState oldState, IBlockState newState, int flags);
 
-    @Shadow protected abstract void tickPlayers();
+    @Shadow
+    protected abstract void tickPlayers();
 
-    @Shadow @Final public boolean isRemote;
+    @Shadow
+    @Final
+    public boolean isRemote;
 
-    @Shadow(remap = false) public abstract ImmutableSetMultimap<ChunkPos, ForgeChunkManager.Ticket> getPersistentChunks();
+    @Shadow(remap = false)
+    public abstract ImmutableSetMultimap<ChunkPos, ForgeChunkManager.Ticket> getPersistentChunks();
 
-    @Shadow protected abstract boolean isAreaLoaded(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, boolean allowEmpty);
+    @Shadow
+    protected abstract boolean isAreaLoaded(int xStart, int yStart, int zStart, int xEnd, int yEnd, int zEnd, boolean allowEmpty);
 
-    public void AddEffect(MikuEffect effect){
+    @Shadow
+    protected boolean scheduledUpdatesAreImmediate;
+
+    public void AddEffect(MikuEffect effect) {
         effects.add(effect);
     }
 
