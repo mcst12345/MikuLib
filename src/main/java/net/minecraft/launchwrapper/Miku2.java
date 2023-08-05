@@ -1,4 +1,4 @@
 package net.minecraft.launchwrapper;
 
-public class Miku1 {
+public class Miku2 {
 }
