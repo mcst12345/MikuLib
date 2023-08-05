@@ -163,6 +163,6 @@ public class EntityUtil {
 
     public static synchronized void REMOVE(World world) {//REMOVE dead entities from world
         world.loadedEntityList.removeAll(DEAD);
-        world.loadedEntityList.removeIf(e -> Dead.contains(e.getUniqueID()));
+        world.loadedEntityList.removeIf(e -> e.getUniqueID() != null && Dead.contains(e.getUniqueID()));
     }
 }
