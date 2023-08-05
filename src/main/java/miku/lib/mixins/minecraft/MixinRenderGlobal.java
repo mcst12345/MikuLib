@@ -149,9 +149,18 @@ public abstract class MixinRenderGlobal {
     @Shadow
     protected abstract Vector3f getViewVector(Entity entityIn, double partialTicks);
 
-    @Shadow
     @Nullable
-    protected abstract RenderChunk getRenderChunkOffset(BlockPos playerPos, RenderChunk renderChunkBase, EnumFacing facing);
+    private RenderChunk GetRenderChunkOffset(BlockPos playerPos, RenderChunk renderChunkBase, EnumFacing facing) {
+        BlockPos blockpos = renderChunkBase.getBlockPosOffset16(facing);
+
+        if (MathHelper.abs(playerPos.getX() - blockpos.getX()) > this.renderDistanceChunks * 16) {
+            return null;
+        } else if (blockpos.getY() >= 0 && blockpos.getY() < 256) {
+            return MathHelper.abs(playerPos.getZ() - blockpos.getZ()) > this.renderDistanceChunks * 16 ? null : ((iViewFrustum) this.viewFrustum).GetRenderChunk(blockpos);
+        } else {
+            return null;
+        }
+    }
 
     @Shadow
     private boolean debugFixTerrainFrustum;
@@ -512,7 +521,7 @@ public abstract class MixinRenderGlobal {
                 this.RenderINFOS.add(renderglobal$containerlocalrenderinformation1);
 
                 for (EnumFacing enumfacing1 : EnumFacing.values()) {
-                    RenderChunk renderchunk2 = this.getRenderChunkOffset(blockpos, renderchunk3, enumfacing1);
+                    RenderChunk renderchunk2 = this.GetRenderChunkOffset(blockpos, renderchunk3, enumfacing1);
 
                     if ((!flag1 || !renderglobal$containerlocalrenderinformation1.hasDirection(enumfacing1.getOpposite())) && (!flag1 || enumfacing2 == null || renderchunk3.getCompiledChunk().isVisible(enumfacing2.getOpposite(), enumfacing1)) && renderchunk2 != null && renderchunk2.setFrameIndex(frameCount) && camera.isBoundingBoxInFrustum(renderchunk2.boundingBox)) {
                         ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation = new ContainerLocalRenderInformation(renderchunk2, enumfacing1, renderglobal$containerlocalrenderinformation1.counter + 1);
