@@ -11,6 +11,7 @@ import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.MikuVectorForNative;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
+import org.lwjgl.opengl.ContextCapabilities;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import sun.misc.Unsafe;
 
@@ -50,6 +51,7 @@ public class Launch {
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);
         NoReflection(URLClassLoader.class);
+        NoReflection(ContextCapabilities.class);
         try {
             ClassUtil.Init();
         } catch (IOException ignored) {

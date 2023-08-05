@@ -10,7 +10,8 @@
     "MixinForgeEventFactory",
     "MixinForgeHooks",
     "MixinItemStack",
-    "MixinLoadController"
+    "MixinLoadController",
+    "MixinMinecraftForge"
   ],
   "client": [
     "MixinAnimationItemOverrideList",

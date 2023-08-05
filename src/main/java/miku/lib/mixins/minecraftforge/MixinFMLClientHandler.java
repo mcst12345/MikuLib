@@ -9,6 +9,7 @@ import miku.lib.common.api.iEventBus;
 import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourcePack;
@@ -68,6 +69,12 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
     @Overwrite
     public void beginMinecraftLoading(Minecraft minecraft, List<IResourcePack> resourcePackList, IReloadableResourceManager resourceManager, MetadataSerializer metaSerializer) {
         Launch.NoReflection(FMLClientHandler.class);
+        Launch.NoReflection(Gui.class);
+        Launch.NoReflection(GuiScreen.class);
+        Launch.NoReflection(GuiModList.class);
+        Launch.NoReflection(GuiMainMenu.class);
+        Launch.NoReflection(GuiIngame.class);
+        Launch.NoReflection(GuiChat.class);
         detectOptifine();
         SplashProgress.start();
         client = minecraft;
