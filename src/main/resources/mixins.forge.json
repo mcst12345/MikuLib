@@ -10,14 +10,18 @@
     "MixinForgeCommandHandler",
     "MixinForgeEventFactory",
     "MixinForgeHooks",
-    "MixinGuiModList",
     "MixinItemStack",
     "MixinLoadController"
   ],
   "client": [
+    "MixinAnimationItemOverrideList",
+    "MixinCloudRenderer",
     "MixinFMLClientHandler",
     "MixinForgeHooksClient",
-    "MixinGuiIngameForge"
+    "MixinGuiConfig",
+    "MixinGuiIngameForge",
+    "MixinGuiModList",
+    "MixinGuiScrollingList"
   ],
   "server": [
     "MixinFMLServerHandler"

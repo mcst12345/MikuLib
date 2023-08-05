@@ -8,6 +8,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.resources.I18n;
@@ -131,9 +132,6 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
 
     @Shadow
     public static boolean renderObjective;
-
-    @Shadow
-    protected abstract void renderPlayerList(int width, int height);
 
     private GuiOverlayDebugForge DebugOverlay;
 
@@ -286,7 +284,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
             regen = updateCounter % 25;
         }
 
-        final int TOP = 9 * (mc.world.getWorldInfo().isHardcoreModeEnabled() ? 5 : 0);
+        final int TOP = 9 * (((iMinecraft) mc).MikuWorld().getWorldInfo().isHardcoreModeEnabled() ? 5 : 0);
         final int BACKGROUND = (highlight ? 25 : 16);
         int MARGIN = 16;
         if (player.isPotionActive(MobEffects.POISON)) MARGIN += 36;
@@ -544,7 +542,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
         ArrayList<String> listR = new ArrayList<>();
 
         if (mc.isDemo()) {
-            long time = mc.world.getTotalWorldTime();
+            long time = ((iMinecraft) mc).MikuWorld().getTotalWorldTime();
             if (time >= 120500L) {
                 listR.add(I18n.format("demo.demoExpired"));
             } else {
@@ -809,7 +807,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
         renderTitle(width, height, partialTicks);
 
 
-        Scoreboard scoreboard = this.mc.world.getScoreboard();
+        Scoreboard scoreboard = ((iMinecraft) this.mc).MikuWorld().getScoreboard();
         ScoreObjective objective = null;
         ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(mc.player.getName());
         if (scoreplayerteam != null) {
@@ -834,5 +832,24 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
         GlStateManager.enableAlpha();
 
         post(ALL);
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    protected void renderPlayerList(int width, int height) {
+        ScoreObjective scoreobjective = ((iMinecraft) this.mc).MikuWorld().getScoreboard().getObjectiveInDisplaySlot(0);
+        NetHandlerPlayClient handler = mc.player.connection;
+
+        if (mc.gameSettings.keyBindPlayerList.isKeyDown() && (!mc.isIntegratedServerRunning() || handler.getPlayerInfoMap().size() > 1 || scoreobjective != null)) {
+            this.overlayPlayerList.updatePlayerList(true);
+            if (pre(PLAYER_LIST)) return;
+            this.overlayPlayerList.renderPlayerlist(width, ((iMinecraft) this.mc).MikuWorld().getScoreboard(), scoreobjective);
+            post(PLAYER_LIST);
+        } else {
+            this.overlayPlayerList.updatePlayerList(false);
+        }
     }
 }

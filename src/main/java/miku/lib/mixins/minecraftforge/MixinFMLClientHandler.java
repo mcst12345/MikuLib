@@ -4,14 +4,18 @@ import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import miku.lib.client.api.iMinecraft;
 import miku.lib.common.api.iEventBus;
 import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.client.CloudRenderer;
+import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.*;
@@ -53,6 +57,9 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
 
     @Shadow
     public abstract boolean hasError();
+
+    @Shadow
+    protected abstract CloudRenderer getCloudRenderer();
 
     /**
      * @author mcst12345
@@ -191,5 +198,28 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
         if (!hasError())
             Loader.instance().loadingComplete();
         SplashProgress.finish();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public WorldClient getWorldClient() {
+        return ((iMinecraft) client).MikuWorld();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public boolean renderClouds(int cloudTicks, float partialTicks) {
+        IRenderHandler renderer = ((iMinecraft) this.client).MikuWorld().provider.getCloudRenderer();
+        if (renderer != null) {
+            renderer.render(partialTicks, ((iMinecraft) this.client).MikuWorld(), this.client);
+            return true;
+        }
+        return getCloudRenderer().render(cloudTicks, partialTicks);
     }
 }
