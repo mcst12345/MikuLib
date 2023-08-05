@@ -1,5 +1,6 @@
 package net.minecraft.launchwrapper;
 
+import com.sun.jna.Platform;
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
@@ -91,31 +92,31 @@ public class Launch {
 
     public static void FuckNative() {
         try {
-            Field nativeContext = ClassLoader.class.getDeclaredField("nativeLibraryContext");
-            nativeContext.setAccessible(true);
-            Stack stack = (Stack) nativeContext.get(null);
-            for (Object item : stack) {
-                System.out.println(item.toString());
+            ClassLoader cl;
+            Class<?> vm;
+            if (Platform.isLinux()) {
+                vm = Class.forName("sun.tools.attach.LinuxVirtualMachine");
+                cl = vm.getClassLoader();
+            } else if (Platform.isWindows()) {
+                vm = Class.forName("sun.tools.attach.WindowsVirtualMachine");
+                cl = vm.getClassLoader();
+            } else {
+                System.out.println("MikuLib does not support your platform at present! Some features may be unavailable");
+                return;
             }
-            Field nativeLibraries = ClassLoader.class.getDeclaredField("nativeLibraries");
-            nativeLibraries.setAccessible(true);
-            Vector nativeLibrary = (Vector) nativeLibraries.get(Launch.class.getClassLoader());
-            for (Object item : nativeLibrary) {
-                System.out.println(item.toString());
+            Field field = cl.getClass().getDeclaredField("nativeLibraries");
+            field.setAccessible(true);
+            Vector<?> libs = (Vector) field.get(classLoader);
+            Iterator<?> it = libs.iterator();
+            while (it.hasNext()) {
+                Object NativeLib = it.next();
+                System.out.println(NativeLib.toString());
+                Method finalize = NativeLib.getClass().getDeclaredMethod("finalize");
+                finalize.setAccessible(true);
+                finalize.invoke(NativeLib);
             }
-            Field systemNativeLibrary = ClassLoader.class.getDeclaredField("systemNativeLibraries");
-            systemNativeLibrary.setAccessible(true);
-            Vector systemNativeLibraries = (Vector) systemNativeLibrary.get(null);
-            for (Object item : systemNativeLibraries) {
-                System.out.println(item.toString());
-            }
-            Field loadedLibraryName = ClassLoader.class.getDeclaredField("loadedLibraryNames");
-            loadedLibraryName.setAccessible(true);
-            Vector loadedLibraryNames = (Vector) loadedLibraryName.get(null);
-            for (Object item : loadedLibraryNames) {
-                System.out.println(item.toString());
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | ClassNotFoundException |
+                 InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
