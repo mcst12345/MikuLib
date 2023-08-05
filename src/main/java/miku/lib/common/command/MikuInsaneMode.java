@@ -39,7 +39,7 @@ public class MikuInsaneMode extends CommandBase {
         sender.sendMessage(new TextComponentString("MikuInsaneMode:" + MikuInsaneMode));
     }
 
-    public static boolean isMikuInsaneMode() {
+    public static synchronized boolean isMikuInsaneMode() {
         return MikuInsaneMode;
     }
 

@@ -20,7 +20,6 @@ public class InvokeDecompiler {
         // 第二步，获取LocalVariableTable信息
         List<LocalVariableNode> localVariables = mn.localVariables;
         if (localVariables == null || localVariables.size() < 1) {
-            System.out.println("LocalVariableTable is Empty");
             return result;
         }
 
