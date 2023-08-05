@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
+import java.security.SecureClassLoader;
 import java.util.*;
 
 public class Launch {
@@ -46,6 +47,9 @@ public class Launch {
         }
         NoReflection(Unsafe.class);
         FuckNative();
+        NoReflection(ClassLoader.class);
+        NoReflection(SecureClassLoader.class);
+        NoReflection(URLClassLoader.class);
         try {
             ClassUtil.Init();
         } catch (IOException ignored) {
