@@ -948,8 +948,10 @@ public abstract class MixinMinecraft implements iMinecraft {
         GuiScreen old = this.currentScreen;
         net.minecraftforge.client.event.GuiOpenEvent event = new net.minecraftforge.client.event.GuiOpenEvent(guiScreenIn);
 
-        if (!(guiScreenIn instanceof GuiGameOver) && !(guiScreenIn instanceof GuiMainMenu) && net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
-            return;
+        if (!MikuInsaneMode.isMikuInsaneMode()) {
+            if (!(guiScreenIn instanceof GuiGameOver) && !(guiScreenIn instanceof GuiMainMenu) && net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
+                return;
+        }
 
         if (!(guiScreenIn instanceof GuiGameOver) && !(guiScreenIn instanceof GuiMainMenu))
             guiScreenIn = event.getGui();
@@ -957,8 +959,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             old.onGuiClosed();
         }
 
-        if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer)
-        {
+        if (guiScreenIn instanceof GuiMainMenu || guiScreenIn instanceof GuiMultiplayer) {
             this.gameSettings.showDebugInfo = false;
             this.ingameGUI.getChatGUI().clearChatMessages(true);
         }
@@ -1668,7 +1669,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      */
     @Overwrite
     public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
-        if (MikuWorld != null) {
+        if (MikuWorld != null && !MikuInsaneMode.isMikuInsaneMode()) {
             try {
                 net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(world));
             } catch (Throwable t) {

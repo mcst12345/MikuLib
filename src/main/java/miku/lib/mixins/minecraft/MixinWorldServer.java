@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.crash.CrashReport;
@@ -129,10 +130,15 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
         for(Entity e : entityCollection){
             if(!EntityUtil.isDEAD(e))fucked.add(e);
         }
-        for (Entity entity : fucked)
-        {
-            if (this.canAddEntity(entity) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this)))
-            {
+        for (Entity entity : fucked) {
+            if (MikuInsaneMode.isMikuInsaneMode()) {
+                if (this.canAddEntity(entity)) {
+                    this.loadedEntityList.add(entity);
+                    this.onEntityAdded(entity);
+                }
+                continue;
+            }
+            if (this.canAddEntity(entity) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
                 this.loadedEntityList.add(entity);
                 this.onEntityAdded(entity);
             }

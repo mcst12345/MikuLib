@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraftforge;
 
+import miku.lib.common.command.MikuInsaneMode;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -38,6 +39,7 @@ public class MixinForgeHooksClient {
      */
     @Overwrite
     public static boolean postMouseEvent() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return false;
         boolean result;
         try {
             result = MinecraftForge.EVENT_BUS.post(new MouseEvent());
@@ -137,6 +139,7 @@ public class MixinForgeHooksClient {
      */
     @Overwrite
     public static void onInputUpdate(EntityPlayer player, MovementInput movementInput) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             MinecraftForge.EVENT_BUS.post(new InputUpdateEvent(player, movementInput));
         } catch (Throwable t) {

@@ -7,7 +7,6 @@
     "MixinEventBus",
     "MixinFMLCommonHandler",
     "MixinFMLModContainer",
-    "MixinForgeCommandHandler",
     "MixinForgeEventFactory",
     "MixinForgeHooks",
     "MixinItemStack",

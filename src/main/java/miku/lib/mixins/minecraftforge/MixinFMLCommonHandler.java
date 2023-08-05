@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraftforge;
 
+import miku.lib.common.command.MikuInsaneMode;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -28,6 +29,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPreClientTick() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.ClientTickEvent(TickEvent.Phase.START));
         } catch (Throwable t) {
@@ -42,6 +44,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPostClientTick() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
         } catch (Throwable t) {
@@ -56,6 +59,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPostServerTick() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.ServerTickEvent(TickEvent.Phase.END));
         } catch (Throwable t) {
@@ -70,6 +74,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPostWorldTick(World world) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.WorldTickEvent(Side.SERVER, TickEvent.Phase.END, world));
         } catch (Throwable t) {
@@ -84,6 +89,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPreServerTick() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.ServerTickEvent(TickEvent.Phase.START));
         } catch (Throwable t) {
@@ -98,6 +104,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPreWorldTick(World world) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.WorldTickEvent(Side.SERVER, TickEvent.Phase.START, world));
         } catch (Throwable t) {
@@ -112,6 +119,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onRenderTickStart(float timer) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         Animation.setClientPartialTickTime(timer);
         try {
             bus().post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, timer));
@@ -127,6 +135,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onRenderTickEnd(float timer) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, timer));
         } catch (Throwable t) {
@@ -141,6 +150,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPlayerPreTick(EntityPlayer player) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.PlayerTickEvent(TickEvent.Phase.START, player));
         } catch (Throwable t) {
@@ -155,6 +165,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void onPlayerPostTick(EntityPlayer player) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new TickEvent.PlayerTickEvent(TickEvent.Phase.END, player));
         } catch (Throwable t) {
@@ -177,6 +188,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void fireMouseInput() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new InputEvent.MouseInputEvent());
         } catch (Throwable t) {
@@ -191,6 +203,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void fireKeyInput() {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new InputEvent.KeyInputEvent());
         } catch (Throwable t) {
@@ -205,6 +218,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void firePlayerChangedDimensionEvent(EntityPlayer player, int fromDim, int toDim) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new PlayerEvent.PlayerChangedDimensionEvent(player, fromDim, toDim));
         } catch (Throwable t) {
@@ -219,6 +233,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void firePlayerLoggedIn(EntityPlayer player) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new PlayerEvent.PlayerLoggedInEvent(player));
         } catch (Throwable t) {
@@ -233,6 +248,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void firePlayerLoggedOut(EntityPlayer player) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new PlayerEvent.PlayerLoggedOutEvent(player));
         } catch (Throwable t) {
@@ -247,6 +263,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void firePlayerRespawnEvent(EntityPlayer player, boolean endConquered) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new PlayerEvent.PlayerRespawnEvent(player, endConquered));
         } catch (Throwable t) {
@@ -261,6 +278,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void firePlayerItemPickupEvent(EntityPlayer player, EntityItem item, ItemStack clone) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new PlayerEvent.ItemPickupEvent(player, item, clone));
         } catch (Throwable t) {
@@ -275,6 +293,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void firePlayerCraftingEvent(EntityPlayer player, ItemStack crafted, IInventory craftMatrix) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new PlayerEvent.ItemCraftedEvent(player, crafted, craftMatrix));
         } catch (Throwable t) {
@@ -289,6 +308,7 @@ public abstract class MixinFMLCommonHandler {
      */
     @Overwrite
     public void firePlayerSmeltedEvent(EntityPlayer player, ItemStack smelted) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
             bus().post(new PlayerEvent.ItemSmeltedEvent(player, smelted));
         } catch (Throwable t) {

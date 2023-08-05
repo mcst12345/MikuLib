@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraftforge;
 
+import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,9 +25,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static boolean onLivingUpdate(EntityLivingBase entity)
     {
-        if(EntityUtil.isProtected(entity)) {
+        if (MikuInsaneMode.isMikuInsaneMode()) return false;
+        if (EntityUtil.isProtected(entity)) {
             entity.isDead = false;
-            entity.deathTime=0;
+            entity.deathTime = 0;
             return false;
         }
         return MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingUpdateEvent(entity));
@@ -39,9 +41,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static void onLivingSetAttackTarget(EntityLivingBase entity, EntityLivingBase target)
     {
-        if(EntityUtil.isProtected(target)){
-            target.isDead=false;
-            target.deathTime=0;
+        if (MikuInsaneMode.isMikuInsaneMode()) return;
+        if (EntityUtil.isProtected(target)) {
+            target.isDead = false;
+            target.deathTime = 0;
             Update(target);
             return;
         }
@@ -55,9 +58,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static boolean onLivingAttack(EntityLivingBase entity, DamageSource src, float amount)
     {
-        if(EntityUtil.isProtected(entity)){
-            entity.isDead=false;
-            entity.deathTime=0;
+        if (MikuInsaneMode.isMikuInsaneMode()) return false;
+        if (EntityUtil.isProtected(entity)) {
+            entity.isDead = false;
+            entity.deathTime = 0;
             Update(entity);
             return true;
         }
@@ -71,9 +75,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static boolean onPlayerAttack(EntityLivingBase entity, DamageSource src, float amount)
     {
-        if(EntityUtil.isProtected(entity)){
-            entity.isDead=false;
-            entity.deathTime=0;
+        if (MikuInsaneMode.isMikuInsaneMode()) return false;
+        if (EntityUtil.isProtected(entity)) {
+            entity.isDead = false;
+            entity.deathTime = 0;
             Update(entity);
             return true;
         }
@@ -87,9 +92,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static float onLivingHurt(EntityLivingBase entity, DamageSource src, float amount)
     {
-        if(EntityUtil.isProtected(entity)){
-            entity.isDead=false;
-            entity.deathTime=0;
+        if (MikuInsaneMode.isMikuInsaneMode()) return Float.MAX_VALUE;
+        if (EntityUtil.isProtected(entity)) {
+            entity.isDead = false;
+            entity.deathTime = 0;
             Update(entity);
             return 0.0f;
         }
@@ -104,9 +110,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static float onLivingDamage(EntityLivingBase entity, DamageSource src, float amount)
     {
-        if(EntityUtil.isProtected(entity)){
-            entity.isDead=false;
-            entity.deathTime=0;
+        if (MikuInsaneMode.isMikuInsaneMode()) return Float.MAX_VALUE;
+        if (EntityUtil.isProtected(entity)) {
+            entity.isDead = false;
+            entity.deathTime = 0;
             Update(entity);
             return 0.0f;
         }
@@ -121,9 +128,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static boolean onLivingDeath(EntityLivingBase entity, DamageSource src)
     {
-        if(EntityUtil.isProtected(entity)){
-            entity.isDead=false;
-            entity.deathTime=0;
+        if (MikuInsaneMode.isMikuInsaneMode()) return false;
+        if (EntityUtil.isProtected(entity)) {
+            entity.isDead = false;
+            entity.deathTime = 0;
             Update(entity);
             return true;
         }
@@ -137,9 +145,10 @@ public class MixinForgeHooks {
     @Overwrite
     public static boolean onPlayerAttackTarget(EntityPlayer player, Entity target)
     {
-        if(EntityUtil.isProtected(target)){
-            target.isDead=false;
-            if(target instanceof EntityLivingBase)((EntityLivingBase)target).deathTime=0;
+        if (MikuInsaneMode.isMikuInsaneMode()) return false;
+        if (EntityUtil.isProtected(target)) {
+            target.isDead = false;
+            if (target instanceof EntityLivingBase) ((EntityLivingBase) target).deathTime = 0;
             Update(target);
             return true;
         }
