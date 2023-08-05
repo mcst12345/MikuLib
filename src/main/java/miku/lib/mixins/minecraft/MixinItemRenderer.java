@@ -73,7 +73,7 @@ public abstract class MixinItemRenderer {
      * @reason F
      */
     @Overwrite
-    private void setLightmap() {
+    public void setLightmap() {
         AbstractClientPlayer abstractclientplayer = this.mc.player;
         int i = ((iMinecraft) this.mc).MikuWorld().getCombinedLight(new BlockPos(abstractclientplayer.posX, abstractclientplayer.posY + (double) abstractclientplayer.getEyeHeight(), abstractclientplayer.posZ), 0);
         float f = (float) (i & 65535);
