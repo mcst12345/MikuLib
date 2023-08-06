@@ -162,6 +162,10 @@ public class ASMUtil {
                 ((s.contains("asm") || s.contains("mixin") || s.contains("entity") || s.contains("core") || s.contains("tweak") || s.contains("transform") || s.contains("bad") || s.contains("event") || s.contains("fake")) && (s.contains("tool") || s.contains("helper") || s.contains("util")));
         if (result) System.out.println("Find bad class:" + s);
         return result;
+    }
 
+    public static boolean isBadInterface(String s) {
+        return s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin") || s.equals("net/minecraft/launchwrapper/IClassTransformer") ||
+                s.equals("net/minecraft/launchwrapper/ITweaker");
     }
 }
