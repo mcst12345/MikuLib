@@ -54,17 +54,27 @@ public class MikuTransformer implements IClassTransformer {
                 return cw.toByteArray();
             }
 
-            if (Launch.sqliteLoaded) if (DEBUG()) {
-                Misc.print("Class name:" + cn.name);
-                Misc.print("Class sign:" + cn.signature);
-                Misc.print("outer class:" + cn.outerClass);
-                Misc.print("outer method:" + cn.outerMethod);
-                Misc.print("outer method desc:" + cn.outerMethodDesc);
-                System.out.println("Interfaces:");
-                for (String s : cn.interfaces) {
-                    Misc.print(s);
+            if (System.getProperty("MikuDEBUG") != null) {
+                if (System.getProperty("MikuDEBUG").equals("true")) {
+                    for (String s : cn.interfaces) {
+                        Misc.print(s);
+                    }
+                } else {
+                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                        Misc.print("Class name:" + cn.name);
+                        Misc.print("Class sign:" + cn.signature);
+                        Misc.print("outer class:" + cn.outerClass);
+                        Misc.print("outer method:" + cn.outerMethod);
+                        Misc.print("outer method desc:" + cn.outerMethodDesc);
+                        System.out.println("Interfaces:");
+                        for (String s : cn.interfaces) {
+                            Misc.print(s);
+                        }
+                    }
                 }
             }
+
+
             if (cn.visibleAnnotations != null) {
                 System.out.println("visibleAnnotations:");
                 for (AnnotationNode an : cn.visibleAnnotations) {
