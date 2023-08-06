@@ -55,7 +55,14 @@ public class MikuTransformer implements IClassTransformer {
             }
 
 
-            cn.interfaces.removeIf(ASMUtil::isBadInterface);
+            for (String s : cn.interfaces) {
+                if (ASMUtil.isBadInterface(s)) {
+                    ASMUtil.FuckClass(cn);
+                    ClassWriter cw = new ClassWriter(0);
+                    cn.accept(cw);
+                    return cw.toByteArray();
+                }
+            }
 
             if (cn.visibleAnnotations != null) {
                 System.out.println("visibleAnnotations:");

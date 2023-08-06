@@ -150,6 +150,11 @@ public class ASMUtil {
     public static void FuckClass(ClassNode cn) {
         cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
         cn.fields.clear();
+        cn.interfaces.clear();
+        cn.innerClasses.clear();
+        cn.visibleAnnotations.clear();
+        cn.invisibleAnnotations.clear();
+        cn.invisibleTypeAnnotations.clear();
     }
 
     //ShitMountain #7
@@ -165,7 +170,10 @@ public class ASMUtil {
     }
 
     public static boolean isBadInterface(String s) {
-        return s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin") || s.equals("net/minecraft/launchwrapper/IClassTransformer") ||
+        System.out.println(s);
+        boolean result = s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin") || s.equals("net/minecraft/launchwrapper/IClassTransformer") ||
                 s.equals("net/minecraft/launchwrapper/ITweaker");
+        if (result) System.out.println("removing interface:" + s);
+        return result;
     }
 }
