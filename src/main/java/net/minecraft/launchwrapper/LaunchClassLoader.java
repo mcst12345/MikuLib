@@ -192,8 +192,10 @@ public class LaunchClassLoader extends URLClassLoader {
             cachedClasses.put(transformedName, clazz);
             return clazz;
         } catch (Throwable e) {
-            e.printStackTrace();
-            if (!name.startsWith("javax.annotation")) System.out.println("MikuWarn:Failed to load class:" + name);
+            if (!name.startsWith("javax.annotation")) {
+                e.printStackTrace();
+                System.out.println("MikuWarn:Failed to load class:" + name);
+            }
             if (DEBUG) {
                 LogWrapper.log(Level.TRACE, e, "Exception encountered attempting classloading of %s", name);
                 LogManager.getLogger("LaunchWrapper").log(Level.ERROR, "Exception encountered attempting classloading of %s", e);
