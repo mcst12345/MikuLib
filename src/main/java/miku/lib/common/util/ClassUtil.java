@@ -1,5 +1,6 @@
 package miku.lib.common.util;
 
+import com.sun.jna.Platform;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -201,7 +202,28 @@ public class ClassUtil {
             DisablejarFucker = true;
         }
 
-        File minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
+        boolean windows = Platform.isWindows();
+
+        System.out.println(System.getenv("INST_DIR"));
+
+        String jar;
+
+        if (windows) {
+            jar = System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").lastIndexOf("\\"));
+        } else {
+            jar = System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").lastIndexOf("/"));
+        }
+
+        System.out.println(jar);
+
+        System.out.println(System.getProperty("user.dir"));
+        System.out.println(System.getProperty("minecraft.client.jar"));
+
+        File minecraft = new File(System.getenv("INST_DIR") + jar);
+        //if(System.getProperty("minecraft.client.jar").contains(":") || System.getProperty("minecraft.client.jar").startsWith("/")){
+        //    minecraft = new File(System.getProperty("minecraft.client.jar"));
+        //}
+        //else minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         minecraft.setReadable(true);
         minecraft.setWritable(true);
         AddJarToTransformerExclusions(minecraft, MinecraftClasses, MinecraftClassCache);

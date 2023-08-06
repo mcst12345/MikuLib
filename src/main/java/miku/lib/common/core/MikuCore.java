@@ -1,8 +1,6 @@
 package miku.lib.common.core;
 
 import com.sun.jna.Platform;
-import miku.lib.common.util.ClassUtil;
-import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.MikuArrayListForTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
@@ -32,9 +30,7 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     public MikuCore() throws IOException {
 
-
         FuckLaunchWrapper();
-        ClassUtil.Init();
 
         if (win) {
             System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");
@@ -52,7 +48,7 @@ public class MikuCore implements IFMLLoadingPlugin {
             System.out.println("The FUCK? You are running MikuLib on Android?");
         }
 
-        if (restart || JarFucker.shouldRestart()) {
+        if (restart) {
             try {
                 StringBuilder LAUNCH = new StringBuilder();
                 for (String s : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
@@ -169,7 +165,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
             miku.setAccessible(true);
-            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku2");
+            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku3");
             return true;
         } catch (NoSuchFieldException | ClassNotFoundException e) {
             return false;
