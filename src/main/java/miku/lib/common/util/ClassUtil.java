@@ -201,6 +201,16 @@ public class ClassUtil {
     }
 
     public static synchronized boolean Init() throws IOException {
+        String className = Thread.currentThread().getStackTrace()[2].getClassName();//调用的类名
+
+        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();//调用的方法名
+
+        int lineNumber = Thread.currentThread().getStackTrace()[2].getLineNumber();//调用的行数
+
+        System.out.println(className);
+        System.out.println(methodName);
+        System.out.println(lineNumber);
+
         if (LOADED) return false;
         if (System.getProperty("DisableJarFucker") != null) if (System.getProperty("DisableJarFucker").equals("true")) {
             DisablejarFucker = true;

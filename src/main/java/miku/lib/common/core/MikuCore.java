@@ -175,7 +175,6 @@ public class MikuCore implements IFMLLoadingPlugin {
     public synchronized static void FuckLaunchWrapper() {
         if (isLaunchFucked()) return;
         try {
-
             FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
             InputStream MikuLaunch;
             if (win) {

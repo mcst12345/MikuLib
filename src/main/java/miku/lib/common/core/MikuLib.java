@@ -38,6 +38,7 @@ public class MikuLib {
     static final boolean Android = Platform.isAndroid();
 
     public MikuLib() {
+        System.out.println("LaunchWrapperFucked:" + MikuCore.isLaunchFucked());
         if (!MikuCore.isLaunchFucked()) {
             MikuCore.FuckLaunchWrapper();
             if (win) {
