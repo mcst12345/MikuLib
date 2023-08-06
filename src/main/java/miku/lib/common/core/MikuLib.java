@@ -10,7 +10,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 
 
@@ -35,8 +38,8 @@ public class MikuLib {
     static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
     static final boolean Android = Platform.isAndroid();
 
-    public MikuLib() throws IOException {
-        if (ClassUtil.Init()) {
+    public MikuLib() {
+        if (!ClassUtil.Loaded()) {
             MikuCore.FuckLaunchWrapper();
             if (win) {
                 System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");
