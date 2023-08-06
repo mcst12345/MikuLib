@@ -186,6 +186,7 @@ public abstract class MixinMinecraftServer {
 
                 while (this.serverRunning)
                 {
+
                     long k = getCurrentTimeMillis();
                     long j = k - this.currentTime;
 

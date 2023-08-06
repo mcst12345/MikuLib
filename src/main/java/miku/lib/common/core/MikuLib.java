@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +37,12 @@ public class MikuLib {
     static final boolean MacOS = Platform.isMac();
     static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
     static final boolean Android = Platform.isAndroid();
+
+    private static final EventBus MikuEventBus = new EventBus();
+
+    public static EventBus MikuEventBus() {
+        return MikuEventBus;
+    }
 
     public MikuLib() {
         System.out.println("LaunchWrapperFucked:" + MikuCore.isLaunchFucked());
