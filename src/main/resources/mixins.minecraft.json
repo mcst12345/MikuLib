@@ -61,6 +61,7 @@
     "MixinRenderGlobal",
     "MixinRenderItemFrame",
     "MixinRenderLivingBase",
+    "MixinSoundManager",
     "MixinTeleportToTeam",
     "MixinTileEntityEndPortalRenderer",
     "MixinTutorial",

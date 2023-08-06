@@ -37,7 +37,7 @@ public class Launch {
     public static boolean sqliteLoaded;
     public static Class<?> NativeLib;
     public static Field NativeLibName;
-
+    protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
     private Launch() {
         try {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
@@ -68,6 +68,15 @@ public class Launch {
 
     public static void NoReflection(Class<?> clazz){
         try {
+            Field fieldAccessor = Field.class.getDeclaredField("fieldAccessor");
+            fieldAccessor.setAccessible(true);
+            Field overrideAccessor = Field.class.getDeclaredField("overrideFieldAccessor");
+            overrideAccessor.setAccessible(true);
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field f : fields) {
+                fieldAccessor.set(f, EMPTY_FIELD_ACCESSOR);
+                overrideAccessor.set(f, EMPTY_FIELD_ACCESSOR);
+            }
             Method method = Class.class.getDeclaredMethod("reflectionData");
             method.setAccessible(true);
             Object DATA = method.invoke(clazz);
