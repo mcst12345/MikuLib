@@ -4,6 +4,7 @@
   "package": "miku.lib.mixins.minecraft",
   "mixins": [
     "MixinBanIP",
+    "MixinBlockNote",
     "MixinChunk",
     "MixinCommandHandler",
     "MixinEnderInventory",

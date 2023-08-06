@@ -951,7 +951,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         net.minecraftforge.client.event.GuiOpenEvent event = new net.minecraftforge.client.event.GuiOpenEvent(guiScreenIn);
 
         if (!MikuInsaneMode.isMikuInsaneMode()) {
-            if (!(guiScreenIn instanceof GuiGameOver) && !(guiScreenIn instanceof GuiMainMenu) && net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
+            if (!(guiScreenIn instanceof GuiGameOver) && !(guiScreenIn instanceof GuiMainMenu) && MikuLib.MikuEventBus().post(event))
                 return;
         }
 
@@ -1675,7 +1675,7 @@ public abstract class MixinMinecraft implements iMinecraft {
     public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
         if (MikuWorld != null && !MikuInsaneMode.isMikuInsaneMode()) {
             try {
-                net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.WorldEvent.Unload(world));
+                MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Unload(world));
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Catch exception at WorldEvent.Unload");
                 t.printStackTrace();
