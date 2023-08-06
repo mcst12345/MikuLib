@@ -7,6 +7,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.gui.TheGui;
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
@@ -71,6 +72,7 @@ import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraft.world.storage.ISaveFormat;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.LWJGLException;
@@ -1277,6 +1279,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 while (this.running)
                 {
                     try {
+                        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                         this.profiler = this.MikuProfiler;
                         this.entityRenderer = this.MikuEntityRenderer;
                         this.world = this.MikuWorld;
@@ -1284,6 +1287,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                         this.profiler = this.MikuProfiler;
                         this.entityRenderer = this.MikuEntityRenderer;
                         this.world = this.MikuWorld;
+                        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                     }
                     catch (OutOfMemoryError var10)
                     {

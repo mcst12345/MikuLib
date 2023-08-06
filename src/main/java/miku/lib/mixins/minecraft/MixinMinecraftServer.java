@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.network.ServerStatusResponse;
@@ -12,6 +13,7 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -177,6 +179,7 @@ public abstract class MixinMinecraftServer {
         {
             if (this.init())
             {
+                MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarted();
                 this.currentTime = getCurrentTimeMillis();
                 long i = 0L;
@@ -186,6 +189,7 @@ public abstract class MixinMinecraftServer {
 
                 while (this.serverRunning)
                 {
+                    MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
 
                     long k = getCurrentTimeMillis();
                     long j = k - this.currentTime;
@@ -230,6 +234,7 @@ public abstract class MixinMinecraftServer {
 
                     Thread.sleep(Math.max(1L, 50L - i));
                     this.serverIsRunning = true;
+                    MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                 }
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStopping();
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().expectServerStopped(); // has to come before finalTick to avoid race conditions
