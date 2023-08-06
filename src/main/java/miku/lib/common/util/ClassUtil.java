@@ -51,7 +51,7 @@ public class ClassUtil {
                 JarEntry jarEntry = entries.nextElement();
                 if (!jarEntry.isDirectory()) {
                     if (jarEntry.getName().matches("(.*).class")) {
-                        String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
+                        String clazz = jarEntry.getName().replace("/", ".").replace(".class", "").trim();
                         if (clazz.equals("module-info")) continue;
                         list.add(clazz);
                         map.put(clazz, true);
@@ -81,6 +81,10 @@ public class ClassUtil {
 
     protected static boolean LOADED = false;
 
+    public static boolean Loaded() {
+        return LOADED;
+    }
+
     public synchronized static void ScanModJarFile(File file) throws IOException {
         if (file.getName().endsWith(".jar")) {
             boolean fucked = false;
@@ -95,7 +99,7 @@ public class ClassUtil {
                     JarEntry jarEntry = entries.nextElement();
                     if (!jarEntry.isDirectory()) {
                         if (jarEntry.getName().endsWith(".class")) {
-                            String clazz = jarEntry.getName().replace("/", ".").replace(".class", "");
+                            String clazz = jarEntry.getName().replace("/", ".").replace(".class", "").trim();
                             if (clazz.equals("module-info")) continue;
                             classes.add(clazz);
                             InputStream classStream = jar.getInputStream(jarEntry);
@@ -227,6 +231,56 @@ public class ClassUtil {
         minecraft.setReadable(true);
         minecraft.setWritable(true);
         AddJarToTransformerExclusions(minecraft, MinecraftClasses, MinecraftClassCache);
+        TransformerExclusions.add("net.minecraft.server.MinecraftServer");
+        GoodClassCache.put("net.minecraft.server.MinecraftServer", true);
+        TransformerExclusions.add("net.minecraft.server.MinecraftServer$1");
+        GoodClassCache.put("net.minecraft.server.MinecraftServer$1", true);
+        TransformerExclusions.add("net.minecraft.server.MinecraftServer$3");
+        GoodClassCache.put("net.minecraft.server.MinecraftServer$3", true);
+        TransformerExclusions.add("net.minecraft.server.MinecraftServer$4");
+        GoodClassCache.put("net.minecraft.server.MinecraftServer$4", true);
+        TransformerExclusions.add("net.minecraft.realms.DisconnectedRealmsScreen");
+        GoodClassCache.put("net.minecraft.realms.DisconnectedRealmsScreen", true);
+        TransformerExclusions.add("net.minecraft.realms.Realms");
+        GoodClassCache.put("net.minecraft.realms.Realms", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsAnvilLevelStorageSource");
+        GoodClassCache.put("net.minecraft.realms.RealmsAnvilLevelStorageSource", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsBridge");
+        GoodClassCache.put("net.minecraft.realms.RealmsBridge", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsBufferBuilder");
+        GoodClassCache.put("net.minecraft.realms.RealmsBufferBuilder", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsButton");
+        GoodClassCache.put("net.minecraft.realms.RealmsButton", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsClickableScrolledSelectionList");
+        GoodClassCache.put("net.minecraft.realms.RealmsClickableScrolledSelectionList", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsConnect");
+        GoodClassCache.put("net.minecraft.realms.RealmsConnect", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsDefaultVertexFormat");
+        GoodClassCache.put("net.minecraft.realms.RealmsDefaultVertexFormat", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsEditBox");
+        GoodClassCache.put("net.minecraft.realms.RealmsEditBox", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsLevelSummary");
+        GoodClassCache.put("net.minecraft.realms.RealmsLevelSummary", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsMth");
+        GoodClassCache.put("net.minecraft.realms.RealmsMth", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsScreen");
+        GoodClassCache.put("net.minecraft.realms.RealmsScreen", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsScrolledSelectionList");
+        GoodClassCache.put("net.minecraft.realms.RealmsScrolledSelectionList", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsServerAddress");
+        GoodClassCache.put("net.minecraft.realms.RealmsServerAddress", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsSharedConstants");
+        GoodClassCache.put("net.minecraft.realms.RealmsSharedConstants", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsSimpleScrolledSelectionList");
+        GoodClassCache.put("net.minecraft.realms.RealmsSimpleScrolledSelectionList", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsSliderButton");
+        GoodClassCache.put("net.minecraft.realms.RealmsSliderButton", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsVertexFormat");
+        GoodClassCache.put("net.minecraft.realms.RealmsVertexFormat", true);
+        TransformerExclusions.add("net.minecraft.realms.RealmsVertexFormatElement");
+        GoodClassCache.put("net.minecraft.realms.RealmsVertexFormatElement", true);
+        TransformerExclusions.add("net.minecraft.realms.Tezzelator");
+        GoodClassCache.put("net.minecraft.realms.Tezzelator", true);
 
         File libraires = new File("libraries");
         libraires.setWritable(true);
@@ -242,6 +296,21 @@ public class ClassUtil {
 
         ScanMods(mods);
         LOADED = true;
+
+        if (System.getProperty("MikuDEBUG") != null) {
+            if (System.getProperty("MikuDEBUG").equals("true")) {
+                for (String s : TransformerExclusions) {
+                    System.out.println(s);
+                }
+                for (String s : MinecraftClasses) {
+                    System.out.println(s);
+                }
+                for (String s : LibraryClasses) {
+                    System.out.println(s);
+                }
+            }
+        }
+
         return true;
     }
 
@@ -277,6 +346,7 @@ public class ClassUtil {
     public static boolean isGoodClass(String s) {
         if (s == null) return false;
         if (GoodClassCache.containsKey(s)) return GoodClassCache.get(s);
+
         for (String c : TransformerExclusions) {
             if (s.contains(c)) {
                 GoodClassCache.put(s, true);
@@ -291,7 +361,8 @@ public class ClassUtil {
         if (s == null) return false;
         if (MinecraftClassCache.containsKey(s)) return MinecraftClassCache.get(s);
         for (String c : MinecraftClasses) {
-            if (s.equals(c)) {
+            if (s.contains(c)) {
+                System.out.println(s + ":" + c);
                 MinecraftClassCache.put(s, true);
                 return true;
             }
@@ -305,6 +376,7 @@ public class ClassUtil {
         if (LibraryClassCache.containsKey(s)) return LibraryClassCache.get(s);
         for (String c : LibraryClasses) {
             if (s.contains(c)) {
+                System.out.println(s + ":" + c);
                 System.out.println(s);
                 System.out.println(c);
                 LibraryClassCache.put(s, true);

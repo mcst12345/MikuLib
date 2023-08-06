@@ -14,7 +14,6 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
-        classLoader.registerTransformer("miku.lib.common.core.MikuTransformer");
     }
 
     @Override

@@ -27,9 +27,10 @@ public class MikuTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (!ClassUtil.Loaded()) return basicClass;
         if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name)) {
-            if(!name.equals(transformedName)){
-                if(ClassUtil.isMinecraftClass(name)){
+            if (!name.equals(transformedName)) {
+                if (ClassUtil.isMinecraftClass(name)) {
                     return basicClass;
                 }
             }

@@ -1,5 +1,6 @@
 package net.minecraft.launchwrapper;
 
+import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.util.ClassUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -79,6 +80,8 @@ public class LaunchClassLoader extends URLClassLoader {
                 tempFolder.mkdirs();
             }
         }
+
+        transformers.add(new MikuTransformer());
     }
 
     private static void closeSilently(Closeable closeable) {

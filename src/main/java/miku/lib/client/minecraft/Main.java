@@ -6,7 +6,6 @@ import com.mojang.authlib.properties.PropertyMap;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import miku.lib.common.util.ClassUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfiguration;
 import net.minecraft.util.JsonUtils;
@@ -15,7 +14,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.PasswordAuthentication;
@@ -101,10 +99,6 @@ public class Main {
         GameConfiguration gameconfiguration = new GameConfiguration(new GameConfiguration.UserInformation(session, propertymap, propertymap1, proxy), new GameConfiguration.DisplayInformation(i, j, flag, flag1), new GameConfiguration.FolderInformation(file1, file3, file2, s6), new GameConfiguration.GameInformation(false, s3, s4), new GameConfiguration.ServerInformation(s7, integer));
         Runtime.getRuntime().addShutdownHook(new Thread("Client Shutdown Thread") {
             public void run() {
-                try {
-                    ClassUtil.Init();
-                } catch (IOException ignored) {
-                }
                 Minecraft.stopIntegratedServer();
             }
         });
