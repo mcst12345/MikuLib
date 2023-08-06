@@ -126,7 +126,8 @@ public class LaunchClassLoader extends URLClassLoader {
                     cachedClasses.put(name, clazz);
                     return clazz;
                 } catch (ClassNotFoundException e) {
-                    System.out.println("MikuWarn:Class " + name + " which is in transformerExceptions can't be found in URLClassLoader.");
+                    if (!name.startsWith("javax.annotation"))
+                        System.out.println("MikuWarn:Class " + name + " which is in transformerExceptions can't be found in URLClassLoader.");
                 }
             }
         }
@@ -192,7 +193,7 @@ public class LaunchClassLoader extends URLClassLoader {
             return clazz;
         } catch (Throwable e) {
             e.printStackTrace();
-            System.out.println("MikuWarn:Failed to load class:"+name);
+            if (!name.startsWith("javax.annotation")) System.out.println("MikuWarn:Failed to load class:" + name);
             if (DEBUG) {
                 LogWrapper.log(Level.TRACE, e, "Exception encountered attempting classloading of %s", name);
                 LogManager.getLogger("LaunchWrapper").log(Level.ERROR, "Exception encountered attempting classloading of %s", e);
