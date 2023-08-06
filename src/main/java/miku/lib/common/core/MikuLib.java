@@ -2,7 +2,6 @@ package miku.lib.common.core;
 
 import com.sun.jna.Platform;
 import miku.lib.common.core.proxy.CommonProxy;
-import miku.lib.common.util.ClassUtil;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -39,7 +38,7 @@ public class MikuLib {
     static final boolean Android = Platform.isAndroid();
 
     public MikuLib() {
-        if (!ClassUtil.Loaded()) {
+        if (!MikuCore.isLaunchFucked()) {
             MikuCore.FuckLaunchWrapper();
             if (win) {
                 System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");
