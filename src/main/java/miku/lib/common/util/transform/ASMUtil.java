@@ -148,13 +148,13 @@ public class ASMUtil {
     }
 
     public static void FuckClass(ClassNode cn) {
-        cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
-        cn.fields.clear();
-        cn.interfaces.clear();
-        cn.innerClasses.clear();
-        cn.visibleAnnotations.clear();
-        cn.invisibleAnnotations.clear();
-        cn.invisibleTypeAnnotations.clear();
+        if (cn.methods != null) cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
+        if (cn.fields != null) cn.fields.clear();
+        if (cn.interfaces != null) cn.interfaces.clear();
+        if (cn.innerClasses != null) cn.innerClasses.clear();
+        if (cn.visibleAnnotations != null) cn.visibleAnnotations.clear();
+        if (cn.invisibleAnnotations != null) cn.invisibleAnnotations.clear();
+        if (cn.invisibleTypeAnnotations != null) cn.invisibleTypeAnnotations.clear();
     }
 
     //ShitMountain #7
