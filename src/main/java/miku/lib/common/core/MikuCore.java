@@ -4,6 +4,7 @@ import com.sun.jna.Platform;
 import miku.lib.common.util.MikuArrayListForTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -13,9 +14,15 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
@@ -28,9 +35,10 @@ public class MikuCore implements IFMLLoadingPlugin {
     static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
     static final boolean Android = Platform.isAndroid();
 
-    public MikuCore() throws IOException {
+    public MikuCore() {
 
         FuckLaunchWrapper();
+        FuckForge();
 
         if (win) {
             System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");
@@ -165,7 +173,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
             miku.setAccessible(true);
-            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku3");
+            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku4");
             return true;
         } catch (NoSuchFieldException | ClassNotFoundException e) {
             return false;
@@ -188,6 +196,50 @@ public class MikuCore implements IFMLLoadingPlugin {
         } catch (IOException ignored) {
         }
         restart = true;
+    }
+
+    public synchronized static void FuckForge() {
+        System.out.println("Fucking Forge.");
+        if (ForgeFucked()) return;
+        String forge = null;
+        for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            if (path.contains("net/minecraftforge/forge")) forge = path;
+        }
+        if (forge == null) {
+            throw new RuntimeException("The fuck?I can't find your forge file!");
+        }
+        try {
+            JarFile jar = new JarFile(forge);
+            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
+            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                JarEntry entry = entries.nextElement();
+                try (InputStream is = jar.getInputStream(entry)) {
+                    System.out.println(entry.getName());
+                    if (entry.getName().equals("net/minecraftforge/fml/relauncher/CoreModManager$FMLPluginWrapper.class")) {
+                        //TODO
+                    }
+                    if (entry.getName().equals("net/minecraftforge/fml/relauncher/CoreModManager.class")) {
+                        //TODO
+                    }
+                }
+            }
+            jos.closeEntry();
+            jos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //restart = true;
+    }
+
+    public synchronized static boolean ForgeFucked() {
+        try {
+            Field field = CoreModManager.class.getDeclaredField("Miku1");
+            field.setAccessible(true);
+            return true;
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
     }
 
     @Override

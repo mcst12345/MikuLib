@@ -35,7 +35,7 @@ public class MikuVectorForNative<E> extends Vector<E> {
         long tmp = Launch.UNSAFE.objectFieldOffset(Launch.NativeLibName);
         String name = (String) Launch.UNSAFE.getObjectVolatile(o, tmp);
         return name.equals("/libjawt.so") || name.endsWith("/liblwjgl64.so") || name.endsWith("\\attach.dll") ||
-                name.endsWith("/libattach.so") || name.endsWith("\\lwjgl64.dll");
+                name.endsWith("/libattach.so") || name.endsWith("\\lwjgl64.dll") || (name.startsWith("/tmp/sqlite-3.42.0.0") && name.endsWith("-libsqlitejdbc.so"));
     }
 
     protected static void printName(Object o) {
