@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.Mixins;
 import sun.misc.Unsafe;
 
 import java.io.File;
@@ -225,10 +226,9 @@ public class Launch {
 
             if(MikuLibInstalled()) {
                 try {
-                    Class<?> MikuCore = Class.forName("miku.lib.common.core.MikuCore",false,classLoader);
-                    Method InitMixin = MikuCore.getDeclaredMethod("InitMixin");
-                    InitMixin.invoke(null);
-                } catch (ClassNotFoundException e) {
+                    Mixins.addConfiguration("mixins.minecraft.json");
+                    Mixins.addConfiguration("mixins.forge.json");
+                } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             }

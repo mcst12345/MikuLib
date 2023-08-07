@@ -148,7 +148,23 @@ public class ASMUtil {
     }
 
     public static void FuckClass(ClassNode cn) {
-        if (cn.methods != null) cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
+        if (cn.methods != null) {
+            cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
+            for (MethodNode mn : cn.methods) {
+                if (mn.parameters != null) mn.parameters.clear();
+                if (mn.attrs != null) mn.attrs.clear();
+                if (mn.exceptions != null) mn.exceptions.clear();
+                if (mn.invisibleAnnotations != null) mn.invisibleAnnotations.clear();
+                if (mn.instructions != null) mn.instructions.clear();
+                if (mn.invisibleLocalVariableAnnotations != null) mn.invisibleLocalVariableAnnotations.clear();
+                if (mn.invisibleTypeAnnotations != null) mn.invisibleTypeAnnotations.clear();
+                if (mn.localVariables != null) mn.localVariables.clear();
+                if (mn.visibleTypeAnnotations != null) mn.visibleTypeAnnotations.clear();
+                if (mn.tryCatchBlocks != null) mn.tryCatchBlocks.clear();
+                if (mn.visibleAnnotations != null) mn.visibleAnnotations.clear();
+                if (mn.visibleLocalVariableAnnotations != null) mn.visibleLocalVariableAnnotations.clear();
+            }
+        }
         if (cn.fields != null) cn.fields.clear();
         if (cn.interfaces != null) cn.interfaces.clear();
         if (cn.innerClasses != null) cn.innerClasses.clear();

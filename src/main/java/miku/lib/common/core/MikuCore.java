@@ -8,7 +8,6 @@ import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.spongepowered.asm.mixin.Mixins;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -159,17 +158,6 @@ public class MikuCore implements IFMLLoadingPlugin {
         Launch.NoReflection(MikuCore.class);
     }
 
-    public static void InitMixin(){
-        try {
-            //Add Mixin configs.
-            Mixins.addConfiguration("mixins.minecraft.json");
-            Mixins.addConfiguration("mixins.forge.json");
-        } catch (Throwable e) {
-            if (isLaunchFucked()) {
-                System.out.println("The fuck? MikuLib can't apply mixins.");
-            }
-        }
-    }
     protected synchronized static boolean isLaunchFucked() {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
