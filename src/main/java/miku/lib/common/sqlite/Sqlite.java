@@ -277,6 +277,6 @@ public class Sqlite {
     }
 
     private static boolean hasReturn(String s){
-        return s.matches("SELECT (.*)");
+        return s.startsWith("SELECT ");
     }
 }

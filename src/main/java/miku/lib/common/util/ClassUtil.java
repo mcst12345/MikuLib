@@ -51,7 +51,7 @@ public class ClassUtil {
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = entries.nextElement();
                 if (!jarEntry.isDirectory()) {
-                    if (jarEntry.getName().matches("(.*).class")) {
+                    if (jarEntry.getName().endsWith(".class")) {
                         String clazz = jarEntry.getName().replace("/", ".").replace(".class", "").trim();
                         if (clazz.equals("module-info")) continue;
                         list.add(clazz);
@@ -163,7 +163,7 @@ public class ClassUtil {
                             } catch (Throwable e) {
                                 System.out.println("Ignore class file:" + clazz);
                             }
-                        } else if (jarEntry.getName().matches("(.*)mcmod.info")) {
+                        } else if (jarEntry.getName().endsWith("mcmod.info")) {
                             //TODO ?
                         } else if (jarEntry.getName().equals("META-INF/MANIFEST.MF")) {
                             try (InputStream is = jar.getInputStream(jarEntry)) {

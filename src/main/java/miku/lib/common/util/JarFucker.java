@@ -67,7 +67,7 @@ public class JarFucker {
                         jos.write(fucked.getBytes());
                         br.close();
                         isr.close();
-                    } else if (entry.getName().matches("(.*).class") && !entry.getName().contains("$")) {
+                    } else if (entry.getName().endsWith(".class") && !entry.getName().contains("$")) {
                         byte[] original = new byte[is.available()];
                         is.read(original);
                         boolean shouldAdd = true;
@@ -145,7 +145,7 @@ public class JarFucker {
     protected static boolean BadMANIFEST(String s) {
         return s.contains("FMLCorePlugin") || s.contains("FMLCorePluginContainsFMLMod") || s.contains("TweakClass") ||
                 s.contains("ForceLoadAsMod") || s.contains("Name:") || s.contains("SHA-256-Digest:") || s.contains("Premain-Class") ||
-                s.contains("Agent-Class:") || s.matches("(.*).class") || s.trim().length() <= 5;
+                s.contains("Agent-Class:") || s.endsWith(".class") || s.trim().length() <= 5;
     }
 
     public static boolean shouldRestart() {

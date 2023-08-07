@@ -21,14 +21,14 @@ import java.sql.SQLException;
 public class MixinCommandHandler {
     @Inject(at=@At("HEAD"),method = "tryExecute", cancellable = true)
     protected void tryExecute(ICommandSender sender, String[] args, ICommand command, String input, CallbackInfoReturnable<Boolean> cir) throws CommandException {
-        if(command instanceof SQLOperation || input.matches("/sql (.*)")){
+        if (command instanceof SQLOperation || input.startsWith("/sql ")) {
             String statement = input.substring(4).trim();
             System.out.println(statement);
-            try(ResultSet rs = Sqlite.ExecuteSQL(statement)) {
-                if(rs!=null && sender instanceof EntityPlayerMP){
+            try (ResultSet rs = Sqlite.ExecuteSQL(statement)) {
+                if (rs != null && sender instanceof EntityPlayerMP) {
                     ResultSetMetaData md = rs.getMetaData();
                     int columnCount = md.getColumnCount();
-                    while (rs.next()){
+                    while (rs.next()) {
                         for (int i = 1; i <= columnCount; i++) {
                             sender.sendMessage(new TextComponentString(md.getColumnName(i) + ":" + rs.getObject(i)));
                         }

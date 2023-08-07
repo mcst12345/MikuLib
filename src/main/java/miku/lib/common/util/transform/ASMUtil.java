@@ -7,6 +7,7 @@ import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Misc;
 import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.Attribute;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 
@@ -19,16 +20,16 @@ public class ASMUtil {
 
     //ShitMountain #2
     private static boolean BadInvoke(String str) {
-        return str.matches("(.*)func_110143_aJ") || str.matches("(.*)func_70106_y") || str.equals("net/minecraft/entity/EntityLivingBase.func_70659_e") ||
-                str.matches("(.*)func_70645_a") || str.matches("(.*)func_130011_c") || str.matches("(.*)func_70606_j") ||
-                str.matches("(.*)func_70097_a") || str.equals("net/minecraft/entity/ai/attributes/IAttributeInstance.func_111128_a") || str.equals("net/minecraft/world/World.func_175681_c") ||
+        return str.endsWith("func_110143_aJ") || str.endsWith("func_70106_y") || str.equals("net/minecraft/entity/EntityLivingBase.func_70659_e") ||
+                str.endsWith("func_70645_a") || str.endsWith("func_130011_c") || str.endsWith("func_70606_j") ||
+                str.endsWith("func_70097_a") || str.equals("net/minecraft/entity/ai/attributes/IAttributeInstance.func_111128_a") || str.equals("net/minecraft/world/World.func_175681_c") ||
                 str.equals("net/minecraft/world/World.func_72847_b") || str.equals("net/minecraft/world/chunk/Chunk.func_76622_b") || str.equals("net/minecraft/world/World.func_72960_a") ||
-                str.matches("(.*)func_110142_aN") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_174925_a") ||
+                str.endsWith("func_110142_aN") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_174925_a") ||
                 str.equals("net/minecraft/util/CombatTracker.func_94547_a") || str.equals("net/minecraft/util/DamageSource.func_76359_i") ||
                 str.equals("net/minecraft/entity/player/EntityPlayer.func_70074_a") || str.equals("net/minecraft/entity/player/EntityPlayer.func_70103_a") ||
-                str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.matches("(.*)func_70674_bp") ||
-                str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b") || str.matches("(.*)func_72900_e") || str.equals("net/minecraft/entity/Entity.func_82142_c") || str.matches("(.*)func_70665_d") ||
-                str.matches("(.*)func_70103_a");
+                str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.endsWith("func_70674_bp") ||
+                str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b") || str.endsWith("func_72900_e") || str.equals("net/minecraft/entity/Entity.func_82142_c") || str.endsWith("func_70665_d") ||
+                str.endsWith("func_70103_a");
     }
 
     public static boolean isBadMethod(MethodNode method, String className) {
@@ -48,7 +49,7 @@ public class ASMUtil {
         }
         if (method.name == null) return false;
         String s = method.name.toLowerCase();
-        if (s.matches("<(.*)init(.*)>")) {//Skip the constructor
+        if (s.startsWith("<") && s.endsWith(">") && s.contains("init")) {//Skip the constructor
             return false;
         }
 
@@ -149,20 +150,12 @@ public class ASMUtil {
 
     public static void FuckClass(ClassNode cn) {
         if (cn.methods != null) {
-            cn.methods.removeIf(mn -> !mn.name.matches("<(.*)init(.*)>"));
-            for (MethodNode mn : cn.methods) {
-                //if (mn.parameters != null) mn.parameters.clear();
-                //if (mn.attrs != null) mn.attrs.clear();
-                //if (mn.exceptions != null) mn.exceptions.clear();
-                //if (mn.invisibleAnnotations != null) mn.invisibleAnnotations.clear();
-                if (mn.instructions != null) mn.instructions.clear();
-                //if (mn.invisibleLocalVariableAnnotations != null) mn.invisibleLocalVariableAnnotations.clear();
-                //if (mn.invisibleTypeAnnotations != null) mn.invisibleTypeAnnotations.clear();
-                //if (mn.localVariables != null) mn.localVariables.clear();
-                //if (mn.visibleTypeAnnotations != null) mn.visibleTypeAnnotations.clear();
-                //if (mn.tryCatchBlocks != null) mn.tryCatchBlocks.clear();
-                //if (mn.visibleAnnotations != null) mn.visibleAnnotations.clear();
-                //if (mn.visibleLocalVariableAnnotations != null) mn.visibleLocalVariableAnnotations.clear();
+            cn.methods.removeIf(mn -> !(mn.name.startsWith("<") && mn.name.endsWith(">") && mn.name.contains("init")));
+            for (int i = 0; i < cn.methods.size(); i++) {
+                String name = cn.methods.get(i).name;
+                String desc = cn.methods.get(i).desc;
+                String sign = cn.methods.get(i).signature;
+                cn.methods.set(i, new MethodNode(Opcodes.ASM5, Opcodes.ACC_PUBLIC, name, desc, sign, new String[0]));
             }
         }
         if (cn.fields != null) cn.fields.clear();
