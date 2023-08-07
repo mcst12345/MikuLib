@@ -25,6 +25,6 @@ public class SQLOperation extends CommandBase {
 
     @Override
     public void execute(@Nonnull MinecraftServer server,@Nonnull ICommandSender sender,@Nonnull String[] args) {
-        //miku.lib.mixins.minecraft.MixinCommandHandler
+        //miku.lib.common.mixins.minecraft.MixinCommandHandler
     }
 }
