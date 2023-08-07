@@ -41,17 +41,33 @@ public class LaunchClassLoader extends URLClassLoader {
     private final Set<String> negativeResourceCache = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final ThreadLocal<byte[]> loadBuffer = new ThreadLocal<>();
     private IClassNameTransformer renameTransformer;
-
+    private static final MikuTransformer Miku = new MikuTransformer();
     public LaunchClassLoader(URL[] sources) {
         super(sources, null);
         this.sources = new ArrayList<>(Arrays.asList(sources));
 
         // classloader exclusions
-        addClassLoaderExclusion("java.");
-        addClassLoaderExclusion("sun.");
-        addClassLoaderExclusion("org.lwjgl.");
-        addClassLoaderExclusion("org.apache.logging.");
-        addClassLoaderExclusion("net.minecraft.launchwrapper.");
+        classLoaderExceptions.add("java.");
+        classLoaderExceptions.add("sun.");
+        classLoaderExceptions.add("org.lwjgl.");
+        classLoaderExceptions.add("org.apache.logging.");
+        classLoaderExceptions.add("net.minecraft.launchwrapper.");
+        classLoaderExceptions.add("org.objectweb.asm.");
+        classLoaderExceptions.add("org.spongepowered.asm.service.");
+        classLoaderExceptions.add("org.spongepowered.asm.launch.");
+        classLoaderExceptions.add("org.spongepowered.asm.logging.");
+        classLoaderExceptions.add("org.spongepowered.asm.lib.");
+        classLoaderExceptions.add("org.spongepowered.asm.mixin.");
+        classLoaderExceptions.add("org.spongepowered.asm.util.");
+        classLoaderExceptions.add("LZMA.");
+        classLoaderExceptions.add("com.google.common.");
+        classLoaderExceptions.add("org.apache.maven.");
+        classLoaderExceptions.add("org.apache.http.");
+        classLoaderExceptions.add("org.apache.commons.");
+        classLoaderExceptions.add("net.minecraftforge.classloading.");
+        classLoaderExceptions.add("net.minecraftforge.fml.relauncher.");
+        classLoaderExceptions.add("net.minecraftforge.fml.common.launcher");
+        classLoaderExceptions.add("net.minecraft.launchwrapper");
 
         // transformer exclusions
         transformerExceptions.add("javax.");
@@ -64,6 +80,9 @@ public class LaunchClassLoader extends URLClassLoader {
         transformerExceptions.add("miku.lib.client.");
         transformerExceptions.add("miku.lib.network.");
         transformerExceptions.add("org.spongepowered.");
+        transformerExceptions.add("net.minecraftforge.fml.common.asm.transformers.");
+        transformerExceptions.add("net.minecraftforge.fml.common.patcher.");
+        transformerExceptions.add("net.minecraftforge.fml.repackage.");
 
         if (DEBUG_SAVE) {
             int x = 1;
@@ -80,8 +99,6 @@ public class LaunchClassLoader extends URLClassLoader {
                 tempFolder.mkdirs();
             }
         }
-
-        transformers.add(new MikuTransformer());
     }
 
     private static void closeSilently(Closeable closeable) {
@@ -290,16 +307,17 @@ public class LaunchClassLoader extends URLClassLoader {
                 s.equals("org.spongepowered.asm.mixin.transformer.Proxy") || s.equals("net.minecraftforge.fml.common.asm.transformers.PatchingTransformer") || s.equals("optifine.OptiFineClassTransformer") ||
                 s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.SideTransformer") || s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer") ||
                 s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.EventSubscriberTransformer") || s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.SoundEngineFixTransformer") ||
-                s.equals("miku.lib.common.core.MikuTransformer") || s.equals("net.minecraftforge.fml.common.asm.transformers.TerminalTransformer") || s.equals("net.minecraftforge.fml.common.asm.transformers.ModAPITransformer");
+                s.equals("net.minecraftforge.fml.common.asm.transformers.TerminalTransformer") || s.equals("net.minecraftforge.fml.common.asm.transformers.ModAPITransformer");
     }
 
     private byte[] runTransformers(final String name, final String transformedName, byte[] basicClass) {
-        if (name.startsWith("miku.")) {
+        if (ClassUtil.isMiku(transformedName)) {
             for (final IClassTransformer transformer : SafeTransformers) {
                 basicClass = transformer.transform(name, transformedName, basicClass);
             }
             return basicClass;
         }
+        basicClass = Miku.transform(name, transformedName, basicClass);
         if (DEBUG_FINER) {
             LogWrapper.finest("Beginning transform of {%s (%s)} Start Length: %d", name, transformedName, (basicClass == null ? 0 : basicClass.length));
             for (final IClassTransformer transformer : transformers) {
@@ -314,10 +332,12 @@ public class LaunchClassLoader extends URLClassLoader {
                 try {
                     basicClass = transformer.transform(name, transformedName, basicClass);
                 } catch (Throwable e) {
-                    return basicClass;
+                    System.out.println("MikuWarn:Catch exception when transforming class:" + name);
+                    e.printStackTrace();
                 }
             }
         }
+        basicClass = Miku.transform(name, transformedName, basicClass);
         return basicClass;
     }
 
@@ -371,13 +391,19 @@ public class LaunchClassLoader extends URLClassLoader {
     }
 
     public void addClassLoaderExclusion(String toExclude) {
+        if (!ClassUtil.isMiku(toExclude) && !ClassUtil.isLibraryClass(toExclude) && !ClassUtil.isGoodClass(toExclude)) {
+            if (!classLoaderExceptions.contains(toExclude))
+                System.out.println("Ignoring:  " + toExclude + "  It will not be added to ClassLoaderExclusion.");
+            return;
+        }
         classLoaderExceptions.add(toExclude);
     }
 
     public void addTransformerExclusion(String toExclude) {
         try {
             if (!ClassUtil.isGoodClass(toExclude)) {
-                System.out.println(toExclude);
+                if (!transformerExceptions.contains(toExclude))
+                    System.out.println("Ignoring:  " + toExclude + "  It will not be added to TransformerExclusion.");
                 return;
             }
         } catch (Throwable ignored) {

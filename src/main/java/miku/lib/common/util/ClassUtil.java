@@ -42,7 +42,8 @@ public class ClassUtil {
     protected static final List<String> TransformerExclusions = new ArrayList<>();
     protected static final List<String> MinecraftClasses = new ArrayList<>();
     protected static final List<String> LibraryClasses = new ArrayList<>();
-    public static Map<String, Class<?>> cachedClasses = null;
+    protected static final List<String> MikuClasses = new ArrayList<>();
+    protected static final Map<String, Boolean> MikuClassCache = new ConcurrentSkipListMap<>();
 
     public static void AddJarToTransformerExclusions(File file, List<String> list, Map<String, Boolean> map) throws IOException {
         try (JarFile jar = new JarFile(file)) {
@@ -87,6 +88,7 @@ public class ClassUtil {
 
     public synchronized static void ScanModJarFile(File file) throws IOException {
         if (file.getName().endsWith(".jar")) {
+            String modid = null;
             boolean fucked = false;
             try (JarFile jar = new JarFile(file)) {
                 System.out.println("Reading jar file:" + jar.getName());
@@ -112,7 +114,6 @@ public class ClassUtil {
                                 if (cn.visibleAnnotations != null) for (AnnotationNode an : cn.visibleAnnotations) {
                                     if (an.desc.equals("Lnet/minecraftforge/fml/common/Mod;")) {
                                         boolean flag = false;
-                                        String modid = null;
                                         for (Object o : an.values) {
                                             String s = (String) o;
                                             if (flag) {
@@ -183,6 +184,14 @@ public class ClassUtil {
                 }
                 if (good) {
                     System.out.println("Adding mod " + jar.getName() + " to TransformerExclusions");
+                    if (modid != null) {
+                        if (modid.equals("mikulib") || modid.equals("miku") || modid.equals("maze")) {
+                            MikuClasses.addAll(classes);
+                            for (String str : classes) {
+                                MikuClassCache.put(str, true);
+                            }
+                        }
+                    }
                     TransformerExclusions.addAll(classes);
                     for (String str : classes) {
                         GoodClassCache.put(str, true);
@@ -372,7 +381,6 @@ public class ClassUtil {
         if (MinecraftClassCache.containsKey(s)) return MinecraftClassCache.get(s);
         for (String c : MinecraftClasses) {
             if (s.contains(c)) {
-                System.out.println(s + ":" + c);
                 MinecraftClassCache.put(s, true);
                 return true;
             }
@@ -386,14 +394,24 @@ public class ClassUtil {
         if (LibraryClassCache.containsKey(s)) return LibraryClassCache.get(s);
         for (String c : LibraryClasses) {
             if (s.contains(c)) {
-                System.out.println(s + ":" + c);
-                System.out.println(s);
-                System.out.println(c);
                 LibraryClassCache.put(s, true);
                 return true;
             }
         }
         LibraryClassCache.put(s, false);
+        return false;
+    }
+
+    public static boolean isMiku(String s) {
+        if (s == null) return false;
+        if (MikuClassCache.containsKey(s)) return MikuClassCache.get(s);
+        for (String c : MikuClasses) {
+            if (s.contains(c)) {
+                MikuClassCache.put(s, true);
+                return true;
+            }
+        }
+        MikuClassCache.put(s, false);
         return false;
     }
 }

@@ -38,7 +38,7 @@ public class MikuCore implements IFMLLoadingPlugin {
     public MikuCore() {
 
         FuckLaunchWrapper();
-        FuckForge();
+        //FuckForge();
 
         if (win) {
             System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");

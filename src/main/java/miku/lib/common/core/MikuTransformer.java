@@ -28,6 +28,8 @@ public class MikuTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (!ClassUtil.Loaded()) return basicClass;
+        if (name.equals("javax.annotation.Resource") || name.equals("javax.annotation.Nullable") || name.equals("org.apache.log4j.Logger"))
+            return basicClass;
         if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name)) {
             if (!name.equals(transformedName)) {
                 if (ClassUtil.isMinecraftClass(name)) {
