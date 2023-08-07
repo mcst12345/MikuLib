@@ -155,7 +155,8 @@ public class MikuCore implements IFMLLoadingPlugin {
             Launch.UNSAFE.putObjectVolatile(Launch.classLoader, tmp, fucked);//Fuck other transformers.
         }
 
-        System.out.println(Launch.classLoader.getClass().toString());
+        Launch.NoReflection(MikuLib.class);
+        Launch.NoReflection(MikuCore.class);
     }
 
     public static void InitMixin(){

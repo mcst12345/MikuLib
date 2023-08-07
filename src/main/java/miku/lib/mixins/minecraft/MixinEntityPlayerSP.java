@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -178,7 +179,7 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent event = new net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent(this, axisalignedbb);
         boolean Flag;
         try {
-            Flag = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+            Flag = MikuLib.MikuEventBus().post(event);
         } catch (Throwable t) {
             Flag = false;
         }
