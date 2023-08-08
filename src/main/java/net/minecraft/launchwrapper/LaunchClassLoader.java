@@ -1,6 +1,7 @@
 package net.minecraft.launchwrapper;
 
 import miku.lib.common.core.MikuTransformer;
+import miku.lib.common.exception.NoYouCannotBeLoaded;
 import miku.lib.common.util.ClassUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -209,13 +210,17 @@ public class LaunchClassLoader extends URLClassLoader {
             cachedClasses.put(transformedName, clazz);
             return clazz;
         } catch (Throwable e) {
-            if (!name.startsWith("javax.annotation")) {
-                e.printStackTrace();
-                System.out.println("MikuWarn:Failed to load class:" + name);
-            }
-            if (DEBUG) {
-                LogWrapper.log(Level.TRACE, e, "Exception encountered attempting classloading of %s", name);
-                LogManager.getLogger("LaunchWrapper").log(Level.ERROR, "Exception encountered attempting classloading of %s", e);
+            if (e instanceof NoYouCannotBeLoaded) {
+                System.out.println("Ignore bad class:" + name);
+            } else {
+                if (!name.startsWith("javax.annotation")) {
+                    e.printStackTrace();
+                    System.out.println("MikuWarn:Failed to load class:" + name);
+                }
+                if (DEBUG) {
+                    LogWrapper.log(Level.TRACE, e, "Exception encountered attempting classloading of %s", name);
+                    LogManager.getLogger("LaunchWrapper").log(Level.ERROR, "Exception encountered attempting classloading of %s", e);
+                }
             }
             throw new ClassNotFoundException(name, e);
         }

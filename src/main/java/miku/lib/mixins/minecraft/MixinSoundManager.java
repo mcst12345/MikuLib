@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import io.netty.util.internal.ThreadLocalRandom;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.client.audio.*;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -64,7 +65,7 @@ public abstract class MixinSoundManager {
     protected abstract float getClampedPitch(ISound soundIn);
 
     @Shadow
-    protected static URL getURLForSoundResource(ResourceLocation p_148612_0_) {
+    private static URL getURLForSoundResource(ResourceLocation p_148612_0_) {
         return null;
     }
 
@@ -185,7 +186,7 @@ public abstract class MixinSoundManager {
                             o.setPitch(s, f2);
                             o.setVolume(s, f1);
                             o.play(s);
-                            this.playingSoundsStopTime.put(s, Integer.valueOf(this.playTime + 20));
+                            this.playingSoundsStopTime.put(s, this.playTime + 20);
                             this.playingSounds.put(s, p_sound);
                             this.categorySounds.put(soundcategory, s);
 
@@ -199,9 +200,10 @@ public abstract class MixinSoundManager {
         }
     }
 
-    private static final Field SndSystem;
+    private static Field SndSystem;
 
-    static {
+    @Inject(at = @At("TAIL"), method = "<init>")
+    public void init(SoundHandler p_i45119_1_, GameSettings p_i45119_2_, CallbackInfo ci) {
         try {
             SndSystem = SoundManager.class.getDeclaredField("sndSystem");
             SndSystem.setAccessible(true);

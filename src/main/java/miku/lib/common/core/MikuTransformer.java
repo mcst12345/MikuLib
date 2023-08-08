@@ -1,5 +1,6 @@
 package miku.lib.common.core;
 
+import miku.lib.common.exception.NoYouCannotBeLoaded;
 import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.Misc;
 import miku.lib.common.util.transform.ASMUtil;
@@ -82,9 +83,7 @@ public class MikuTransformer implements IClassTransformer {
             for (String s : cn.interfaces) {
                 if (ASMUtil.isBadInterface(s)) {
                     ASMUtil.FuckClass(cn);
-                    ClassWriter cw = new ClassWriter(0);
-                    cn.accept(cw);
-                    return cw.toByteArray();
+                    throw new NoYouCannotBeLoaded();
                 }
             }
 
