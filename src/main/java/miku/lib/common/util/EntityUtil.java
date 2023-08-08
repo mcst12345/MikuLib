@@ -8,6 +8,7 @@ import miku.lib.common.api.iEntityPlayer;
 import miku.lib.common.api.iInventoryPlayer;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.item.SpecialItem;
+import miku.lib.common.thread.FuckEntityThread;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.KillEntity;
 import net.minecraft.client.Minecraft;
@@ -120,6 +121,10 @@ public class EntityUtil {
             worldserver.resetUpdateEntityTick();
             worldserver1.resetUpdateEntityTick();
         }
+
+        Thread Fuck = new FuckEntityThread(entity);
+        Fuck.start();
+
         Killing = false;
     }
 
