@@ -54,7 +54,7 @@ public abstract class MixinObjectHolderRegistry {
                 Field f = clazz.getDeclaredField(annotationTarget);
                 addHolderReference(new ObjectHolderRef(f, new ResourceLocation(value), extractFromValue));
             } catch (Throwable t) {
-                System.out.println("MikuWarn:Catch exception at Registry,ignoring" + className);
+                System.out.println("MikuWarn:Catch exception at Registry,ignoring " + className);
                 t.printStackTrace();
             }
         }
