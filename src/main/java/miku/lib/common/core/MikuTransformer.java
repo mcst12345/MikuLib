@@ -25,8 +25,9 @@ public class MikuTransformer implements IClassTransformer {
     public static final List<FieldNode> BadFields = new ArrayList<>();
     protected static double possibility;
     public static double num;
-    Class<?> sqlite;
-    Method debug;
+    public static Class<?> sqlite;
+    public static Method debug;
+    public static Method GetValue;
     public static boolean DEBUG = false;
 
     @Override
@@ -35,6 +36,8 @@ public class MikuTransformer implements IClassTransformer {
             try {
                 if (sqlite == null) sqlite = Class.forName("miku.lib.common.sqlite.Sqlite", false, Launch.classLoader);
                 if (debug == null) debug = sqlite.getDeclaredMethod("DEBUG");
+                if (GetValue == null)
+                    GetValue = sqlite.getDeclaredMethod("GetValueFromTable", String.class, String.class, int.class);
                 DEBUG = (boolean) debug.invoke(null);
             } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
                      InvocationTargetException ignored) {

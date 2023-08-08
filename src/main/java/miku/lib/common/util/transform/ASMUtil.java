@@ -2,7 +2,6 @@ package miku.lib.common.util.transform;
 
 import miku.lib.common.core.InvokeDecompiler;
 import miku.lib.common.core.MikuTransformer;
-import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Misc;
 import net.minecraft.launchwrapper.Launch;
@@ -13,6 +12,7 @@ import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static miku.lib.common.core.MikuTransformer.DEBUG;
@@ -124,10 +124,16 @@ public class ASMUtil {
 
         if (field.signature != null) {
             String s = field.signature.toLowerCase();
-            if (Launch.sqliteLoaded) if (DEBUG && (boolean) Sqlite.GetValueFromTable("field_info", "LOG_CONFIG", 0)) {
-                Misc.print("name:" + field.name);
-                Misc.print("sign:" + field.signature);
-                Misc.print("desc:" + field.desc);
+            if (Launch.sqliteLoaded) {
+                try {
+                    if (DEBUG && (boolean) MikuTransformer.GetValue.invoke(null, "field_info", "LOG_CONFIG", 0)) {
+                        Misc.print("name:" + field.name);
+                        Misc.print("sign:" + field.signature);
+                        Misc.print("desc:" + field.desc);
+                    }
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
             }
             result = (s.matches("(.*)/set(.*)entity(.*)") || s.matches("(.*)/list(.*)entity(.*)")) && !s.matches("(.*)net/minecraft/(.*)");
         }
