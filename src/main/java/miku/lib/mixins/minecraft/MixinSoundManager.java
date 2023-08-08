@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import paulscode.sound.SoundSystem;
 
 import java.net.URL;
 import java.util.List;
@@ -87,7 +86,7 @@ public abstract class MixinSoundManager {
     private List<ITickableSound> tickableSounds;
 
     @Shadow
-    private SoundSystem sndSystem;
+    private SoundManager.SoundSystemStarterThread sndSystem;
 
     @Inject(at = @At("TAIL"), method = "<clinit>")
     private static void SoundManager(CallbackInfo ci) {
