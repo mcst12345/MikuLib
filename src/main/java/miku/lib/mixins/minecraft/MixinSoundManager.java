@@ -4,7 +4,6 @@ import com.google.common.collect.Multimap;
 import io.netty.util.internal.ThreadLocalRandom;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.client.audio.*;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import paulscode.sound.SoundSystem;
 
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +86,9 @@ public abstract class MixinSoundManager {
     @Final
     private List<ITickableSound> tickableSounds;
 
+    @Shadow
+    private SoundSystem sndSystem;
+
     @Inject(at = @At("TAIL"), method = "<clinit>")
     private static void SoundManager(CallbackInfo ci) {
         MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
@@ -121,12 +122,6 @@ public abstract class MixinSoundManager {
      */
     @Overwrite
     public void playSound(ISound p_sound) {
-        SoundSystem o;
-        try {
-            o = (SoundSystem) SndSystem.get(this);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
 
         if (this.loaded) {
             p_sound = net.minecraftforge.client.ForgeHooksClient.playSound((SoundManager) (Object) this, p_sound);
@@ -146,7 +141,7 @@ public abstract class MixinSoundManager {
                     }
                 }
 
-                if (o.getMasterVolume() <= 0.0F) {
+                if (sndSystem.getMasterVolume() <= 0.0F) {
                     LOGGER.debug(LOG_MARKER, "Skipped playing soundEvent: {}, master volume was zero", resourcelocation);
                 } else {
                     Sound sound = p_sound.getSound();
@@ -175,17 +170,17 @@ public abstract class MixinSoundManager {
                             ResourceLocation resourcelocation1 = sound.getSoundAsOggLocation();
 
                             if (sound.isStreaming()) {
-                                o.newStreamingSource(false, s, getURLForSoundResource(resourcelocation1), resourcelocation1.toString(), flag, p_sound.getXPosF(), p_sound.getYPosF(), p_sound.getZPosF(), p_sound.getAttenuationType().getTypeInt(), f);
+                                sndSystem.newStreamingSource(false, s, getURLForSoundResource(resourcelocation1), resourcelocation1.toString(), flag, p_sound.getXPosF(), p_sound.getYPosF(), p_sound.getZPosF(), p_sound.getAttenuationType().getTypeInt(), f);
                                 MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.sound.PlayStreamingSourceEvent((SoundManager) (Object) this, p_sound, s));
                             } else {
-                                o.newSource(false, s, getURLForSoundResource(resourcelocation1), resourcelocation1.toString(), flag, p_sound.getXPosF(), p_sound.getYPosF(), p_sound.getZPosF(), p_sound.getAttenuationType().getTypeInt(), f);
+                                sndSystem.newSource(false, s, getURLForSoundResource(resourcelocation1), resourcelocation1.toString(), flag, p_sound.getXPosF(), p_sound.getYPosF(), p_sound.getZPosF(), p_sound.getAttenuationType().getTypeInt(), f);
                                 MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.sound.PlaySoundSourceEvent((SoundManager) (Object) this, p_sound, s));
                             }
 
                             LOGGER.debug(LOG_MARKER, "Playing sound {} for event {} as channel {}", sound.getSoundLocation(), resourcelocation, s);
-                            o.setPitch(s, f2);
-                            o.setVolume(s, f1);
-                            o.play(s);
+                            sndSystem.setPitch(s, f2);
+                            sndSystem.setVolume(s, f1);
+                            sndSystem.play(s);
                             this.playingSoundsStopTime.put(s, this.playTime + 20);
                             this.playingSounds.put(s, p_sound);
                             this.categorySounds.put(soundcategory, s);
@@ -197,18 +192,6 @@ public abstract class MixinSoundManager {
                     }
                 }
             }
-        }
-    }
-
-    private static Field SndSystem;
-
-    @Inject(at = @At("TAIL"), method = "<init>")
-    public void init(SoundHandler p_i45119_1_, GameSettings p_i45119_2_, CallbackInfo ci) {
-        try {
-            SndSystem = SoundManager.class.getDeclaredField("sndSystem");
-            SndSystem.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
         }
     }
 }
