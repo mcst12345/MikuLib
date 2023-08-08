@@ -37,6 +37,7 @@ public class InvokeDecompiler {
 
             // (2) 从Frame当中获取指令，并将指令转换LocalVariableTable当中的变量名
             Frame<SourceValue> f = frames[methodInsn];
+            if (f == null) continue;
             int stackSize = f.getStackSize();
             List<String> argList = new ArrayList<>();
             for (int i = 0; i < argNum; i++) {

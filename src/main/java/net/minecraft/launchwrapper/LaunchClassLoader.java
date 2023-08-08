@@ -317,7 +317,7 @@ public class LaunchClassLoader extends URLClassLoader {
             }
             return basicClass;
         }
-        basicClass = Miku.transform(name, transformedName, basicClass);
+        //basicClass = Miku.transform(name, transformedName, basicClass);
         if (DEBUG_FINER) {
             LogWrapper.finest("Beginning transform of {%s (%s)} Start Length: %d", name, transformedName, (basicClass == null ? 0 : basicClass.length));
             for (final IClassTransformer transformer : transformers) {

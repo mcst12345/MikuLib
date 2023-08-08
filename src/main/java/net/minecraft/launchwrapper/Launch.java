@@ -57,8 +57,6 @@ public class Launch {
             ClassUtil.Init();
         } catch (IOException ignored) {
         }
-        System.out.println(System.getProperty("java.home"));
-
         URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());
         blackboard = new HashMap<>();
@@ -134,7 +132,7 @@ public class Launch {
 
     public static boolean MikuLibInstalled() {
         try {
-            Class<?> MikuLib = Class.forName("miku.lib.common.core.MikuLib", false, classLoader);
+            Class<?> MikuLib = Class.forName("miku.lib.common.core.MikuCore", false, classLoader);
             return true;
         } catch (ClassNotFoundException e) {
             return false;
@@ -223,14 +221,9 @@ public class Launch {
             } while (!tweakClassNames.isEmpty());
 
             MixinBootstrap.init();
-
-            if(MikuLibInstalled()) {
-                try {
-                    Mixins.addConfiguration("mixins.minecraft.json");
-                    Mixins.addConfiguration("mixins.forge.json");
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
+            if (MikuLibInstalled()) {
+                Mixins.addConfiguration("mixins.forge.json");
+                Mixins.addConfiguration("mixins.minecraft.json");
             }
 
             for (ITweaker tweaker : allTweakers) {

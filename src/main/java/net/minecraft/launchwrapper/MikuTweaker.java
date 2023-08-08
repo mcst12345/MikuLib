@@ -14,6 +14,7 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader classLoader) {
+
     }
 
     @Override

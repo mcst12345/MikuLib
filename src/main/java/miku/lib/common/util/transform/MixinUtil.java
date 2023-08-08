@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.TypeAnnotationNode;
 
 import java.util.Objects;
 
-import static miku.lib.common.sqlite.Sqlite.DEBUG;
+import static miku.lib.common.core.MikuTransformer.DEBUG;
 
 public class MixinUtil {
     public static boolean isBadInject(String s) {//Holy Shit.
@@ -64,7 +64,7 @@ public class MixinUtil {
             if (mn.invisibleTypeAnnotations != null) {
                 System.out.println("invisibleTypeAnnotations of " + mn.name);
                 for (TypeAnnotationNode an : mn.invisibleTypeAnnotations) {
-                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                    if (Launch.sqliteLoaded) if (DEBUG) {
                         Misc.print(an.desc);
                         if (an.values != null) Misc.print(an.values.toString());
                     }
@@ -91,7 +91,7 @@ public class MixinUtil {
             if (mn.visibleAnnotations != null) {
                 System.out.println("invisibleTypeAnnotations of " + mn.name);
                 for (AnnotationNode an : mn.visibleAnnotations) {
-                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                    if (Launch.sqliteLoaded) if (DEBUG) {
                         Misc.print(an.desc);
                         if (an.values != null) Misc.print(an.values.toString());
                     }
@@ -100,7 +100,7 @@ public class MixinUtil {
             if (mn.invisibleAnnotations != null) {
                 System.out.println("invisibleAnnotations of " + mn.name);
                 for (AnnotationNode an : mn.invisibleAnnotations) {
-                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                    if (Launch.sqliteLoaded) if (DEBUG) {
                         Misc.print(an.desc);
                         if (an.values != null) Misc.print(an.values.toString());
                     }

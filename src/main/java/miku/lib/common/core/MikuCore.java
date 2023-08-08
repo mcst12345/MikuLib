@@ -35,6 +35,11 @@ public class MikuCore implements IFMLLoadingPlugin {
     static final boolean Android = Platform.isAndroid();
 
     public MikuCore() {
+        try {
+            Class.forName("miku.lib.common.sqlite.Sqlite");
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
 
         FuckLaunchWrapper();
         //FuckForge();
@@ -153,9 +158,6 @@ public class MikuCore implements IFMLLoadingPlugin {
             System.out.println("Fucking LaunchClassLoader.");
             Launch.UNSAFE.putObjectVolatile(Launch.classLoader, tmp, fucked);//Fuck other transformers.
         }
-
-        Launch.NoReflection(MikuLib.class);
-        Launch.NoReflection(MikuCore.class);
     }
 
     protected synchronized static boolean isLaunchFucked() {
@@ -185,6 +187,9 @@ public class MikuCore implements IFMLLoadingPlugin {
         } catch (IOException ignored) {
         }
         restart = true;
+    }
+
+    public synchronized static void FuckServerCore() {
     }
 
     public synchronized static void FuckForge() {

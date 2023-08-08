@@ -7,6 +7,7 @@ import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Misc;
 import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.Attribute;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
@@ -14,7 +15,7 @@ import org.objectweb.asm.tree.analysis.AnalyzerException;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import static miku.lib.common.sqlite.Sqlite.DEBUG;
+import static miku.lib.common.core.MikuTransformer.DEBUG;
 
 public class ASMUtil {
 
@@ -58,25 +59,25 @@ public class ASMUtil {
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) || result;
 
 
-        if (Launch.sqliteLoaded) if (DEBUG()) {
+        if (Launch.sqliteLoaded) if (DEBUG) {
             Misc.print("Method name:" + method.name);
         }
 
         if (method.parameters != null) for (ParameterNode parameter : method.parameters) {
-            if (Launch.sqliteLoaded) if (DEBUG()) {
+            if (Launch.sqliteLoaded) if (DEBUG) {
                 Misc.print("parameter name:" + parameter.name);
             }
         }
         if (method.visibleTypeAnnotations != null)
             for (TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations) {
-                if (Launch.sqliteLoaded) if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG) {
                     Misc.print("typeAnnotation desc:" + typeAnnotation.desc);
                     Misc.print("typeAnnotation typePath:" + typeAnnotation.typePath.toString());
                 }
             }
         if (method.invisibleTypeAnnotations != null)
             for (TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations) {
-                if (Launch.sqliteLoaded) if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG) {
                     Misc.print("invisibleTypeAnnotation desc:" + invisibleTypeAnnotation.desc);
                     Misc.print("invisibleTypeAnnotation typePath:" + invisibleTypeAnnotation.typePath.toString());
                 }
@@ -84,7 +85,7 @@ public class ASMUtil {
 
         if (method.attrs != null) {
             for (Attribute attr : method.attrs) {
-                if (Launch.sqliteLoaded) if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG) {
                     Misc.print("attr type:" + attr.type);
                 }
             }
@@ -92,7 +93,7 @@ public class ASMUtil {
 
         if (method.localVariables != null) {
             for (LocalVariableNode localVariable : method.localVariables) {
-                if (Launch.sqliteLoaded) if (DEBUG()) {
+                if (Launch.sqliteLoaded) if (DEBUG) {
 
                     Misc.print("localVariable name:" + localVariable.name);
                     if (localVariable.signature != null)
@@ -123,7 +124,7 @@ public class ASMUtil {
 
         if (field.signature != null) {
             String s = field.signature.toLowerCase();
-            if (Launch.sqliteLoaded) if (DEBUG() && (boolean) Sqlite.GetValueFromTable("field_info", "LOG_CONFIG", 0)) {
+            if (Launch.sqliteLoaded) if (DEBUG && (boolean) Sqlite.GetValueFromTable("field_info", "LOG_CONFIG", 0)) {
                 Misc.print("name:" + field.name);
                 Misc.print("sign:" + field.signature);
                 Misc.print("desc:" + field.desc);
@@ -151,11 +152,22 @@ public class ASMUtil {
     public static void FuckClass(ClassNode cn) {
         if (cn.methods != null) {
             cn.methods.removeIf(mn -> !(mn.name.startsWith("<") && mn.name.endsWith(">") && mn.name.contains("init")));
-            for (int i = 0; i < cn.methods.size(); i++) {
-                String name = cn.methods.get(i).name;
-                String desc = cn.methods.get(i).desc;
-                String sign = cn.methods.get(i).signature;
-                cn.methods.set(i, new MethodNode(Opcodes.ASM5, Opcodes.ACC_PUBLIC, name, desc, sign, new String[0]));
+            //for (int i = 0; i < cn.methods.size(); i++) {
+            //String name = cn.methods.get(i).name;
+            //String desc = cn.methods.get(i).desc;
+            //String sign = cn.methods.get(i).signature;
+            //cn.methods.set(i, new MethodNode(Opcodes.ASM5, Opcodes.ACC_PUBLIC, name, desc, sign, new String[0]));
+            //}
+            for (MethodNode mn : cn.methods) {
+                mn.visitCode();
+                Label label0 = new Label();
+                mn.visitLabel(label0);
+                mn.visitLineNumber(3, label0);
+                mn.visitVarInsn(Opcodes.ALOAD, 0);
+                mn.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+                mn.visitInsn(Opcodes.RETURN);
+                mn.visitMaxs(1, 1);
+                mn.visitEnd();
             }
         }
         if (cn.fields != null) cn.fields.clear();

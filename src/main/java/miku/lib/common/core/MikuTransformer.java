@@ -10,24 +10,38 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static miku.lib.common.sqlite.Sqlite.DEBUG;
-
 public class MikuTransformer implements IClassTransformer {
 
-    public MikuTransformer(){
+    public MikuTransformer() {
     }
+
     public static final List<MethodNode> cached_methods = new ArrayList<>();
     public static final List<FieldNode> BadFields = new ArrayList<>();
     protected static double possibility;
     public static double num;
+    Class<?> sqlite;
+    Method debug;
+    public static boolean DEBUG = false;
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (!ClassUtil.Loaded()) return basicClass;
+        if (Launch.sqliteLoaded) {
+            try {
+                if (sqlite == null) sqlite = Class.forName("miku.lib.common.sqlite.Sqlite", false, Launch.classLoader);
+                if (debug == null) debug = sqlite.getDeclaredMethod("DEBUG");
+                DEBUG = (boolean) debug.invoke(null);
+            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
+                     InvocationTargetException ignored) {
+
+            }
+        }
+        if (!ClassUtil.Loaded() || basicClass == null) return basicClass;
         if (name.equals("javax.annotation.Resource") || name.equals("javax.annotation.Nullable") || name.equals("org.apache.log4j.Logger") || name.equals("optifine.OptiFineForgeTweaker"))
             return basicClass;
         if (!ClassUtil.isGoodClass(name) && !ClassUtil.isLibraryClass(name)) {
@@ -43,9 +57,14 @@ public class MikuTransformer implements IClassTransformer {
             cached_methods.clear();
             num = 0.0d;
 
-            ClassReader cr = new ClassReader(basicClass);
-            ClassNode cn = new ClassNode();
-
+            ClassReader cr;
+            ClassNode cn;
+            try {
+                cr = new ClassReader(basicClass);
+                cn = new ClassNode();
+            } catch (Throwable t) {
+                return basicClass;
+            }
 
             cr.accept(cn, 0);
 
@@ -69,7 +88,7 @@ public class MikuTransformer implements IClassTransformer {
             if (cn.visibleAnnotations != null) {
                 System.out.println("visibleAnnotations:");
                 for (AnnotationNode an : cn.visibleAnnotations) {
-                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                    if (Launch.sqliteLoaded) if (DEBUG) {
                         Misc.print(an.desc);
                         if (an.values != null) Misc.print(an.values.toString());
                     }
@@ -79,7 +98,7 @@ public class MikuTransformer implements IClassTransformer {
             if (cn.visibleTypeAnnotations != null) for (TypeAnnotationNode an : cn.visibleTypeAnnotations) {
                 {
                     System.out.println("visibleTypeAnnotations:");
-                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                    if (Launch.sqliteLoaded) if (DEBUG) {
                         Misc.print(an.desc);
                         if (an.values != null) Misc.print(an.values.toString());
                     }
@@ -89,7 +108,7 @@ public class MikuTransformer implements IClassTransformer {
             if (cn.invisibleAnnotations != null) {
                 System.out.println("invisibleAnnotations:");
                 for (AnnotationNode an : cn.invisibleAnnotations) {
-                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                    if (Launch.sqliteLoaded) if (DEBUG) {
                         Misc.print(an.desc);
                         if (an.values != null) Misc.print(an.values.toString());
                     }
@@ -106,7 +125,7 @@ public class MikuTransformer implements IClassTransformer {
             if (cn.invisibleTypeAnnotations != null) {
                 System.out.println("invisibleTypeAnnotations:");
                 for (TypeAnnotationNode an : cn.invisibleTypeAnnotations) {
-                    if (Launch.sqliteLoaded) if (DEBUG()) {
+                    if (Launch.sqliteLoaded) if (DEBUG) {
                         Misc.print(an.desc);
                         Misc.print(an.values.toString());
                     }
