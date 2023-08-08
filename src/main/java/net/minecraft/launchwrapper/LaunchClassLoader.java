@@ -312,7 +312,8 @@ public class LaunchClassLoader extends URLClassLoader {
                 s.equals("org.spongepowered.asm.mixin.transformer.Proxy") || s.equals("net.minecraftforge.fml.common.asm.transformers.PatchingTransformer") || s.equals("optifine.OptiFineClassTransformer") ||
                 s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.SideTransformer") || s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer") ||
                 s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.EventSubscriberTransformer") || s.equals("$wrapper.net.minecraftforge.fml.common.asm.transformers.SoundEngineFixTransformer") ||
-                s.equals("net.minecraftforge.fml.common.asm.transformers.TerminalTransformer") || s.equals("net.minecraftforge.fml.common.asm.transformers.ModAPITransformer");
+                s.equals("net.minecraftforge.fml.common.asm.transformers.TerminalTransformer") || s.equals("net.minecraftforge.fml.common.asm.transformers.ModAPITransformer") || s.equals("net.minecraftforge.fml.relauncher.FMLCorePlugin") ||
+                s.equals("net.minecraftforge.classloading.FMLForgePlugin");
     }
 
     private byte[] runTransformers(final String name, final String transformedName, byte[] basicClass) {
@@ -396,7 +397,7 @@ public class LaunchClassLoader extends URLClassLoader {
     }
 
     public void addClassLoaderExclusion(String toExclude) {
-        if (!ClassUtil.isMiku(toExclude) && !ClassUtil.isLibraryClass(toExclude) && !ClassUtil.isGoodClass(toExclude)) {
+        if (!ClassUtil.isMiku(toExclude) && !ClassUtil.isLibraryClass(toExclude) && !ClassUtil.isGoodClass(toExclude) && !isGoodTransformer(toExclude)) {
             if (!classLoaderExceptions.contains(toExclude))
                 System.out.println("Ignoring:  " + toExclude + "  It will not be added to ClassLoaderExclusion.");
             return;
@@ -406,7 +407,7 @@ public class LaunchClassLoader extends URLClassLoader {
 
     public void addTransformerExclusion(String toExclude) {
         try {
-            if (!ClassUtil.isGoodClass(toExclude)) {
+            if (!ClassUtil.isGoodClass(toExclude) && !isGoodTransformer(toExclude)) {
                 if (!transformerExceptions.contains(toExclude))
                     System.out.println("Ignoring:  " + toExclude + "  It will not be added to TransformerExclusion.");
                 return;
