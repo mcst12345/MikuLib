@@ -11,7 +11,8 @@
     "MixinForgeHooks",
     "MixinItemStack",
     "MixinLoadController",
-    "MixinMinecraftForge"
+    "MixinMinecraftForge",
+    "MixinProxyInjector"
   ],
   "client": [
     "MixinAnimationItemOverrideList",
