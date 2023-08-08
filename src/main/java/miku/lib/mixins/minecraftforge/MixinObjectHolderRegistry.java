@@ -33,9 +33,10 @@ public abstract class MixinObjectHolderRegistry {
             try {
                 clazz = Class.forName(className, extractFromValue, getClass().getClassLoader());
                 classCache.put(className, clazz);
-            } catch (ClassNotFoundException ex) {
-                // unpossible?
-                throw new RuntimeException(ex);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at Registry,ignoring " + className);
+                t.printStackTrace();
+                return;
             }
         }
         if (isClass) {
@@ -52,9 +53,9 @@ public abstract class MixinObjectHolderRegistry {
             try {
                 Field f = clazz.getDeclaredField(annotationTarget);
                 addHolderReference(new ObjectHolderRef(f, new ResourceLocation(value), extractFromValue));
-            } catch (NoSuchFieldException ex) {
-                // unpossible?
-                throw new RuntimeException(ex);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Catch exception at Registry,ignoring" + className);
+                t.printStackTrace();
             }
         }
     }
