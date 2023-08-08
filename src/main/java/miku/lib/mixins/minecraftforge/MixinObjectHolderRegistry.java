@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-@Mixin(value = ObjectHolderRegistry.class)
+@Mixin(value = ObjectHolderRegistry.class, remap = false)
 public abstract class MixinObjectHolderRegistry {
     @Shadow
     protected abstract void scanClassForFields(Map<String, String> classModIds, String className, String value, Class<?> clazz, boolean extractFromExistingValues);
