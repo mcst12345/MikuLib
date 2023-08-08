@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.block.Block;
@@ -171,7 +172,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
                 }
                 continue;
             }
-            if (this.canAddEntity(entity) && !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
+            if (this.canAddEntity(entity) && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
                 this.loadedEntityList.add(entity);
                 this.onEntityAdded(entity);
             }

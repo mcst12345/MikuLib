@@ -1,13 +1,13 @@
 package miku.lib.mixins.minecraftforge;
 
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.world.GetCollisionBoxesEvent;
@@ -26,7 +26,7 @@ public class MixinForgeEventFactory {
     public static boolean gatherCollisionBoxes(World world, Entity entity, AxisAlignedBB aabb, List<AxisAlignedBB> outList) {
         if (MikuInsaneMode.isMikuInsaneMode()) return false;
         try {
-            MinecraftForge.EVENT_BUS.post(new GetCollisionBoxesEvent(world, entity, aabb, outList));
+            MikuLib.MikuEventBus().post(new GetCollisionBoxesEvent(world, entity, aabb, outList));
         } catch (Throwable t) {
             System.out.println("MikuWarn:Catch exception at GetCollisionBoxesEvent");
             t.printStackTrace();
@@ -42,7 +42,7 @@ public class MixinForgeEventFactory {
     public static int onItemUseStart(EntityLivingBase entity, ItemStack item, int duration) {
         if (MikuInsaneMode.isMikuInsaneMode() && !EntityUtil.isProtected(entity)) return 0;
         LivingEntityUseItemEvent event = new LivingEntityUseItemEvent.Start(entity, item, duration);
-        return MinecraftForge.EVENT_BUS.post(event) ? -1 : event.getDuration();
+        return MikuLib.MikuEventBus().post(event) ? -1 : event.getDuration();
     }
 
     /**
@@ -53,7 +53,7 @@ public class MixinForgeEventFactory {
     public static int onItemUseTick(EntityLivingBase entity, ItemStack item, int duration) {
         if (MikuInsaneMode.isMikuInsaneMode() && !EntityUtil.isProtected(entity)) return 0;
         LivingEntityUseItemEvent event = new LivingEntityUseItemEvent.Tick(entity, item, duration);
-        return MinecraftForge.EVENT_BUS.post(event) ? -1 : event.getDuration();
+        return MikuLib.MikuEventBus().post(event) ? -1 : event.getDuration();
     }
 
     /**
@@ -63,7 +63,7 @@ public class MixinForgeEventFactory {
     @Overwrite
     public static boolean onUseItemStop(EntityLivingBase entity, ItemStack item, int duration) {
         if (MikuInsaneMode.isMikuInsaneMode() && !EntityUtil.isProtected(entity)) return true;
-        return MinecraftForge.EVENT_BUS.post(new LivingEntityUseItemEvent.Stop(entity, item, duration));
+        return MikuLib.MikuEventBus().post(new LivingEntityUseItemEvent.Stop(entity, item, duration));
     }
 
     /**
@@ -74,7 +74,7 @@ public class MixinForgeEventFactory {
     public static ItemStack onItemUseFinish(EntityLivingBase entity, ItemStack item, int duration, ItemStack result) {
         if (MikuInsaneMode.isMikuInsaneMode() && !EntityUtil.isProtected(entity)) return ItemStack.EMPTY;
         LivingEntityUseItemEvent.Finish event = new LivingEntityUseItemEvent.Finish(entity, item, duration, result);
-        MinecraftForge.EVENT_BUS.post(event);
+        MikuLib.MikuEventBus().post(event);
         return event.getResultStack();
     }
 }

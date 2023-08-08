@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraftforge;
 
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.util.GuiOverlayDebugForge;
+import miku.lib.common.core.MikuLib;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -29,7 +30,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -63,7 +63,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
     @Overwrite
     private void post(RenderGameOverlayEvent.ElementType type) {
         try {
-            MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(eventParent, type));
+            MikuLib.MikuEventBus().post(new RenderGameOverlayEvent.Post(eventParent, type));
         } catch (Throwable t) {
             System.out.println("MikuWarn:Catch exception at RenderGameOverlayEvent." + type.name());
             t.printStackTrace();
@@ -148,7 +148,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
     private boolean pre(RenderGameOverlayEvent.ElementType type) {
         boolean flag = false;
         try {
-            flag = MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(eventParent, type));
+            flag = MikuLib.MikuEventBus().post(new RenderGameOverlayEvent.Pre(eventParent, type));
         } catch (Throwable ignored) {
         }
         return flag;
@@ -557,7 +557,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
         }
 
         RenderGameOverlayEvent.Text event = new RenderGameOverlayEvent.Text(eventParent, listL, listR);
-        if (!MinecraftForge.EVENT_BUS.post(event)) {
+        if (!MikuLib.MikuEventBus().post(event)) {
             int top = 2;
             for (String msg : listL) {
                 if (msg == null) continue;
@@ -670,7 +670,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
         ((iMinecraft) this.mc).MikuProfiler().startSection("chat");
 
         RenderGameOverlayEvent.Chat event = new RenderGameOverlayEvent.Chat(eventParent, 0, height - 48);
-        if (MinecraftForge.EVENT_BUS.post(event)) return;
+        if (MikuLib.MikuEventBus().post(event)) return;
 
         GlStateManager.pushMatrix();
         GlStateManager.translate((float) event.getPosX(), (float) event.getPosY(), 0.0F);

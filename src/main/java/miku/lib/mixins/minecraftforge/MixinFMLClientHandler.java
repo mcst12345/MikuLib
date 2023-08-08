@@ -6,6 +6,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.api.iEventBus;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.client.Minecraft;
@@ -17,7 +18,6 @@ import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.client.CloudRenderer;
 import net.minecraftforge.client.IRenderHandler;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.*;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -101,7 +101,7 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
         {
             FMLLog.log.error("An exception was thrown, the game will display an error screen and halt.", e);
             errorToDisplay = e;
-            ((iEventBus) MinecraftForge.EVENT_BUS).Shutdown();
+            ((iEventBus) MikuLib.MikuEventBus()).Shutdown();
         }
         catch (LoaderException le)
         {
@@ -124,7 +124,7 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
                 CustomModLoadingErrorDisplayException custom = (CustomModLoadingErrorDisplayException) le.getCause();
                 FMLLog.log.error("A custom exception was thrown by a mod, the game will display an error screen and halt.", custom);
                 errorToDisplay = custom;
-                ((iEventBus) MinecraftForge.EVENT_BUS).Shutdown();
+                ((iEventBus) MikuLib.MikuEventBus()).Shutdown();
             }
             else
             {
@@ -165,7 +165,7 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
                 CustomModLoadingErrorDisplayException custom = (CustomModLoadingErrorDisplayException) le.getCause();
                 FMLLog.log.error("A custom exception was thrown by a mod, the game will display an error screen and halt.", custom);
                 errorToDisplay = custom;
-                ((iEventBus) MinecraftForge.EVENT_BUS).Shutdown();
+                ((iEventBus) MikuLib.MikuEventBus()).Shutdown();
             } else {
                 haltGame("There was a severe problem during mod loading that has caused the game to fail", le);
                 return;

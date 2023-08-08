@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraftforge;
 
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -10,7 +11,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,7 +31,7 @@ public class MixinForgeHooks {
             entity.deathTime = 0;
             return false;
         }
-        return MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingUpdateEvent(entity));
+        return MikuLib.MikuEventBus().post(new LivingEvent.LivingUpdateEvent(entity));
     }
 
     /**
@@ -48,7 +48,7 @@ public class MixinForgeHooks {
             Update(target);
             return;
         }
-        MinecraftForge.EVENT_BUS.post(new LivingSetAttackTargetEvent(entity, target));
+        MikuLib.MikuEventBus().post(new LivingSetAttackTargetEvent(entity, target));
     }
 
     /**
@@ -65,7 +65,7 @@ public class MixinForgeHooks {
             Update(entity);
             return true;
         }
-        return entity instanceof EntityPlayer || !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
+        return entity instanceof EntityPlayer || !MikuLib.MikuEventBus().post(new LivingAttackEvent(entity, src, amount));
     }
 
     /**
@@ -82,7 +82,7 @@ public class MixinForgeHooks {
             Update(entity);
             return true;
         }
-        return !MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(entity, src, amount));
+        return !MikuLib.MikuEventBus().post(new LivingAttackEvent(entity, src, amount));
     }
 
     /**
@@ -100,7 +100,7 @@ public class MixinForgeHooks {
             return 0.0f;
         }
         LivingHurtEvent event = new LivingHurtEvent(entity, src, amount);
-        return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
+        return (MikuLib.MikuEventBus().post(event) ? 0 : event.getAmount());
     }
 
     /**
@@ -118,7 +118,7 @@ public class MixinForgeHooks {
             return 0.0f;
         }
         LivingDamageEvent event = new LivingDamageEvent(entity, src, amount);
-        return (MinecraftForge.EVENT_BUS.post(event) ? 0 : event.getAmount());
+        return (MikuLib.MikuEventBus().post(event) ? 0 : event.getAmount());
     }
 
     /**
@@ -135,7 +135,7 @@ public class MixinForgeHooks {
             Update(entity);
             return true;
         }
-        return MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(entity, src));
+        return MikuLib.MikuEventBus().post(new LivingDeathEvent(entity, src));
     }
 
     /**
@@ -152,7 +152,7 @@ public class MixinForgeHooks {
             Update(target);
             return true;
         }
-        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(player, target))) return false;
+        if (MikuLib.MikuEventBus().post(new AttackEntityEvent(player, target))) return false;
         ItemStack stack = player.getHeldItemMainhand();
         return stack.isEmpty() || !stack.getItem().onLeftClickEntity(stack, player, target);
     }

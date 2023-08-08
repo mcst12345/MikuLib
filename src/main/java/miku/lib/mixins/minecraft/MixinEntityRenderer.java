@@ -18,8 +18,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.client.shader.ShaderLinkHelper;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -826,12 +824,8 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                 try {
                     net.minecraftforge.client.ForgeHooksClient.drawScreen(this.mc.currentScreen, k1, l1, this.mc.getTickLength());
                 } catch (Throwable throwable) {
-                    CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Rendering screen");
-                    CrashReportCategory crashreportcategory = crashreport.makeCategory("Screen render details");
-                    crashreportcategory.addDetail("Screen name", () -> MixinEntityRenderer.this.mc.currentScreen.getClass().getCanonicalName());
-                    crashreportcategory.addDetail("Mouse location", () -> String.format("Scaled: (%d, %d). Absolute: (%d, %d)", k1, l1, Mouse.getX(), Mouse.getY()));
-                    crashreportcategory.addDetail("Screen size", () -> String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), MixinEntityRenderer.this.mc.displayWidth, MixinEntityRenderer.this.mc.displayHeight, scaledresolution.getScaleFactor()));
-                    throw new ReportedException(crashreport);
+                    System.out.println("MikuWarn:Catch exception when drawing screen:");
+                    throwable.printStackTrace();
                 }
             }
         }

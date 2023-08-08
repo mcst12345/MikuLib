@@ -1,7 +1,9 @@
 package miku.lib.mixins.minecraftforge;
 
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.core.MikuLib;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
@@ -12,7 +14,6 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -26,7 +27,7 @@ public class MixinForgeHooksClient {
     public static float getOffsetFOV(EntityPlayer entity, float fov) {
         FOVUpdateEvent fovUpdateEvent = new FOVUpdateEvent(entity, fov);
         try {
-            MinecraftForge.EVENT_BUS.post(fovUpdateEvent);
+            MikuLib.MikuEventBus().post(fovUpdateEvent);
         } catch (Throwable ignored) {
 
         }
@@ -42,7 +43,7 @@ public class MixinForgeHooksClient {
         if (MikuInsaneMode.isMikuInsaneMode()) return false;
         boolean result;
         try {
-            result = MinecraftForge.EVENT_BUS.post(new MouseEvent());
+            result = MikuLib.MikuEventBus().post(new MouseEvent());
         } catch (Throwable t) {
             result = false;
             System.out.println("MikuWarn:Catch exception at MouseEvent");
@@ -59,7 +60,7 @@ public class MixinForgeHooksClient {
     public static boolean onDrawBlockHighlight(RenderGlobal context, EntityPlayer player, RayTraceResult target, int subID, float partialTicks) {
         boolean result;
         try {
-            result = MinecraftForge.EVENT_BUS.post(new DrawBlockHighlightEvent(context, player, target, subID, partialTicks));
+            result = MikuLib.MikuEventBus().post(new DrawBlockHighlightEvent(context, player, target, subID, partialTicks));
         } catch (Throwable t) {
             result = false;
             System.out.println("MikuWarn:Catch exception at DrawBlockHighlightEvent");
@@ -75,7 +76,7 @@ public class MixinForgeHooksClient {
     @Overwrite
     public static void dispatchRenderLast(RenderGlobal context, float partialTicks) {
         try {
-            MinecraftForge.EVENT_BUS.post(new RenderWorldLastEvent(context, partialTicks));
+            MikuLib.MikuEventBus().post(new RenderWorldLastEvent(context, partialTicks));
         } catch (Throwable t) {
             System.out.println("MikuWarn:Catch exception at RenderWorldLastEvent");
             t.printStackTrace();
@@ -91,7 +92,7 @@ public class MixinForgeHooksClient {
     public static boolean renderFirstPersonHand(RenderGlobal context, float partialTicks, int renderPass) {
         boolean result;
         try {
-            result = MinecraftForge.EVENT_BUS.post(new RenderHandEvent(context, partialTicks, renderPass));
+            result = MikuLib.MikuEventBus().post(new RenderHandEvent(context, partialTicks, renderPass));
         } catch (Throwable t) {
             result = false;
             System.out.println("MikuWarn:Catch exception at RenderHandEvent");
@@ -108,7 +109,7 @@ public class MixinForgeHooksClient {
     public static boolean renderSpecificFirstPersonHand(EnumHand hand, float partialTicks, float interpPitch, float swingProgress, float equipProgress, ItemStack stack) {
         boolean result;
         try {
-            result = MinecraftForge.EVENT_BUS.post(new RenderSpecificHandEvent(hand, partialTicks, interpPitch, swingProgress, equipProgress, stack));
+            result = MikuLib.MikuEventBus().post(new RenderSpecificHandEvent(hand, partialTicks, interpPitch, swingProgress, equipProgress, stack));
         } catch (Throwable t) {
             result = false;
             System.out.println("MikuWarn:Catch exception at RenderSpecificHandEvent");
@@ -125,7 +126,7 @@ public class MixinForgeHooksClient {
     public static float getFOVModifier(EntityRenderer renderer, Entity entity, IBlockState state, double renderPartialTicks, float fov) {
         EntityViewRenderEvent.FOVModifier event = new EntityViewRenderEvent.FOVModifier(renderer, entity, state, renderPartialTicks, fov);
         try {
-            MinecraftForge.EVENT_BUS.post(event);
+            MikuLib.MikuEventBus().post(event);
         } catch (Throwable t) {
             System.out.println("MikuWarn:Catch exception at FOVModifier");
             t.printStackTrace();
@@ -141,9 +142,32 @@ public class MixinForgeHooksClient {
     public static void onInputUpdate(EntityPlayer player, MovementInput movementInput) {
         if (MikuInsaneMode.isMikuInsaneMode()) return;
         try {
-            MinecraftForge.EVENT_BUS.post(new InputUpdateEvent(player, movementInput));
+            MikuLib.MikuEventBus().post(new InputUpdateEvent(player, movementInput));
         } catch (Throwable t) {
             System.out.println("MikuWarn:Catch exception at InputUpdateEvent");
+            t.printStackTrace();
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public static void drawScreen(GuiScreen screen, int mouseX, int mouseY, float partialTicks) {
+        boolean flag = false;
+        try {
+            flag = MikuLib.MikuEventBus().post(new GuiScreenEvent.DrawScreenEvent.Pre(screen, mouseX, mouseY, partialTicks));
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception at GuiScreenEvent.DrawScreenEvent.Pre");
+            t.printStackTrace();
+        }
+        if (!flag)
+            screen.drawScreen(mouseX, mouseY, partialTicks);
+        try {
+            MikuLib.MikuEventBus().post(new GuiScreenEvent.DrawScreenEvent.Post(screen, mouseX, mouseY, partialTicks));
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Catch exception at GuiScreenEvent.DrawScreenEvent.Post");
             t.printStackTrace();
         }
     }

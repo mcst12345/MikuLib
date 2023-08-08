@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraft;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iEntityLivingBase;
 import miku.lib.common.api.iWorld;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.Entity;
@@ -609,7 +610,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
                 if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
                     if (!ItemStack.areItemStacksEqualUsingNBTShareTag(itemstack1, itemstack))
                         ((WorldServer) this.world).getEntityTracker().sendToTracking(this, new SPacketEntityEquipment(this.getEntityId(), entityequipmentslot, itemstack1));
-                    net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent((EntityLivingBase) (Object) this, entityequipmentslot, itemstack, itemstack1));
+                    MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent((EntityLivingBase) (Object) this, entityequipmentslot, itemstack, itemstack1));
 
                     if (!itemstack.isEmpty()) {
                         this.getAttributeMap().removeAttributeModifiers(itemstack.getAttributeModifiers(entityequipmentslot));
