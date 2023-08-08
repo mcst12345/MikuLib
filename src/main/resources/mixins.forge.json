@@ -12,6 +12,7 @@
     "MixinItemStack",
     "MixinLoadController",
     "MixinMinecraftForge",
+    "MixinObjectHolderRegistry",
     "MixinProxyInjector"
   ],
   "client": [

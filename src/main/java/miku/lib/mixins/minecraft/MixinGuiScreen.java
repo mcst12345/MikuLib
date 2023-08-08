@@ -168,6 +168,6 @@ public abstract class MixinGuiScreen extends Gui {
     @Overwrite
     public void drawDefaultBackground() {
         this.drawWorldBackground(0);
-        MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent(this));
+        MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.GuiScreenEvent.BackgroundDrawnEvent((GuiScreen) (Object) (this)));
     }
 }
