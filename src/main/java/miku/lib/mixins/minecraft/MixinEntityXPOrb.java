@@ -19,7 +19,7 @@ public abstract class MixinEntityXPOrb extends Entity {
     @Shadow
     public int delayBeforeCanPickup;
 
-    @Shadow
+    @Shadow(remap = false)
     private static int roundAverage(float value) {
         return 0;
     }

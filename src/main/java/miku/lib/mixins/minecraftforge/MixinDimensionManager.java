@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import javax.annotation.Nullable;
 import java.util.Hashtable;
 
-@Mixin(value = DimensionManager.class)
+@Mixin(value = DimensionManager.class, remap = false)
 public abstract class MixinDimensionManager {
     @Shadow
     public static WorldServer getWorld(int id) {

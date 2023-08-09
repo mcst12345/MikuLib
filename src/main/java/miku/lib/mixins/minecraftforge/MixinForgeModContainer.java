@@ -42,7 +42,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-@Mixin(value = ForgeModContainer.class)
+@Mixin(value = ForgeModContainer.class, remap = false)
 public abstract class MixinForgeModContainer extends DummyModContainer implements WorldAccessContainer {
     @Shadow
     @Final

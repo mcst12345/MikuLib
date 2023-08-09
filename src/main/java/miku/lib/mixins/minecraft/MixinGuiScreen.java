@@ -49,13 +49,13 @@ public abstract class MixinGuiScreen extends Gui {
     @Shadow
     public abstract void initGui();
 
-    @Shadow
+    @Shadow(remap = false)
     protected boolean mouseHandled;
 
     @Shadow
     public abstract void handleMouseInput() throws IOException;
 
-    @Shadow
+    @Shadow(remap = false)
     protected boolean keyHandled;
 
     @Shadow

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Map;
 
-@Mixin(value = ForgeChunkManager.class)
+@Mixin(value = ForgeChunkManager.class, remap = false)
 public abstract class MixinForgeChunkManager {
     @Shadow
     private static SetMultimap<String, ForgeChunkManager.Ticket> playerTickets;

@@ -4,7 +4,7 @@ import ic2.core.util.Util;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(value = Util.class)
+@Mixin(value = Util.class, remap = false)
 public class MixinUtil {
     /**
      * @author mcst12345

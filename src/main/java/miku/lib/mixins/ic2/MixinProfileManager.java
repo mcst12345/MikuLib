@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Mixin(value = ProfileManager.class)
+@Mixin(value = ProfileManager.class, remap = false)
 public class MixinProfileManager {
     @Shadow
     private static List<IResourcePack> textureChanges;

@@ -813,7 +813,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      * @author mcst12345
      * @reason FUCK!!!
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public void curePotionEffects(ItemStack curativeItem) {
         if (world.isRemote) return;
         Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();

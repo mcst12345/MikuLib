@@ -50,10 +50,10 @@ public abstract class MixinPlayerChunkMapEntry {
     @Nullable
     private Chunk chunk;
 
-    @Shadow
+    @Shadow(remap = false)
     private boolean loading;
 
-    @Shadow
+    @Shadow(remap = false)
     private Runnable loadedRunnable;
 
     @Shadow

@@ -59,7 +59,7 @@ public abstract class MixinEntityMinecart extends Entity implements IWorldNameab
     @Shadow
     private double minecartPitch;
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract boolean canUseRail();
 
     @Shadow
@@ -74,19 +74,19 @@ public abstract class MixinEntityMinecart extends Entity implements IWorldNameab
     @Shadow
     private boolean isInReverse;
 
-    @Shadow
+    @Shadow(remap = false)
     @Nullable
     public static IMinecartCollisionHandler getCollisionHandler() {
         return null;
     }
 
-    @Shadow
+    @Shadow(remap = false)
     protected abstract BlockPos getCurrentRailPosition();
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract boolean canBeRidden();
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract boolean isPoweredCart();
 
     public MixinEntityMinecart(World worldIn) {

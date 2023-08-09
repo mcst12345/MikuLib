@@ -17,7 +17,7 @@ public abstract class MixinBiome extends net.minecraftforge.registries.IForgeReg
      * @author mcst12345
      * @reason Fuck!
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public int getWaterColorMultiplier() {
         net.minecraftforge.event.terraingen.BiomeEvent.GetWaterColor event = new net.minecraftforge.event.terraingen.BiomeEvent.GetWaterColor((Biome) (Object) this, waterColor);
         MikuLib.MikuEventBus().post(event);
@@ -28,7 +28,7 @@ public abstract class MixinBiome extends net.minecraftforge.registries.IForgeReg
      * @author mcst12345
      * @reason Fuck!
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public int getModdedBiomeGrassColor(int original) {
         net.minecraftforge.event.terraingen.BiomeEvent.GetGrassColor event = new net.minecraftforge.event.terraingen.BiomeEvent.GetGrassColor((Biome) (Object) this, original);
         MikuLib.MikuEventBus().post(event);
@@ -39,7 +39,7 @@ public abstract class MixinBiome extends net.minecraftforge.registries.IForgeReg
      * @author mcst12345
      * @reason Fuck!
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public int getModdedBiomeFoliageColor(int original) {
         net.minecraftforge.event.terraingen.BiomeEvent.GetFoliageColor event = new net.minecraftforge.event.terraingen.BiomeEvent.GetFoliageColor((Biome) (Object) this, original);
         MikuLib.MikuEventBus().post(event);

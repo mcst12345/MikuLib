@@ -147,7 +147,7 @@ public abstract class MixinWorld implements iWorld {
     @Shadow
     protected boolean scheduledUpdatesAreImmediate;
 
-    @Shadow
+    @Shadow(remap = false)
     public boolean restoringBlockSnapshots;
 
     @Shadow

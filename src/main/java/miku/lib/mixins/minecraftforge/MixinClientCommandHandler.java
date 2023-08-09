@@ -16,7 +16,7 @@ import static net.minecraft.util.text.TextFormatting.RED;
 
 @Mixin(value = ClientCommandHandler.class)
 public abstract class MixinClientCommandHandler extends CommandHandler {
-    @Shadow
+    @Shadow(remap = false)
     protected abstract TextComponentTranslation format(TextFormatting color, String str, Object... args);
 
     /**
