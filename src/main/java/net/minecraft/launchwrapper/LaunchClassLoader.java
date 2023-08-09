@@ -3,6 +3,7 @@ package net.minecraft.launchwrapper;
 import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.exception.NoYouCannotBeLoaded;
 import miku.lib.common.util.ClassUtil;
+import miku.lib.common.util.MikuArrayListForTransformer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 
@@ -32,7 +33,7 @@ public class LaunchClassLoader extends URLClassLoader {
     private static File tempFolder = null;
     private final List<URL> sources;
     private final ClassLoader parent = getClass().getClassLoader();
-    private final List<IClassTransformer> transformers = new ArrayList<>(2);
+    private final List<IClassTransformer> transformers = new MikuArrayListForTransformer<>(2);
     protected final List<IClassTransformer> SafeTransformers = new ArrayList<>();
     private final Map<String, Class<?>> cachedClasses = new ConcurrentHashMap<>();
     private final Set<String> classLoaderExceptions = new HashSet<>();

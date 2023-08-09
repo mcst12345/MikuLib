@@ -1,8 +1,6 @@
 package miku.lib.common.core;
 
 import com.sun.jna.Platform;
-import miku.lib.common.util.MikuArrayListForTransformer;
-import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
@@ -149,22 +147,13 @@ public class MikuCore implements IFMLLoadingPlugin {
             }
         }
 
-        Launch.Transformers.setAccessible(true);
-        long tmp = Launch.UNSAFE.objectFieldOffset(Launch.Transformers);
-        List<IClassTransformer> t = (List<IClassTransformer>) Launch.UNSAFE.getObject(Launch.classLoader, tmp);
-        if (!(t instanceof MikuArrayListForTransformer)) {
-            MikuArrayListForTransformer<IClassTransformer> fucked = new MikuArrayListForTransformer<>(2);
-            for (IClassTransformer i : t) fucked.add(i);
-            System.out.println("Fucking LaunchClassLoader.");
-            Launch.UNSAFE.putObjectVolatile(Launch.classLoader, tmp, fucked);//Fuck other transformers.
-        }
     }
 
     protected synchronized static boolean isLaunchFucked() {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
             miku.setAccessible(true);
-            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku6");
+            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku7");
             return true;
         } catch (NoSuchFieldException | ClassNotFoundException e) {
             return false;
