@@ -884,7 +884,7 @@ public class ForgeChunkManager {
         }
     }
 
-    static void captureConfig(File configDir) {
+    public static void captureConfig(File configDir) {
         cfgFile = new File(configDir, "forgeChunkLoading.cfg");
         config = new Configuration(cfgFile, true);
         try {

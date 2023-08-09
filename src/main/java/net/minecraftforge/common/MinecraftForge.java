@@ -52,7 +52,7 @@ public class MinecraftForge {
     public static final EventBus ORE_GEN_BUS = new EventBus();
     public static final String MC_VERSION = Loader.MC_VERSION;
 
-    static final ForgeInternalHandler INTERNAL_HANDLER = new ForgeInternalHandler();
+    public static final ForgeInternalHandler INTERNAL_HANDLER = new ForgeInternalHandler();
 
     /**
      * Register a new seed to be dropped when breaking tall grass.

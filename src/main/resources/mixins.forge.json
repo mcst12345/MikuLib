@@ -11,6 +11,7 @@
     "MixinForgeChunkManager",
     "MixinForgeEventFactory",
     "MixinForgeHooks",
+    "MixinForgeModContainer",
     "MixinItemStack",
     "MixinLoadController",
     "MixinMinecraftForge",
