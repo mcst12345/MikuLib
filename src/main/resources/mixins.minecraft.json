@@ -35,6 +35,7 @@
     "MixinEntityRenderer",
     "MixinFallbackResourceManager",
     "MixinFontRenderer",
+    "MixinGuiContainer",
     "MixinGuiGameOver",
     "MixinGuiIngame",
     "MixinGuiIngameMenu",
