@@ -8,15 +8,13 @@ import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.profiler.Profiler;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.WorldSettings;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -136,10 +134,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
         if (EntityUtil.isProtected(entitiesById.lookup(entityID))) cir.setReturnValue(null);
     }
 
-    @Inject(at = @At("TAIL"), method = "<init>")
-    public void WorldClient(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn, CallbackInfo ci) {
-        MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Load(this));
+    static {
+        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
     }
-
-
 }

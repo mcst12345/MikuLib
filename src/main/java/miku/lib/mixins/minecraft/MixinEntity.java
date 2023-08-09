@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.common.api.*;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.network.NetworkHandler;
@@ -22,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ITeleporter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -532,4 +534,8 @@ public abstract class MixinEntity implements iEntity {
         }
     }
 
+    @Inject(at = @At("HEAD"), method = "<clinit>")
+    private static void Entity(CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
+    }
 }
