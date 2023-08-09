@@ -180,11 +180,11 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
                     this.loadedEntityList.add(entity);
                     this.onEntityAdded(entity);
                 }
-                continue;
-            }
-            if (this.canAddEntity(entity) && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
-                this.loadedEntityList.add(entity);
-                this.onEntityAdded(entity);
+            } else {
+                if (this.canAddEntity(entity) && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
+                    this.loadedEntityList.add(entity);
+                    this.onEntityAdded(entity);
+                }
             }
         }
     }
