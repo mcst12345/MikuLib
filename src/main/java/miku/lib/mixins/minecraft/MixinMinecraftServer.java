@@ -3,7 +3,9 @@ package miku.lib.mixins.minecraft;
 import com.mojang.authlib.GameProfile;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
+import net.minecraft.command.CommandBase;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.network.NetworkSystem;
 import net.minecraft.network.ServerStatusResponse;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.profiler.Snooper;
@@ -12,7 +14,10 @@ import net.minecraft.server.management.PlayerList;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.*;
+import net.minecraft.world.storage.ISaveFormat;
+import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -72,31 +77,128 @@ public abstract class MixinMinecraftServer {
 
     @Shadow @Final private static Logger LOGGER;
 
-    @Shadow public WorldServer[] worlds;
+    @Shadow
+    public WorldServer[] worlds;
 
-    @Shadow private boolean serverIsRunning;
+    @Shadow
+    private boolean serverIsRunning;
 
-    @Shadow public abstract void finalTick(CrashReport report);
+    @Shadow
+    public abstract void finalTick(CrashReport report);
 
-    @Shadow public abstract CrashReport addServerInfoToCrashReport(CrashReport report);
+    @Shadow
+    public abstract CrashReport addServerInfoToCrashReport(CrashReport report);
 
-    @Shadow public abstract File getDataDirectory();
+    @Shadow
+    public abstract File getDataDirectory();
 
-    @Shadow public abstract void stopServer();
+    /**
+     * @author mcst12345
+     * @reason Fuck!!!
+     */
+    @Overwrite
+    public void stopServer() {
+        LOGGER.info("Stopping server");
 
-    @Shadow private boolean serverStopped;
+        if (this.getNetworkSystem() != null) {
+            this.getNetworkSystem().terminateEndpoints();
+        }
 
-    @Shadow public abstract void systemExitNow();
+        if (this.playerList != null) {
+            LOGGER.info("Saving players");
+            this.playerList.saveAllPlayerData();
+            this.playerList.removeAllPlayers();
+        }
 
-    @Shadow private String motd;
+        if (this.worlds != null) {
+            LOGGER.info("Saving worlds");
+
+            for (WorldServer worldserver : this.worlds) {
+                if (worldserver != null) {
+                    worldserver.disableLevelSaving = false;
+                }
+            }
+
+            this.saveAllWorlds(false);
+
+            for (WorldServer worldserver1 : this.worlds) {
+                if (worldserver1 != null) {
+                    MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Unload(worldserver1));
+                    worldserver1.flush();
+                }
+            }
+
+            WorldServer[] tmp = worlds;
+            for (WorldServer world : tmp) {
+                net.minecraftforge.common.DimensionManager.setWorld(world.provider.getDimension(), null, (MinecraftServer) (Object) this);
+            }
+        }
+
+        if (this.usageSnooper.isSnooperRunning()) {
+            this.usageSnooper.stopSnooper();
+        }
+
+        CommandBase.setCommandListener(null); // Forge: fix MC-128561
+    }
+
+    @Shadow
+    private boolean serverStopped;
+
+    @Shadow
+    public abstract void systemExitNow();
+
+    @Shadow
+    private String motd;
+
+    @Shadow
+    public abstract void initialWorldChunkLoad();
+
+    @Shadow
+    public abstract void convertMapIfNeeded(String worldNameIn);
+
+    @Shadow
+    protected abstract void setUserMessage(String message);
+
+    @Shadow
+    @Final
+    private ISaveFormat anvilConverterForAnvilFile;
+
+    @Shadow
+    public abstract void setResourcePackFromWorld(String worldNameIn, ISaveHandler saveHandlerIn);
+
+    @Shadow
+    public abstract String getFolderName();
+
+    @Shadow
+    public abstract GameType getGameType();
+
+    @Shadow
+    public abstract boolean canStructuresSpawn();
+
+    @Shadow
+    public abstract boolean isHardcore();
+
+    @Shadow
+    private boolean enableBonusChest;
+
+    @Shadow
+    public abstract boolean isSinglePlayer();
+
+    @Shadow
+    public abstract void setDifficultyForAllWorlds(EnumDifficulty difficulty);
+
+    @Shadow
+    public abstract EnumDifficulty getDifficulty();
+
+    @Shadow
+    public abstract NetworkSystem getNetworkSystem();
 
     /**
      * @author mcst12345
      * @reason F
      */
     @Overwrite
-    public void tick()
-    {
+    public void tick() {
         long i = System.nanoTime();
         if (!SpecialItem.isTimeStop()) {
             try {
@@ -287,13 +389,55 @@ public abstract class MixinMinecraftServer {
             catch (Throwable throwable)
             {
                 LOGGER.error("Exception stopping the server", throwable);
-            }
-            finally
-            {
+            } finally {
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStopped();
                 this.serverStopped = true;
                 this.systemExitNow();
             }
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason HolyShit
+     */
+    @Overwrite
+    public void loadAllWorlds(String saveName, String worldNameIn, long seed, WorldType type, String generatorOptions) {
+        this.convertMapIfNeeded(saveName);
+        this.setUserMessage("menu.loadingLevel");
+        ISaveHandler isavehandler = this.anvilConverterForAnvilFile.getSaveLoader(saveName, true);
+        this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
+        WorldInfo worldinfo = isavehandler.loadWorldInfo();
+        WorldSettings worldsettings;
+
+        if (worldinfo == null) {
+            worldsettings = new WorldSettings(seed, this.getGameType(), this.canStructuresSpawn(), this.isHardcore(), type);
+            worldsettings.setGeneratorOptions(generatorOptions);
+
+            if (this.enableBonusChest) {
+                worldsettings.enableBonusChest();
+            }
+
+            worldinfo = new WorldInfo(worldsettings, worldNameIn);
+        } else {
+            worldinfo.setWorldName(worldNameIn);
+            worldsettings = new WorldSettings(worldinfo);
+        }
+
+        WorldServer overWorld = (WorldServer) (new WorldServer((MinecraftServer) (Object) this, isavehandler, worldinfo, 0, profiler).init());
+        overWorld.initialize(worldsettings);
+        for (int dim : net.minecraftforge.common.DimensionManager.getStaticDimensionIDs()) {
+            WorldServer world = (dim == 0 ? overWorld : (WorldServer) new WorldServerMulti((MinecraftServer) (Object) this, isavehandler, dim, overWorld, profiler).init());
+            world.addEventListener(new ServerWorldEventHandler((MinecraftServer) (Object) this, world));
+
+            if (!this.isSinglePlayer()) {
+                world.getWorldInfo().setGameType(this.getGameType());
+            }
+            MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Load(world));
+        }
+
+        this.playerList.setPlayerManager(new WorldServer[]{overWorld});
+        this.setDifficultyForAllWorlds(this.getDifficulty());
+        this.initialWorldChunkLoad();
     }
 }

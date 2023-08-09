@@ -4,14 +4,15 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.core.MikuLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.datafix.DataFixer;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.*;
+import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -36,6 +37,10 @@ public abstract class MixinIntegratedServer extends MinecraftServer {
     @Shadow
     @Final
     private Minecraft mc;
+
+    @Shadow
+    @Final
+    private WorldSettings worldSettings;
 
     public MixinIntegratedServer(File anvilFileIn, Proxy proxyIn, DataFixer dataFixerIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn) {
         super(anvilFileIn, proxyIn, dataFixerIn, authServiceIn, sessionServiceIn, profileRepoIn, profileCacheIn);
@@ -112,5 +117,43 @@ public abstract class MixinIntegratedServer extends MinecraftServer {
         if (((iMinecraft) this.mc).MikuWorld() != null) {
             ((iMinecraft) this.mc).MikuWorld().getWorldInfo().setDifficulty(difficulty);
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public void loadAllWorlds(@Nonnull String saveName, @Nonnull String worldNameIn, long seed, @Nonnull WorldType type, @Nonnull String generatorOptions) {
+        this.convertMapIfNeeded(saveName);
+        ISaveHandler isavehandler = this.getActiveAnvilConverter().getSaveLoader(saveName, true);
+        this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
+        WorldInfo worldinfo = isavehandler.loadWorldInfo();
+
+        if (worldinfo == null) {
+            worldinfo = new WorldInfo(this.worldSettings, worldNameIn);
+        } else {
+            worldinfo.setWorldName(worldNameIn);
+        }
+
+        WorldServer overWorld = (isDemo() ? (WorldServer) (new WorldServerDemo(this, isavehandler, worldinfo, 0, this.profiler)).init() :
+                (WorldServer) (new WorldServer(this, isavehandler, worldinfo, 0, this.profiler)).init());
+        overWorld.initialize(this.worldSettings);
+        for (int dim : net.minecraftforge.common.DimensionManager.getStaticDimensionIDs()) {
+            WorldServer world = (dim == 0 ? overWorld : (WorldServer) (new WorldServerMulti(this, isavehandler, dim, overWorld, this.profiler)).init());
+            world.addEventListener(new ServerWorldEventHandler(this, world));
+            if (!this.isSinglePlayer()) {
+                world.getWorldInfo().setGameType(getGameType());
+            }
+            MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Load(world));
+        }
+
+        this.getPlayerList().setPlayerManager(new WorldServer[]{overWorld});
+
+        if (overWorld.getWorldInfo().getDifficulty() == null) {
+            this.setDifficultyForAllWorlds(this.mc.gameSettings.difficulty);
+        }
+
+        this.initialWorldChunkLoad();
     }
 }
