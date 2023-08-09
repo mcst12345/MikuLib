@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.core.MikuLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -52,11 +53,10 @@ public abstract class MixinRenderItemFrame extends Render<EntityItemFrame> {
             GlStateManager.rotate((float) i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
 
             net.minecraftforge.client.event.RenderItemInFrameEvent event = new net.minecraftforge.client.event.RenderItemInFrameEvent(itemFrame, (RenderItemFrame) (Object) this);
-            if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) {
+            if (!MikuLib.MikuEventBus().post(event)) {
                 if (flag) {
                     this.renderManager.renderEngine.bindTexture(MAP_BACKGROUND_TEXTURES);
                     GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
-                    float f = 0.0078125F;
                     GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
                     GlStateManager.translate(-64.0F, -64.0F, 0.0F);
                     MapData mapdata = ((net.minecraft.item.ItemMap) itemstack.getItem()).getMapData(itemstack, itemFrame.world);

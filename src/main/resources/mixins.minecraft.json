@@ -64,6 +64,7 @@
     "MixinRenderGlobal",
     "MixinRenderItemFrame",
     "MixinRenderLivingBase",
+    "MixinRenderPlayer",
     "MixinSimpleReloadableResourceManager",
     "MixinSoundManager",
     "MixinTeleportToTeam",
