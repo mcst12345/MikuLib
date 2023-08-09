@@ -3,7 +3,10 @@
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins.minecraft",
   "mixins": [
+    "MixinAnvilChunkLoader",
     "MixinBanIP",
+    "MixinBiome",
+    "MixinBiomeDecorator",
     "MixinBlockNote",
     "MixinChunk",
     "MixinCommandHandler",
