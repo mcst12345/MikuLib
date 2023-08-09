@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import com.google.common.collect.Lists;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
@@ -15,6 +16,7 @@ import net.minecraft.entity.passive.EntitySkeletonHorse;
 import net.minecraft.init.Blocks;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.server.management.PlayerChunkMap;
+import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.BlockPos;
@@ -22,6 +24,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.spongepowered.asm.mixin.Final;
@@ -34,6 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 @Mixin(value = WorldServer.class)
@@ -68,6 +72,12 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
 
     @Shadow
     protected abstract BlockPos adjustPosToNearbyEntity(BlockPos pos);
+
+    @Shadow
+    protected abstract void saveLevel() throws MinecraftException;
+
+    @Shadow
+    public abstract ChunkProviderServer getChunkProvider();
 
     protected MixinWorldServer(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);
@@ -165,7 +175,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
             if(!EntityUtil.isDEAD(e))fucked.add(e);
         }
         for (Entity entity : fucked) {
-            if (MikuInsaneMode.isMikuInsaneMode()) {
+            if (!MikuInsaneMode.isMikuInsaneMode()) {
                 if (this.canAddEntity(entity)) {
                     this.loadedEntityList.add(entity);
                     this.onEntityAdded(entity);
@@ -286,7 +296,6 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
                     //Keeping here as a note for future when it may be restored.
                     //boolean isForced = getPersistentChunks().containsKey(new ChunkPos(nextticklistentry.xCoord >> 4, nextticklistentry.zCoord >> 4));
                     //byte b0 = isForced ? 0 : 8;
-                    int k = 0;
 
                     if (this.isAreaLoaded(nextticklistentry1.position.add(0, 0, 0), nextticklistentry1.position.add(0, 0, 0))) {
                         IBlockState iblockstate = this.getBlockState(nextticklistentry1.position);
@@ -415,6 +424,36 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
             }
 
             this.profiler.endSection();
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!!!!
+     */
+    @Overwrite
+    public void saveAllChunks(boolean all, @Nullable IProgressUpdate progressCallback) throws MinecraftException {
+        ChunkProviderServer chunkproviderserver = this.getChunkProvider();
+
+        if (chunkproviderserver.canSave()) {
+            if (progressCallback != null) {
+                progressCallback.displaySavingString("Saving level");
+            }
+
+            this.saveLevel();
+
+            if (progressCallback != null) {
+                progressCallback.displayLoadingString("Saving chunks");
+            }
+
+            chunkproviderserver.saveChunks(all);
+            MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Save(this));
+
+            for (Chunk chunk : Lists.newArrayList(chunkproviderserver.getLoadedChunks())) {
+                if (chunk != null && !this.playerChunkMap.contains(chunk.x, chunk.z)) {
+                    chunkproviderserver.queueUnload(chunk);
+                }
+            }
         }
     }
 }
