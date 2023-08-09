@@ -4,9 +4,11 @@
   "package": "miku.lib.mixins.minecraftforge",
   "mixins": [
     "MixinCommandSetDimension",
+    "MixinDimensionManager",
     "MixinEventBus",
     "MixinFMLCommonHandler",
     "MixinFMLModContainer",
+    "MixinForgeChunkManager",
     "MixinForgeEventFactory",
     "MixinForgeHooks",
     "MixinItemStack",
