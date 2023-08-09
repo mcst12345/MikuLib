@@ -17,6 +17,7 @@
   ],
   "client": [
     "MixinAnimationItemOverrideList",
+    "MixinClientCommandHandler",
     "MixinCloudRenderer",
     "MixinFMLClientHandler",
     "MixinForgeHooksClient",
