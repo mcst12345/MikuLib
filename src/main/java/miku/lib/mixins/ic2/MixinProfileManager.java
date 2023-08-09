@@ -5,8 +5,10 @@ import ic2.core.profile.ProfileManager;
 import ic2.core.profile.TextureStyle;
 import ic2.core.util.ReflectionUtil;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.client.api.iSimpleReloadableResourceManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.FallbackResourceManager;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,7 +42,10 @@ public class MixinProfileManager {
         }
 
         List<IResourcePack> packs = new ArrayList<>();
-        Map<String, FallbackResourceManager> domainManagers = (Map) ((iMinecraft) Minecraft.getMinecraft()).GetResourceManager();
+
+        IReloadableResourceManager rm = ((iMinecraft) Minecraft.getMinecraft()).GetResourceManager();
+
+        Map<String, FallbackResourceManager> domainManagers = ((iSimpleReloadableResourceManager) rm).getDomainResourceManagers();
 
         for (TextureStyle texture : selected.textures) {
             FallbackResourceManager manager = domainManagers.get(texture.mod);
