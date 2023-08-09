@@ -38,6 +38,7 @@ public class MixinProfileManager {
     @SideOnly(Side.CLIENT)
     @Overwrite
     public static void doTextureChanges() {
+        System.out.println("Successfully fucked ic2.");
         if (textureChanges == null) {
             textureChanges = Collections.emptyList();
         }

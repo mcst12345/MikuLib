@@ -4,8 +4,10 @@ import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.exception.NoYouCannotBeLoaded;
 import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.MikuArrayListForTransformer;
+import miku.lib.common.util.Misc;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.*;
 import java.net.JarURLConnection;
@@ -127,6 +129,10 @@ public class LaunchClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> findClass(final String name) throws ClassNotFoundException {
+        if (name.equals("ic2.core.util.Util") || name.equals("ic2.core.profile.ProfileManager")) {
+            Mixins.addConfiguration("mixins.ic2.json");
+            Misc.returnMixin();
+        }
 
         for (final String exception : classLoaderExceptions) {
             if (name.startsWith(exception)) {
