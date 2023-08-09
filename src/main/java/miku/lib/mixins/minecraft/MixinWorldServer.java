@@ -175,7 +175,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
             if(!EntityUtil.isDEAD(e))fucked.add(e);
         }
         for (Entity entity : fucked) {
-            if (!MikuInsaneMode.isMikuInsaneMode()) {
+            if (MikuInsaneMode.isMikuInsaneMode()) {
                 if (this.canAddEntity(entity)) {
                     this.loadedEntityList.add(entity);
                     this.onEntityAdded(entity);
