@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Ordering;
 import miku.lib.common.api.iWorld;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -90,13 +91,39 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
                 j += l;
             }
         }
-        if(((iWorld)this.mc.player.world).HasEffect(this.mc.player)){
-            for(MikuEffect effect : ((iWorld)this.mc.player.world).GetEntityEffects(this.mc.player)){
-                if(effect.getTEXTURE() == null)continue;
+        if (((iWorld) this.mc.player.world).HasEffect(this.mc.player)) {
+            for (MikuEffect effect : ((iWorld) this.mc.player.world).GetEntityEffects(this.mc.player)) {
+                if (effect.getTEXTURE() == null) continue;
                 this.mc.getTextureManager().bindTexture(effect.getTEXTURE());
                 this.drawTexturedModalRect(i + 6, j + 7, 0, 0, 72, 18);
 
             }
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!!!!!
+     */
+    @Overwrite
+    protected void updateActivePotionEffects() {
+        boolean hasVisibleEffect = false;
+        for (PotionEffect potioneffect : this.mc.player.getActivePotionEffects()) {
+            Potion potion = potioneffect.getPotion();
+            if (potion.shouldRender(potioneffect)) {
+                hasVisibleEffect = true;
+                break;
+            }
+        }
+        if (this.mc.player.getActivePotionEffects().isEmpty() || !hasVisibleEffect) {
+            this.guiLeft = (this.width - this.xSize) / 2;
+            this.hasActivePotionEffects = false;
+        } else {
+            if (MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent(this)))
+                this.guiLeft = (this.width - this.xSize) / 2;
+            else
+                this.guiLeft = 160 + (this.width - this.xSize - 200) / 2;
+            this.hasActivePotionEffects = true;
         }
     }
 }

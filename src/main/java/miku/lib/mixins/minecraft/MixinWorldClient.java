@@ -2,15 +2,19 @@ package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iWorldClient;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import net.minecraft.world.WorldSettings;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.spongepowered.asm.mixin.Final;
@@ -122,13 +126,18 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
         if(EntityUtil.isDEAD(entityToSpawn))ci.cancel();
     }
 
-    @Inject(at=@At("TAIL"),method = "getEntityByID", cancellable = true)
-    public void getEntityByID(int id, CallbackInfoReturnable<Entity> cir){
-        if(EntityUtil.isDEAD(cir.getReturnValue()))cir.setReturnValue(null);
+    @Inject(at = @At("TAIL"), method = "getEntityByID", cancellable = true)
+    public void getEntityByID(int id, CallbackInfoReturnable<Entity> cir) {
+        if (EntityUtil.isDEAD(cir.getReturnValue())) cir.setReturnValue(null);
     }
 
-    @Inject(at=@At("HEAD"),method = "removeEntityFromWorld", cancellable = true)
-    public void removeEntityFromWorld(int entityID, CallbackInfoReturnable<Entity> cir){
-        if(EntityUtil.isProtected(entitiesById.lookup(entityID)))cir.setReturnValue(null);
+    @Inject(at = @At("HEAD"), method = "removeEntityFromWorld", cancellable = true)
+    public void removeEntityFromWorld(int entityID, CallbackInfoReturnable<Entity> cir) {
+        if (EntityUtil.isProtected(entitiesById.lookup(entityID))) cir.setReturnValue(null);
+    }
+
+    @Inject(at = @At("TAIL"), method = "<init>")
+    public void WorldClient(NetHandlerPlayClient netHandler, WorldSettings settings, int dimension, EnumDifficulty difficulty, Profiler profilerIn, CallbackInfo ci) {
+        MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Load(this));
     }
 }

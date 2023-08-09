@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.base.Predicates;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.core.MikuLib;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -422,7 +423,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
         }
 
         net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors((EntityRenderer) (Object) this, entity, iblockstate, partialTicks, this.fogColorRed, this.fogColorGreen, this.fogColorBlue);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+        MikuLib.MikuEventBus().post(event);
 
         this.fogColorRed = event.getRed();
         this.fogColorGreen = event.getGreen();
@@ -1221,7 +1222,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             }
             IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(((iMinecraft) this.mc).MikuWorld(), entity, partialTicks);
             net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup((EntityRenderer) (Object) this, entity, state, partialTicks, yaw, pitch, roll);
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+            MikuLib.MikuEventBus().post(event);
             GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);

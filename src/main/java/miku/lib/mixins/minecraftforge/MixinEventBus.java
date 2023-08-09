@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraftforge;
 
 import miku.lib.common.api.iEventBus;
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.Objects;
 
 @Mixin(value = EventBus.class, remap = false)
 public class MixinEventBus implements iEventBus {
@@ -29,12 +32,16 @@ public class MixinEventBus implements iEventBus {
      */
     @Overwrite
     public boolean post(Event event) {
+        if (!Objects.equals(this, MikuLib.MikuEventBus())) {
+            return false;
+        }
         if (EntityUtil.isKilling() || MikuInsaneMode.isMikuInsaneMode()) return false;
         if (event instanceof EntityJoinWorldEvent) {
             if (EntityUtil.isProtected(((EntityJoinWorldEvent) event).getEntity())) return false;
         }
-        if(event instanceof PlayerInteractEvent){
-            if(EntityUtil.isProtected(((PlayerInteractEvent)event).getEntityPlayer()) && ((PlayerInteractEvent)event).getEntity() != null)return false;
+        if (event instanceof PlayerInteractEvent) {
+            if (EntityUtil.isProtected(((PlayerInteractEvent) event).getEntityPlayer()) && ((PlayerInteractEvent) event).getEntity() != null)
+                return false;
         }
         if (shutdown) return false;
 
