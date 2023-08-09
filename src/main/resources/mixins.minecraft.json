@@ -9,6 +9,8 @@
     "MixinBiomeDecorator",
     "MixinBlockNote",
     "MixinChunk",
+    "MixinChunkGeneratorEnd",
+    "MixinChunkGeneratorHell",
     "MixinCommandHandler",
     "MixinEnderInventory",
     "MixinEntity",
