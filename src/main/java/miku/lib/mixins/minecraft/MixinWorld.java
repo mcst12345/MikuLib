@@ -1,12 +1,14 @@
 package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Lists;
 import miku.lib.client.api.iWorldClient;
 import miku.lib.common.api.ProtectedEntity;
 import miku.lib.common.api.iChunk;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
@@ -23,6 +25,7 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -38,6 +41,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -55,6 +59,19 @@ public abstract class MixinWorld implements iWorld {
         this.scheduledUpdatesAreImmediate = true;
         state.getBlock().updateTick((World) (Object) this, pos, state, random);
         this.scheduledUpdatesAreImmediate = false;
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!!!
+     */
+    @Overwrite
+    public boolean addWeatherEffect(Entity entityIn) {
+        if (EntityUtil.isDEAD(entityIn)) return false;
+        if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)))
+            return false;
+        this.weatherEffects.add(entityIn);
+        return true;
     }
 
     protected final HashSet<Entity> protected_entities = new HashSet<>();
@@ -130,10 +147,59 @@ public abstract class MixinWorld implements iWorld {
     @Shadow
     protected boolean scheduledUpdatesAreImmediate;
 
+    @Shadow
+    public boolean restoringBlockSnapshots;
+
+    @Shadow
+    @Final
+    public List<EntityPlayer> playerEntities;
+
+    @Shadow
+    public abstract void updateAllPlayersSleepingFlag();
+
+    @Shadow
+    public abstract List<Entity> getEntitiesWithinAABBExcludingEntity(@Nullable Entity entityIn, AxisAlignedBB bb);
+
+    @Shadow
+    protected abstract boolean getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_, @Nullable List<AxisAlignedBB> outList);
+
     public void AddEffect(MikuEffect effect) {
         effects.add(effect);
     }
 
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public List<AxisAlignedBB> getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb) {
+        List<AxisAlignedBB> list = Lists.newArrayList();
+        this.getCollisionBoxes(entityIn, aabb, false, list);
+
+        if (entityIn != null) {
+            List<Entity> list1 = this.getEntitiesWithinAABBExcludingEntity(entityIn, aabb.grow(0.25D));
+
+            for (Entity entity : list1) {
+                if (!entityIn.isRidingSameEntity(entity)) {
+                    AxisAlignedBB axisalignedbb = entity.getCollisionBoundingBox();
+
+                    if (axisalignedbb != null && axisalignedbb.intersects(aabb)) {
+                        list.add(axisalignedbb);
+                    }
+
+                    axisalignedbb = entityIn.getCollisionBox(entity);
+
+                    if (axisalignedbb != null && axisalignedbb.intersects(aabb)) {
+                        list.add(axisalignedbb);
+                    }
+                }
+            }
+        }
+        MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.GetCollisionBoxesEvent((World) (Object) this, entityIn, aabb, list));
+        return list;
+    }
+
+    @SuppressWarnings("JavaReflectionMemberAccess")
     public void remove(Entity entity) {
         Field field;
         long tmp;
@@ -144,7 +210,6 @@ public abstract class MixinWorld implements iWorld {
         } catch (NoSuchFieldException e) {
             System.out.println(e.getLocalizedMessage());
         }
-        //this.loadedEntityList.remove(entity);
         try {
             field = World.class.getDeclaredField("field_73007_j");
             tmp = Launch.UNSAFE.objectFieldOffset(field);
@@ -152,8 +217,6 @@ public abstract class MixinWorld implements iWorld {
         } catch (NoSuchFieldException e) {
             System.out.println(e.getLocalizedMessage());
         }
-        //weatherEffects.remove(entity);
-        //net.minecraft.world.World field_73021_x # eventListeners
 
         try {
             field = World.class.getDeclaredField("field_73021_x");
@@ -166,9 +229,6 @@ public abstract class MixinWorld implements iWorld {
             System.out.println(e.getLocalizedMessage());
         }
 
-        //for (IWorldEventListener eventListener : this.eventListeners) {
-        //    eventListener.onEntityRemoved(entity);
-        //}
         int i = entity.chunkCoordX;
         int j = entity.chunkCoordZ;
         if (this.isChunkLoaded(i, j, true)) {
@@ -179,25 +239,70 @@ public abstract class MixinWorld implements iWorld {
         }
     }
 
-    @Inject(at=@At("HEAD"),method = "spawnEntity", cancellable = true)
-    public void spawnEntity(Entity entityIn, CallbackInfoReturnable<Boolean> cir){
-        if((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))cir.setReturnValue(false);
-        if(DEBUG())System.out.println(entityIn.getClass().toString());
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public boolean spawnEntity(Entity entityIn) {
+        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))
+            return false;
+        if (DEBUG()) System.out.println(entityIn.getClass().toString());
+        // do not drop any items while restoring blocksnapshots. Prevents dupes
+        if (!this.isRemote && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
+            return false;
+
+        int i = MathHelper.floor(entityIn.posX / 16.0D);
+        int j = MathHelper.floor(entityIn.posZ / 16.0D);
+        boolean flag = entityIn.forceSpawn;
+
+        if (entityIn instanceof EntityPlayer) {
+            flag = true;
+        }
+
+        if (!flag && !this.isChunkLoaded(i, j, false)) {
+            return false;
+        } else {
+            if (entityIn instanceof EntityPlayer) {
+                EntityPlayer entityplayer = (EntityPlayer) entityIn;
+                this.playerEntities.add(entityplayer);
+                this.updateAllPlayersSleepingFlag();
+            }
+
+            if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)) && !flag)
+                return false;
+
+            this.getChunk(i, j).addEntity(entityIn);
+            this.loadedEntityList.add(entityIn);
+            this.onEntityAdded(entityIn);
+            return true;
+        }
     }
 
-    @Inject(at=@At("HEAD"),method = "onEntityAdded", cancellable = true)
-    public void onEntityAdded(Entity entityIn, CallbackInfo ci){
-        if((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))ci.cancel();
+    /**
+     * @author mcst12345
+     * @reason FUCK!!!
+     */
+    @Overwrite
+    public void onEntityAdded(Entity entityIn) {
+        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))
+            return;
+        for (IWorldEventListener eventListener : this.eventListeners) {
+            eventListener.onEntityAdded(entityIn);
+        }
+        entityIn.onAddedToWorld();
     }
 
-    @Inject(at=@At("HEAD"),method = "onEntityRemoved", cancellable = true)
-    public void onEntityRemoved(Entity entityIn, CallbackInfo ci){
-        if(EntityUtil.isProtected(entityIn))ci.cancel();
+
+    @Inject(at = @At("HEAD"), method = "onEntityRemoved", cancellable = true)
+    public void onEntityRemoved(Entity entityIn, CallbackInfo ci) {
+        if (EntityUtil.isProtected(entityIn)) ci.cancel();
     }
 
-    @Inject(at=@At("HEAD"),method = "removeEntity", cancellable = true)
-    public void removeEntity(Entity entityIn, CallbackInfo ci){
-        if(EntityUtil.isProtected(entityIn))ci.cancel();
+    @Inject(at = @At("HEAD"), method = "removeEntity", cancellable = true)
+    public void removeEntity(Entity entityIn, CallbackInfo ci) {
+        if (EntityUtil.isProtected(entityIn)) ci.cancel();
     }
 
     @Inject(at=@At("HEAD"),method = "removeEntityDangerously", cancellable = true)
@@ -459,9 +564,24 @@ public abstract class MixinWorld implements iWorld {
      * @reason ...
      */
     @Overwrite
-    public void unloadEntities(Collection<Entity> entityCollection){
-        for(Entity en : entityCollection){
-            if(!EntityUtil.isProtected(en))unloadedEntityList.add(en);
+    public void unloadEntities(Collection<Entity> entityCollection) {
+        for (Entity en : entityCollection) {
+            if (!EntityUtil.isProtected(en)) unloadedEntityList.add(en);
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public void loadEntities(Collection<Entity> entityCollection) {
+        for (Entity entity4 : entityCollection) {
+            if (!MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity4, (World) (Object) this))) {
+                if (EntityUtil.isDEAD(entity4)) continue;
+                loadedEntityList.add(entity4);
+                this.onEntityAdded(entity4);
+            }
         }
     }
 
@@ -470,9 +590,8 @@ public abstract class MixinWorld implements iWorld {
      * @reason ...
      */
     @Overwrite
-    public void updateEntityWithOptionalForce(Entity entityIn, boolean forceUpdate)
-    {
-        if(EntityUtil.isDEAD(entityIn))return;
+    public void updateEntityWithOptionalForce(Entity entityIn, boolean forceUpdate) {
+        if (EntityUtil.isDEAD(entityIn)) return;
         if (!(entityIn instanceof EntityPlayer))
         {
             int j2 = MathHelper.floor(entityIn.posX);
