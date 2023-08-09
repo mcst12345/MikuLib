@@ -6,10 +6,7 @@ import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.util.EntityUtil;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EntityTracker;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -29,8 +26,10 @@ import net.minecraft.network.play.server.SPacketCollectItem;
 import net.minecraft.network.play.server.SPacketEntityEquipment;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.CombatTracker;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -44,11 +43,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Mixin(value = EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity implements iEntityLivingBase {
@@ -133,21 +132,9 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Shadow @Final private static DataParameter<Float> HEALTH;
 
-    @Shadow protected boolean dead;
-
-    @Shadow public int deathTime;
-
-    @Shadow @Final private CombatTracker combatTracker;
-
     @Shadow protected abstract void dropLoot(boolean wasRecentlyHit, int lootingModifier, DamageSource source);
 
     @Shadow protected int idleTime;
-
-    @Shadow protected abstract void damageShield(float damage);
-
-    @Shadow protected float lastDamage;
-
-    @Shadow private EntityLivingBase revengeTarget;
 
     @Shadow private int revengeTimer;
 
@@ -174,8 +161,6 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
     public void SetAbsorptionAmount(float value){
         absorptionAmount = value;
     }
-
-    @Shadow private AbstractAttributeMap attributeMap;
 
     @Shadow @Final private Map<Potion, PotionEffect> activePotionsMap;
 
@@ -218,9 +203,6 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Shadow
     public float prevRenderYawOffset;
-
-    @Shadow
-    public float limbSwingAmount;
 
     @Shadow
     protected abstract void updateActiveHand();
@@ -275,15 +257,137 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
     @Shadow
     protected int ticksElytraFlying;
 
+    @Shadow
+    protected abstract void onFinishedPotionEffect(PotionEffect effect);
+
+    @Shadow
+    protected abstract void onChangedPotionEffect(PotionEffect id, boolean p_70695_2_);
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!!!!
+     */
+    @Overwrite
+    public void removePotionEffect(Potion potionIn) {
+        if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, potionIn)))
+            return;
+        PotionEffect potioneffect = this.removeActivePotionEffect(potionIn);
+
+        if (potioneffect != null) {
+            this.onFinishedPotionEffect(potioneffect);
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason shit
+     */
+    @Overwrite
+    protected void updatePotionMetadata() {
+        if (this.activePotionsMap.isEmpty()) {
+            this.resetPotionEffectMetadata();
+            this.setInvisible(false);
+        } else {
+            Collection<PotionEffect> collection = this.activePotionsMap.values();
+            net.minecraftforge.event.entity.living.PotionColorCalculationEvent event = new net.minecraftforge.event.entity.living.PotionColorCalculationEvent((EntityLivingBase) (Object) this, PotionUtils.getPotionColorFromEffectList(collection), areAllPotionsAmbient(collection), collection);
+            MikuLib.MikuEventBus().post(event);
+            this.dataManager.set(HIDE_PARTICLES, event.areParticlesHidden());
+            this.dataManager.set(POTION_EFFECTS, event.getColor());
+            this.setInvisible(this.isPotionActive(MobEffects.INVISIBILITY));
+        }
+    }
+
+    @Shadow
+    @Final
+    private static DataParameter<Integer> POTION_EFFECTS;
+
+    @Shadow
+    @Final
+    private static DataParameter<Boolean> HIDE_PARTICLES;
+
+    @Shadow
+    protected abstract void resetPotionEffectMetadata();
+
+    @Shadow
+    public static boolean areAllPotionsAmbient(Collection<PotionEffect> potionEffects) {
+        return false;
+    }
+
+    @Shadow
+    protected abstract void onNewPotionEffect(PotionEffect id);
+
+    @Shadow
+    public abstract EnumCreatureAttribute getCreatureAttribute();
+
+    @Shadow
+    @Nullable
+    public abstract PotionEffect removeActivePotionEffect(@Nullable Potion potioneffectin);
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public boolean isPotionApplicable(PotionEffect potioneffectIn) {
+        net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent event = new net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent((EntityLivingBase) (Object) this, potioneffectIn);
+        MikuLib.MikuEventBus().post(event);
+        if (event.getResult() != net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT)
+            return event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
+        if (this.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
+            Potion potion = potioneffectIn.getPotion();
+
+            return potion != MobEffects.REGENERATION && potion != MobEffects.POISON;
+        }
+
+        return true;
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void clearActivePotions() {
+        if (!this.world.isRemote) {
+            Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
+
+            while (iterator.hasNext()) {
+                PotionEffect effect = iterator.next();
+                if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, effect)))
+                    continue;
+
+                this.onFinishedPotionEffect(effect);
+                iterator.remove();
+            }
+        }
+    }
+
     public MixinEntityLivingBase(World worldIn) {
         super(worldIn);
     }
 
-    @Inject(at = @At("HEAD"), method = "addPotionEffect", cancellable = true)
-    public void addPotionEffect(PotionEffect potioneffectIn, CallbackInfo ci) {
-        if (EntityUtil.isProtected(this)) ci.cancel();
+    /**
+     * @author mcst12345
+     * @reason FUCK!!
+     */
+    @Overwrite
+    public void addPotionEffect(PotionEffect potioneffectIn) {
+        if (EntityUtil.isProtected(this)) return;
+        if (this.isPotionApplicable(potioneffectIn)) {
+            PotionEffect potioneffect = this.activePotionsMap.get(potioneffectIn.getPotion());
+
+            MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent((EntityLivingBase) (Object) this, potioneffect, potioneffectIn));
+            if (potioneffect == null) {
+                this.activePotionsMap.put(potioneffectIn.getPotion(), potioneffectIn);
+                this.onNewPotionEffect(potioneffectIn);
+            } else {
+                potioneffect.combine(potioneffectIn);
+                this.onChangedPotionEffect(potioneffect, true);
+            }
+        }
     }
 
+    @SuppressWarnings("JavaReflectionMemberAccess")
     @Override
     public void Kill() {
         Field field;
@@ -384,29 +488,6 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             System.out.println(e.getLocalizedMessage());
         }
 
-        //this.limbSwingAmount = 1.5F;
-        //this.idleTime = 0;
-        //this.lastDamage=Float.MAX_VALUE;
-        //this.recentlyHit=60;
-        //this.revengeTarget=null;
-        //this.revengeTimer=0;
-        //this.landMovementFactor = 0.0F;
-        //Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
-        //while (iterator.hasNext()) {
-        //    PotionEffect effect = iterator.next();
-        //    this.potionsNeedUpdate = true;
-        //    effect.getPotion().applyAttributesModifiersToEntity(((EntityLivingBase) (Object) this), ((EntityLivingBase) (Object) this).getAttributeMap(), effect.getAmplifier());
-        //    iterator.remove();
-        //}
-        //this.dataManager.set(HEALTH, 0.0f);
-        //if (this.attributeMap == null) {
-        //    this.attributeMap = new AttributeMap();
-        //}
-        //IAttributeInstance Attribute = this.attributeMap.getAttributeInstance(SharedMonsterAttributes.MAX_HEALTH);
-        //Attribute.setBaseValue(0.0D);
-        //Attribute = attributeMap.getAttributeInstance(SharedMonsterAttributes.MOVEMENT_SPEED);
-        //Attribute.setBaseValue(0.0D);
-
         try {
             field = EntityLivingBase.class.getDeclaredField("field_70729_aU");
             tmp = Launch.UNSAFE.objectFieldOffset(field);
@@ -463,14 +544,6 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             System.out.println(e.getLocalizedMessage());
         }
 
-        //this.dead=true;
-        //this.deathTime= Integer.MAX_VALUE;
-        //this.attackingPlayer=null;
-        //this.lastAttackedEntity=null;
-        //this.lastAttackedEntityTime=0;
-        //this.velocityChanged=true;
-        //this.absorptionAmount = 0;
-        //combatTracker.reset();
         if (!this.world.isRemote) {
             int i = Integer.MAX_VALUE;
             captureDrops = true;
@@ -542,16 +615,6 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
     public final void GetMaxHealth(CallbackInfoReturnable<Float> cir) {
         if(EntityUtil.isProtected(this))cir.setReturnValue(20.0f);
         if(EntityUtil.isDEAD(this))cir.setReturnValue(0.0f);
-    }
-
-    @Inject(at = @At("HEAD"), method = "onUpdate", cancellable = true)
-    public void onUpdate(CallbackInfo ci) {
-        if (((iEntity) this).isTimeStop()) {
-            ((iEntity) this).TimeStop();
-            this.swingProgressInt = 0;
-            this.swingProgress = 0.0f;
-            ci.cancel();
-        }
     }
 
     /**
@@ -738,13 +801,69 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
     @Overwrite
     public void onItemPickup(Entity entityIn, int quantity)
     {
-        if ((!entityIn.isDead && !EntityUtil.isProtected(entityIn)) && !this.world.isRemote)
-        {
-            EntityTracker entitytracker = ((WorldServer)this.world).getEntityTracker();
+        if ((!entityIn.isDead && !EntityUtil.isProtected(entityIn)) && !this.world.isRemote) {
+            EntityTracker entitytracker = ((WorldServer) this.world).getEntityTracker();
 
-            if (entityIn instanceof EntityItem || entityIn instanceof EntityArrow || entityIn instanceof EntityXPOrb)
-            {
+            if (entityIn instanceof EntityItem || entityIn instanceof EntityArrow || entityIn instanceof EntityXPOrb) {
                 entitytracker.sendToTracking(entityIn, new SPacketCollectItem(entityIn.getEntityId(), this.getEntityId(), quantity));
+            }
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    protected void updatePotionEffects() {
+        Iterator<Potion> iterator = this.activePotionsMap.keySet().iterator();
+
+        try {
+            while (iterator.hasNext()) {
+                Potion potion = iterator.next();
+                PotionEffect potioneffect = this.activePotionsMap.get(potion);
+
+                if (!potioneffect.onUpdate((EntityLivingBase) (Object) this)) {
+                    if (!this.world.isRemote && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionExpiryEvent((EntityLivingBase) (Object) this, potioneffect))) {
+                        iterator.remove();
+                        this.onFinishedPotionEffect(potioneffect);
+                    }
+                } else if (potioneffect.getDuration() % 600 == 0) {
+                    this.onChangedPotionEffect(potioneffect, false);
+                }
+            }
+        } catch (ConcurrentModificationException ignored) {
+        }
+
+        if (this.potionsNeedUpdate) {
+            if (!this.world.isRemote) {
+                this.updatePotionMetadata();
+            }
+
+            this.potionsNeedUpdate = false;
+        }
+
+        int i = this.dataManager.get(POTION_EFFECTS);
+        boolean flag1 = this.dataManager.get(HIDE_PARTICLES);
+
+        if (i > 0) {
+            boolean flag;
+
+            if (this.isInvisible()) {
+                flag = this.rand.nextInt(15) == 0;
+            } else {
+                flag = this.rand.nextBoolean();
+            }
+
+            if (flag1) {
+                flag &= this.rand.nextInt(5) == 0;
+            }
+
+            if (flag && i > 0) {
+                double d0 = (double) (i >> 16 & 255) / 255.0D;
+                double d1 = (double) (i >> 8 & 255) / 255.0D;
+                double d2 = (double) (i & 255) / 255.0D;
+                this.world.spawnParticle(flag1 ? EnumParticleTypes.SPELL_MOB_AMBIENT : EnumParticleTypes.SPELL_MOB, this.posX + (this.rand.nextDouble() - 0.5D) * (double) this.width, this.posY + this.rand.nextDouble() * (double) this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double) this.width, d0, d1, d2);
             }
         }
     }
