@@ -799,13 +799,32 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      * @reason ...
      */
     @Overwrite
-    public void onItemPickup(Entity entityIn, int quantity)
-    {
+    public void onItemPickup(Entity entityIn, int quantity) {
         if ((!entityIn.isDead && !EntityUtil.isProtected(entityIn)) && !this.world.isRemote) {
             EntityTracker entitytracker = ((WorldServer) this.world).getEntityTracker();
 
             if (entityIn instanceof EntityItem || entityIn instanceof EntityArrow || entityIn instanceof EntityXPOrb) {
                 entitytracker.sendToTracking(entityIn, new SPacketCollectItem(entityIn.getEntityId(), this.getEntityId(), quantity));
+            }
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!!!
+     */
+    @Overwrite
+    public void curePotionEffects(ItemStack curativeItem) {
+        if (world.isRemote) return;
+        Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
+
+        while (iterator.hasNext()) {
+            PotionEffect effect = iterator.next();
+
+            if (effect.isCurativeItem(curativeItem) && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, effect))) {
+                onFinishedPotionEffect(effect);
+                iterator.remove();
+                this.potionsNeedUpdate = true;
             }
         }
     }
