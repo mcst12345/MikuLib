@@ -30,8 +30,9 @@ public class ASMUtil {
                 str.equals("net/minecraft/entity/player/EntityPlayer.func_71053_j") || str.equals("net/minecraft/entity/player/InventoryPlayer.func_70436_m") || str.endsWith("func_70674_bp") ||
                 str.equals("net/minecraft/network/NetHandlerPlayServer.func_194028_b") || str.endsWith("func_72900_e") || str.equals("net/minecraft/entity/Entity.func_82142_c") || str.endsWith("func_70665_d") ||
                 str.endsWith("func_70103_a") || str.endsWith("org/lwjgl/input/Mouse.setGrabbed") || str.endsWith("net/minecraft/client/gui/ScaledResolution.<init>") || str.endsWith("getScaledWidth") || str.endsWith("func_78328_b") ||
-                str.endsWith("setWorldAndResolution") || str.endsWith("func_184429_b") || str.endsWith("java/lang/Class.getDeclaredMethod") || str.endsWith("java/lang/reflect/Method.setAccessible") || str.endsWith("java/lang/reflect/Method.invoke") ||
-                str.endsWith("java/lang/RuntimeException.<init>") || str.endsWith("net/minecraft/client/Minecraft.func_175598_ae");
+                str.endsWith("setWorldAndResolution") || str.endsWith("func_184429_b") || str.endsWith("Class.getDeclaredMethod") || str.endsWith("Method.setAccessible") || str.endsWith("Method.invoke") ||
+                str.endsWith("java/lang/RuntimeException.<init>") || str.endsWith("func_175598_ae") || str.endsWith("Class.forName") || str.endsWith("Field.setAccessible") || str.endsWith("Field.get") ||
+                str.endsWith("Class.getMethod");
     }
 
     public static boolean isBadMethod(MethodNode method, String className) {

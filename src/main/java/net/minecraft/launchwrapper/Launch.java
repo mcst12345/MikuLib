@@ -47,7 +47,6 @@ public class Launch {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        NoReflection(Unsafe.class);
         FuckNative();
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);
