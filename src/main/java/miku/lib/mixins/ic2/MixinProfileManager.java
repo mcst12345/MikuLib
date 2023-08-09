@@ -3,7 +3,8 @@ package miku.lib.mixins.ic2;
 import ic2.core.profile.Profile;
 import ic2.core.profile.ProfileManager;
 import ic2.core.profile.TextureStyle;
-import ic2.core.util.ReflectionUtil;
+import miku.lib.client.api.iFMLClientHandler;
+import miku.lib.client.api.iFallbackResourceManager;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iSimpleReloadableResourceManager;
 import net.minecraft.client.Minecraft;
@@ -50,7 +51,7 @@ public class MixinProfileManager {
         for (TextureStyle texture : selected.textures) {
             FallbackResourceManager manager = domainManagers.get(texture.mod);
             if (manager != null) {
-                ((List<?>) ReflectionUtil.getValue(manager, List.class)).removeAll(textureChanges);
+                ((iFallbackResourceManager) manager).getResourcePacks().removeAll(textureChanges);
                 IResourcePack pack = texture.applyChanges();
                 if (pack != null) {
                     manager.addResourcePack(pack);
@@ -59,7 +60,7 @@ public class MixinProfileManager {
             }
         }
 
-        List<IResourcePack> defaultPacks = ReflectionUtil.getValue(FMLClientHandler.instance(), List.class);
+        List<IResourcePack> defaultPacks = ((iFMLClientHandler) FMLClientHandler.instance()).getResourcePackList();
         defaultPacks.removeAll(textureChanges);
 
         assert defaultPacks.stream().noneMatch((packx) -> packx.getPackName().startsWith("IC2 Profile Pack for "));

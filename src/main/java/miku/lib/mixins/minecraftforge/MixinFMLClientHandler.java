@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import miku.lib.client.api.iFMLClientHandler;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.api.iEventBus;
 import miku.lib.common.core.MikuLib;
@@ -33,9 +34,15 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-@Mixin(value = FMLClientHandler.class,remap = false)
-public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
-    @Shadow protected abstract void detectOptifine();
+@Mixin(value = FMLClientHandler.class, remap = false)
+public abstract class MixinFMLClientHandler implements IFMLSidedHandler, iFMLClientHandler {
+    @Override
+    public List<IResourcePack> getResourcePackList() {
+        return resourcePackList;
+    }
+
+    @Shadow
+    protected abstract void detectOptifine();
 
     @Shadow
     private Minecraft client;

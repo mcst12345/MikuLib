@@ -33,6 +33,7 @@
     "MixinDebugRendererNeighborsUpdate",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinFallbackResourceManager",
     "MixinFontRenderer",
     "MixinGuiGameOver",
     "MixinGuiIngame",
