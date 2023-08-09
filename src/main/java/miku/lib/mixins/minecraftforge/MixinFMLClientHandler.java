@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.*;
 import net.minecraftforge.fml.common.toposort.ModSortingException;
 import org.objectweb.asm.tree.FieldNode;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -91,6 +92,7 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler {
         try
         {
             Loader.instance().loadMods(injectedModContainers);
+            Mixins.addConfiguration("mixins.ic2.json");
             Sqlite.Init();
             for(FieldNode field : MikuTransformer.BadFields){
                 //To Do ?

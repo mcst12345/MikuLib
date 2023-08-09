@@ -2,6 +2,7 @@ package miku.lib.client.api;
 
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.profiler.Profiler;
 
 public interface iMinecraft {
@@ -24,4 +25,6 @@ public interface iMinecraft {
     EntityRenderer MikuEntityRenderer();
 
     WorldClient MikuWorld();
+
+    IReloadableResourceManager GetResourceManager();
 }

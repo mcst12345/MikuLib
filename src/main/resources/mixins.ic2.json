@@ -1,0 +1,14 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "minVersion": "0.8.0",
+  "package": "miku.lib.mixins.ic2",
+  "mixins": [
+    "MixinUtil"
+  ],
+  "client": [
+    "MixinProfileManager"
+  ],
+  "server": [],
+  "required": true,
+  "setSourceFile": false
+}

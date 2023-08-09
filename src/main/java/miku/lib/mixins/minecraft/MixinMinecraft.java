@@ -97,6 +97,11 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = Minecraft.class)
 public abstract class MixinMinecraft implements iMinecraft {
+    @Override
+    public IReloadableResourceManager GetResourceManager() {
+        return resourceManager;
+    }
+
     public WorldClient MikuWorld() {
         return MikuWorld;
     }
