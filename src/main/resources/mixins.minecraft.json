@@ -28,6 +28,7 @@
     "MixinLayerSpiderEyes",
     "MixinMinecraftServer",
     "MixinNetHandlerPlayServer",
+    "MixinPlayerChunkMapEntry",
     "MixinPlayerList",
     "MixinSaveHandler",
     "MixinServerCommandManager",
