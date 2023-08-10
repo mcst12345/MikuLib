@@ -16,7 +16,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-@Mixin(value = AutomaticEventSubscriber.class)
+@Mixin(value = AutomaticEventSubscriber.class, remap = false)
 public abstract class MixinAutomaticEventSubscriber {
     @Shadow
     @Final

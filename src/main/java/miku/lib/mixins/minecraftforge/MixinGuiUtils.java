@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(value = GuiUtils.class)
+@Mixin(value = GuiUtils.class, remap = false)
 public abstract class MixinGuiUtils {
     @Shadow
     public static void drawGradientRect(int zLevel, int left, int top, int right, int bottom, int startColor, int endColor) {

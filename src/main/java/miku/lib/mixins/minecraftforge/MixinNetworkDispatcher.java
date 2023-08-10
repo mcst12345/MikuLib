@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Locale;
 
-@Mixin(value = NetworkDispatcher.class)
+@Mixin(value = NetworkDispatcher.class, remap = false)
 public abstract class MixinNetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> implements ChannelOutboundHandler {
     @Shadow
     private NetworkDispatcher.ConnectionType connectionType;

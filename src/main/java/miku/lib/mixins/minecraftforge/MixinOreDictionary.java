@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
-@Mixin(value = OreDictionary.class)
+@Mixin(value = OreDictionary.class, remap = false)
 public abstract class MixinOreDictionary {
     @Shadow
     public static int getOreID(String name) {

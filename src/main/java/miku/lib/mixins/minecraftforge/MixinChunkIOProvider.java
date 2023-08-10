@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(targets = "net.minecraftforge.common.chunkio.ChunkIOProvider")
+@Mixin(targets = "net.minecraftforge.common.chunkio.ChunkIOProvider", remap = false)
 public abstract class MixinChunkIOProvider implements Runnable {
     @Shadow
     private Chunk chunk;

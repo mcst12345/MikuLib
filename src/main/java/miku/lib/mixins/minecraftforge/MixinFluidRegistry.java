@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.Map;
 
-@Mixin(value = FluidRegistry.class)
+@Mixin(value = FluidRegistry.class, remap = false)
 public abstract class MixinFluidRegistry {
     @Shadow
     private static BiMap<String, Fluid> masterFluidReference;

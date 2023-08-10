@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.EnumMap;
 
-@Mixin(value = FMLNetworkHandler.class)
+@Mixin(value = FMLNetworkHandler.class, remap = false)
 public abstract class MixinFMLNetworkHandler {
     @Shadow
     private static EnumMap<Side, FMLEmbeddedChannel> channelPair;
