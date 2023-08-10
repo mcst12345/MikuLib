@@ -404,6 +404,7 @@ public class MixinForgeHooks {
      */
     @Overwrite
     public static boolean onTravelToDimension(Entity entity, int dimension) {
+        if (EntityUtil.isDEAD(entity)) return false;
         EntityTravelToDimensionEvent event = new EntityTravelToDimensionEvent(entity, dimension);
         MikuLib.MikuEventBus().post(event);
         if (event.isCanceled()) {

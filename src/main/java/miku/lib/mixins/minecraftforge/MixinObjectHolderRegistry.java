@@ -25,7 +25,7 @@ public abstract class MixinObjectHolderRegistry {
      * @reason FUCK!!!
      */
     @Overwrite
-    private void scanTarget(Map<String, String> classModIds, Map<String, Class<?>> classCache, String className, @Nullable String annotationTarget, String value, boolean isClass, boolean extractFromValue) {
+    public void scanTarget(Map<String, String> classModIds, Map<String, Class<?>> classCache, String className, @Nullable String annotationTarget, String value, boolean isClass, boolean extractFromValue) {
         Class<?> clazz;
         if (classCache.containsKey(className)) {
             clazz = classCache.get(className);

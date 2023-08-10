@@ -42,7 +42,7 @@ public abstract class MixinNetworkDispatcher extends SimpleChannelInboundHandler
      * @reason Fuck!!!
      */
     @Overwrite
-    private void completeClientSideConnection(NetworkDispatcher.ConnectionType type) {
+    public void completeClientSideConnection(NetworkDispatcher.ConnectionType type) {
         this.connectionType = type;
         FMLLog.log.info("[{}] Client side {} connection established", Thread.currentThread().getName(), this.connectionType.name().toLowerCase(Locale.ENGLISH));
         this.state = NetworkDispatcher.ConnectionState.CONNECTED;

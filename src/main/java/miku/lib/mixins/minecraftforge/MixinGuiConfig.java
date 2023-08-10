@@ -58,7 +58,7 @@ public abstract class MixinGuiConfig extends GuiScreen {
      * @reason FUCK!
      */
     @Overwrite
-    protected void actionPerformed(GuiButton button) {
+    public void actionPerformed(GuiButton button) {
         if (button.id == 2000) {
             boolean flag = true;
             try {

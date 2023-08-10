@@ -41,7 +41,7 @@ public abstract class MixinOreDictionary {
      * @reason FUCK!!!
      */
     @Overwrite
-    private static void registerOreImpl(String name, @Nonnull ItemStack ore) {
+    public static void registerOreImpl(String name, @Nonnull ItemStack ore) {
         if ("Unknown".equals(name)) return; //prevent bad IDs.
         if (ore.isEmpty()) {
             FMLLog.bigWarning("Invalid registration attempt for an Ore Dictionary item with name {} has occurred. The registration has been denied to prevent crashes. The mod responsible for the registration needs to correct this.", name);
