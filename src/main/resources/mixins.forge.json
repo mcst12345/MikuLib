@@ -3,6 +3,7 @@
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins.minecraftforge",
   "mixins": [
+    "MixinChunkIOProvider",
     "MixinCommandSetDimension",
     "MixinDimensionManager",
     "MixinEventBus",
