@@ -69,7 +69,7 @@ public abstract class MixinNetworkDispatcher extends SimpleChannelInboundHandler
      * @reason Fuck!!
      */
     @Overwrite
-    public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+    public void close(ChannelHandlerContext ctx, ChannelPromise promise) {
         if (side == Side.CLIENT) {
             MikuLib.MikuEventBus().post(new FMLNetworkEvent.ClientDisconnectionFromServerEvent(manager));
         } else {

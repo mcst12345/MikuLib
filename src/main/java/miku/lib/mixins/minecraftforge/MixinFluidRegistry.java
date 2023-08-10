@@ -13,30 +13,30 @@ import java.util.Map;
 @Mixin(value = FluidRegistry.class, remap = false)
 public abstract class MixinFluidRegistry {
     @Shadow
-    private static BiMap<String, Fluid> masterFluidReference;
+    static BiMap<String, Fluid> masterFluidReference;
 
     @Shadow
-    protected static String uniqueName(Fluid fluid) {
+    private static String uniqueName(Fluid fluid) {
         return null;
     }
 
     @Shadow
-    private static Map<Fluid, FluidRegistry.FluidDelegate> delegates;
+    static Map<Fluid, FluidRegistry.FluidDelegate> delegates;
 
     @Shadow
-    private static BiMap<String, Fluid> fluids;
+    static BiMap<String, Fluid> fluids;
 
     @Shadow
-    private static int maxID;
+    static int maxID;
 
     @Shadow
-    private static BiMap<Fluid, Integer> fluidIDs;
+    static BiMap<Fluid, Integer> fluidIDs;
 
     @Shadow
-    private static BiMap<Integer, String> fluidNames;
+    static BiMap<Integer, String> fluidNames;
 
     @Shadow
-    private static BiMap<String, String> defaultFluidName;
+    static BiMap<String, String> defaultFluidName;
 
     /**
      * @author mcst12345

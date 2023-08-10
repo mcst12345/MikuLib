@@ -9,6 +9,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.common.FMLLog;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,12 +18,15 @@ import java.util.Map;
 
 @Mixin(value = ForgeChunkManager.class, remap = false)
 public abstract class MixinForgeChunkManager {
+    @Final
     @Shadow
     private static SetMultimap<String, ForgeChunkManager.Ticket> playerTickets;
 
+    @Final
     @Shadow
     private static Map<World, Multimap<String, ForgeChunkManager.Ticket>> tickets;
 
+    @Final
     @Shadow
     private static Map<World, ImmutableSetMultimap<ChunkPos, ForgeChunkManager.Ticket>> forcedChunks;
 

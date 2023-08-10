@@ -82,7 +82,7 @@ public abstract class MixinFMLModContainer implements ModContainer {
     private EventBus eventBus;
 
     @Shadow
-    protected abstract void processFieldAnnotations(ASMDataTable asmDataTable) throws IllegalAccessException;
+    protected abstract void processFieldAnnotations(ASMDataTable asmDataTable);
 
     /**
      * @author mcst12345
@@ -156,14 +156,6 @@ public abstract class MixinFMLModContainer implements ModContainer {
                         Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                     }
                     MikuCore.AddInvalidMod(getModId());
-                    //Field modController = Loader.class.getDeclaredField("modController");
-                    //tmp = Launch.UNSAFE.objectFieldOffset(modController);
-                    //LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                    //Field activeModList = LoadController.class.getDeclaredField("activeModList");
-                    //tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
-                    //List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
-                    //ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
-                    //Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 }
                 return;
             } catch (Throwable throwable) {
@@ -237,14 +229,6 @@ public abstract class MixinFMLModContainer implements ModContainer {
                         Launch.UNSAFE.putObjectVolatile(Loader.instance(), tmp, FUCKED);
                     }
                     MikuCore.AddInvalidMod(getModId());
-                    //Field modController = Loader.class.getDeclaredField("modController");
-                    //tmp = Launch.UNSAFE.objectFieldOffset(modController);
-                    //LoadController ModController = (LoadController) Launch.UNSAFE.getObjectVolatile(Loader.instance(), tmp);
-                    //Field activeModList = LoadController.class.getDeclaredField("activeModList");
-                    //tmp = Launch.UNSAFE.objectFieldOffset(activeModList);
-                    //List<ModContainer> ActiveModList = (List<ModContainer>) Launch.UNSAFE.getObjectVolatile(ModController, tmp);
-                    //ActiveModList.removeIf(mc -> mc.getModId().equals(getModId()));
-                    //Launch.UNSAFE.putObjectVolatile(ModController, tmp, ActiveModList);
                 }
                 return;
             } catch (Throwable throwable) {
@@ -260,11 +244,6 @@ public abstract class MixinFMLModContainer implements ModContainer {
         AutomaticEventSubscriber.inject(this, event.getASMHarvestedData(), FMLCommonHandler.instance().getSide());
         ConfigManager.sync(this.getModId(), Config.Type.INSTANCE);
 
-        try {
-            processFieldAnnotations(event.getASMHarvestedData());
-        } catch (IllegalAccessException e) {
-            FormattedMessage message = new FormattedMessage("{} Failed to process field annotations.", getModId());
-            throw new LoaderException(message.getFormattedMessage(), e);
-        }
+        processFieldAnnotations(event.getASMHarvestedData());
     }
 }

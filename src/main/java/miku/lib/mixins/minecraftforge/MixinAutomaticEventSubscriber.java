@@ -37,7 +37,6 @@ public abstract class MixinAutomaticEventSubscriber {
         for (ASMDataTable.ASMData targ : targets) {
             try {
                 //noinspection unchecked
-                @SuppressWarnings("unchecked")
                 List<ModAnnotation.EnumHolder> sidesEnum = (List<ModAnnotation.EnumHolder>) targ.getAnnotationInfo().get("value");
                 EnumSet<Side> sides = DEFAULT;
                 if (sidesEnum != null) {
