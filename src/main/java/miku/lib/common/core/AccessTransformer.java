@@ -18,6 +18,7 @@ public class AccessTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if (basicClass == null) return basicClass;
+        System.out.println(transformedName);
         ClassReader cr;
         ClassNode cn;
         try {
@@ -31,6 +32,7 @@ public class AccessTransformer implements IClassTransformer {
 
         for (FieldNode fn : cn.fields) {
             if (fn.name.equals("$VALUES")) continue;
+            System.out.println(fn.name);
             if (isPrivate(fn.access)) {
                 fn.access &= ~Opcodes.ACC_PRIVATE;
                 fn.access |= Opcodes.ACC_PUBLIC;
@@ -46,6 +48,7 @@ public class AccessTransformer implements IClassTransformer {
 
         for (MethodNode mn : cn.methods) {
             if (mn.name.equals("<clinit>")) continue;
+            System.out.println(mn.name);
             if (isPrivate(mn.access)) {
                 mn.access &= ~Opcodes.ACC_PRIVATE;
                 mn.access |= Opcodes.ACC_PUBLIC;

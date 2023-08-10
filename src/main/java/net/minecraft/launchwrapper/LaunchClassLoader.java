@@ -149,6 +149,19 @@ public class LaunchClassLoader extends URLClassLoader {
         for (final String exception : transformerExceptions) {
             if (name.startsWith(exception)) {
                 try {
+                    byte[] clazz = getClassBytes(name);
+                    if (clazz != null) {
+                        clazz = AT.transform(name, name, clazz);
+                        final String fileName = name.replace('.', '/').concat(".class");
+                        URLConnection urlConnection = findCodeSourceConnectionFor(fileName);
+                        final CodeSource codeSource = urlConnection == null ? null : new CodeSource(urlConnection.getURL(), new CodeSigner[0]);
+                        final Class<?> Clazz = defineClass(name, clazz, 0, clazz.length, codeSource);
+                        cachedClasses.put(name, Clazz);
+                        return Clazz;
+                    }
+                } catch (Throwable ignored) {
+                }
+                try {
                     final Class<?> clazz = super.findClass(name);
                     cachedClasses.put(name, clazz);
                     return clazz;
@@ -209,7 +222,8 @@ public class LaunchClassLoader extends URLClassLoader {
                 }
             }
 
-            final byte[] transformedClass = runTransformers(untransformedName, transformedName, getClassBytes(untransformedName));
+            byte[] transformedClass = runTransformers(untransformedName, transformedName, getClassBytes(untransformedName));
+            transformedClass = AT.transform(name, transformedName, transformedClass);
             if (DEBUG_SAVE) {
                 saveTransformedClass(transformedClass, transformedName);
             }
@@ -352,7 +366,7 @@ public class LaunchClassLoader extends URLClassLoader {
                 }
             }
         }
-        basicClass = AT.transform(name, transformedName, basicClass);
+
         basicClass = Miku.transform(name, transformedName, basicClass);
         return basicClass;
     }
