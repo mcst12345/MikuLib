@@ -133,6 +133,7 @@ public abstract class MixinFMLModContainer implements ModContainer {
             clazz = Class.forName(className, true, modClassLoader);
         } catch (Throwable t) {
             System.out.println("MikuFATAL:Failed to load modClass:" + className + " it will be ignored.Report this.");
+            t.printStackTrace();
             try {
                 synchronized (this) {
                     long tmp;
@@ -168,7 +169,6 @@ public abstract class MixinFMLModContainer implements ModContainer {
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
-            t.printStackTrace();
             return;
         }
 
