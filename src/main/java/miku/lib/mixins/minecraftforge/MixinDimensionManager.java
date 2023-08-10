@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraftforge;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import miku.lib.common.api.iDimension;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.MinecraftException;
@@ -42,7 +43,7 @@ public abstract class MixinDimensionManager {
     private static Int2ObjectMap<WorldServer> worlds;
 
     @Shadow
-    protected static boolean canUnloadWorld(WorldServer world) {
+    private static boolean canUnloadWorld(WorldServer world) {
         return false;
     }
 
@@ -92,13 +93,13 @@ public abstract class MixinDimensionManager {
         while (queueIterator.hasNext()) {
             int id = queueIterator.nextInt();
             DimensionManager.Dimension dimension = dimensions.get(id);
-            if (dimension.ticksWaited < ForgeModContainer.dimensionUnloadQueueDelay) {
-                dimension.ticksWaited++;
+            if (((iDimension) dimension).ticksWaited() < ForgeModContainer.dimensionUnloadQueueDelay) {
+                ((iDimension) dimension).ticksWaitedAdd();
                 continue;
             }
             WorldServer w = worlds.get(id);
             queueIterator.remove();
-            dimension.ticksWaited = 0;
+            ((iDimension) dimension).setTicksWaited(0);
             // Don't unload the world if the status changed
             if (w == null || !canUnloadWorld(w)) {
                 FMLLog.log.debug("Aborting unload for dimension {} as status changed", id);
@@ -115,4 +116,5 @@ public abstract class MixinDimensionManager {
             }
         }
     }
+
 }
