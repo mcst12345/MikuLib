@@ -217,7 +217,7 @@ public abstract class MixinRenderGlobal {
      * @reason FUCK
      */
     @Overwrite
-    protected int getRenderedChunks() {
+    public int getRenderedChunks() {
         int i = 0;
 
         for (ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation : this.RenderINFOS) {
@@ -706,7 +706,7 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     @SuppressWarnings("incomplete-switch")
-    private void renderBlockLayer(BlockRenderLayer blockLayerIn) {
+    public void renderBlockLayer(BlockRenderLayer blockLayerIn) {
         ((iMinecraft) this.mc).MikuEntityRenderer().enableLightmap();
 
         if (OpenGlHelper.useVbo()) {

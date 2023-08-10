@@ -102,7 +102,7 @@ public abstract class MixinChunkGeneratorHell implements IChunkGenerator {
      * @reason Fuck!
      */
     @Overwrite
-    private double[] getHeights(double[] p_185938_1_, int p_185938_2_, int p_185938_3_, int p_185938_4_, int p_185938_5_, int p_185938_6_, int p_185938_7_) {
+    public double[] getHeights(double[] p_185938_1_, int p_185938_2_, int p_185938_3_, int p_185938_4_, int p_185938_5_, int p_185938_6_, int p_185938_7_) {
         if (p_185938_1_ == null) {
             p_185938_1_ = new double[p_185938_5_ * p_185938_6_ * p_185938_7_];
         }

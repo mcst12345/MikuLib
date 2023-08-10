@@ -78,7 +78,7 @@ public abstract class MixinGuiOverlayDebug extends Gui {
      */
     @Overwrite
     @SuppressWarnings("incomplete-switch")
-    protected List<String> call() {
+    public List<String> call() {
         BlockPos blockpos = new BlockPos(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().getEntityBoundingBox().minY, this.mc.getRenderViewEntity().posZ);
 
         if (this.mc.isReducedDebug()) {
@@ -148,7 +148,7 @@ public abstract class MixinGuiOverlayDebug extends Gui {
      * @reason FUCK
      */
     @Overwrite
-    protected <T extends Comparable<T>> List<String> getDebugInfoRight() {
+    public <T extends Comparable<T>> List<String> getDebugInfoRight() {
         long i = Runtime.getRuntime().maxMemory();
         long j = Runtime.getRuntime().totalMemory();
         long k = Runtime.getRuntime().freeMemory();

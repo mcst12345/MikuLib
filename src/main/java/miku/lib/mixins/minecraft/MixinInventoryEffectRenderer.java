@@ -106,7 +106,7 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
      * @reason FUCK!!!!!
      */
     @Overwrite
-    protected void updateActivePotionEffects() {
+    public void updateActivePotionEffects() {
         boolean hasVisibleEffect = false;
         for (PotionEffect potioneffect : this.mc.player.getActivePotionEffects()) {
             Potion potion = potioneffect.getPotion();

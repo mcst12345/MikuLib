@@ -39,7 +39,7 @@ public abstract class MixinEntityShulker extends EntityGolem implements IMob {
      * @reason Fuck!!!
      */
     @Overwrite
-    protected boolean tryTeleportToNewPosition() {
+    public boolean tryTeleportToNewPosition() {
         if (!this.isAIDisabled() && this.isEntityAlive()) {
             BlockPos blockpos = new BlockPos(this);
 

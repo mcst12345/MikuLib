@@ -42,7 +42,7 @@ public abstract class MixinRenderItemFrame extends Render<EntityItemFrame> {
      * @reason Fuck!
      */
     @Overwrite
-    private void renderItem(EntityItemFrame itemFrame) {
+    public void renderItem(EntityItemFrame itemFrame) {
         ItemStack itemstack = itemFrame.getDisplayedItem();
 
         if (!itemstack.isEmpty()) {

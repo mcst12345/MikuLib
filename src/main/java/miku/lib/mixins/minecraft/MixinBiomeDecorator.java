@@ -100,7 +100,7 @@ public abstract class MixinBiomeDecorator {
      * @reason Shit!
      */
     @Overwrite
-    protected void genDecorations(Biome biomeIn, World worldIn, Random random) {
+    public void genDecorations(Biome biomeIn, World worldIn, Random random) {
         net.minecraft.util.math.ChunkPos forgeChunkPos = new net.minecraft.util.math.ChunkPos(chunkPos); // actual ChunkPos instead of BlockPos, used for events
         MikuLib.MikuEventBus().post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Pre(worldIn, random, forgeChunkPos));
         this.generateOres(worldIn, random);

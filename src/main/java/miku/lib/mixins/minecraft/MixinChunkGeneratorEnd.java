@@ -37,7 +37,7 @@ public abstract class MixinChunkGeneratorEnd implements IChunkGenerator {
      * @reason Fuck!!!!
      */
     @Overwrite
-    private double[] getHeights(double[] p_185963_1_, int p_185963_2_, int p_185963_3_, int p_185963_4_, int p_185963_5_, int p_185963_6_, int p_185963_7_) {
+    public double[] getHeights(double[] p_185963_1_, int p_185963_2_, int p_185963_3_, int p_185963_4_, int p_185963_5_, int p_185963_6_, int p_185963_7_) {
         net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField event = new net.minecraftforge.event.terraingen.ChunkGeneratorEvent.InitNoiseField(this, p_185963_1_, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_);
         MikuLib.MikuEventBus().post(event);
         if (event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)

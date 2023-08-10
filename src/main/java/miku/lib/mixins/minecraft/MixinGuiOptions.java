@@ -108,7 +108,7 @@ public abstract class MixinGuiOptions extends GuiScreen {
      * @reason FUCK
      */
     @Overwrite
-    protected void actionPerformed(GuiButton button) {
+    public void actionPerformed(GuiButton button) {
         if (button.enabled) {
             if (button.id < 100 && button instanceof GuiOptionButton) {
                 GameSettings.Options gamesettings$options = ((GuiOptionButton) button).getOption();

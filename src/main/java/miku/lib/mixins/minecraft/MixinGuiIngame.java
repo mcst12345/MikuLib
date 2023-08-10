@@ -54,7 +54,7 @@ public abstract class MixinGuiIngame extends Gui {
      * @reason Shit
      */
     @Overwrite
-    protected void renderVignette(float lightLevel, ScaledResolution scaledRes) {
+    public void renderVignette(float lightLevel, ScaledResolution scaledRes) {
         lightLevel = 1.0F - lightLevel;
         lightLevel = MathHelper.clamp(lightLevel, 0.0F, 1.0F);
         WorldBorder worldborder = ((iMinecraft) (this.mc)).MikuWorld().getWorldBorder();
@@ -112,7 +112,7 @@ public abstract class MixinGuiIngame extends Gui {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderAttackIndicator(float partialTicks, ScaledResolution p_184045_2_) {
+    public void renderAttackIndicator(float partialTicks, ScaledResolution p_184045_2_) {
         GameSettings gamesettings = this.mc.gameSettings;
 
         if (gamesettings.thirdPersonView == 0) {
@@ -584,7 +584,7 @@ public abstract class MixinGuiIngame extends Gui {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderPlayerStats(ScaledResolution scaledRes) {
+    public void renderPlayerStats(ScaledResolution scaledRes) {
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer) {
             EntityPlayer entityplayer = (EntityPlayer) this.mc.getRenderViewEntity();
             int i = MathHelper.ceil(entityplayer.getHealth());
@@ -770,7 +770,7 @@ public abstract class MixinGuiIngame extends Gui {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderMountHealth(ScaledResolution p_184047_1_) {
+    public void renderMountHealth(ScaledResolution p_184047_1_) {
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer) {
             EntityPlayer entityplayer = (EntityPlayer) this.mc.getRenderViewEntity();
             Entity entity = entityplayer.getRidingEntity();

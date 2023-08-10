@@ -19,7 +19,7 @@ public abstract class MixinEntityEnderman extends EntityMob {
      * @reason FUCK!!!!
      */
     @Overwrite
-    private boolean teleportTo(double x, double y, double z) {
+    public boolean teleportTo(double x, double y, double z) {
         net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, x, y, z, 0);
         if (MikuLib.MikuEventBus().post(event)) return false;
         boolean flag = this.attemptTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ());

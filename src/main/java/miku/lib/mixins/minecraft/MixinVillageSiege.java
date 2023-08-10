@@ -50,7 +50,7 @@ public abstract class MixinVillageSiege {
      * @reason Fuck!
      */
     @Overwrite
-    private boolean trySetupSiege() {
+    public boolean trySetupSiege() {
         List<EntityPlayer> list = this.world.playerEntities;
         Iterator<EntityPlayer> iterator = list.iterator();
 

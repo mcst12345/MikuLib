@@ -42,7 +42,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
      * @reason Holy s
      */
     @Overwrite
-    protected void renderLivingAt(T entityLivingBaseIn, double x, double y, double z) {
+    public void renderLivingAt(T entityLivingBaseIn, double x, double y, double z) {
         if (EntityUtil.isDEAD(entityLivingBaseIn)) return;
         GlStateManager.translate((float) x, (float) y, (float) z);
     }
@@ -68,7 +68,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
      * @reason Holy Shit
      */
     @Overwrite
-    protected void renderModel(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void renderModel(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
         if (EntityUtil.isDEAD(entitylivingbaseIn)) return;
         boolean flag = this.isVisible(entitylivingbaseIn);
         boolean flag1 = !flag && !entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().player);
@@ -95,7 +95,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
      * @reason FUCK!!!!!
      */
     @Overwrite
-    protected void renderLayers(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scaleIn) {
+    public void renderLayers(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scaleIn) {
         if (EntityUtil.isDEAD(entitylivingbaseIn)) return;
         for (LayerRenderer<T> layerrenderer : this.layerRenderers) {
             boolean flag = this.setBrightness(entitylivingbaseIn, partialTicks, layerrenderer.shouldCombineTextures());

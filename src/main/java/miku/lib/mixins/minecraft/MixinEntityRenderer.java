@@ -160,7 +160,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason F
      */
     @Overwrite
-    private void setupFog(int startCoords, float partialTicks) {
+    public void setupFog(int startCoords, float partialTicks) {
         Entity entity = this.mc.getRenderViewEntity();
         this.setupFogColor(false);
         GlStateManager.glNormal3f(0.0F, -1.0F, 0.0F);
@@ -252,7 +252,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason f
      */
     @Overwrite
-    private float getFOVModifier(float partialTicks, boolean useFOVSetting) {
+    public float getFOVModifier(float partialTicks, boolean useFOVSetting) {
         if (this.debugView) {
             return 90.0F;
         } else {
@@ -284,7 +284,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason F
      */
     @Overwrite
-    private void updateFogColor(float partialTicks) {
+    public void updateFogColor(float partialTicks) {
         World world = ((iMinecraft) this.mc).MikuWorld();
         Entity entity = this.mc.getRenderViewEntity();
         float f = 0.25F + 0.75F * (float) this.mc.gameSettings.renderDistanceChunks / 32.0F;
@@ -1144,7 +1144,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason F
      */
     @Overwrite
-    private void orientCamera(float partialTicks) {
+    public void orientCamera(float partialTicks) {
         Entity entity = this.mc.getRenderViewEntity();
         float f = entity.getEyeHeight();
         double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;
@@ -1240,7 +1240,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason F
      */
     @Overwrite
-    private boolean isDrawBlockOutline() {
+    public boolean isDrawBlockOutline() {
         if (!this.drawBlockOutline) {
             return false;
         } else {
@@ -1271,7 +1271,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason F
      */
     @Overwrite
-    private void addRainParticles() {
+    public void addRainParticles() {
         float f = ((iMinecraft) this.mc).MikuWorld().getRainStrength(1.0F);
 
         if (!this.mc.gameSettings.fancyGraphics) {
@@ -1341,7 +1341,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      * @reason F
      */
     @Overwrite
-    protected void renderRainSnow(float partialTicks) {
+    public void renderRainSnow(float partialTicks) {
         net.minecraftforge.client.IRenderHandler renderer = ((iMinecraft) this.mc).MikuWorld().provider.getWeatherRenderer();
         if (renderer != null) {
             renderer.render(partialTicks, ((iMinecraft) this.mc).MikuWorld(), mc);

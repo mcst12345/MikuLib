@@ -327,7 +327,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
      * @reason Fuck!
      */
     @Overwrite
-    protected void updateBlocks() {
+    public void updateBlocks() {
         if (MikuInsaneMode.isMikuInsaneMode() || SpecialItem.isTimeStop()) return;
         this.playerCheckLight();
 

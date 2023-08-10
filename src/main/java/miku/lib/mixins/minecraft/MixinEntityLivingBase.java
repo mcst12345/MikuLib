@@ -283,7 +283,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      * @reason shit
      */
     @Overwrite
-    protected void updatePotionMetadata() {
+    public void updatePotionMetadata() {
         if (this.activePotionsMap.isEmpty()) {
             this.resetPotionEffectMetadata();
             this.setInvisible(false);
@@ -834,7 +834,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      * @reason FUCK!
      */
     @Overwrite
-    protected void updatePotionEffects() {
+    public void updatePotionEffects() {
         Iterator<Potion> iterator = this.activePotionsMap.keySet().iterator();
 
         try {

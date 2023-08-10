@@ -28,7 +28,7 @@ public abstract class MixinEntityAIVillagerMate extends EntityAIBase {
      * @reason FUCK!!!
      */
     @Overwrite
-    private void giveBirth() {
+    public void giveBirth() {
         net.minecraft.entity.EntityAgeable entityvillager = this.villager.createChild(this.mate);
         this.mate.setGrowingAge(6000);
         this.villager.setGrowingAge(6000);

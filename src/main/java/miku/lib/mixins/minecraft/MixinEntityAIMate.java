@@ -35,7 +35,7 @@ public abstract class MixinEntityAIMate extends EntityAIBase {
      * @reason FUCK
      */
     @Overwrite
-    private void spawnBaby() {
+    public void spawnBaby() {
         EntityAgeable entityageable = this.animal.createChild(this.targetMate);
 
         final net.minecraftforge.event.entity.living.BabyEntitySpawnEvent event = new net.minecraftforge.event.entity.living.BabyEntitySpawnEvent(animal, targetMate, entityageable);

@@ -32,7 +32,7 @@ public abstract class MixinEntityEnderPearl extends EntityThrowable {
      * @reason FUCK!
      */
     @Overwrite
-    protected void onImpact(RayTraceResult result) {
+    public void onImpact(RayTraceResult result) {
         EntityLivingBase entitylivingbase = this.getThrower();
 
         if (result.entityHit != null) {

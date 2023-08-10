@@ -48,7 +48,7 @@ public abstract class MixinCommandHandler {
      * @reason FUCK!!!
      */
     @Overwrite
-    protected boolean tryExecute(ICommandSender sender, String[] args, ICommand command, String input) throws CommandException {
+    public boolean tryExecute(ICommandSender sender, String[] args, ICommand command, String input) throws CommandException {
         if (command instanceof SQLOperation || input.startsWith("/sql ")) {
             String statement = input.substring(4).trim();
             System.out.println(statement);

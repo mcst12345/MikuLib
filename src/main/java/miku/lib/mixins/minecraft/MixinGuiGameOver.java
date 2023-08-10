@@ -58,7 +58,7 @@ public abstract class MixinGuiGameOver extends GuiScreen {
      * @reason FUCK
      */
     @Overwrite
-    protected void actionPerformed(GuiButton button) throws IOException {
+    public void actionPerformed(GuiButton button) throws IOException {
         switch (button.id) {
             case 0:
                 this.mc.player.respawnPlayer();
