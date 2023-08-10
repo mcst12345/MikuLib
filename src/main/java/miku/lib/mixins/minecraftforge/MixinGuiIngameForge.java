@@ -61,7 +61,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    private void post(RenderGameOverlayEvent.ElementType type) {
+    public void post(RenderGameOverlayEvent.ElementType type) {
         try {
             MikuLib.MikuEventBus().post(new RenderGameOverlayEvent.Post(eventParent, type));
         } catch (Throwable t) {
@@ -145,7 +145,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason Fuck!
      */
     @Overwrite
-    private boolean pre(RenderGameOverlayEvent.ElementType type) {
+    public boolean pre(RenderGameOverlayEvent.ElementType type) {
         boolean flag = false;
         try {
             flag = MikuLib.MikuEventBus().post(new RenderGameOverlayEvent.Pre(eventParent, type));
@@ -159,7 +159,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderBossHealth() {
+    public void renderBossHealth() {
         if (pre(BOSSHEALTH)) return;
         bind(Gui.ICONS);
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -176,7 +176,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderArmor(int width, int height) {
+    public void renderArmor(int width, int height) {
         if (pre(ARMOR)) return;
         ((iMinecraft) mc).MikuProfiler().startSection("armor");
 
@@ -207,7 +207,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderAir(int width, int height) {
+    public void renderAir(int width, int height) {
         if (pre(AIR)) return;
         ((iMinecraft) mc).MikuProfiler().startSection("air");
         EntityPlayer player = (EntityPlayer) this.mc.getRenderViewEntity();
@@ -384,7 +384,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderSleepFade(int width, int height) {
+    public void renderSleepFade(int width, int height) {
         if (mc.player.getSleepTimer() > 0) {
             ((iMinecraft) mc).MikuProfiler().startSection("sleep");
             GlStateManager.disableDepth();
@@ -409,7 +409,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason Fuck
      */
     @Overwrite
-    protected void renderExperience(int width, int height) {
+    public void renderExperience(int width, int height) {
         bind(ICONS);
         if (pre(EXPERIENCE)) return;
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -459,7 +459,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderJumpBar(int width, int height) {
+    public void renderJumpBar(int width, int height) {
         bind(ICONS);
         if (pre(JUMPBAR)) return;
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -490,7 +490,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderToolHighlight(ScaledResolution res) {
+    public void renderToolHighlight(ScaledResolution res) {
         if (this.mc.gameSettings.heldItemTooltips && !this.mc.playerController.isSpectator()) {
             ((iMinecraft) mc).MikuProfiler().startSection("toolHighlight");
 
@@ -535,7 +535,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderHUDText(int width, int height) {
+    public void renderHUDText(int width, int height) {
         ((iMinecraft) mc).MikuProfiler().startSection("forgeHudText");
         OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
         ArrayList<String> listL = new ArrayList<>();
@@ -586,7 +586,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason FUCK
      */
     @Overwrite
-    protected void renderFPSGraph() {
+    public void renderFPSGraph() {
         if (this.mc.gameSettings.showDebugInfo && this.mc.gameSettings.showLagometer && !pre(FPS_GRAPH)) {
             this.DebugOverlay.renderLagometer();
             post(FPS_GRAPH);
@@ -598,7 +598,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason Fuck
      */
     @Overwrite
-    protected void renderRecordOverlay(int width, int height, float partialTicks) {
+    public void renderRecordOverlay(int width, int height, float partialTicks) {
         if (overlayMessageTime > 0) {
             ((iMinecraft) mc).MikuProfiler().startSection("overlayMessage");
             float hue = (float) overlayMessageTime - partialTicks;
@@ -625,7 +625,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason Shit Fuck
      */
     @Overwrite
-    protected void renderTitle(int width, int height, float partialTicks) {
+    public void renderTitle(int width, int height, float partialTicks) {
         if (titlesTimer > 0) {
             ((iMinecraft) mc).MikuProfiler().startSection("titleAndSubtitle");
             float age = (float) this.titlesTimer - partialTicks;
@@ -666,7 +666,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason Fuck
      */
     @Overwrite
-    protected void renderChat(int width, int height) {
+    public void renderChat(int width, int height) {
         ((iMinecraft) this.mc).MikuProfiler().startSection("chat");
 
         RenderGameOverlayEvent.Chat event = new RenderGameOverlayEvent.Chat(eventParent, 0, height - 48);
@@ -687,7 +687,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason Fuck
      */
     @Overwrite
-    protected void renderHealthMount(int width, int height) {
+    public void renderHealthMount(int width, int height) {
         EntityPlayer player = (EntityPlayer) mc.getRenderViewEntity();
         Entity tmp = player.getRidingEntity();
         if (!(tmp instanceof EntityLivingBase)) return;
@@ -839,7 +839,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
      * @reason Fuck!
      */
     @Overwrite
-    protected void renderPlayerList(int width, int height) {
+    public void renderPlayerList(int width, int height) {
         ScoreObjective scoreobjective = ((iMinecraft) this.mc).MikuWorld().getScoreboard().getObjectiveInDisplaySlot(0);
         NetHandlerPlayClient handler = mc.player.connection;
 

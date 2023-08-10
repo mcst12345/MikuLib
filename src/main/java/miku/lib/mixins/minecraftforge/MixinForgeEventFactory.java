@@ -756,7 +756,7 @@ public class MixinForgeEventFactory {
      */
     @Overwrite
     @Nullable
-    private static CapabilityDispatcher gatherCapabilities(AttachCapabilitiesEvent<?> event, @Nullable ICapabilityProvider parent) {
+    public static CapabilityDispatcher gatherCapabilities(AttachCapabilitiesEvent<?> event, @Nullable ICapabilityProvider parent) {
         MikuLib.MikuEventBus().post(event);
         return event.getCapabilities().size() > 0 || parent != null ? new CapabilityDispatcher(event.getCapabilities(), parent) : null;
     }
