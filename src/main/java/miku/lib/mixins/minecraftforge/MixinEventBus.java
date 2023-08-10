@@ -4,6 +4,7 @@ import miku.lib.common.api.iEventBus;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.MikuEventBus;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLLog;
@@ -32,8 +33,8 @@ public class MixinEventBus implements iEventBus {
      */
     @Overwrite
     public boolean post(Event event) {
-        if (!Objects.equals(this, MikuLib.MikuEventBus())) {
-            return false;
+        if (!Objects.equals(getClass(), MikuEventBus.class)) {
+            return MikuLib.MikuEventBus().post(event);
         }
         if (EntityUtil.isKilling() || MikuInsaneMode.isMikuInsaneMode()) return false;
         if (event instanceof EntityJoinWorldEvent) {

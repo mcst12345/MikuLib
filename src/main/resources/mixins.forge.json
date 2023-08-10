@@ -3,20 +3,27 @@
   "minVersion": "0.8.0",
   "package": "miku.lib.mixins.minecraftforge",
   "mixins": [
+    "MixinAutomaticEventSubscriber",
     "MixinChunkIOProvider",
     "MixinCommandSetDimension",
     "MixinDimensionManager",
     "MixinEventBus",
+    "MixinFluidEvent",
+    "MixinFluidRegistry",
     "MixinFMLCommonHandler",
     "MixinFMLModContainer",
+    "MixinFMLNetworkHandler",
     "MixinForgeChunkManager",
     "MixinForgeEventFactory",
     "MixinForgeHooks",
     "MixinForgeModContainer",
+    "MixinGameData",
     "MixinItemStack",
     "MixinLoadController",
     "MixinMinecraftForge",
+    "MixinNetworkDispatcher",
     "MixinObjectHolderRegistry",
+    "MixinOreDictionary",
     "MixinProxyInjector"
   ],
   "client": [
@@ -28,7 +35,8 @@
     "MixinGuiConfig",
     "MixinGuiIngameForge",
     "MixinGuiModList",
-    "MixinGuiScrollingList"
+    "MixinGuiScrollingList",
+    "MixinGuiUtils"
   ],
   "server": [
     "MixinFMLServerHandler"

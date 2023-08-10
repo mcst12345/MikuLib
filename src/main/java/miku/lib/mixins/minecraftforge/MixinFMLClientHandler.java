@@ -19,6 +19,7 @@ import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.client.CloudRenderer;
 import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.*;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -235,5 +236,14 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler, iFMLCli
             return true;
         }
         return getCloudRenderer().render(cloudTicks, partialTicks);
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!!!
+     */
+    @Overwrite
+    public void fireSidedRegistryEvents() {
+        MikuLib.MikuEventBus().post(new ModelRegistryEvent());
     }
 }

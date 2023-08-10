@@ -2,6 +2,7 @@ package miku.lib.common.core;
 
 import com.sun.jna.Platform;
 import miku.lib.common.core.proxy.CommonProxy;
+import miku.lib.common.util.MikuEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -38,7 +39,7 @@ public class MikuLib {
     static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
     static final boolean Android = Platform.isAndroid();
 
-    private static final EventBus MikuEventBus = new EventBus();
+    private static final EventBus MikuEventBus = new MikuEventBus();
 
     public static EventBus MikuEventBus() {
         return MikuEventBus;
