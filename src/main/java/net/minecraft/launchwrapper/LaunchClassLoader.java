@@ -1,5 +1,6 @@
 package net.minecraft.launchwrapper;
 
+import miku.lib.common.core.AccessTransformer;
 import miku.lib.common.core.MikuTransformer;
 import miku.lib.common.exception.NoYouCannotBeLoaded;
 import miku.lib.common.util.ClassUtil;
@@ -46,6 +47,7 @@ public class LaunchClassLoader extends URLClassLoader {
     private final ThreadLocal<byte[]> loadBuffer = new ThreadLocal<>();
     private IClassNameTransformer renameTransformer;
     private static final MikuTransformer Miku = new MikuTransformer();
+    private static final AccessTransformer AT = new AccessTransformer();
     public LaunchClassLoader(URL[] sources) {
         super(sources, null);
         this.sources = new ArrayList<>(Arrays.asList(sources));
@@ -350,6 +352,7 @@ public class LaunchClassLoader extends URLClassLoader {
                 }
             }
         }
+        basicClass = AT.transform(name, transformedName, basicClass);
         basicClass = Miku.transform(name, transformedName, basicClass);
         return basicClass;
     }

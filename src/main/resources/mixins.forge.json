@@ -6,7 +6,6 @@
     "MixinAutomaticEventSubscriber",
     "MixinChunkIOProvider",
     "MixinCommandSetDimension",
-    "MixinDimension",
     "MixinDimensionManager",
     "MixinEventBus",
     "MixinFluidEvent",

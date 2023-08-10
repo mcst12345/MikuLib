@@ -66,11 +66,10 @@ public class MikuTransformer implements IClassTransformer {
             try {
                 cr = new ClassReader(basicClass);
                 cn = new ClassNode();
+                cr.accept(cn, 0);
             } catch (Throwable t) {
                 return basicClass;
             }
-
-            cr.accept(cn, 0);
 
             if (ASMUtil.isBadClass(transformedName)) {
                 ASMUtil.FuckClass(cn);
