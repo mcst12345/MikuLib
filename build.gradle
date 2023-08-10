@@ -95,7 +95,7 @@ jar {
         attributes([
                 "Specification-Title"     : "mikulib",
                 "Specification-Vendor"    : "mcst12345",
-                "Specification-Version"   : "1.11.1",
+                "Specification-Version"   : "1.11.2",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "mcst12345",
