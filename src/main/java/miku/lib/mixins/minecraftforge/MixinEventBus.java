@@ -55,7 +55,7 @@ public class MixinEventBus implements iEventBus {
                 try {
                     listeners[index].invoke(event);
                 } catch (Throwable t) {
-                    System.out.println("MikuWarn:Catch exception when invoking event listener:" + listeners[index].getClass());
+                    System.out.println("MikuWarn:Catch exception when posting event:" + event.getClass());
                     t.printStackTrace();
                 }
             }
