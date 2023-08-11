@@ -6,6 +6,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.jar.JarEntry;
@@ -13,7 +14,7 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
 public class ClassUtil {
-
+    protected static final List<File> BadMods = new ArrayList<>();
     protected static final Map<String, Boolean> GoodClassCache = new ConcurrentSkipListMap<>();
     protected static final Map<String, Boolean> MinecraftClassCache = new ConcurrentSkipListMap<>();
     protected static final Map<String, Boolean> LibraryClassCache = new ConcurrentSkipListMap<>();
@@ -98,6 +99,7 @@ public class ClassUtil {
                 Enumeration<JarEntry> entries = jar.entries();
                 loop:
                 while (entries.hasMoreElements()) {
+                    if (good && fucked) break;
                     JarEntry jarEntry = entries.nextElement();
                     if (!jarEntry.isDirectory()) {
                         if (jarEntry.getName().endsWith(".class")) {
@@ -117,6 +119,10 @@ public class ClassUtil {
                                         for (Object o : an.values) {
                                             String s = (String) o;
                                             if (flag) {
+                                                if (s.equals("bathappymod")) {
+                                                    BadMods.add(file);
+                                                    break;
+                                                }
                                                 modid = s;
                                                 break;
                                             }
@@ -131,7 +137,7 @@ public class ClassUtil {
                                             for (String s : mod_id_white_list) {
                                                 if (s.equals(modid)) {
                                                     good = true;
-                                                    break;
+                                                    if (fucked) break;
                                                 }
                                             }
                                         }
@@ -142,7 +148,7 @@ public class ClassUtil {
                                                 String s = o.toString();
                                                 if (isGoodCoremod(s)) {
                                                     good = true;
-                                                    break loop;
+                                                    if (fucked) break loop;
                                                 }
                                             }
                                         }
@@ -154,7 +160,7 @@ public class ClassUtil {
                                         if (s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin")) {
                                             if (isGoodCoremodClass(cn.name)) {
                                                 good = true;
-                                                break;
+                                                if (fucked) break;
                                             }
                                         }
                                     }
@@ -174,8 +180,7 @@ public class ClassUtil {
                                     str = str + "\n";
                                     if (str.contains("Fucked: true")) {
                                         fucked = true;
-                                        good = false;
-                                        break;
+                                        if (good) break;
                                     }
                                 }
                             }
@@ -183,6 +188,9 @@ public class ClassUtil {
                     }
                 }
                 if (good) {
+                    if (!fucked) {
+                        JarFucker.RemoveSignature(jar);
+                    }
                     System.out.println("Adding mod " + jar.getName() + " to TransformerExclusions");
                     if (modid != null) {
                         if (modid.equals("mikulib") || modid.equals("miku") || modid.equals("maze")) {
@@ -203,10 +211,6 @@ public class ClassUtil {
                 }
             }
         }
-    }
-
-    public static synchronized boolean JarFuckerDisabled() {
-        return DisablejarFucker;
     }
 
     public static synchronized boolean Init() throws IOException {
@@ -315,6 +319,14 @@ public class ClassUtil {
 
         ScanMods(mods);
         LOADED = true;
+
+        if (!BadMods.isEmpty()) {
+            for (File file : BadMods) {
+                System.gc();
+                Files.deleteIfExists(file.toPath());
+                if (Files.exists(file.toPath())) Files.delete(file.toPath());
+            }
+        }
 
         if (System.getProperty("MikuDEBUG") != null) {
             if (System.getProperty("MikuDEBUG").equals("true")) {

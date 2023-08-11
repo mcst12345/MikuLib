@@ -13,9 +13,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -26,21 +24,17 @@ import static miku.lib.common.core.MikuTransformer.cached_methods;
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 public class JarFucker {
-    protected static boolean shouldRestart = false;
     public static double num;
-    protected static final Set<JarFile> BadJars = new HashSet<>();
     protected static boolean ShouldIgnore(String s) {
         return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA")) ||
                 s.endsWith(".exe") || s.endsWith(".dll") || s.endsWith(".so");
     }
 
     public synchronized static void FuckModJar(JarFile jar) {
-        BadJars.add(jar);
         if (ClassUtil.DisablejarFucker) {
             System.out.println("JarFucker is disabled. Continue.");
             return;
         }
-        boolean changed = false;
         System.out.println("Hi," + jar.getName().replace("mods/", "") + ". Fuck you!");
         System.out.println("如果被干掉的不是一个秒杀mod,请于 https://github.com/mcst12345/MikuLib/issues 汇报");
         try {
@@ -59,8 +53,6 @@ public class JarFucker {
                             if (!BadMANIFEST(str)) {
                                 str = str + "\n";
                                 jos.write(str.getBytes());
-                            } else {
-                                changed = true;
                             }
                         }
                         String fucked = "Fucked: true";
@@ -77,14 +69,12 @@ public class JarFucker {
                         cr.accept(cn, 0);
                         if (cn.interfaces != null) for (String s : cn.interfaces) {
                             if (s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin") || s.equals("net/minecraft/launchwrapper/ITweaker")) {
-                                changed = true;
                                 shouldAdd = false;
                                 break;
                             }
                         }
                         if (shouldAdd) {
                             byte[] fucked = transform(cn.name.replace("/", "."), cn);
-                            if (fucked != original) changed = true;
                             jos.putNextEntry(new JarEntry(entry.getName()));
                             jos.write(fucked);
                         }
@@ -97,15 +87,46 @@ public class JarFucker {
             jos.closeEntry();
             jos.close();
 
-            if (changed) {
-                shouldRestart = true;
-            }
-
             OverwriteFile(new File(jar.getName() + ".fucked"), new File(jar.getName()), true);
 
 
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public synchronized static void RemoveSignature(JarFile jar) {
+        try {
+            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
+            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                JarEntry entry = entries.nextElement();
+                if (isSignFile(entry.getName()))
+                    continue;
+                try (InputStream is = jar.getInputStream(entry)) {
+                    if (entry.getName().equals("META-INF/MANIFEST.MF")) {
+                        jos.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+                        InputStreamReader isr = new InputStreamReader(is);
+                        BufferedReader br = new BufferedReader(isr);
+                        String str;
+                        while ((str = br.readLine()) != null) {
+                            if (!isSign(str)) {
+                                str = str + "\n";
+                                jos.write(str.getBytes());
+                            }
+                        }
+                        String fucked = "Fucked: true";
+                        jos.write(fucked.getBytes());
+                        br.close();
+                        isr.close();
+                    } else {
+                        jos.putNextEntry(new JarEntry(entry.getName()));
+                        jos.write(IOUtils.readNBytes(is, is.available()));
+                    }
+                }
+            }
+            jos.closeEntry();
+            jos.close();
+        } catch (IOException ignored) {
         }
     }
 
@@ -148,8 +169,12 @@ public class JarFucker {
                 s.contains("Agent-Class:") || s.endsWith(".class") || s.trim().length() <= 5;
     }
 
-    public static boolean shouldRestart() {
-        return shouldRestart;
+    protected static boolean isSign(String s) {
+        return s.contains("SHA-256-Digest:") || s.endsWith(".class") || s.trim().length() <= 5;
+    }
+
+    protected static boolean isSignFile(String s) {
+        return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA"));
     }
 
     protected static byte[] transform(String transformedName, ClassNode cn) {
@@ -256,9 +281,5 @@ public class JarFucker {
         cn.accept(cw);
 
         return cw.toByteArray();
-    }
-
-    public static synchronized boolean isBadJar(JarFile jarFile) {
-        return BadJars.contains(jarFile);
     }
 }
