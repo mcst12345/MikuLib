@@ -140,6 +140,10 @@ public class LaunchClassLoader extends URLClassLoader {
             Mixins.addConfiguration("mixins.foamfix.json");
             Misc.returnMixin();
         }
+        if (name.equals("c6h2cl2.YukariLib.YukariLibCore")) {
+            Mixins.addConfiguration("mixins.yukarilib.json");
+            Misc.returnMixin();
+        }
 
         for (final String exception : classLoaderExceptions) {
             if (name.startsWith(exception)) {
