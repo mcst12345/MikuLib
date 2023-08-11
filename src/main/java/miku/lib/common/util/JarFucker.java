@@ -128,6 +128,8 @@ public class JarFucker {
             jos.close();
         } catch (IOException ignored) {
         }
+
+        OverwriteFile(new File(jar.getName() + ".fucked"), new File(jar.getName()), true);
     }
 
     protected synchronized static void OverwriteFile(File source, File target, boolean backup) {
