@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(value = YukariLibCore.class)
+@Mixin(value = YukariLibCore.class, remap = false)
 public class MixinYukariLibCore {
     /**
      * @author mcst12345
