@@ -38,8 +38,6 @@ public class ClassUtil {
     protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin", "RandomPatches"};
 
     protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
-
-
     protected static final List<String> TransformerExclusions = new ArrayList<>();
     protected static final List<String> MinecraftClasses = new ArrayList<>();
     protected static final List<String> LibraryClasses = new ArrayList<>();
@@ -136,6 +134,8 @@ public class ClassUtil {
                                             System.out.println(modid);
                                             for (String s : mod_id_white_list) {
                                                 if (s.equals(modid)) {
+                                                    if (modid.equals("mikulib") || modid.equals("miku") || modid.equals("maze"))
+                                                        fucked = true;
                                                     good = true;
                                                     if (fucked) break;
                                                 }
