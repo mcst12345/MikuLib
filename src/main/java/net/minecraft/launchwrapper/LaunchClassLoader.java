@@ -41,13 +41,14 @@ public class LaunchClassLoader extends URLClassLoader {
     private final Map<String, Class<?>> cachedClasses = new ConcurrentHashMap<>();
     private final Set<String> classLoaderExceptions = new HashSet<>();
     private final Set<String> transformerExceptions = new HashSet<>();
-    private final Map<Package, Manifest> packageManifests = new ConcurrentHashMap<>();
-    private final Map<String, byte[]> resourceCache = new ConcurrentHashMap<>(1000);
+    public Map<Package, Manifest> packageManifests = new ConcurrentHashMap<>();
+    public Map<String, byte[]> resourceCache = new ConcurrentHashMap<>(1000);
     private final Set<String> negativeResourceCache = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final ThreadLocal<byte[]> loadBuffer = new ThreadLocal<>();
     private IClassNameTransformer renameTransformer;
     private static final MikuTransformer Miku = new MikuTransformer();
     private static final AccessTransformer AT = new AccessTransformer();
+
     public LaunchClassLoader(URL[] sources) {
         super(sources, null);
         this.sources = new ArrayList<>(Arrays.asList(sources));
@@ -133,6 +134,10 @@ public class LaunchClassLoader extends URLClassLoader {
     public Class<?> findClass(final String name) throws ClassNotFoundException {
         if (name.equals("ic2.core.util.Util") || name.equals("ic2.core.profile.ProfileManager")) {
             Mixins.addConfiguration("mixins.ic2.json");
+            Misc.returnMixin();
+        }
+        if (name.equals("pl.asie.foamfix.ProxyCommon")) {
+            Mixins.addConfiguration("mixins.foamfix.json");
             Misc.returnMixin();
         }
 
