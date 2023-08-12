@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Iterator;
 import java.util.List;
 
-@Mixin(value = AetherClientEvents.class)
+@Mixin(value = AetherClientEvents.class, remap = false)
 public abstract class MixinAetherClientEvents {
     @Shadow
     @Final
