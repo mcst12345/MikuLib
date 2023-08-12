@@ -37,7 +37,7 @@ public class ClassUtil {
 
     protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin", "RandomPatches"};
 
-    protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
+    protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin", "thebetweenlands/core/TheBetweenlandsLoadingPlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
     protected static final List<String> TransformerExclusions = new ArrayList<>();
     protected static final List<String> MinecraftClasses = new ArrayList<>();
     protected static final List<String> LibraryClasses = new ArrayList<>();
