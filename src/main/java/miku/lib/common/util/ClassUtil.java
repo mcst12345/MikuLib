@@ -96,7 +96,6 @@ public class ClassUtil {
                 boolean good = false;
                 Enumeration<JarEntry> entries = jar.entries();
                 while (entries.hasMoreElements()) {
-                    if (good && fucked) break;
                     JarEntry jarEntry = entries.nextElement();
                     if (!jarEntry.isDirectory()) {
                         if (jarEntry.getName().endsWith(".class")) {
