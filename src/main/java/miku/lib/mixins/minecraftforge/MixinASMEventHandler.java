@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.lang.reflect.Type;
 
-@Mixin(value = ASMEventHandler.class)
+@Mixin(value = ASMEventHandler.class, remap = false)
 public class MixinASMEventHandler {
     @Shadow
     @Final
