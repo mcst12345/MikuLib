@@ -26,8 +26,9 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 public class JarFucker {
     public static double num;
     protected static boolean ShouldIgnore(String s) {
-        return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA")) ||
-                s.endsWith(".exe") || s.endsWith(".dll") || s.endsWith(".so");
+        return (s.startsWith("META-INF/") && (s.endsWith(".RSA") || s.endsWith(".SF") || s.endsWith(".DSA"))) ||
+                s.endsWith(".exe") || s.endsWith(".dll") || s.endsWith(".so") || !s.contains(".") || s.endsWith("at.cfg") || s.endsWith(".bin") || s.endsWith(".zip") ||
+                s.endsWith(".7z") || s.endsWith(".rar") || s.endsWith(".xz") || s.endsWith(".tar") || s.endsWith(".gz");
     }
 
     public synchronized static void FuckModJar(JarFile jar) {
@@ -49,10 +50,19 @@ public class JarFucker {
                         InputStreamReader isr = new InputStreamReader(is);
                         BufferedReader br = new BufferedReader(isr);
                         String str;
+                        boolean flag = false;
                         while ((str = br.readLine()) != null) {
                             if (!BadMANIFEST(str)) {
+                                if (flag) {
+                                    if (str.startsWith(" ")) {
+                                        flag = false;
+                                        continue;
+                                    }
+                                }
                                 str = str + "\n";
                                 jos.write(str.getBytes());
+                            } else {
+                                flag = true;
                             }
                         }
                         String fucked = "Fucked: true";
@@ -108,10 +118,20 @@ public class JarFucker {
                         InputStreamReader isr = new InputStreamReader(is);
                         BufferedReader br = new BufferedReader(isr);
                         String str;
+                        boolean flag = false;
                         while ((str = br.readLine()) != null) {
+
                             if (!isSign(str)) {
+                                if (flag) {
+                                    if (str.startsWith(" ")) {
+                                        flag = false;
+                                        continue;
+                                    }
+                                }
                                 str = str + "\n";
                                 jos.write(str.getBytes());
+                            } else {
+                                flag = true;
                             }
                         }
                         String fucked = "Fucked: true";
@@ -166,13 +186,13 @@ public class JarFucker {
     }
 
     protected static boolean BadMANIFEST(String s) {
-        return s.contains("FMLCorePlugin") || s.contains("FMLCorePluginContainsFMLMod") || s.contains("TweakClass") ||
-                s.contains("ForceLoadAsMod") || s.contains("Name:") || s.contains("SHA-256-Digest:") || s.contains("Premain-Class") ||
-                s.contains("Agent-Class:") || s.endsWith(".class") || s.startsWith("Name:") || s.trim().length() <= 5;
+        return s.startsWith("FMLCorePlugin") || s.startsWith("FMLCorePluginContainsFMLMod") || s.startsWith("TweakClass") ||
+                s.startsWith("ForceLoadAsMod") || s.startsWith("SHA-256-Digest:") || s.startsWith("Premain-Class") ||
+                s.startsWith("Agent-Class:") || s.startsWith("Name:");
     }
 
     protected static boolean isSign(String s) {
-        return s.contains("SHA-256-Digest:") || s.endsWith(".class") || s.startsWith("Name:") || s.trim().length() <= 5;
+        return s.startsWith("SHA") || s.startsWith("Name:");
     }
 
     protected static boolean isSignFile(String s) {
