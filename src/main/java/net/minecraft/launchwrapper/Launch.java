@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
+import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
 import java.util.*;
 
@@ -52,6 +53,7 @@ public class Launch {
         NoReflection(SecureClassLoader.class);
         NoReflection(URLClassLoader.class);
         NoReflection(ContextCapabilities.class);
+        NoReflection(ProtectionDomain.class);
         try {
             ClassUtil.Init();
         } catch (IOException ignored) {
@@ -166,6 +168,7 @@ public class Launch {
         String profileName = options.valueOf(profileOption);
         List<String> tweakClassNames = new ArrayList<>(options.valuesOf(tweakClassOption));
         tweakClassNames.add("net.minecraft.launchwrapper.MikuTweaker");
+        tweakClassNames.remove("org.spongepowered.asm.launch.MixinTweaker");
         List<String> argumentList = new ArrayList<>();
         blackboard.put("TweakClasses", tweakClassNames);
         blackboard.put("ArgumentList", argumentList);
@@ -191,7 +194,7 @@ public class Launch {
             do {
                 for (Iterator<String> it = tweakClassNames.iterator(); it.hasNext(); ) {
                     String tweakName = it.next();
-                    if (tweakName.equals("org.spongepowered.asm.launch.MixinTweaker")) continue;
+                    if (tweakName.contains("org.spongepowered.asm.launch.MixinTweaker")) continue;
                     if (allTweakerNames.contains(tweakName)) {
                         LogWrapper.log(Level.WARN, "Tweak class name %s has already been visited -- skipping", tweakName);
                         it.remove();
@@ -199,6 +202,7 @@ public class Launch {
                     } else {
                         allTweakerNames.add(tweakName);
                     }
+
                     LogWrapper.log(Level.INFO, "Loading tweak class name %s", tweakName);
                     classLoader.addClassLoaderExclusion(tweakName.substring(0, tweakName.lastIndexOf('.')));
                     ITweaker tweaker = (ITweaker) Class.forName(tweakName, true, classLoader).getConstructor().newInstance();
