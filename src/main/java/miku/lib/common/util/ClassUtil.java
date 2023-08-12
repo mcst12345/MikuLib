@@ -245,10 +245,6 @@ public class ClassUtil {
         System.out.println(System.getProperty("minecraft.client.jar"));
 
         File minecraft = new File(System.getenv("INST_DIR") + jar);
-        //if(System.getProperty("minecraft.client.jar").contains(":") || System.getProperty("minecraft.client.jar").startsWith("/")){
-        //    minecraft = new File(System.getProperty("minecraft.client.jar"));
-        //}
-        //else minecraft = new File(System.getProperty("user.dir").replace(".minecraft", "") + System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").indexOf(".minecraft")));
         minecraft.setReadable(true);
         minecraft.setWritable(true);
         AddJarToTransformerExclusions(minecraft, MinecraftClasses, MinecraftClassCache);
