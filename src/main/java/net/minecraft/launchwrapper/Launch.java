@@ -191,6 +191,7 @@ public class Launch {
             do {
                 for (Iterator<String> it = tweakClassNames.iterator(); it.hasNext(); ) {
                     String tweakName = it.next();
+                    if (tweakName.equals("org.spongepowered.asm.launch.MixinTweaker")) continue;
                     if (allTweakerNames.contains(tweakName)) {
                         LogWrapper.log(Level.WARN, "Tweak class name %s has already been visited -- skipping", tweakName);
                         it.remove();
