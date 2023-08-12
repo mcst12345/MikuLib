@@ -48,6 +48,7 @@ public class MixinASMEventHandler {
                         handler.invoke(event);
                     } catch (Throwable t) {
                         System.out.println("MikuWarn:Catch exception when invoking event:" + event.getClass());
+                        t.printStackTrace();
                     }
                 }
             }
