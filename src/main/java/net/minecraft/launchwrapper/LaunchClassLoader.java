@@ -144,6 +144,10 @@ public class LaunchClassLoader extends URLClassLoader {
             Mixins.addConfiguration("mixins.yukarilib.json");
             Misc.returnMixin();
         }
+        if (name.equals("com.gildedgames.the_aether.client.AetherClientEvents")) {
+            Mixins.addConfiguration("mixins.aether.json");
+            Misc.returnMixin();
+        }
 
         for (final String exception : classLoaderExceptions) {
             if (name.startsWith(exception)) {

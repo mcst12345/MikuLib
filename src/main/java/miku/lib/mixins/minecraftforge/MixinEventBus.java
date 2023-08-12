@@ -20,8 +20,8 @@ import java.util.Objects;
 
 @Mixin(value = EventBus.class, remap = false)
 public class MixinEventBus implements iEventBus {
-    @Shadow
-    private boolean shutdown;
+
+    private boolean Shutdown;
 
     @Shadow
     @Final
@@ -44,7 +44,7 @@ public class MixinEventBus implements iEventBus {
             if (EntityUtil.isProtected(((PlayerInteractEvent) event).getEntityPlayer()) && ((PlayerInteractEvent) event).getEntity() != null)
                 return false;
         }
-        if (shutdown) return false;
+        if (Shutdown) return false;
 
         IEventListener[] listeners = event.getListenerList().getListeners(busID);
         int index = 0;
@@ -77,6 +77,6 @@ public class MixinEventBus implements iEventBus {
     @Override
     public void Shutdown() {
         FMLLog.log.warn("EventBus {} shutting down - future events will not be posted.", busID);
-        shutdown = true;
+        Shutdown = true;
     }
 }

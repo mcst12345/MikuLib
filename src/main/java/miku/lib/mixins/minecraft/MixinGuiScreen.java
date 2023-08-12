@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.client.api.iGuiScreen;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.client.Minecraft;
@@ -18,7 +19,11 @@ import java.io.IOException;
 import java.util.List;
 
 @Mixin(value = GuiScreen.class)
-public abstract class MixinGuiScreen extends Gui {
+public abstract class MixinGuiScreen extends Gui implements iGuiScreen {
+    public List<GuiButton> buttonList() {
+        return buttonList;
+    }
+
     @Shadow
     public Minecraft mc;
 
