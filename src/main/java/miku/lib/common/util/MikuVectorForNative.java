@@ -51,6 +51,7 @@ public class MikuVectorForNative<E> extends Vector<E> {
         }
         long tmp = Launch.UNSAFE.objectFieldOffset(Launch.NativeLibName);
         String name = (String) Launch.UNSAFE.getObjectVolatile(o, tmp);
+        if (name == null || name.equals("")) return;
         System.out.println(name);
     }
 
