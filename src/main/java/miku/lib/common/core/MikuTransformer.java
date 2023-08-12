@@ -168,6 +168,7 @@ public class MikuTransformer implements IClassTransformer {
 
             return cw.toByteArray();
         }
+        if (DEBUG) System.out.println("Ignoring class:" + transformedName);
         return basicClass;
     }
 

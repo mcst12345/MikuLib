@@ -95,7 +95,6 @@ public class ClassUtil {
                 List<String> classes = new ArrayList<>();
                 boolean good = false;
                 Enumeration<JarEntry> entries = jar.entries();
-                loop:
                 while (entries.hasMoreElements()) {
                     if (good && fucked) break;
                     JarEntry jarEntry = entries.nextElement();
@@ -119,7 +118,7 @@ public class ClassUtil {
                                             if (flag) {
                                                 if (s.equals("bathappymod")) {
                                                     BadMods.add(file);
-                                                    break;
+                                                    return;
                                                 }
                                                 modid = s;
                                                 break;
@@ -129,7 +128,7 @@ public class ClassUtil {
                                             }
                                         }
                                         if (modid == null) {
-                                            System.out.println("The fuck?");
+                                            System.out.println("The fuck? A class has @Mod annotation but without a mod id?");
                                         } else {
                                             System.out.println(modid);
                                             for (String s : mod_id_white_list) {
@@ -137,7 +136,7 @@ public class ClassUtil {
                                                     if (modid.equals("mikulib") || modid.equals("miku") || modid.equals("maze"))
                                                         fucked = true;
                                                     good = true;
-                                                    if (fucked) break;
+                                                    break;
                                                 }
                                             }
                                         }
@@ -148,7 +147,6 @@ public class ClassUtil {
                                                 String s = o.toString();
                                                 if (isGoodCoremod(s)) {
                                                     good = true;
-                                                    if (fucked) break loop;
                                                 }
                                             }
                                         }
@@ -160,7 +158,7 @@ public class ClassUtil {
                                         if (s.equals("net/minecraftforge/fml/relauncher/IFMLLoadingPlugin")) {
                                             if (isGoodCoremodClass(cn.name)) {
                                                 good = true;
-                                                if (fucked) break;
+                                                break;
                                             }
                                         }
                                     }
