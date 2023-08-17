@@ -21,7 +21,7 @@ public abstract class MixinItemPotion extends Item {
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(tab)) {
             for (Object o : PotionType.REGISTRY) {
-                if (!(o instanceof PotionType)) return;
+                if (!(o instanceof PotionType)) continue;
                 PotionType potiontype = (PotionType) o;
                 if (potiontype != PotionTypes.EMPTY) {
                     items.add(PotionUtils.addPotionToItemStack(new ItemStack(this), potiontype));
