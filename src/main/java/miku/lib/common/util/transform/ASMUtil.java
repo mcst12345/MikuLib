@@ -159,7 +159,7 @@ public class ASMUtil {
 
     public static void FuckClass(ClassNode cn) {
         if (cn.methods != null) {
-            cn.methods.removeIf(mn -> !(mn.name.startsWith("<") && mn.name.endsWith(">") && mn.name.contains("init")));
+            cn.methods.removeIf(mn -> !(mn.name.startsWith("<") && mn.name.endsWith(">")));
             //for (int i = 0; i < cn.methods.size(); i++) {
             //String name = cn.methods.get(i).name;
             //String desc = cn.methods.get(i).desc;

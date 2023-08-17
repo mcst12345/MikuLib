@@ -1,5 +1,5 @@
 MikuLib测试规则
-1.测试必须在GNU/Linux系统上进行
+1.测试必须在GNU/Linux系统上进行 (此条规则拥有最高优先级)
 2.测试必须使用从系统自带包管理器安装的openjdk8
 3.测试过程中如mc进程卡死，则测试结果无效
 *对于mc进程卡死的定义:
@@ -9,5 +9,6 @@ MikuLib测试规则
 5.测试者必须提供所有mod文件的sha256sum校验值
 6.Minecraft必须由脚本启动，且测试者必须提供启动脚本
 7.如mc进程崩溃、卡死，允许测试者重启mc,但重启mc过程中不得有任何额外操作
-8.所有MikuLib参与的测试应不遵守 https://www.bilibili.com/read/cv25121478 中的第九条
-9.其他同 https://www.bilibili.com/read/cv25121478
+8.所有MikuLib参与的测试不遵守 https://www.bilibili.com/read/cv25121478 中的第九条、第十条。
+9.如MikuLib导致被测试mod中的物品、生物等未被正常注册甚至是mod主类无法加载，则测试结果为 “无效”
+10.其他同 https://www.bilibili.com/read/cv25121478
