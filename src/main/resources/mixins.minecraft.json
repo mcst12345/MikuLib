@@ -30,6 +30,7 @@
     "MixinEntityXPOrb",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",
+    "MixinItemPotion",
     "MixinLayerSpiderEyes",
     "MixinMinecraftServer",
     "MixinNetHandlerPlayServer",
