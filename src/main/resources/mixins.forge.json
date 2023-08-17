@@ -18,6 +18,7 @@
     "MixinForgeEventFactory",
     "MixinForgeHooks",
     "MixinForgeModContainer",
+    "MixinForgeRegistry",
     "MixinGameData",
     "MixinItemStack",
     "MixinLoadController",
@@ -25,7 +26,8 @@
     "MixinNetworkDispatcher",
     "MixinObjectHolderRegistry",
     "MixinOreDictionary",
-    "MixinProxyInjector"
+    "MixinProxyInjector",
+    "MixinRegistryDelegate"
   ],
   "client": [
     "MixinAnimationItemOverrideList",

@@ -101,7 +101,9 @@ public abstract class MixinSoundManager {
     public void reloadSoundSystem() {
         UNABLE_TO_PLAY.clear();
 
-        for (SoundEvent soundevent : SoundEvent.REGISTRY) {
+        for (Object o : SoundEvent.REGISTRY) {
+            if (!(o instanceof SoundEvent)) continue;
+            SoundEvent soundevent = (SoundEvent) o;
             ResourceLocation resourcelocation = soundevent.getSoundName();
 
             if (this.sndHandler.getAccessor(resourcelocation) == null) {

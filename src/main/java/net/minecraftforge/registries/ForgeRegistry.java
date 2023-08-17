@@ -848,11 +848,11 @@ public class ForgeRegistry<V extends IForgeRegistryEntry<V>> implements IForgeRe
             FMLLog.log.debug("There were {} missing mappings that have been ignored", ignored);
     }
 
-    private static class OverrideOwner {
+    public static class OverrideOwner {
         final String owner;
         final ResourceLocation key;
 
-        private OverrideOwner(String owner, ResourceLocation key) {
+        public OverrideOwner(String owner, ResourceLocation key) {
             this.owner = owner;
             this.key = key;
         }

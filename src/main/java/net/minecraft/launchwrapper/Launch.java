@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.launch.MixinTweaker;
 import org.spongepowered.asm.mixin.Mixins;
 import sun.misc.Unsafe;
 
@@ -168,7 +169,6 @@ public class Launch {
         String profileName = options.valueOf(profileOption);
         List<String> tweakClassNames = new ArrayList<>(options.valuesOf(tweakClassOption));
         tweakClassNames.add("net.minecraft.launchwrapper.MikuTweaker");
-        tweakClassNames.remove("org.spongepowered.asm.launch.MixinTweaker");
         List<String> argumentList = new ArrayList<>();
         blackboard.put("TweakClasses", tweakClassNames);
         blackboard.put("ArgumentList", argumentList);
@@ -216,6 +216,7 @@ public class Launch {
 
                 for (Iterator<ITweaker> it = tweakers.iterator(); it.hasNext(); ) {
                     ITweaker tweaker = it.next();
+                    if (tweaker instanceof MixinTweaker) continue;
                     LogWrapper.log(Level.INFO, "Calling tweak class %s", tweaker.getClass().getName());
                     tweaker.acceptOptions(options.valuesOf(nonOption), minecraftHome, assetsDir, profileName);
                     tweaker.injectIntoClassLoader(classLoader);
