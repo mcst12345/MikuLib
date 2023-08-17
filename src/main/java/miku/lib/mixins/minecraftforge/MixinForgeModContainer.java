@@ -127,12 +127,17 @@ public abstract class MixinForgeModContainer extends DummyModContainer implement
     @Overwrite
     @SubscribeEvent
     public void registrItems(RegistryEvent.Register<Item> event) {
-        // Add and register the forge universal bucket, if it's enabled
-        if (FluidRegistry.isUniversalBucketEnabled()) {
-            universalBucket = new UniversalBucket();
-            universalBucket.setTranslationKey("forge.bucketFilled");
-            event.getRegistry().register(universalBucket.setRegistryName(ForgeVersion.MOD_ID, "bucketFilled"));
-            MikuLib.MikuEventBus().register(universalBucket);
+        try {
+            // Add and register the forge universal bucket, if it's enabled
+            if (FluidRegistry.isUniversalBucketEnabled()) {
+                universalBucket = new UniversalBucket();
+                universalBucket.setTranslationKey("forge.bucketFilled");
+                event.getRegistry().register(universalBucket.setRegistryName(ForgeVersion.MOD_ID, "bucketFilled"));
+                MikuLib.MikuEventBus().register(universalBucket);
+            }
+        } catch (Throwable t) {
+            System.out.println("MikuWarn:Failed to register universalBucket!");
+            t.printStackTrace();
         }
     }
 }
