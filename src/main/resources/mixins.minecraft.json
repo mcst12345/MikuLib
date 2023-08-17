@@ -32,6 +32,7 @@
     "MixinInventoryPlayer",
     "MixinItemEnchantedBook",
     "MixinItemPotion",
+    "MixinItemTippedArrow",
     "MixinLayerSpiderEyes",
     "MixinMinecraftServer",
     "MixinNetHandlerPlayServer",
