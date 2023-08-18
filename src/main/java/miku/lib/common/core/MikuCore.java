@@ -1,7 +1,6 @@
 package miku.lib.common.core;
 
 import com.sun.jna.Platform;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
@@ -196,11 +195,11 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     protected synchronized static boolean isLaunchFucked() {
         try {
-            Field miku = Launch.class.getDeclaredField("Miku");
-            miku.setAccessible(true);
-            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku10");
-            return true;
-        } catch (NoSuchFieldException | ClassNotFoundException e) {
+            File file = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
+            System.out.println(FileUtils.checksumCRC32(file));
+            return Objects.equals(FileUtils.checksumCRC32(file), 3477993133L);//Edit this value if LaunchWrapper is changed.
+        } catch (Throwable e) {
+            e.printStackTrace();
             return false;
         }
     }
