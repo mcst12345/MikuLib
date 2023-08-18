@@ -14,6 +14,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -21,6 +22,21 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static boolean Client = false;
+
+    private static Class<?> deduceMainApplicationClass() {
+        Class<?> result = null;
+        try {
+            StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+            for (StackTraceElement stackTraceElement : stackTrace) {
+                if ("main".equals(stackTraceElement.getMethodName())) {
+                    result = Class.forName(stackTraceElement.getClassName());
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            // Swallow and continue
+        }
+        return result;
+    }
 
     static {
         l:
@@ -49,7 +65,6 @@ public class MikuCore implements IFMLLoadingPlugin {
     static final boolean MacOS = Platform.isMac();
     static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
     static final boolean Android = Platform.isAndroid();
-
     public MikuCore() {
 
         FuckLaunchWrapper();
@@ -83,6 +98,15 @@ public class MikuCore implements IFMLLoadingPlugin {
                     LAUNCH.append(' ');
                 }
 
+                CodeSource cs = deduceMainApplicationClass().getProtectionDomain().getCodeSource();
+                String file = cs.getLocation().toURI().getSchemeSpecificPart();
+
+                int lastIndex = file.lastIndexOf(".jar");
+                file = file.substring(5, lastIndex + 4);
+
+                System.out.println(file);
+
+                LAUNCH.insert(0, " -jar " + file);
 
                 if (Client) {
                     LAUNCH.append("-cp ");
@@ -128,6 +152,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                         LAUNCH.insert(0, tmp + " ");
                     }
                 }
+
+
                 String command = LAUNCH.toString().replace(",", "");
                 if (Client) System.out.println("MikuLib has completed its file injection.Now restarting the game.");
                 else System.out.println("MikuLib has completed its file injection.Now restarting the server.");
