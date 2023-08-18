@@ -99,6 +99,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                     LAUNCH.append(' ');
                 }
 
+                LAUNCH.append(" -Dcatserver.skipCheckLibraries=true");
+
                 CodeSource cs = deduceMainApplicationClass().getProtectionDomain().getCodeSource();
                 String file = cs.getLocation().toURI().getSchemeSpecificPart();
 
@@ -276,7 +278,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                             jos.close();
                         }
                         if (changed) {
-                            JarFucker.OverwriteFile(new File(file.getName() + ".fucked"), new File(file.getName()), false);
+                            JarFucker.OverwriteFile(new File(file.getName() + ".fucked"), new File(file.getName()), true);
                         }
                     }
                 }
