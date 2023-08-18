@@ -21,6 +21,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static boolean Client = false;
+    private static final long crc = 3477993133L;//Edit this value if LaunchWrapper is changed.
 
     private static Class<?> deduceMainApplicationClass() {
         Class<?> result = null;
@@ -195,9 +196,19 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     protected synchronized static boolean isLaunchFucked() {
         try {
-            File file = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
-            System.out.println(FileUtils.checksumCRC32(file));
-            return Objects.equals(FileUtils.checksumCRC32(file), 3477993133L);//Edit this value if LaunchWrapper is changed.
+            File file1 = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
+            File file2 = new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar");
+            long crc1 = 0, crc2 = 0;
+            try {
+                crc1 = FileUtils.checksumCRC32(file1);
+            } catch (Throwable ignored) {
+            }
+            try {
+                crc2 = FileUtils.checksumCRC32(file2);
+            } catch (Throwable ignored) {
+            }
+
+            return (crc1 == 0 || crc1 == crc) && (crc2 == 0 || crc2 == crc);
         } catch (Throwable e) {
             e.printStackTrace();
             return false;
@@ -226,6 +237,18 @@ public class MikuCore implements IFMLLoadingPlugin {
             }
             assert MIXIN != null;
             FileUtils.copyInputStreamToFile(MIXIN, new File(System.getProperty("user.dir") + "/libraries/mixin.jar"));
+        } catch (IOException ignored) {
+        }
+
+        try {
+            File dic = new File(System.getProperty("user.dir"));
+            if (dic.isDirectory()) {
+                for (File file : Objects.requireNonNull(dic.listFiles())) {
+                    if (file.getName().endsWith(".jar")) {
+                        JarFile jar = new JarFile(file);
+                    }
+                }
+            } else System.out.println("The fuck?");
         } catch (IOException ignored) {
         }
         restart = true;
