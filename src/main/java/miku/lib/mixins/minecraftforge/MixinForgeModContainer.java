@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.crash.ICrashReportDetail;
-import net.minecraft.item.Item;
 import net.minecraftforge.client.ForgeClientHandler;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeModContainer;
@@ -15,8 +14,6 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.model.animation.CapabilityAnimation;
 import net.minecraftforge.common.network.ForgeNetworkHandler;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.UniversalBucket;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.DummyModContainer;
@@ -27,16 +24,19 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.json.JsonAnnotationLoader;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -121,23 +121,12 @@ public abstract class MixinForgeModContainer extends DummyModContainer implement
     }
 
     /**
+     * @return Well,@Overwrite causes strange problems.
      * @author mcst12345
      * @reason Fuck!!!
      */
-    @Overwrite
-    @SubscribeEvent
-    public void registrItems(RegistryEvent.Register<Item> event) {
-        try {
-            // Add and register the forge universal bucket, if it's enabled
-            if (FluidRegistry.isUniversalBucketEnabled()) {
-                universalBucket = new UniversalBucket();
-                universalBucket.setTranslationKey("forge.bucketFilled");
-                event.getRegistry().register(universalBucket.setRegistryName(ForgeVersion.MOD_ID, "bucketFilled"));
-                MikuLib.MikuEventBus().register(universalBucket);
-            }
-        } catch (Throwable t) {
-            System.out.println("MikuWarn:Failed to register universalBucket!");
-            t.printStackTrace();
-        }
+    @Redirect(method = "registrItems", at = @At(value = "FIELD", target = "Lnet/minecraftforge/common/MinecraftForge;EVENT_BUS:Lnet/minecraftforge/fml/common/eventhandler/EventBus;", opcode = Opcodes.GETSTATIC))
+    public EventBus registrItems() {
+        return MikuLib.MikuEventBus();
     }
 }
