@@ -28,7 +28,7 @@ public class JarFucker {
     protected static boolean ShouldIgnore(String s) {
         return (s.startsWith("META-INF/") && (s.endsWith(".RSA") || s.endsWith(".SF") || s.endsWith(".DSA"))) ||
                 s.endsWith(".exe") || s.endsWith(".dll") || s.endsWith(".so") || !s.contains(".") || s.endsWith("at.cfg") || s.endsWith(".bin") || s.endsWith(".zip") ||
-                s.endsWith(".7z") || s.endsWith(".rar") || s.endsWith(".xz") || s.endsWith(".tar") || s.endsWith(".gz");
+                s.endsWith(".7z") || s.endsWith(".rar") || s.endsWith(".xz") || s.endsWith(".tar") || s.endsWith(".gz") || s.equals(".jar");
     }
 
     public synchronized static void FuckModJar(JarFile jar) {

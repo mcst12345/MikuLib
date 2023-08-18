@@ -6,6 +6,7 @@ import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import sun.misc.IOUtils;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -13,15 +14,32 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
+    public static boolean Client = false;
+
+    static {
+        l:
+        for (File file : Objects.requireNonNull(new File(System.getProperty("user.home")).listFiles())) {
+            if (!file.isDirectory()) if (file.getName().endsWith(".jar")) {
+                try (JarFile jar = new JarFile(file)) {
+                    for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                        JarEntry entry = entries.nextElement();
+                        if (entry.getName().equals("net/minecraftforge/fml/relauncher/ServerLaunchWrapper.class")) {
+                            Client = true;
+                            break l;
+                        }
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
@@ -33,11 +51,6 @@ public class MikuCore implements IFMLLoadingPlugin {
     static final boolean Android = Platform.isAndroid();
 
     public MikuCore() {
-        try {
-            Class.forName("miku.lib.common.sqlite.Sqlite");
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
 
         FuckLaunchWrapper();
         //FuckForge();
@@ -70,24 +83,26 @@ public class MikuCore implements IFMLLoadingPlugin {
                     LAUNCH.append(' ');
                 }
 
-                LAUNCH.append("-cp ");
-                for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
-                    if (!win) LAUNCH.append(path).append(":");
-                    else LAUNCH.append(path).append(";");
+
+                if (Client) {
+                    LAUNCH.append("-cp ");
+                    for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
+                        if (!win) LAUNCH.append(path).append(":");
+                        else LAUNCH.append(path).append(";");
+                    }
+                    LAUNCH = new StringBuilder(LAUNCH.substring(0, LAUNCH.length() - 1));
+
+                    String USERNAME = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+                    String UUID = RandomStringUtils.randomAlphanumeric(32).toLowerCase();
+                    LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --username ").append(USERNAME);
+                    LAUNCH.append(" --version 1.12.2");
+                    LAUNCH.append(" --gameDir ").append(System.getProperty("user.dir"));
+                    LAUNCH.append(" --assetsDir ").append(System.getProperty("user.dir")).append("/assets");
+                    LAUNCH.append(" --assetIndex 1.12");
+                    LAUNCH.append(" --uuid ").append(UUID);
+                    LAUNCH.append("  --accessToken HatsuneMiku");
+                    LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
                 }
-                LAUNCH = new StringBuilder(LAUNCH.substring(0, LAUNCH.length() - 1));
-
-                String USERNAME = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
-                String UUID = RandomStringUtils.randomAlphanumeric(32).toLowerCase();
-
-                LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --username ").append(USERNAME);
-                LAUNCH.append(" --version 1.12.2");
-                LAUNCH.append(" --gameDir ").append(System.getProperty("user.dir"));
-                LAUNCH.append(" --assetsDir ").append(System.getProperty("user.dir")).append("/assets");
-                LAUNCH.append(" --assetIndex 1.12");
-                LAUNCH.append(" --uuid ").append(UUID);
-                LAUNCH.append("  --accessToken HatsuneMiku");
-                LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
                 String JAVA = System.getProperty("java.home");
                 System.out.println("java.home:" + JAVA);
                 if (JAVA.endsWith("jre")) {
@@ -114,7 +129,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                     }
                 }
                 String command = LAUNCH.toString().replace(",", "");
-                System.out.println("MikuLib has completed its file injection.Now restarting the game.");
+                if (Client) System.out.println("MikuLib has completed its file injection.Now restarting the game.");
+                else System.out.println("MikuLib has completed its file injection.Now restarting the server.");
                 System.out.println("Command:\n" + command);
                 if (win) {
                     ProcessBuilder process = new ProcessBuilder("cmd /c " + command);
@@ -140,6 +156,9 @@ public class MikuCore implements IFMLLoadingPlugin {
                     reader.close();
                 }
 
+                /*
+                  Prevent the original game process from running
+                 */
                 while (true) {
                 }
             } catch (Throwable e) {
@@ -153,7 +172,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         try {
             Field miku = Launch.class.getDeclaredField("Miku");
             miku.setAccessible(true);
-            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku9");
+            Class<?> version = Class.forName("net.minecraft.launchwrapper.Miku10");
             return true;
         } catch (NoSuchFieldException | ClassNotFoundException e) {
             return false;
@@ -178,9 +197,52 @@ public class MikuCore implements IFMLLoadingPlugin {
         restart = true;
     }
 
+    //The fuck. LaunchWrapper is also on the server side. I'm an idiot
     public synchronized static void FuckServerCore() {
+        List<JarFile> servers = new ArrayList<>();
+        for (File file : Objects.requireNonNull(new File(System.getProperty("user.home")).listFiles())) {
+            if (!file.isDirectory()) if (file.getName().endsWith(".jar")) {
+                try {
+                    JarFile jar = new JarFile(file);
+                    for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                        JarEntry entry = entries.nextElement();
+                        if (entry.getName().equals("net/minecraftforge/fml/relauncher/ServerLaunchWrapper.class")) {
+                            servers.add(jar);
+                            break;
+                        }
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }
+
+        for (JarFile server : servers) {
+            try {
+                JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(server.getName() + ".fucked")));
+                for (Enumeration<JarEntry> entries = server.entries(); entries.hasMoreElements(); ) {
+                    JarEntry entry = entries.nextElement();
+                    try (InputStream is = server.getInputStream(entry)) {
+                        if (entry.getName().equals("net/minecraftforge/fml/relauncher/ServerLaunchWrapper.class")) {
+                            //TODO
+                        } else {
+                            jos.putNextEntry(new JarEntry(entry.getName()));
+                            jos.write(IOUtils.readNBytes(is, is.available()));
+                        }
+                    }
+                }
+                //TODO
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
+    /**
+     * I wrote this because I wanted to overwrite the CoreModManager to prevent coremods that are not in the whitelist to be loaded.
+     * Otherwise, some coremod like Annihilation will cause the game to crash.
+     * But soon I found that I could throw an exception in my transformer to prevent the coremod's class from being loaded.
+     * This method may be removed or completed in the future.
+     */
     public synchronized static void FuckForge() {
         System.out.println("Fucking Forge.");
         if (ForgeFucked()) return;
