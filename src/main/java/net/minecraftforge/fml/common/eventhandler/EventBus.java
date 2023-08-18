@@ -1,110 +1,63 @@
-package miku.lib.mixins.minecraftforge;
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016-2020.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 
+package net.minecraftforge.fml.common.eventhandler;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
+import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
-import miku.lib.common.api.iEventBus;
-import miku.lib.common.command.MikuInsaneMode;
-import miku.lib.common.core.MikuLib;
-import miku.lib.common.util.EntityUtil;
-import miku.lib.common.util.MikuEventBus;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.eventhandler.*;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Mixin(value = EventBus.class, remap = false)
-public class MixinEventBus implements iEventBus {
+public class EventBus implements IEventExceptionHandler {
+    private static int maxID = 0;
 
-    private boolean Shutdown;
+    private final ConcurrentHashMap<Object, ArrayList<IEventListener>> listeners = new ConcurrentHashMap<Object, ArrayList<IEventListener>>();
+    private final Map<Object, ModContainer> listenerOwners = new MapMaker().weakKeys().weakValues().makeMap();
+    private final int busID = maxID++;
+    private IEventExceptionHandler exceptionHandler;
+    private boolean shutdown;
 
-    @Shadow
-    @Final
-    private int busID;
-
-    @Shadow
-    private ConcurrentHashMap<Object, ArrayList<IEventListener>> listeners;
-
-    @Shadow
-    private Map<Object, ModContainer> listenerOwners;
-
-    /**
-     * @author mcst12345
-     * @reason F
-     */
-    @Overwrite
-    public boolean post(Event event) {
-        if (!Objects.equals(getClass(), MikuEventBus.class)) {
-            return MikuLib.MikuEventBus().post(event);
-        }
-        if (EntityUtil.isKilling() || MikuInsaneMode.isMikuInsaneMode()) return false;
-        if (event instanceof EntityJoinWorldEvent) {
-            if (EntityUtil.isProtected(((EntityJoinWorldEvent) event).getEntity())) return false;
-        }
-        if (event instanceof PlayerInteractEvent) {
-            if (EntityUtil.isProtected(((PlayerInteractEvent) event).getEntityPlayer()) && ((PlayerInteractEvent) event).getEntity() != null)
-                return false;
-        }
-        if (Shutdown) return false;
-
-        IEventListener[] listeners = event.getListenerList().getListeners(busID);
-        int index = 0;
-        try
-        {
-            for (; index < listeners.length; index++)
-            {
-                try {
-                    listeners[index].invoke(event);
-                } catch (Throwable t) {
-                    System.out.println("MikuWarn:Catch exception when posting event:" + event.getClass());
-                    t.printStackTrace();
-                }
-            }
-        } catch (Throwable t) {
-            System.out.println("MikuWarn:Catch exception when posting event:" + event.getClass());
-            t.printStackTrace();
-        }
-        return event.isCancelable() && event.isCanceled();
+    public EventBus() {
+        ListenerList.resize(busID + 1);
+        exceptionHandler = this;
     }
 
-    /**
-     * @author mcst12345
-     * @reason fuck you all
-     */
-    @Overwrite
-    public void shutdown() {
+    public EventBus(@Nonnull IEventExceptionHandler handler) {
+        this();
+        Preconditions.checkNotNull(handler, "EventBus exception handler can not be null");
+        exceptionHandler = handler;
     }
 
-    @Override
-    public void Shutdown() {
-        FMLLog.log.warn("EventBus {} shutting down - future events will not be posted.", busID);
-        Shutdown = true;
-    }
-
-    /**
-     * @author mcst12345
-     * @reason Fuck!
-     */
-    @Overwrite
     public void register(Object target) {
-        if (!Objects.equals(getClass(), MikuEventBus.class)) {
-            MikuLib.MikuEventBus().register(target);
-            return;
-        }
         if (listeners.containsKey(target)) {
             return;
         }
@@ -152,16 +105,7 @@ public class MixinEventBus implements iEventBus {
         }
     }
 
-    /**
-     * @author mcst12345
-     * @reason Fuck!
-     */
-    @Overwrite
     public void register(Class<?> eventType, Object target, Method method, final ModContainer owner) {
-        if (!Objects.equals(getClass(), MikuEventBus.class)) {
-            MikuLib.MikuEventBus().register(eventType, target, method, owner);
-            return;
-        }
         try {
             Constructor<?> ctr = eventType.getConstructor();
             ctr.setAccessible(true);
@@ -170,12 +114,15 @@ public class MixinEventBus implements iEventBus {
 
             IEventListener listener = asm;
             if (IContextSetter.class.isAssignableFrom(eventType)) {
-                listener = event1 -> {
-                    ModContainer old = Loader.instance().activeModContainer();
-                    Loader.instance().setActiveModContainer(owner);
-                    ((IContextSetter) event1).setModContainer(owner);
-                    asm.invoke(event1);
-                    Loader.instance().setActiveModContainer(old);
+                listener = new IEventListener() {
+                    @Override
+                    public void invoke(Event event) {
+                        ModContainer old = Loader.instance().activeModContainer();
+                        Loader.instance().setActiveModContainer(owner);
+                        ((IContextSetter) event).setModContainer(owner);
+                        asm.invoke(event);
+                        Loader.instance().setActiveModContainer(old);
+                    }
                 };
             }
 
@@ -185,6 +132,46 @@ public class MixinEventBus implements iEventBus {
             others.add(listener);
         } catch (Exception e) {
             FMLLog.log.error("Error registering event handler: {} {} {}", owner, eventType, method, e);
+        }
+    }
+
+    public void unregister(Object object) {
+        ArrayList<IEventListener> list = listeners.remove(object);
+        if (list == null)
+            return;
+        for (IEventListener listener : list) {
+            ListenerList.unregisterAll(busID, listener);
+        }
+    }
+
+    public boolean post(Event event) {
+        if (shutdown) return false;
+
+        IEventListener[] listeners = event.getListenerList().getListeners(busID);
+        int index = 0;
+        try {
+            for (; index < listeners.length; index++) {
+                listeners[index].invoke(event);
+            }
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(this, event, listeners, index, throwable);
+            Throwables.throwIfUnchecked(throwable);
+            throw new RuntimeException(throwable);
+        }
+        return event.isCancelable() && event.isCanceled();
+    }
+
+    public void shutdown() {
+        FMLLog.log.warn("EventBus {} shutting down - future events will not be posted.", busID);
+        shutdown = true;
+    }
+
+    @Override
+    public void handleException(EventBus bus, Event event, IEventListener[] listeners, int index, Throwable throwable) {
+        FMLLog.log.error("Exception caught during firing event {}:", event, throwable);
+        FMLLog.log.error("Index: {} Listeners:", index);
+        for (int x = 0; x < listeners.length; x++) {
+            FMLLog.log.error("{}: {}", x, listeners[x]);
         }
     }
 }
