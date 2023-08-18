@@ -31,7 +31,7 @@ libraries/json-simple-1.1.1.jar|5cc2c478d73e8454b4c369cee66c5bc7
 libraries/jsr305-3.0.1.jar|c6532beb3f7cc54a8d73d25d5602b9e4
 libraries/junit-4.10.jar|68380001b88006ebe49be50cef5bb23a
 libraries/jutils-1.0.0.jar|f60976b19661c849c5c87433045a9885
-libraries/launchwrapper-1.12.jar|9f51f9824dcececbb8f02d18ee8eead8
+libraries/launchwrapper-1.12.jar|d12d5456d0c5a7e5aba87f8df51a6e88
 libraries/log4j-api-2.8.1.jar|a2ad9b058b4b03d43f3cc301701654e4
 libraries/log4j-core-2.8.1.jar|547bb3ed2deb856d0e3bbd77c27b9625
 libraries/lzma-0.0.1.jar|a3e3c3186e41c4a1a3027ba2bb23cdc6

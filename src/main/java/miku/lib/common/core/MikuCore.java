@@ -22,7 +22,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static boolean Client = false;
-    private static final long crc = 3477993133L;//Edit this value if LaunchWrapper is changed.
+    private static final long crc1 = 1446508905, crc2 = 3329933059L;//Edit this value if LaunchWrapper is changed.
 
     private static Class<?> deduceMainApplicationClass() {
         Class<?> result = null;
@@ -208,8 +208,10 @@ public class MikuCore implements IFMLLoadingPlugin {
                 crc2 = FileUtils.checksumCRC32(file2);
             } catch (Throwable ignored) {
             }
+            System.out.println(crc1);
+            System.out.println(crc2);
 
-            return (crc1 == 0 || crc1 == crc) && (crc2 == 0 || crc2 == crc);
+            return (crc1 == 0 || crc1 == MikuCore.crc1 || crc1 == MikuCore.crc2) && (crc2 == 0 || crc2 == MikuCore.crc1 || crc2 == MikuCore.crc2);
         } catch (Throwable e) {
             e.printStackTrace();
             return false;
@@ -254,10 +256,16 @@ public class MikuCore implements IFMLLoadingPlugin {
                                 try (InputStream is = jar.getInputStream(entry)) {
                                     if (entry.getName().equals("libraries.info")) {
                                         changed = true;
-                                        try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info")) {
-                                            jos.putNextEntry(new JarEntry(entry.getName()));
-                                            jos.write(IOUtils.readNBytes(fucked, fucked.available()));
-                                        }
+                                        if (win) {
+                                            try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info.win")) {
+                                                jos.putNextEntry(new JarEntry(entry.getName()));
+                                                jos.write(IOUtils.readNBytes(fucked, fucked.available()));
+                                            }
+                                        } else
+                                            try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info")) {
+                                                jos.putNextEntry(new JarEntry(entry.getName()));
+                                                jos.write(IOUtils.readNBytes(fucked, fucked.available()));
+                                            }
                                     } else {
                                         jos.putNextEntry(new JarEntry(entry.getName()));
                                         jos.write(IOUtils.readNBytes(is, is.available()));
