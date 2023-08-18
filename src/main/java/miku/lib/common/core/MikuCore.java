@@ -208,6 +208,10 @@ public class MikuCore implements IFMLLoadingPlugin {
         if (isLaunchFucked()) return;
         try {
             FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
+            try {
+                FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar.backup"));
+            } catch (Throwable ignored) {
+            }
             InputStream MikuLaunch;
             if (win) {
                 MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked.win");
@@ -215,6 +219,11 @@ public class MikuCore implements IFMLLoadingPlugin {
             InputStream MIXIN = MikuCore.class.getResourceAsStream("/mixin-0.8.5-SNAPSHOT.jar");
             assert MikuLaunch != null;
             FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
+            try {
+                FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar"));
+            } catch (Throwable ignored) {
+
+            }
             assert MIXIN != null;
             FileUtils.copyInputStreamToFile(MIXIN, new File(System.getProperty("user.dir") + "/libraries/mixin.jar"));
         } catch (IOException ignored) {
