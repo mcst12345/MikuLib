@@ -121,7 +121,7 @@ public class JarFucker {
                         boolean flag = false;
                         while ((str = br.readLine()) != null) {
 
-                            if (!isSign(str)) {
+                            if (!Remove(str)) {
                                 if (flag) {
                                     if (str.startsWith(" ")) {
                                         flag = false;
@@ -191,8 +191,8 @@ public class JarFucker {
                 s.startsWith("Agent-Class:") || s.startsWith("Name:");
     }
 
-    protected static boolean isSign(String s) {
-        return s.startsWith("SHA") || s.startsWith("Name:");
+    protected static boolean Remove(String s) {
+        return s.startsWith("SHA") || s.startsWith("Name:") || s.contains("org.spongepowered.asm.launch.MixinTweaker");
     }
 
     protected static boolean isSignFile(String s) {
