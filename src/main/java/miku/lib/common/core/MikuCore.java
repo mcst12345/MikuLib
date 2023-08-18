@@ -106,7 +106,7 @@ public class MikuCore implements IFMLLoadingPlugin {
 
                 System.out.println(file);
 
-                LAUNCH.insert(0, " -jar " + file);
+                LAUNCH.insert(0, "-jar " + file + " ");
 
                 if (Client) {
                     LAUNCH.append("-cp ");
