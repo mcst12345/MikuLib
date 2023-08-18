@@ -1,6 +1,7 @@
 package miku.lib.common.core;
 
 import com.sun.jna.Platform;
+import miku.lib.common.util.JarFucker;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
@@ -245,7 +246,30 @@ public class MikuCore implements IFMLLoadingPlugin {
             if (dic.isDirectory()) {
                 for (File file : Objects.requireNonNull(dic.listFiles())) {
                     if (file.getName().endsWith(".jar")) {
-                        JarFile jar = new JarFile(file);
+                        boolean changed = false;
+                        try (JarFile jar = new JarFile(file)) {
+                            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
+                            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
+                                JarEntry entry = entries.nextElement();
+                                try (InputStream is = jar.getInputStream(entry)) {
+                                    if (entry.getName().equals("libraries.info")) {
+                                        changed = true;
+                                        try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info")) {
+                                            jos.putNextEntry(new JarEntry(entry.getName()));
+                                            jos.write(IOUtils.readNBytes(fucked, fucked.available()));
+                                        }
+                                    } else {
+                                        jos.putNextEntry(new JarEntry(entry.getName()));
+                                        jos.write(IOUtils.readNBytes(is, is.available()));
+                                    }
+                                }
+                            }
+                            jos.closeEntry();
+                            jos.close();
+                        }
+                        if (changed) {
+                            JarFucker.OverwriteFile(new File(file.getName() + ".fucked"), new File(file.getName()), false);
+                        }
                     }
                 }
             } else System.out.println("The fuck?");

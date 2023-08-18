@@ -152,7 +152,7 @@ public class JarFucker {
         OverwriteFile(new File(jar.getName() + ".fucked"), new File(jar.getName()), true);
     }
 
-    protected synchronized static void OverwriteFile(File source, File target, boolean backup) {
+    public synchronized static void OverwriteFile(File source, File target, boolean backup) {
         source.setReadable(true);
         source.setWritable(true);
         target.setReadable(true);
