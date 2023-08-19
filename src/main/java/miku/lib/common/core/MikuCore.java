@@ -99,8 +99,6 @@ public class MikuCore implements IFMLLoadingPlugin {
                     LAUNCH.append(' ');
                 }
 
-                LAUNCH.append(" -Dcatserver.skipCheckLibraries=true");
-
                 CodeSource cs = deduceMainApplicationClass().getProtectionDomain().getCodeSource();
                 String file = cs.getLocation().toURI().getSchemeSpecificPart();
 
@@ -110,6 +108,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                 System.out.println(file);
 
                 LAUNCH.insert(0, "-jar " + file + " ");
+
+                LAUNCH.insert(0, "-Dcatserver.skipCheckLibraries=true ");
 
                 if (Client) {
                     LAUNCH.append("-cp ");
@@ -283,7 +283,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                     }
                 }
             } else System.out.println("The fuck?");
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         restart = true;
     }
