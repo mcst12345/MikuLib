@@ -7,6 +7,8 @@ import org.spongepowered.asm.mixin.transformer.Proxy;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Misc {
     public static void print(String s) {
@@ -61,5 +63,35 @@ public class Misc {
             // no-op
 
         }
+    }
+
+    public static Class<?> deduceMainApplicationClass() {
+        Class<?> result = null;
+        try {
+            StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+            for (StackTraceElement stackTraceElement : stackTrace) {
+                if ("main".equals(stackTraceElement.getMethodName())) {
+                    result = Class.forName(stackTraceElement.getClassName());
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            // Swallow and continue
+        }
+        return result;
+    }
+
+    public static List<Class<?>> deduceMainApplicationClasses() {
+        List<Class<?>> result = new ArrayList<>();
+        try {
+            StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+            for (StackTraceElement stackTraceElement : stackTrace) {
+                if ("main".equals(stackTraceElement.getMethodName())) {
+                    result.add(Class.forName(stackTraceElement.getClassName()));
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            // Swallow and continue
+        }
+        return result;
     }
 }

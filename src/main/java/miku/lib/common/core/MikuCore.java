@@ -3,6 +3,7 @@ package miku.lib.common.core;
 import com.sun.jna.Platform;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Md5Utils;
+import miku.lib.common.util.Misc;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
@@ -23,22 +24,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("-Dminecraft.client.jar") != null;
-    private static final String md5_1 = "48d213e7283a691bb482a82a316e3a0e", md5_2 = "5d5148424d739b119ee0c2fc188ff448";//Edit these values if LaunchWrapper is changed.
-
-    private static Class<?> deduceMainApplicationClass() {
-        Class<?> result = null;
-        try {
-            StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
-            for (StackTraceElement stackTraceElement : stackTrace) {
-                if ("main".equals(stackTraceElement.getMethodName())) {
-                    result = Class.forName(stackTraceElement.getClassName());
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            // Swallow and continue
-        }
-        return result;
-    }
+    private static final String md5_1 = "6c913d46a6e00853d39e3a1417ec4aad", md5_2 = "77155da337fe6a4a1f3d0ea084ce57ce";//Edit these values if LaunchWrapper is changed.
 
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;
@@ -83,7 +69,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                 }
 
                 if (!Client) {
-                    CodeSource cs = deduceMainApplicationClass().getProtectionDomain().getCodeSource();
+                    CodeSource cs = Misc.deduceMainApplicationClass().getProtectionDomain().getCodeSource();
                     String file = cs.getLocation().toURI().getSchemeSpecificPart();
 
                     int lastIndex = file.lastIndexOf(".jar");
@@ -250,7 +236,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                             for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
                                 JarEntry entry = entries.nextElement();
                                 try (InputStream is = jar.getInputStream(entry)) {
-                                    if (entry.getName().equals("libraries.info")) {
+                                    if (entry.getName().equals("libraries.info") || entry.getName().equals("mohist_libraries.txt")) {
                                         changed = true;
                                     } else {
                                         jos.putNextEntry(new JarEntry(entry.getName()));

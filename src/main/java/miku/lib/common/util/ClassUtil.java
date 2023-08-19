@@ -1,12 +1,14 @@
 package miku.lib.common.util;
 
 import com.sun.jna.Platform;
+import miku.lib.common.core.MikuCore;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.jar.JarEntry;
@@ -233,21 +235,41 @@ public class ClassUtil {
 
         String jar;
 
-        if (windows) {
-            jar = System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").lastIndexOf("\\"));
+        if (MikuCore.Client) {
+            System.out.println(System.getProperty("user.dir"));
+            System.out.println(System.getProperty("minecraft.client.jar"));
+
+            if (windows) {
+                jar = System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").lastIndexOf("\\"));
+            } else {
+                jar = System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").lastIndexOf("/"));
+            }
+            System.out.println(jar);
+
+
+            File minecraft = new File(System.getenv("INST_DIR") + jar);
+            minecraft.setReadable(true);
+            minecraft.setWritable(true);
+            AddJarToTransformerExclusions(minecraft, MinecraftClasses, MinecraftClassCache);
         } else {
-            jar = System.getProperty("minecraft.client.jar").substring(System.getProperty("minecraft.client.jar").lastIndexOf("/"));
+            List<Class<?>> MAIN = Misc.deduceMainApplicationClasses();
+            for (Class<?> clazz : MAIN) {
+
+                try {
+                    CodeSource cs = clazz.getProtectionDomain().getCodeSource();
+                    String file = null;
+                    file = cs.getLocation().toURI().getSchemeSpecificPart();
+                    int lastIndex = file.lastIndexOf(".jar");
+                    file = file.substring(5, lastIndex + 4);
+                    AddJarToTransformerExclusions(new File(file), TransformerExclusions, GoodClassCache);
+                } catch (Throwable ignored) {
+                }
+
+
+            }
         }
 
-        System.out.println(jar);
 
-        System.out.println(System.getProperty("user.dir"));
-        System.out.println(System.getProperty("minecraft.client.jar"));
-
-        File minecraft = new File(System.getenv("INST_DIR") + jar);
-        minecraft.setReadable(true);
-        minecraft.setWritable(true);
-        AddJarToTransformerExclusions(minecraft, MinecraftClasses, MinecraftClassCache);
         TransformerExclusions.add("net.minecraft.server.MinecraftServer");
         GoodClassCache.put("net.minecraft.server.MinecraftServer", true);
         TransformerExclusions.add("net.minecraft.server.MinecraftServer$1");
