@@ -21,7 +21,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
-    public static boolean Client = false;
+    public static boolean Client = true;
     private static final long crc1 = 1446508905, crc2 = 3329933059L;//Edit this value if LaunchWrapper is changed.
 
     private static Class<?> deduceMainApplicationClass() {
@@ -47,7 +47,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                     for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
                         JarEntry entry = entries.nextElement();
                         if (entry.getName().equals("net/minecraftforge/fml/relauncher/ServerLaunchWrapper.class")) {
-                            Client = true;
+                            Client = false;
                             break l;
                         }
                     }
@@ -225,10 +225,15 @@ public class MikuCore implements IFMLLoadingPlugin {
     public synchronized static void FuckLaunchWrapper() {
         if (isLaunchFucked()) return;
         try {
-            FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
+            try {
+                FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar.backup"));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
             try {
                 FileUtils.copyFile(new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar"), new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar.backup"));
-            } catch (Throwable ignored) {
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
             InputStream MikuLaunch;
             if (win) {
@@ -239,12 +244,13 @@ public class MikuCore implements IFMLLoadingPlugin {
             FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
             try {
                 FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar"));
-            } catch (Throwable ignored) {
-
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
             assert MIXIN != null;
             FileUtils.copyInputStreamToFile(MIXIN, new File(System.getProperty("user.dir") + "/libraries/mixin.jar"));
-        } catch (IOException ignored) {
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
 
         try {
