@@ -281,6 +281,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                         }
                         if (changed) {
                             JarFucker.OverwriteFile(new File(file.getName() + ".fucked"), new File(file.getName()), true);
+                        } else {
+                            new File(file.getName() + ".fucked").delete();
                         }
                     }
                 }
