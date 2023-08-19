@@ -21,7 +21,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
-    public static boolean Client = true;
+    public static final boolean Client = System.getProperty("-Dminecraft.client.jar") != null;
     private static final long crc1 = 1446508905, crc2 = 3329933059L;//Edit this value if LaunchWrapper is changed.
 
     private static Class<?> deduceMainApplicationClass() {
@@ -37,24 +37,6 @@ public class MikuCore implements IFMLLoadingPlugin {
             // Swallow and continue
         }
         return result;
-    }
-
-    static {
-        l:
-        for (File file : Objects.requireNonNull(new File(System.getProperty("user.home")).listFiles())) {
-            if (!file.isDirectory()) if (file.getName().endsWith(".jar")) {
-                try (JarFile jar = new JarFile(file)) {
-                    for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
-                        JarEntry entry = entries.nextElement();
-                        if (entry.getName().equals("net/minecraftforge/fml/relauncher/ServerLaunchWrapper.class")) {
-                            Client = false;
-                            break l;
-                        }
-                    }
-                } catch (IOException ignored) {
-                }
-            }
-        }
     }
 
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
@@ -243,6 +225,9 @@ public class MikuCore implements IFMLLoadingPlugin {
             assert MikuLaunch != null;
             FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar"));
             try {
+                if (win) {
+                    MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked.win");
+                } else MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
                 FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar"));
             } catch (Throwable t) {
                 t.printStackTrace();
