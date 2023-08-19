@@ -29,7 +29,7 @@ import java.security.SecureClassLoader;
 import java.util.*;
 
 public class Launch {
-    public static final boolean Client = System.getProperty("-Dminecraft.client.jar") != null;
+    public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     public static Unsafe UNSAFE;
     protected static final boolean Miku = true;
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
