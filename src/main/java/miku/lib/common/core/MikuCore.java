@@ -99,17 +99,19 @@ public class MikuCore implements IFMLLoadingPlugin {
                     LAUNCH.append(' ');
                 }
 
-                CodeSource cs = deduceMainApplicationClass().getProtectionDomain().getCodeSource();
-                String file = cs.getLocation().toURI().getSchemeSpecificPart();
+                if (!Client) {
+                    CodeSource cs = deduceMainApplicationClass().getProtectionDomain().getCodeSource();
+                    String file = cs.getLocation().toURI().getSchemeSpecificPart();
 
-                int lastIndex = file.lastIndexOf(".jar");
-                file = file.substring(5, lastIndex + 4);
+                    int lastIndex = file.lastIndexOf(".jar");
+                    file = file.substring(5, lastIndex + 4);
 
-                System.out.println(file);
+                    System.out.println(file);
 
-                LAUNCH.insert(0, "-jar " + file + " ");
+                    LAUNCH.insert(0, "-jar " + file + " ");
+                }
 
-                LAUNCH.insert(0, "-Dcatserver.skipCheckLibraries=true ");
+                if (!Client) LAUNCH.insert(0, "-Dcatserver.skipCheckLibraries=true ");
 
                 if (Client) {
                     LAUNCH.append("-cp ");
@@ -258,16 +260,16 @@ public class MikuCore implements IFMLLoadingPlugin {
                                 try (InputStream is = jar.getInputStream(entry)) {
                                     if (entry.getName().equals("libraries.info")) {
                                         changed = true;
-                                        if (win) {
-                                            try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info.win")) {
-                                                jos.putNextEntry(new JarEntry(entry.getName()));
-                                                jos.write(IOUtils.readNBytes(fucked, fucked.available()));
-                                            }
-                                        } else
-                                            try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info")) {
-                                                jos.putNextEntry(new JarEntry(entry.getName()));
-                                                jos.write(IOUtils.readNBytes(fucked, fucked.available()));
-                                            }
+                                        //if (win) {
+                                        //    try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info.win")) {
+                                        //        jos.putNextEntry(new JarEntry(entry.getName()));
+                                        //        jos.write(IOUtils.readNBytes(fucked, fucked.available()));
+                                        //    }
+                                        //} else
+                                        //    try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info")) {
+                                        //        jos.putNextEntry(new JarEntry(entry.getName()));
+                                        //        jos.write(IOUtils.readNBytes(fucked, fucked.available()));
+                                        //    }
                                     } else {
                                         jos.putNextEntry(new JarEntry(entry.getName()));
                                         jos.write(IOUtils.readNBytes(is, is.available()));
