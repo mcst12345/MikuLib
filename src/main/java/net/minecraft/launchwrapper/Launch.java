@@ -53,7 +53,10 @@ public class Launch {
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);
         NoReflection(URLClassLoader.class);
-        NoReflection(ContextCapabilities.class);
+        try {
+            NoReflection(ContextCapabilities.class);
+        } catch (Throwable ignored) {
+        }
         NoReflection(ProtectionDomain.class);
         try {
             ClassUtil.Init();

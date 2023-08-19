@@ -2,6 +2,7 @@ package miku.lib.common.core;
 
 import com.sun.jna.Platform;
 import miku.lib.common.util.JarFucker;
+import miku.lib.common.util.Md5Utils;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
@@ -22,7 +23,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("-Dminecraft.client.jar") != null;
-    private static final long crc1 = 1446508905, crc2 = 3329933059L;//Edit this value if LaunchWrapper is changed.
+    private static final String md5_1 = "48d213e7283a691bb482a82a316e3a0e", md5_2 = "5d5148424d739b119ee0c2fc188ff448";//Edit these values if LaunchWrapper is changed.
 
     private static Class<?> deduceMainApplicationClass() {
         Class<?> result = null;
@@ -185,19 +186,19 @@ public class MikuCore implements IFMLLoadingPlugin {
         try {
             File file1 = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
             File file2 = new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar");
-            long crc1 = 0, crc2 = 0;
+            String md5_1 = null, md5_2 = null;
             try {
-                crc1 = FileUtils.checksumCRC32(file1);
+                md5_1 = Md5Utils.getFileMD5String(file1);
             } catch (Throwable ignored) {
             }
             try {
-                crc2 = FileUtils.checksumCRC32(file2);
+                md5_2 = Md5Utils.getFileMD5String(file2);
             } catch (Throwable ignored) {
             }
-            System.out.println(crc1);
-            System.out.println(crc2);
+            System.out.println(md5_1);
+            System.out.println(md5_2);
 
-            return (crc1 == 0 || crc1 == MikuCore.crc1 || crc1 == MikuCore.crc2) && (crc2 == 0 || crc2 == MikuCore.crc1 || crc2 == MikuCore.crc2);
+            return (md5_1 == null || md5_1.equals(MikuCore.md5_1) || md5_1.equals(MikuCore.md5_2)) && (md5_2 == null || md5_2.equals(MikuCore.md5_1) || md5_2.equals(MikuCore.md5_2));
         } catch (Throwable e) {
             e.printStackTrace();
             return false;
@@ -251,16 +252,6 @@ public class MikuCore implements IFMLLoadingPlugin {
                                 try (InputStream is = jar.getInputStream(entry)) {
                                     if (entry.getName().equals("libraries.info")) {
                                         changed = true;
-                                        //if (win) {
-                                        //    try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info.win")) {
-                                        //        jos.putNextEntry(new JarEntry(entry.getName()));
-                                        //        jos.write(IOUtils.readNBytes(fucked, fucked.available()));
-                                        //    }
-                                        //} else
-                                        //    try (InputStream fucked = MikuCore.class.getResourceAsStream("/libraries.info")) {
-                                        //        jos.putNextEntry(new JarEntry(entry.getName()));
-                                        //        jos.write(IOUtils.readNBytes(fucked, fucked.available()));
-                                        //    }
                                     } else {
                                         jos.putNextEntry(new JarEntry(entry.getName()));
                                         jos.write(IOUtils.readNBytes(is, is.available()));
