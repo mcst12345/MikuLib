@@ -24,7 +24,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("-Dminecraft.client.jar") != null;
-    private static final String md5_1 = "6c913d46a6e00853d39e3a1417ec4aad", md5_2 = "77155da337fe6a4a1f3d0ea084ce57ce";//Edit these values if LaunchWrapper is changed.
+    private static final String md5_1 = "614eb69f9636615e8e454426a1e0231f", md5_2 = "dda2757bc71a42ff6b9a825b0ccaceba";//Edit these values if LaunchWrapper is changed.
 
     public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;

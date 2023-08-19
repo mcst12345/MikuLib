@@ -1,7 +1,7 @@
 package miku.lib.common.util;
 
 import com.sun.jna.Platform;
-import miku.lib.common.core.MikuCore;
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -235,7 +235,7 @@ public class ClassUtil {
 
         String jar;
 
-        if (MikuCore.Client) {
+        if (Launch.Client) {
             System.out.println(System.getProperty("user.dir"));
             System.out.println(System.getProperty("minecraft.client.jar"));
 
