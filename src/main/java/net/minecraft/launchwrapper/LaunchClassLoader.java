@@ -235,7 +235,13 @@ public class LaunchClassLoader extends URLClassLoader {
                 }
             }
 
-            byte[] transformedClass = runTransformers(untransformedName, transformedName, getClassBytes(untransformedName));
+            byte[] original = getClassBytes(untransformedName);
+            if (original == null) {
+                System.out.println("MikuWarn:Failed to get class bytes of class:" + untransformedName);
+                throw new ClassNotFoundException(name);
+            }
+
+            byte[] transformedClass = runTransformers(untransformedName, transformedName, original);
             transformedClass = AT.transform(name, transformedName, transformedClass);
             if (DEBUG_SAVE) {
                 saveTransformedClass(transformedClass, transformedName);
@@ -249,7 +255,7 @@ public class LaunchClassLoader extends URLClassLoader {
             if (e instanceof NoYouCannotBeLoaded) {
                 System.out.println("Ignore bad class:" + name);
             } else {
-                if (!name.startsWith("javax.annotation")) {
+                if (!name.startsWith("javax.")) {
                     e.printStackTrace();
                     System.out.println("MikuWarn:Failed to load class:" + name);
                 }
@@ -365,14 +371,16 @@ public class LaunchClassLoader extends URLClassLoader {
             for (final IClassTransformer transformer : transformers) {
                 final String transName = transformer.getClass().getName();
                 LogWrapper.finest("Before Transformer {%s (%s)} %s: %d", name, transformedName, transName, (basicClass == null ? 0 : basicClass.length));
-                basicClass = transformer.transform(name, transformedName, basicClass);
+                byte[] transformed = transformer.transform(name, transformedName, basicClass);
+                if (transformed != null) basicClass = transformed;
                 LogWrapper.finest("After  Transformer {%s (%s)} %s: %d", name, transformedName, transName, (basicClass == null ? 0 : basicClass.length));
             }
             LogWrapper.finest("Ending transform of {%s (%s)} Start Length: %d", name, transformedName, (basicClass == null ? 0 : basicClass.length));
         } else {
             for (final IClassTransformer transformer : transformers) {
                 try {
-                    basicClass = transformer.transform(name, transformedName, basicClass);
+                    byte[] transformed = transformer.transform(name, transformedName, basicClass);
+                    if (transformed != null) basicClass = transformed;
                 } catch (Throwable e) {
                     System.out.println("MikuWarn:Catch exception when transforming class:" + name);
                     e.printStackTrace();

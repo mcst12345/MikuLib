@@ -48,6 +48,7 @@ public class ClassUtil {
     protected static final Map<String, Boolean> MikuClassCache = new ConcurrentSkipListMap<>();
 
     public static void AddJarToTransformerExclusions(File file, List<String> list, Map<String, Boolean> map) throws IOException {
+        List<File> deps = new ArrayList<>();
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -58,11 +59,25 @@ public class ClassUtil {
                         if (clazz.equals("module-info")) continue;
                         list.add(clazz);
                         map.put(clazz, true);
+                    } else if (jarEntry.getName().endsWith(".jar")) {
+                        File tmp = new File(jarEntry.getName().substring(jarEntry.getName().lastIndexOf("/")));
+                        try (InputStream is = jar.getInputStream(jarEntry)) {
+                            try (FileOutputStream fos = new FileOutputStream(tmp)) {
+                                while (is.available() > 0) {
+                                    fos.write(is.read());
+                                }
+                            }
+                        }
+                        deps.add(tmp);
                     }
                 }
             }
         } catch (ZipException e) {
             System.out.println("Ignore file:" + file.getName());
+        }
+
+        for (File jarFile : deps) {
+            AddJarToTransformerExclusions(jarFile, list, map);
         }
     }
 

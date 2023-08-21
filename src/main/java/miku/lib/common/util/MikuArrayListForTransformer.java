@@ -17,10 +17,10 @@ public class MikuArrayListForTransformer<E> extends ArrayList<E> {
         String s = var1.getClass().toString().substring(5).trim();
         return s.equals("guichaguri.betterfps.tweaker.BetterFpsTweaker") || s.equals("org.spongepowered.asm.launch.MixinTweaker") ||
                 s.equals("miku.lib.core.MikuTweaker") || s.equals("optifine.OptiFineForgeTweaker") || s.equals("net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker") ||
-                s.equals("net.minecraftforge.fml.common.launcher.FMLTweaer") || s.equals("net.minecraftforge.fml.common.launcher.FMLDeobfTweaker") ||
-                s.equals("net.minecraft.launchwrapper.AlphaVanillaTweaker") || s.equals("org.spongepowered.asm.mixin.EnvironmentStateTweaker") ||
+                s.equals("net.minecraftforge.fml.common.launcher.FMLTweaer") || s.equals("net.minecraftforge.fml.common.launcher.FMLDeobfTweaker") || s.equals("$wrapper.catserver.server.asm.MethodTransformer") ||
+                s.equals("net.minecraft.launchwrapper.AlphaVanillaTweaker") || s.equals("org.spongepowered.asm.mixin.EnvironmentStateTweaker") || s.equals("$wrapper.catserver.server.asm.SideTransformer") ||
                 s.equals("net.minecraftforge.fml.relauncher.CoreModManager.FMLPluginWrapper") || s.equals("net.minecraftforge.fml.common.launcher.FMLServerTweaker") ||
-                s.equals("net.minecraft.launchwrapper.IndevVanillaTweaker") || s.equals("net.minecraftforge.fml.common.launcher.TerminalTweaker") ||
+                s.equals("net.minecraft.launchwrapper.IndevVanillaTweaker") || s.equals("net.minecraftforge.fml.common.launcher.TerminalTweaker") || s.equals("$wrapper.catserver.server.asm.ModsCompatibleTransformer") ||
                 s.equals("net.minecraft.launchwrapper.VanillaTweaker") || s.equals("net.minecraftforge.fml.common.asm.transformers.DeobfuscationTransformer") ||
                 s.equals("net.minecraftforge.fml.common.asm.transformers.AccessTransformer") || s.equals("net.minecraftforge.fml.common.asm.transformers.ModAccessTransformer") ||
                 s.equals("net.minecraftforge.fml.common.asm.transformers.ItemStackTransformer") || s.equals("net.minecraftforge.fml.common.asm.transformers.ItemBlockTransformer") ||

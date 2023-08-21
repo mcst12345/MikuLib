@@ -3,6 +3,7 @@ package miku.lib.common.core;
 import com.sun.jna.Platform;
 import miku.lib.common.core.proxy.CommonProxy;
 import miku.lib.common.util.MikuEventBus;
+import miku.lib.common.util.Misc;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -16,6 +17,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
+import java.security.CodeSource;
+
+import static miku.lib.common.core.MikuCore.Client;
 
 
 @Mod(
@@ -75,24 +79,39 @@ public class MikuLib {
                     LAUNCH.append(' ');
                 }
 
-                LAUNCH.append("-cp ");
-                for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
-                    if (!win) LAUNCH.append(path).append(":");
-                    else LAUNCH.append(path).append(";");
+                if (!Client) {
+                    CodeSource cs = Misc.deduceMainApplicationClass().getProtectionDomain().getCodeSource();
+                    String file = cs.getLocation().toURI().getSchemeSpecificPart();
+
+                    int lastIndex = file.lastIndexOf(".jar");
+                    file = file.substring(5, lastIndex + 4);
+
+                    System.out.println(file);
+
+                    LAUNCH.insert(0, "-jar " + file + " ");
                 }
-                LAUNCH = new StringBuilder(LAUNCH.substring(0, LAUNCH.length() - 1));
 
-                String USERNAME = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
-                String UUID = RandomStringUtils.randomAlphanumeric(32).toLowerCase();
+                if (!Client) LAUNCH.insert(0, "-Dcatserver.skipCheckLibraries=true ");
 
-                LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --username ").append(USERNAME);
-                LAUNCH.append(" --version 1.12.2");
-                LAUNCH.append(" --gameDir ").append(System.getProperty("user.dir"));
-                LAUNCH.append(" --assetsDir ").append(System.getProperty("user.dir")).append("/assets");
-                LAUNCH.append(" --assetIndex 1.12");
-                LAUNCH.append(" --uuid ").append(UUID);
-                LAUNCH.append("  --accessToken HatsuneMiku");
-                LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
+                if (Client) {
+                    LAUNCH.append("-cp ");
+                    for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
+                        if (!win) LAUNCH.append(path).append(":");
+                        else LAUNCH.append(path).append(";");
+                    }
+                    LAUNCH = new StringBuilder(LAUNCH.substring(0, LAUNCH.length() - 1));
+
+                    String USERNAME = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+                    String UUID = RandomStringUtils.randomAlphanumeric(32).toLowerCase();
+                    LAUNCH.append(" net.minecraft.launchwrapper.Launch --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --username ").append(USERNAME);
+                    LAUNCH.append(" --version 1.12.2");
+                    LAUNCH.append(" --gameDir ").append(System.getProperty("user.dir"));
+                    LAUNCH.append(" --assetsDir ").append(System.getProperty("user.dir")).append("/assets");
+                    LAUNCH.append(" --assetIndex 1.12");
+                    LAUNCH.append(" --uuid ").append(UUID);
+                    LAUNCH.append("  --accessToken HatsuneMiku");
+                    LAUNCH.append(" --userType msa --versionType Forge --width 854 --height 480");
+                }
                 String JAVA = System.getProperty("java.home");
                 System.out.println("java.home:" + JAVA);
                 if (JAVA.endsWith("jre")) {
@@ -118,8 +137,11 @@ public class MikuLib {
                         LAUNCH.insert(0, tmp + " ");
                     }
                 }
+
+
                 String command = LAUNCH.toString().replace(",", "");
-                System.out.println("MikuLib has completed its file injection.Now restarting the game.");
+                if (Client) System.out.println("MikuLib has completed its file injection.Now restarting the game.");
+                else System.out.println("MikuLib has completed its file injection.Now restarting the server.");
                 System.out.println("Command:\n" + command);
                 if (win) {
                     ProcessBuilder process = new ProcessBuilder("cmd /c " + command);
@@ -145,6 +167,9 @@ public class MikuLib {
                     reader.close();
                 }
 
+                /*
+                  Prevent the original game process from running
+                 */
                 while (true) {
                 }
             } catch (Throwable e) {
