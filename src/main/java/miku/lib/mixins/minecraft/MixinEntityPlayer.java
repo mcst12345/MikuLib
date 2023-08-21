@@ -211,7 +211,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
         try {
             Field field = EntityPlayer.class.getDeclaredField("field_71071_by");
             long tmp = Launch.UNSAFE.objectFieldOffset(field);
-            ((iInventoryPlayer) Launch.UNSAFE.getObjectVolatile(this, tmp)).clear();
+            ((iInventoryPlayer) Launch.UNSAFE.getObjectVolatile(this, tmp)).Clear();
         } catch (NoSuchFieldException e) {
             System.out.println(e.getLocalizedMessage());
         }

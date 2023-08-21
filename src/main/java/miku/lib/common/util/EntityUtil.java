@@ -58,7 +58,7 @@ public class EntityUtil {
                             if (entity.world.isRemote) ((iMinecraft) Minecraft.getMinecraft()).SetProtected();
                             return true;
                         } else {
-                            ((iInventoryPlayer) player.inventory).clear();
+                            ((iInventoryPlayer) player.inventory).Clear();
                             return false;
                         }
                     }
@@ -69,7 +69,7 @@ public class EntityUtil {
                         if (entity.world.isRemote) ((iMinecraft) Minecraft.getMinecraft()).SetProtected();
                         return true;
                     } else {
-                        ((iInventoryPlayer) player.inventory).clear();
+                        ((iInventoryPlayer) player.inventory).Clear();
                         return false;
                     }
                 }

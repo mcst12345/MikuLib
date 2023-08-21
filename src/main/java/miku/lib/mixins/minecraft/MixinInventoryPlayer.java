@@ -2,7 +2,9 @@ package miku.lib.mixins.minecraft;
 
 import miku.lib.common.api.iInventoryPlayer;
 import miku.lib.common.command.MikuInsaneMode;
+import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.ItemUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
@@ -45,15 +47,22 @@ public abstract class MixinInventoryPlayer implements iInventoryPlayer {
     @Shadow
     public int currentItem;
 
-    @Inject(at = @At("HEAD"), method = "clear", cancellable = true)
-    public void clear(CallbackInfo ci) {
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void clear() {
         if (EntityUtil.isProtected(player)) {
-            ci.cancel();
+            return;
+        }
+        for (List<ItemStack> list : this.allInventories) {
+            list.clear();
         }
     }
 
     @Override
-    public void clear() {
+    public void Clear() {
         for (List<ItemStack> list : allInventories) {
             Collections.fill(list, ItemStack.EMPTY);
         }
@@ -109,6 +118,82 @@ public abstract class MixinInventoryPlayer implements iInventoryPlayer {
                     t.printStackTrace();
                 }
             }
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "add", cancellable = true)
+    public void add(int p_191971_1_, ItemStack p_191971_2_, CallbackInfoReturnable<Boolean> cir) {
+        if (EntityUtil.isProtected(this.player)) {
+            if (ItemUtil.BadItem(p_191971_2_)) cir.setReturnValue(true);
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void deleteStack(ItemStack stack) {
+        if (stack.getItem() instanceof SpecialItem) {
+            return;
+        }
+        for (NonNullList<ItemStack> nonnulllist : this.allInventories) {
+            for (int i = 0; i < nonnulllist.size(); ++i) {
+                if (nonnulllist.get(i) == stack) {
+                    nonnulllist.set(i, ItemStack.EMPTY);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public ItemStack removeStackFromSlot(int index) {
+        NonNullList<ItemStack> nonnulllist = null;
+
+        for (NonNullList<ItemStack> nonnulllist1 : this.allInventories) {
+            if (index < nonnulllist1.size()) {
+                nonnulllist = nonnulllist1;
+                break;
+            }
+
+            index -= nonnulllist1.size();
+        }
+
+        if (nonnulllist != null && !nonnulllist.get(index).isEmpty()) {
+            ItemStack itemstack = nonnulllist.get(index);
+            if (!(itemstack.getItem() instanceof SpecialItem)) nonnulllist.set(index, ItemStack.EMPTY);
+            return itemstack;
+        } else {
+            return ItemStack.EMPTY;
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void setInventorySlotContents(int index, ItemStack stack) {
+        NonNullList<ItemStack> nonnulllist = null;
+
+        for (NonNullList<ItemStack> nonnulllist1 : this.allInventories) {
+            if (index < nonnulllist1.size()) {
+                nonnulllist = nonnulllist1;
+                break;
+            }
+
+            index -= nonnulllist1.size();
+        }
+
+        if (nonnulllist != null) {
+            ItemStack stack1 = nonnulllist.get(index);
+            if (stack1.getItem() instanceof SpecialItem) return;
+            nonnulllist.set(index, stack);
         }
     }
 }
