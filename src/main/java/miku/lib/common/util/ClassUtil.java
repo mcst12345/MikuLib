@@ -37,7 +37,7 @@ public class ClassUtil {
             "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft", "gamestages", "serenetweaks", "vampirism_integrations", "ichunutil", "morphspellpack", "baubles", "thaumcraft", "botania",
             "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft",
             "harvestcraft", "darknesslib", "grue", "aether", "aether_legacy", "cyclopscore", "academy", "uncraftingtable", "ghostsexplosives", "kubejs", "yukarilib", "aoa3", "atum", "thelegendofthebrave", "lycanitesmobs",
-            "snowrealmagic"};
+            "snowrealmagic", "mist", "erebus", "timemachin", "herobrine", "nikkorimod", "googlyeyes"};
 
     protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin", "RandomPatches"};
 
