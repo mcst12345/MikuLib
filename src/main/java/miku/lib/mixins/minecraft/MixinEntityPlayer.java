@@ -39,7 +39,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
      * @author mcst12345
      * @reason FUCK!
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public void openGui(Object mod, int modGuiId, World world, int x, int y, int z) {
         if (EntityUtil.isProtected(this)) {
             String clazz = mod.getClass().toString().substring(5).trim();
