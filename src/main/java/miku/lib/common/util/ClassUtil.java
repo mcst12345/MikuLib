@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
@@ -48,6 +49,7 @@ public class ClassUtil {
     protected static final Map<String, Boolean> MikuClassCache = new ConcurrentSkipListMap<>();
 
     public static void AddJarToTransformerExclusions(File file, List<String> list, Map<String, Boolean> map) throws IOException {
+        System.out.println("Adding " + file.getPath() + " to transformer exclusions");
         List<File> deps = new ArrayList<>();
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
@@ -272,12 +274,23 @@ public class ClassUtil {
 
                 try {
                     CodeSource cs = clazz.getProtectionDomain().getCodeSource();
-                    String file = null;
+                    String file;
                     file = cs.getLocation().toURI().getSchemeSpecificPart();
                     int lastIndex = file.lastIndexOf(".jar");
                     file = file.substring(5, lastIndex + 4);
                     AddJarToTransformerExclusions(new File(file), TransformerExclusions, GoodClassCache);
-                } catch (Throwable ignored) {
+                    try (JarFile JAR = new JarFile(file)) {
+                        Attributes MainAttributes = JAR.getManifest().getMainAttributes();
+                        for (Map.Entry<Object, Object> entry : MainAttributes.entrySet()) {
+                            String key = entry.getKey().toString();
+                            if (key.equalsIgnoreCase("Class-Path")) {
+                                System.out.println(entry.getValue());
+                            }
+                        }
+
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 }
 
 
@@ -388,7 +401,6 @@ public class ClassUtil {
     public synchronized static void ScanLibraries() throws IOException {
         for (String path : System.getProperty("java.class.path").split(File.pathSeparator)){
             if(path.endsWith("1.12.2.jar"))continue;
-            System.out.println("Adding "+path+" to transformer exclusions");
             File file = new File(path);
             AddJarToTransformerExclusions(file,LibraryClasses,LibraryClassCache);
         }

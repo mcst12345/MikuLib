@@ -238,7 +238,6 @@ public class LaunchClassLoader extends URLClassLoader {
             byte[] original = getClassBytes(untransformedName);
             if (original == null) {
                 System.out.println("MikuWarn:Failed to get class bytes of class:" + untransformedName);
-                throw new ClassNotFoundException(name);
             }
 
             byte[] transformedClass = runTransformers(untransformedName, transformedName, original);
