@@ -5,6 +5,7 @@ import miku.lib.common.api.iEnderInventory;
 import miku.lib.common.api.iEntityPlayer;
 import miku.lib.common.api.iInventoryPlayer;
 import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -23,6 +24,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,6 +35,21 @@ import java.lang.reflect.Field;
 
 @Mixin(value = EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements iEntityPlayer {
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void openGui(Object mod, int modGuiId, World world, int x, int y, int z) {
+        if (EntityUtil.isProtected(this)) {
+            String clazz = mod.getClass().toString().substring(5).trim();
+            if (!ClassUtil.isGoodClass(clazz) && !ClassUtil.isLibraryClass(clazz)) {
+                System.out.println(clazz);
+                return;
+            }
+        }
+        net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.openGui((EntityPlayer) (Object) this, mod, modGuiId, world, x, y, z);
+    }
 
     protected int mode = -1;
 
@@ -42,7 +59,7 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
     }
 
     @Override
-    public int GetGameMode(){
+    public int GetGameMode() {
         return mode;
     }
 
