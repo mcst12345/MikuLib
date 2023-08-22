@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nonnull;
 
@@ -46,5 +49,10 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
             GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
         }
         MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.RenderPlayerEvent.Post(entity, (RenderPlayer) (Object) this, partialTicks, x, y, z));
+    }
+
+    @Inject(at = @At("HEAD"), method = "applyRotations(Lnet/minecraft/client/entity/AbstractClientPlayer;FFF)V", cancellable = true)
+    public void applyRotations(AbstractClientPlayer entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci) {
+        if (EntityUtil.isProtected(entityLiving)) ci.cancel();
     }
 }

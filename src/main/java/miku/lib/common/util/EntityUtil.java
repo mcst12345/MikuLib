@@ -74,8 +74,7 @@ public class EntityUtil {
                     }
                 }
             }
-        }
-        if (entity instanceof ProtectedEntity) {
+        } else if (entity instanceof ProtectedEntity) {
             return !((ProtectedEntity) entity).CanBeKilled() || !((ProtectedEntity) entity).DEAD();
         }
         return false;

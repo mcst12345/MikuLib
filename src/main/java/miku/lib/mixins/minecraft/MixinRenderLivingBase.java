@@ -133,7 +133,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
         super(renderManager);
     }
 
-    @Inject(at = @At("HEAD"), method = "applyRotations")
+    @Inject(at = @At("HEAD"), method = "applyRotations", cancellable = true)
     public void applyRotations(T entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo ci) {
         if (EntityUtil.isProtected(entityLiving)) {
             GlStateManager.rotate(180.0F - rotationYaw, 0.0F, 1.0F, 0.0F);
@@ -143,6 +143,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
                 GlStateManager.translate(0.0F, entityLiving.height + 0.1F, 0.0F);
                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
             }
+            ci.cancel();
         }
     }
 
