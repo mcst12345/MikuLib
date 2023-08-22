@@ -4,7 +4,6 @@ import com.sun.jna.Platform;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Md5Utils;
 import miku.lib.common.util.Misc;
-import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -13,7 +12,6 @@ import sun.misc.IOUtils;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.CodeSource;
@@ -26,7 +24,6 @@ public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     private static final String md5_1 = "2a56bf0983e02cafb34d43612bd9f75d", md5_2 = "b7fe3fe0a4c64713cfbed9779eebfa8c";//Edit these values if LaunchWrapper is changed.
 
-    public static final String PID = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
 
@@ -215,6 +212,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                 if (win) {
                     MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked.win");
                 } else MikuLaunch = MikuCore.class.getResourceAsStream("/launchwrapper-1.12.jar.fucked");
+                assert MikuLaunch != null;
                 FileUtils.copyInputStreamToFile(MikuLaunch, new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar"));
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -259,96 +257,6 @@ public class MikuCore implements IFMLLoadingPlugin {
             e.printStackTrace();
         }
         restart = true;
-    }
-
-    //The fuck. LaunchWrapper is also on the server side. I'm an idiot
-    public synchronized static void FuckServerCore() {
-        List<JarFile> servers = new ArrayList<>();
-        for (File file : Objects.requireNonNull(new File(System.getProperty("user.home")).listFiles())) {
-            if (!file.isDirectory()) if (file.getName().endsWith(".jar")) {
-                try {
-                    JarFile jar = new JarFile(file);
-                    for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
-                        JarEntry entry = entries.nextElement();
-                        if (entry.getName().equals("net/minecraftforge/fml/relauncher/ServerLaunchWrapper.class")) {
-                            servers.add(jar);
-                            break;
-                        }
-                    }
-                } catch (IOException ignored) {
-                }
-            }
-        }
-
-        for (JarFile server : servers) {
-            try {
-                JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(server.getName() + ".fucked")));
-                for (Enumeration<JarEntry> entries = server.entries(); entries.hasMoreElements(); ) {
-                    JarEntry entry = entries.nextElement();
-                    try (InputStream is = server.getInputStream(entry)) {
-                        if (entry.getName().equals("net/minecraftforge/fml/relauncher/ServerLaunchWrapper.class")) {
-                            //TODO
-                        } else {
-                            jos.putNextEntry(new JarEntry(entry.getName()));
-                            jos.write(IOUtils.readNBytes(is, is.available()));
-                        }
-                    }
-                }
-                //TODO
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * I wrote this because I wanted to overwrite the CoreModManager to prevent coremods that are not in the whitelist to be loaded.
-     * Otherwise, some coremod like Annihilation will cause the game to crash.
-     * But soon I found that I could throw an exception in my transformer to prevent the coremod's class from being loaded.
-     * This method may be removed or completed in the future.
-     */
-    public synchronized static void FuckForge() {
-        System.out.println("Fucking Forge.");
-        if (ForgeFucked()) return;
-        String forge = null;
-        for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
-            if (path.contains("net/minecraftforge/forge")) forge = path;
-        }
-        if (forge == null) {
-            throw new RuntimeException("The fuck?I can't find your forge file!");
-        }
-        try {
-            JarFile jar = new JarFile(forge);
-            JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
-            for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
-                JarEntry entry = entries.nextElement();
-                try (InputStream is = jar.getInputStream(entry)) {
-                    System.out.println(entry.getName());
-                    if (entry.getName().equals("net/minecraftforge/fml/relauncher/CoreModManager$FMLPluginWrapper.class")) {
-                        //TODO
-                    }
-                    if (entry.getName().equals("net/minecraftforge/fml/relauncher/CoreModManager.class")) {
-                        //TODO
-                    }
-                }
-            }
-            jos.closeEntry();
-            jos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //restart = true;
-    }
-
-    public synchronized static boolean ForgeFucked() {
-        try {
-            Field field = CoreModManager.class.getDeclaredField("Miku1");
-            field.setAccessible(true);
-            return true;
-        } catch (NoSuchFieldException e) {
-            return false;
-        }
     }
 
     @Override
