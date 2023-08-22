@@ -274,7 +274,7 @@ int main()
         printf("Error: cannot open framebuffer device.\n");
         exit(1);
     }
-    show_picture(fbfd, "./girl.bmp");
+    show_picture(fbfd, "./gui.bmp");
 
     close(fbfd);
 }

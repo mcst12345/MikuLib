@@ -22,7 +22,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
-    private static final String md5_1 = "2a56bf0983e02cafb34d43612bd9f75d", md5_2 = "b7fe3fe0a4c64713cfbed9779eebfa8c";//Edit these values if LaunchWrapper is changed.
+    private static final String md5_1 = "cab733e08c188a479e108083c092eef2", md5_2 = "a82b6c381e774829909176327a6bf686";//Edit these values if LaunchWrapper is changed.
 
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
@@ -32,6 +32,7 @@ public class MikuCore implements IFMLLoadingPlugin {
     static final boolean MacOS = Platform.isMac();
     static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
     static final boolean Android = Platform.isAndroid();
+
     public MikuCore() {
 
         FuckLaunchWrapper();
