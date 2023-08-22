@@ -22,7 +22,7 @@ public class ClassUtil {
     protected static final Map<String, Boolean> MinecraftClassCache = new ConcurrentSkipListMap<>();
     protected static final Map<String, Boolean> LibraryClassCache = new ConcurrentSkipListMap<>();
 
-    //Holy Fuck. Well,at least this is better than that package-based whitelist.
+    //Holy Fuck. Well, at least this is better than that package-based whitelist.
     protected static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
             "tickdynamic", "sweetmagic", "stevekung's_lib", "srparasites", "spaceambient", "smoothfont", "flammpfeil.slashblade", "shutupmodelloader", "scp", "redstoneflux", "randompatches", "projecteintegration",
             "projecte", "placebo", "phosphor-lighting", "performant", "patchouli", "particleculling", "openterraingenerator", "oldjava", "neid", "non_update", "moreplanets", "testdummy", "mikulib", "mikulib_sqlite",
@@ -37,7 +37,7 @@ public class ClassUtil {
             "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft", "gamestages", "serenetweaks", "vampirism_integrations", "ichunutil", "morphspellpack", "baubles", "thaumcraft", "botania",
             "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft",
             "harvestcraft", "darknesslib", "grue", "aether", "aether_legacy", "cyclopscore", "academy", "uncraftingtable", "ghostsexplosives", "kubejs", "yukarilib", "aoa3", "atum", "thelegendofthebrave", "lycanitesmobs",
-            "snowrealmagic", "mist", "erebus", "timemachin", "herobrine", "nikkorimod", "googlyeyes"};
+            "snowrealmagic", "mist", "erebus", "timemachin", "herobrine", "nikkorimod", "googlyeyes", "movingworld", "shui", "davincisvessels", "mjrlegendslib", "libvulpes", "kiwi", "uteamcore", "webdisplays", "gargoyles", "lelib", "legendera"};
 
     protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin", "RandomPatches"};
 

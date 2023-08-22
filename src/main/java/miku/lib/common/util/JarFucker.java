@@ -188,11 +188,11 @@ public class JarFucker {
     protected static boolean BadMANIFEST(String s) {
         return s.startsWith("FMLCorePlugin") || s.startsWith("FMLCorePluginContainsFMLMod") || s.startsWith("TweakClass") ||
                 s.startsWith("ForceLoadAsMod") || s.startsWith("SHA-256-Digest:") || s.startsWith("Premain-Class") ||
-                s.startsWith("Agent-Class:") || s.startsWith("Name:");
+                s.startsWith("Agent-Class:") || s.startsWith("Name:") || s.startsWith("Fingerprint");
     }
 
     protected static boolean Remove(String s) {
-        return s.startsWith("SHA") || s.startsWith("Name:") || s.contains("org.spongepowered.asm.launch.MixinTweaker");
+        return s.startsWith("SHA") || s.startsWith("Name:") || s.contains("org.spongepowered.asm.launch.MixinTweaker") || s.startsWith("Fingerprint");
     }
 
     protected static boolean isSignFile(String s) {
