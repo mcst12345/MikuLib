@@ -11,6 +11,7 @@ import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.FieldUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
@@ -1263,6 +1264,7 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void run()
     {
+        FieldUtil.Init();
         System.out.println("Successfully fucked Minecraft.");
 
         this.running = true;

@@ -30,8 +30,23 @@ import java.util.*;
 
 public class Launch {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
-    public static Unsafe UNSAFE;
-    protected static final boolean Miku = true;
+    public static final Unsafe UNSAFE;
+    private static final Field field;
+
+    static {
+        try {
+            field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            UNSAFE = (Unsafe) field.get(null);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
     public static File minecraftHome;
     public static File assetsDir;
@@ -43,13 +58,7 @@ public class Launch {
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
     private Launch() {
-        try {
-            Field field = Unsafe.class.getDeclaredField("theUnsafe");
-            field.setAccessible(true);
-            UNSAFE = (Unsafe) field.get(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         FuckNative();
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);

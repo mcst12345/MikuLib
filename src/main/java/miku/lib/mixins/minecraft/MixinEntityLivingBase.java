@@ -6,6 +6,7 @@ import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.FieldUtil;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -45,7 +46,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -387,90 +387,77 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
         }
     }
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
     @Override
     public void Kill() {
-        Field field;
         long tmp;
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70721_aZ");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70721_aZ);
             Launch.UNSAFE.putFloatVolatile(this, tmp, 1.5F);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70708_bq");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70708_bq);
             Launch.UNSAFE.putIntVolatile(this, tmp, 0);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_110153_bc");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_110153_bc);
             Launch.UNSAFE.putFloatVolatile(this, tmp, Float.MAX_VALUE);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70718_bc");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70718_bc);
             Launch.UNSAFE.putIntVolatile(this, tmp, 60);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70755_b");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70755_b);
             Launch.UNSAFE.putObjectVolatile(this, tmp, null);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70756_c");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70756_c);
             Launch.UNSAFE.putIntVolatile(this, tmp, 0);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70746_aG");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70746_aG);
             Launch.UNSAFE.putFloatVolatile(this, tmp, 0.0f);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70713_bf");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70713_bf);
             Launch.UNSAFE.putObjectVolatile(this, tmp, new HashMap<>());
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = Entity.class.getDeclaredField("field_70180_af");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70180_af);
             EntityDataManager manager = (EntityDataManager) Launch.UNSAFE.getObjectVolatile(this, tmp);
             manager.set(HEALTH, 0.0f);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_110155_d");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_110155_d);
             AbstractAttributeMap AttributeMap = (AbstractAttributeMap) Launch.UNSAFE.getObjectVolatile(this, tmp);
-            Field attributes = AbstractAttributeMap.class.getDeclaredField("field_111154_a");
-            tmp = Launch.UNSAFE.objectFieldOffset(attributes);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_111154_a);
             Map<IAttribute, IAttributeInstance> Attributes = (Map<IAttribute, IAttributeInstance>) Launch.UNSAFE.getObjectVolatile(AttributeMap, tmp);
             IAttributeInstance Attribute = Attributes.get(SharedMonsterAttributes.MAX_HEALTH);
             Attribute.setBaseValue(0.0D);
@@ -484,63 +471,56 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             Attribute.setBaseValue(0.0D);
             Attribute = Attributes.get(SharedMonsterAttributes.ATTACK_DAMAGE);
             Attribute.setBaseValue(0.0D);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70729_aU");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70729_aU);
             Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70725_aQ");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70725_aQ);
             Launch.UNSAFE.putIntVolatile(this, tmp, Integer.MAX_VALUE);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_70717_bb");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70717_bb);
             Launch.UNSAFE.putObjectVolatile(this, tmp, null);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_110150_bn");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_110150_bn);
             Launch.UNSAFE.putObjectVolatile(this, tmp, null);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_142016_bo");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_142016_bo);
             Launch.UNSAFE.putIntVolatile(this, tmp, 0);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_110151_bq");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_110151_bq);
             Launch.UNSAFE.putIntVolatile(this, tmp, 0);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = EntityLivingBase.class.getDeclaredField("field_94063_bt");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_94063_bt);
             Launch.UNSAFE.putObjectVolatile(this, tmp, new CombatTracker((EntityLivingBase) (Object) this));
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 

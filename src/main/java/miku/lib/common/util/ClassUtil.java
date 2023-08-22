@@ -35,7 +35,7 @@ public class ClassUtil {
             "mwc", "inputmethodblocker", "mts", "mtsofficalpack", "overlast", "farlanders", "srmonstress", "scapeandrunvaccine", "wyrmsofnyrus", "roughmobsrevamped", "sereneseasons", "immersive-intelligence", "immersiveintelligence",
             "immersiveengineering", "techguns", "synlib", "geckolib3", "thermalfoundation", "cofhworld", "thermaldynamics", "thermalinnovation", "thermalcultivation", "thermalexpansion", "evilcraft", "bloodmagic", "moarsigns",
             "opencomputers", "immersivepetroleum", "immersiveposts", "warpdrive", "tconstruct", "securitycraft", "gamestages", "serenetweaks", "vampirism_integrations", "ichunutil", "morphspellpack", "baubles", "thaumcraft", "botania",
-            "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft",
+            "vampiresneedumbrellas", "consecration", "xreliquary", "bewitchment", "tammodized", "voidcraft", "aov", "classicbar", "toughasnails", "toroquest", "acintegration", "morph", "biomesoplenty", "nei", "mca", "tofucraft", "advancedrocketry",
             "harvestcraft", "darknesslib", "grue", "aether", "aether_legacy", "cyclopscore", "academy", "uncraftingtable", "ghostsexplosives", "kubejs", "yukarilib", "aoa3", "atum", "thelegendofthebrave", "lycanitesmobs", "forgelin",
             "snowrealmagic", "mist", "erebus", "timemachin", "herobrine", "nikkorimod", "googlyeyes", "movingworld", "shui", "davincisvessels", "mjrlegendslib", "libvulpes", "kiwi", "uteamcore", "webdisplays", "gargoyles", "lelib", "legendera"};
 

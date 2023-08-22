@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraft;
 import com.mojang.authlib.GameProfile;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.FieldUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.network.NetworkSystem;
@@ -275,12 +276,11 @@ public abstract class MixinMinecraftServer {
      * @reason F
      */
     @Overwrite
-    public void run()
-    {
-        try
-        {
-            if (this.init())
-            {
+    public void run() {
+        FieldUtil.Init();
+        System.out.println("Successfully fucked Minecraft Server.");
+        try {
+            if (this.init()) {
                 MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarted();
                 this.currentTime = getCurrentTimeMillis();

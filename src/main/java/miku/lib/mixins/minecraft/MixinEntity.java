@@ -4,6 +4,7 @@ import miku.lib.common.api.*;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.FieldUtil;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.DisplayTheGui;
 import miku.lib.network.packets.ExitGame;
@@ -274,62 +275,48 @@ public abstract class MixinEntity implements iEntity {
     @Override
     public void kill() {
         DEAD = true;
-        Field field;
         long tmp;
         try {
-            field = Entity.class.getDeclaredField("field_70134_J");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70134_J);
             Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
         try {
-            field = Entity.class.getDeclaredField("field_190534_ay");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_190534_ay);
             Launch.UNSAFE.putIntVolatile(this, tmp, Integer.MAX_VALUE);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = Entity.class.getDeclaredField("isAddedToWorld");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.isAddedToWorld);
             Launch.UNSAFE.putBooleanVolatile(this, tmp, false);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
         try {
-            field = Entity.class.getDeclaredField("field_70128_L");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70128_L);
             Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
         try {
-            field = Entity.class.getDeclaredField("field_70180_af");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70180_af);
             EntityDataManager manager = (EntityDataManager) Launch.UNSAFE.getObjectVolatile(this, tmp);
             byte b0 = manager.get(FLAGS);
             manager.set(FLAGS, (byte) (b0 | 1 << 5));
             manager.set(FLAGS, (byte) (b0 & ~(1)));
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = Entity.class.getDeclaredField("field_70133_I");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_70133_I);
             Launch.UNSAFE.putBooleanVolatile(this, tmp, true);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
-        //isInWeb = true;
-        //fire = Integer.MAX_VALUE;
-        //isDead=true;
-        //byte b0 = this.dataManager.get(FLAGS);
-        //this.dataManager.set(FLAGS, (byte) (b0 | 1 << 5));
-        //this.dataManager.set(FLAGS, (byte) (b0 & ~(1)));
-        //isAddedToWorld=false;
         if (((Entity) (Object) this) instanceof EntityLivingBase) {
             ((iEntityLivingBase) this).Kill();
             if (((Entity) (Object) this) instanceof EntityLiving) {

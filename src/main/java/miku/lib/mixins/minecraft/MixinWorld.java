@@ -13,6 +13,7 @@ import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.FieldUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -42,7 +43,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 import java.util.*;
 
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
@@ -199,33 +199,28 @@ public abstract class MixinWorld implements iWorld {
         return list;
     }
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
     public void remove(Entity entity) {
-        Field field;
         long tmp;
         try {
-            field = World.class.getDeclaredField("field_72996_f");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_72996_f);
             ((List<Entity>) Launch.UNSAFE.getObjectVolatile(this, tmp)).remove(entity);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
         try {
-            field = World.class.getDeclaredField("field_73007_j");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_73007_j);
             ((List<Entity>) Launch.UNSAFE.getObjectVolatile(this, tmp)).remove(entity);
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
-            field = World.class.getDeclaredField("field_73021_x");
-            tmp = Launch.UNSAFE.objectFieldOffset(field);
+            tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_73021_x);
             List<IWorldEventListener> list = (List<IWorldEventListener>) Launch.UNSAFE.getObjectVolatile(this, tmp);
             for (IWorldEventListener eventListener : list) {
                 eventListener.onEntityRemoved(entity);
             }
-        } catch (NoSuchFieldException e) {
+        } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
