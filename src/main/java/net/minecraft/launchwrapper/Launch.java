@@ -58,7 +58,6 @@ public class Launch {
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
     private Launch() {
-
         FuckNative();
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);

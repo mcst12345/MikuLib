@@ -197,7 +197,6 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
 
     @Override
     public void Kill() {
-        //((iEnderInventory) ((iEntityPlayer) this).GetEnderInventory()).Clear();
         try {
             long tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_71078_a);
             ((iEnderInventory) Launch.UNSAFE.getObjectVolatile(this, tmp)).Clear();

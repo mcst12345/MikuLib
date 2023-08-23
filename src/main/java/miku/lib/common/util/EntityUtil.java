@@ -2,22 +2,28 @@ package miku.lib.common.util;
 
 import com.google.common.collect.Lists;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.api.ProtectedEntity;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iEntityPlayer;
 import miku.lib.common.api.iInventoryPlayer;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.item.SpecialItem;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.thread.FuckEntityThread;
 import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.DisplayTheGui;
+import miku.lib.network.packets.ExitGame;
 import miku.lib.network.packets.KillEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.Loader;
@@ -110,7 +116,21 @@ public class EntityUtil {
         }
         entity.dimension = -25;
 
-        ((iEntity) entity).kill();
+        try {
+            NativeUtil.Kill(entity);
+            if (entity instanceof EntityPlayerMP) {
+                EntityPlayerMP playerMP = (EntityPlayerMP) entity;
+                NetworkHandler.INSTANCE.sendMessageToPlayer(new DisplayTheGui(), playerMP);
+                if ((boolean) Sqlite.GetValueFromTable("miku_kill_kick_attack", "CONFIG", 0)) {
+                    NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
+                    playerMP.connection.disconnect(new TextComponentString("Goodbye!"));
+                }
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            ((iEntity) entity).kill();
+        }
+
 
         if (MikuInsaneMode.isMikuInsaneMode()) UnsafeUtil.Fuck(entity);
 

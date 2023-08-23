@@ -1,6 +1,7 @@
 package miku.lib.common.core;
 
 import com.sun.jna.Platform;
+import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Md5Utils;
 import miku.lib.common.util.Misc;
@@ -22,7 +23,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
-    private static final String md5_1 = "cab733e08c188a479e108083c092eef2", md5_2 = "a82b6c381e774829909176327a6bf686";//Edit these values if LaunchWrapper is changed.
+    private static final String md5_1 = "b663a4117bd5a378721325ef5921cc5a", md5_2 = "df60deb98fdc2371c304d8305b5d3658";//Edit these values if LaunchWrapper is changed.
 
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
@@ -34,6 +35,16 @@ public class MikuCore implements IFMLLoadingPlugin {
     static final boolean Android = Platform.isAndroid();
 
     public MikuCore() {
+        if (!win) {
+            File f = new File("libJNI.so");
+            if (!f.exists()) {
+
+            }
+            System.load(f.getAbsolutePath());
+        } else {
+
+        }
+        System.out.println(NativeUtil.TEST());
 
         FuckLaunchWrapper();
         //FuckForge();

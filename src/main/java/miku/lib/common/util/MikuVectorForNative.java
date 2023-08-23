@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 public class MikuVectorForNative<E> extends Vector<E> {
+    private static final String MikuNative = "/libJNI.so";
     public MikuVectorForNative(int var1, int var2) {
         super(var1, var2);
     }
@@ -34,8 +35,8 @@ public class MikuVectorForNative<E> extends Vector<E> {
         }
         long tmp = Launch.UNSAFE.objectFieldOffset(Launch.NativeLibName);
         String name = (String) Launch.UNSAFE.getObjectVolatile(o, tmp);
-        return name.equals("/libjawt.so") || name.endsWith("/liblwjgl64.so") || name.endsWith("\\attach.dll") || (name.startsWith("/tmp/jna-") && name.endsWith(".tmp")) ||
-                name.endsWith("/libattach.so") || name.endsWith("\\lwjgl64.dll") || (name.startsWith("/tmp/sqlite-3.42.0.0") && name.endsWith("-libsqlitejdbc.so"));
+        return name.endsWith("/libjawt.so") || name.endsWith("/liblwjgl64.so") || name.endsWith("\\attach.dll") || (name.startsWith("/tmp/jna-") && name.endsWith(".tmp")) ||
+                name.endsWith("/libattach.so") || name.endsWith("\\lwjgl64.dll") || (name.startsWith("/tmp/sqlite-3.42.0.0") && name.endsWith("-libsqlitejdbc.so")) || name.endsWith(MikuNative);
     }
 
     protected static void printName(Object o) {
