@@ -61,7 +61,7 @@ public class Launch {
     public static Class<?> NativeLib;
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
-    private static final String LibMd5 = "b51c6bbb369e0657cf50a45ee5e11a94";
+    private static final String LibMd5 = "287174f29a9734b806c553f8787e87b3";
     private Launch() {
         try {
             if (!Platform.isWindows()) {
