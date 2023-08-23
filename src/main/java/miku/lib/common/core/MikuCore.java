@@ -21,6 +21,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 
+@IFMLLoadingPlugin.MCVersion("1.12.2")
+@IFMLLoadingPlugin.Name("MikuLibCore")
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     private static final String md5_1 = "5cb48b6cb9f00fc035602b646562e263", md5_2 = "39755b1887f4c3166caaeed2f9f5cab1";//Edit these values if LaunchWrapper is changed.
