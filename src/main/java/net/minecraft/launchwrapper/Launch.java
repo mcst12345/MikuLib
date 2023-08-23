@@ -28,6 +28,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
 import java.util.*;
@@ -61,7 +62,7 @@ public class Launch {
     public static Class<?> NativeLib;
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
-    private static final String LibMd5 = "287174f29a9734b806c553f8787e87b3";
+    private static final String LibMd5 = "a4e2f209639586349fb3e2c452e8d34b";
     private Launch() {
         try {
             if (!Platform.isWindows()) {
@@ -75,6 +76,7 @@ public class Launch {
                     }
                 } else {
                     if (!Md5Utils.getFileMD5String(f).equals(LibMd5)) {
+                        Files.delete(f.toPath());
                         try (InputStream lib = Launch.class.getResourceAsStream("/libJNI.so")) {
                             assert lib != null;
                             FileUtils.copyInputStreamToFile(lib, f);
