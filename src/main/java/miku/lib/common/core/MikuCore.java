@@ -25,7 +25,7 @@ import java.util.jar.JarOutputStream;
 @IFMLLoadingPlugin.Name("MikuLibCore")
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
-    private static final String md5_1 = "c5ec3038880a821a7b3d34e1c65fd3e9", md5_2 = "224effeaab00002ac28755afc8dab08c";//Edit these values if LaunchWrapper is changed.
+    private static final String md5_1 = "faa29244be61a83292be5abe7e540fd9", md5_2 = "6496b2198518d9e4fc4b74ae73cd0f52";//Edit these values if LaunchWrapper is changed.
 
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
