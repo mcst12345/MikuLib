@@ -23,7 +23,7 @@ import java.util.jar.JarOutputStream;
 
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
-    private static final String md5_1 = "b663a4117bd5a378721325ef5921cc5a", md5_2 = "df60deb98fdc2371c304d8305b5d3658";//Edit these values if LaunchWrapper is changed.
+    private static final String md5_1 = "5cb48b6cb9f00fc035602b646562e263", md5_2 = "39755b1887f4c3166caaeed2f9f5cab1";//Edit these values if LaunchWrapper is changed.
 
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
@@ -35,19 +35,18 @@ public class MikuCore implements IFMLLoadingPlugin {
     static final boolean Android = Platform.isAndroid();
 
     public MikuCore() {
-        if (!win) {
-            File f = new File("libJNI.so");
-            if (!f.exists()) {
 
-            }
-            System.load(f.getAbsolutePath());
-        } else {
-
-        }
-        System.out.println(NativeUtil.TEST());
 
         FuckLaunchWrapper();
-        //FuckForge();
+        if (!restart) {
+            if (!win) {
+                File f = new File("libJNI.so");
+                System.load(f.getAbsolutePath());
+            } else {
+                //TODO
+            }
+            System.out.println(NativeUtil.TEST());
+        }
 
         if (win) {
             System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");

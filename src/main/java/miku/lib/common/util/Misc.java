@@ -1,6 +1,8 @@
 package miku.lib.common.util;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.util.NonNullList;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 
@@ -11,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Misc {
+    public static Object EmptyItemList(int size) {
+        return NonNullList.withSize(size, ItemStack.EMPTY);
+    }
+
     public static void print(String s) {
         if (s.contains(":null")) return;
         System.out.println(s);

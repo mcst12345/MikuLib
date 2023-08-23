@@ -1,5 +1,6 @@
 package net.minecraft.launchwrapper;
 
+import com.sun.jna.Platform;
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
@@ -8,8 +9,10 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import miku.lib.common.util.ClassUtil;
+import miku.lib.common.util.Md5Utils;
 import miku.lib.common.util.MikuVectorForNative;
 import net.minecraftforge.fml.relauncher.CoreModManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -19,6 +22,7 @@ import sun.misc.Unsafe;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -57,7 +61,34 @@ public class Launch {
     public static Class<?> NativeLib;
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
+    private static final String LibMd5 = "5b2afd955fb02a376dc5d5d7f62dc427";
     private Launch() {
+        try {
+            if (!Platform.isWindows()) {
+                File f = new File("libJNI.so");
+                if (!f.exists()) {
+                    try (InputStream lib = Launch.class.getResourceAsStream("/libJNI.so")) {
+                        assert lib != null;
+                        FileUtils.copyInputStreamToFile(lib, f);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    if (!Md5Utils.getFileMD5String(f).equals(LibMd5)) {
+                        try (InputStream lib = Launch.class.getResourceAsStream("/libJNI.so")) {
+                            assert lib != null;
+                            FileUtils.copyInputStreamToFile(lib, f);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            } else {
+                //TODO
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         FuckNative();
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);
