@@ -43,6 +43,7 @@
     "MixinUtil",
     "MixinVillageSiege",
     "MixinWorld",
+    "MixinWorldInfo",
     "MixinWorldServer"
   ],
   "client": [

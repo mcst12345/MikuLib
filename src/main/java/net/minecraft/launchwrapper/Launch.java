@@ -148,7 +148,8 @@ public class Launch {
         NoReflection(ProtectionDomain.class);
         try {
             ClassUtil.Init();
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         URLClassLoader ucl = (URLClassLoader) this.getClass().getClassLoader();
         classLoader = new LaunchClassLoader(ucl.getURLs());

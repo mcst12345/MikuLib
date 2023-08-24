@@ -75,6 +75,7 @@ public class ClassUtil {
                 }
             }
         } catch (ZipException e) {
+            e.printStackTrace();
             System.out.println("Ignore file:" + file.getName());
         }
 
