@@ -6,24 +6,24 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.Files;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
 public class ClassUtil {
-    protected static final List<File> BadMods = new ArrayList<>();
-    protected static final Map<String, Boolean> GoodClassCache = new ConcurrentSkipListMap<>();
-    protected static final Map<String, Boolean> MinecraftClassCache = new ConcurrentSkipListMap<>();
-    protected static final Map<String, Boolean> LibraryClassCache = new ConcurrentSkipListMap<>();
+    private static final List<File> BadMods = new ArrayList<>();
+    private static final Map<String, Boolean> GoodClassCache = new ConcurrentSkipListMap<>();
+    private static final Map<String, Boolean> MinecraftClassCache = new ConcurrentSkipListMap<>();
+    private static final Map<String, Boolean> LibraryClassCache = new ConcurrentSkipListMap<>();
 
     //Holy Fuck. Well, at least this is better than that package-based whitelist.
-    protected static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
+    private static final String[] mod_id_white_list = {"jei", "zollerngalaxy", "xaerominimap", "variedcommodities", "universaltweaks", "twilightforest", "tragicmc", "torcherino", "vm", "tickratechanger",
             "tickdynamic", "sweetmagic", "stevekung's_lib", "srparasites", "spaceambient", "smoothfont", "flammpfeil.slashblade", "shutupmodelloader", "scp", "redstoneflux", "randompatches", "projecteintegration",
             "projecte", "placebo", "phosphor-lighting", "performant", "patchouli", "particleculling", "openterraingenerator", "oldjava", "neid", "non_update", "moreplanets", "testdummy", "mikulib", "mikulib_sqlite",
             "miku", "memorycleaner", "maze", "matteroverdrive", "manaita_plus", "lovely_robot", "lostcities", "letmedespawn", "jeid", "rejoymod", "ic2", "ilib", "hammercore", "getittogetherdrops", "galaxyspace",
@@ -39,14 +39,14 @@ public class ClassUtil {
             "harvestcraft", "darknesslib", "grue", "aether", "aether_legacy", "cyclopscore", "academy", "uncraftingtable", "ghostsexplosives", "kubejs", "yukarilib", "aoa3", "atum", "thelegendofthebrave", "lycanitesmobs", "forgelin",
             "snowrealmagic", "mist", "erebus", "timemachin", "herobrine", "nikkorimod", "googlyeyes", "movingworld", "shui", "davincisvessels", "mjrlegendslib", "libvulpes", "kiwi", "uteamcore", "webdisplays", "gargoyles", "lelib", "legendera"};
 
-    protected static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin", "RandomPatches"};
+    private static final String[] coremod_white_list = {"llibrary", "MixinBooter", "non_update", "OpenEyePlugin", "RandomPatches"};
 
-    protected static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin", "thebetweenlands/core/TheBetweenlandsLoadingPlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
-    protected static final List<String> TransformerExclusions = new ArrayList<>();
-    protected static final List<String> MinecraftClasses = new ArrayList<>();
-    protected static final List<String> LibraryClasses = new ArrayList<>();
-    protected static final List<String> MikuClasses = new ArrayList<>();
-    protected static final Map<String, Boolean> MikuClassCache = new ConcurrentSkipListMap<>();
+    private static final String[] coremod_class_white_list = {"com/enderio/core/common/transform/EnderCorePlugin", "thebetweenlands/core/TheBetweenlandsLoadingPlugin"};//Holy Fuck.Why don't you write a @Name() annotation?
+    private static final List<String> TransformerExclusions = new ArrayList<>();
+    private static final List<String> MinecraftClasses = new ArrayList<>();
+    private static final List<String> LibraryClasses = new ArrayList<>();
+    private static final List<String> MikuClasses = new ArrayList<>();
+    private static final Map<String, Boolean> MikuClassCache = new ConcurrentSkipListMap<>();
 
     public static void AddJarToTransformerExclusions(File file, List<String> list, Map<String, Boolean> map) throws IOException {
         System.out.println("Adding " + file.getPath() + " to transformer exclusions");
@@ -83,16 +83,16 @@ public class ClassUtil {
         }
     }
 
-    protected static boolean DisablejarFucker = false;
+    static boolean DisablejarFucker = false;
 
-    protected static boolean isGoodCoremodClass(String s) {
+    private static boolean isGoodCoremodClass(String s) {
         for (String c : coremod_class_white_list) {
             if (c.equals(s)) return true;
         }
         return false;
     }
 
-    protected static boolean isGoodCoremod(String s) {
+    private static boolean isGoodCoremod(String s) {
         for (String c : coremod_white_list) {
             if (c.equals(s)) return true;
         }
@@ -278,7 +278,7 @@ public class ClassUtil {
                     file = cs.getLocation().toURI().getSchemeSpecificPart();
                     System.out.println(file);
                     AddJarToTransformerExclusions(new File(file), TransformerExclusions, GoodClassCache);
-                    try (JarFile JAR = new JarFile(file)) {
+                    /*try (JarFile JAR = new JarFile(file)) {
                         Attributes MainAttributes = JAR.getManifest().getMainAttributes();
                         for (Map.Entry<Object, Object> entry : MainAttributes.entrySet()) {
                             String key = entry.getKey().toString();
@@ -288,7 +288,10 @@ public class ClassUtil {
                             }
                         }
 
-                    }
+                    }*/
+                    File lib = new File("libraries");
+                    assert lib.exists();
+                    AddDirectoryToTransformExclusions(lib, LibraryClasses, LibraryClassCache);
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
@@ -468,5 +471,17 @@ public class ClassUtil {
         }
         MikuClassCache.put(s, false);
         return false;
+    }
+
+    private static synchronized void AddDirectoryToTransformExclusions(@Nonnull File dir, List<String> list, Map<String, Boolean> map) throws IOException {
+        if (dir.listFiles() != null) for (File file : dir.listFiles()) {
+            if (!file.isDirectory()) {
+                if (file.getName().endsWith(".jar")) {
+                    AddJarToTransformerExclusions(file, list, map);
+                }
+            } else {
+                AddDirectoryToTransformExclusions(file, list, map);
+            }
+        }
     }
 }
