@@ -5,7 +5,6 @@ import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Md5Utils;
 import miku.lib.common.util.Misc;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -30,7 +29,7 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     static {
         if (Platform.isWindows()) {
-            try (InputStream is = Launch.class.getResourceAsStream("/launch.win.md5")) {
+            try (InputStream is = MikuCore.class.getResourceAsStream("/launch.win.md5")) {
                 assert is != null;
                 byte[] dat = new byte[is.available()];
                 is.read(dat);
@@ -43,7 +42,7 @@ public class MikuCore implements IFMLLoadingPlugin {
                 throw new RuntimeException(e);
             }
         } else {
-            try (InputStream is = Launch.class.getResourceAsStream("/launch.md5")) {
+            try (InputStream is = MikuCore.class.getResourceAsStream("/launch.md5")) {
                 assert is != null;
                 byte[] dat = new byte[is.available()];
                 is.read(dat);
