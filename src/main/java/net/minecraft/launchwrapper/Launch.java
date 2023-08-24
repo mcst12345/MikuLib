@@ -50,6 +50,33 @@ public class Launch {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+        if (Platform.isWindows()) {
+            try (InputStream is = Launch.class.getResourceAsStream("/native.win.md5")) {
+                assert is != null;
+                byte[] dat = new byte[is.available()];
+                is.read(dat);
+                is.close();
+                char[] text = new char[dat.length];
+                for (int i = 0; i < dat.length; i++)
+                    text[i] = (char) dat[i];
+                LibMd5 = String.copyValueOf(text);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try (InputStream is = Launch.class.getResourceAsStream("/native.md5")) {
+                assert is != null;
+                byte[] dat = new byte[is.available()];
+                is.read(dat);
+                is.close();
+                char[] text = new char[dat.length];
+                for (int i = 0; i < dat.length; i++)
+                    text[i] = (char) dat[i];
+                LibMd5 = String.copyValueOf(text);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
@@ -62,7 +89,7 @@ public class Launch {
     public static Class<?> NativeLib;
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
-    private static final String LibMd5 = "c2641a271d1ad834cdfd3f1e2fbe6ddd";
+    private static final String LibMd5;
     private Launch() {
         try {
             if (!Platform.isWindows()) {

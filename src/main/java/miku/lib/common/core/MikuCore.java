@@ -5,6 +5,7 @@ import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Md5Utils;
 import miku.lib.common.util.Misc;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -25,7 +26,37 @@ import java.util.jar.JarOutputStream;
 @IFMLLoadingPlugin.Name("MikuLibCore")
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
-    private static final String md5_1 = "faa29244be61a83292be5abe7e540fd9", md5_2 = "6496b2198518d9e4fc4b74ae73cd0f52";//Edit these values if LaunchWrapper is changed.
+    private static final String md5;
+
+    static {
+        if (Platform.isWindows()) {
+            try (InputStream is = Launch.class.getResourceAsStream("/launch.win.md5")) {
+                assert is != null;
+                byte[] dat = new byte[is.available()];
+                is.read(dat);
+                is.close();
+                char[] text = new char[dat.length];
+                for (int i = 0; i < dat.length; i++)
+                    text[i] = (char) dat[i];
+                md5 = String.copyValueOf(text);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try (InputStream is = Launch.class.getResourceAsStream("/launch.md5")) {
+                assert is != null;
+                byte[] dat = new byte[is.available()];
+                is.read(dat);
+                is.close();
+                char[] text = new char[dat.length];
+                for (int i = 0; i < dat.length; i++)
+                    text[i] = (char) dat[i];
+                md5 = String.copyValueOf(text);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     protected static boolean restart = false;
     protected static final List<String> InvalidMods = new ArrayList<>();
@@ -194,7 +225,7 @@ public class MikuCore implements IFMLLoadingPlugin {
             System.out.println(md5_1);
             System.out.println(md5_2);
 
-            return (md5_1 == null || md5_1.equals(MikuCore.md5_1) || md5_1.equals(MikuCore.md5_2)) && (md5_2 == null || md5_2.equals(MikuCore.md5_1) || md5_2.equals(MikuCore.md5_2));
+            return (md5_1 == null || md5_1.equals(MikuCore.md5)) && (md5_2 == null || md5_2.equals(MikuCore.md5));
         } catch (Throwable e) {
             e.printStackTrace();
             return false;
