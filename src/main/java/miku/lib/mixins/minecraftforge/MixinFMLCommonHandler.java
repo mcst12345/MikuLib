@@ -1,14 +1,18 @@
 package miku.lib.mixins.minecraftforge;
 
+import miku.lib.common.api.iMinecraftServer;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.animation.Animation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.IFMLSidedHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -21,10 +25,21 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.concurrent.CountDownLatch;
+
 @Mixin(value = FMLCommonHandler.class, remap = false)
 public abstract class MixinFMLCommonHandler {
     @Shadow
     private EventBus eventBus;
+
+    @Shadow
+    private IFMLSidedHandler sidedDelegate;
+
+    @Shadow
+    public abstract MinecraftServer getMinecraftServerInstance();
+
+    @Shadow
+    private volatile CountDownLatch exitLatch;
 
     /**
      * @author mcst12345
@@ -332,6 +347,27 @@ public abstract class MixinFMLCommonHandler {
         } catch (Throwable t) {
             System.out.println("MikuWarn:Catch exception at ItemSmeltedEvent");
             t.printStackTrace();
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason fuck
+     */
+    @Overwrite
+    public void handleServerStopped() {
+        sidedDelegate.serverStopped();
+        MinecraftServer server = getMinecraftServerInstance();
+        Loader.instance().serverStopped();
+        // FORCE the internal server to stop: hello optifine workaround!
+        if (server != null) ((iMinecraftServer) server).SetStopped(true);
+
+        // allow any pending exit to continue, clear exitLatch
+        CountDownLatch latch = exitLatch;
+
+        if (latch != null) {
+            latch.countDown();
+            exitLatch = null;
         }
     }
 }

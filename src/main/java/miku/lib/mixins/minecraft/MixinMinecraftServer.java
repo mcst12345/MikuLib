@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
+import miku.lib.common.api.iMinecraftServer;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.FieldUtil;
@@ -34,16 +35,27 @@ import java.util.Date;
 import java.util.Random;
 
 @Mixin(value = MinecraftServer.class)
-public abstract class MixinMinecraftServer {
-    @Shadow private int tickCounter;
+public abstract class MixinMinecraftServer implements iMinecraftServer {
+    @Override
+    public void SetStopped(boolean stop) {
+        this.serverStopped = stop;
+    }
 
-    @Shadow private boolean startProfiling;
+    @Shadow
+    private int tickCounter;
 
-    @Shadow @Final public Profiler profiler;
+    @Shadow
+    private boolean startProfiling;
 
-    @Shadow public abstract void updateTimeLightAndEntities();
+    @Shadow
+    @Final
+    public Profiler profiler;
 
-    @Shadow private long nanoTimeSinceStatusRefresh;
+    @Shadow
+    public abstract void updateTimeLightAndEntities();
+
+    @Shadow
+    private long nanoTimeSinceStatusRefresh;
 
     @Shadow @Final private ServerStatusResponse statusResponse;
 
