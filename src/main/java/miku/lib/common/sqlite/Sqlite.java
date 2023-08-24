@@ -1,13 +1,10 @@
 package miku.lib.common.sqlite;
 
-import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -41,7 +38,6 @@ public class Sqlite {
                 CreateTable("BANNED_MODS", "ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
-                if (Launch.Client) CreateTable("BANNED_GUIS", "ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_CLASS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("LOG_CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 System.out.println("Init database.");
@@ -198,15 +194,9 @@ public class Sqlite {
         return item != null && SqliteCaches.BANNED_ITEMS.contains(item.getClass());
     }
 
-    @SideOnly(Side.CLIENT)
-    public static boolean IS_GUI_BANNED(@Nullable Gui gui) {
-        return gui != null && SqliteCaches.BANNED_GUIS.contains(gui.getClass());
-    }
-
     public static synchronized void Init() {
         GetClassFromTable("BANNED_MOBS", "ID", SqliteCaches.BANNED_MOBS);
         GetClassFromTable("BANNED_ITEMS", "ID", SqliteCaches.BANNED_ITEMS);
-        GetClassFromTable("BANNED_GUIS", "ID", SqliteCaches.BANNED_GUIS);
 
         if (DEBUG()) {
             for (Object o : SqliteCaches.BANNED_MOBS) {
@@ -214,9 +204,6 @@ public class Sqlite {
             }
             for (Object o : SqliteCaches.BANNED_ITEMS) {
                 System.out.println("Item " + o.toString() + " is banned.");
-            }
-            for (Object o : SqliteCaches.BANNED_GUIS) {
-                System.out.println("GUI " + o.toString() + " is banned.");
             }
         }
 

@@ -9,7 +9,6 @@ import miku.lib.client.gui.TheGui;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
-import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
 import net.minecraft.block.material.Material;
@@ -916,11 +915,6 @@ public abstract class MixinMinecraft implements iMinecraft {
      */
     @Overwrite
     public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {
-        if (Sqlite.IS_GUI_BANNED(guiScreenIn)) {
-            if (DEBUG()) System.out.println(guiScreenIn.getClass().toString() + " is banned");
-            guiScreenIn.onGuiClosed();
-            return;
-        }
         if(EntityUtil.isProtected(player)){
             if (guiScreenIn instanceof GuiGameOver) {
                 guiScreenIn.onGuiClosed();
