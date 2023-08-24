@@ -31,6 +31,7 @@ public class AccessTransformer implements IClassTransformer {
 
         for (FieldNode fn : cn.fields) {
             if (fn.name.equals("$VALUES")) continue;
+            System.out.println("Original access:" + fn.access);
             if (isPrivate(fn.access)) {
                 fn.access &= ~Opcodes.ACC_PRIVATE;
                 fn.access |= Opcodes.ACC_PUBLIC;
@@ -43,13 +44,12 @@ public class AccessTransformer implements IClassTransformer {
                 fn.access &= ~Opcodes.ACC_FINAL;
             }
 
-            if (fn.access == 0x9) {
-                fn.access = 0x0001;
-            }
+            System.out.println("Transformed access:" + fn.access);
         }
 
         for (MethodNode mn : cn.methods) {
             if (mn.name.equals("<clinit>")) continue;
+            System.out.println("Original access:" + mn.access);
             if (isPrivate(mn.access)) {
                 mn.access &= ~Opcodes.ACC_PRIVATE;
                 mn.access |= Opcodes.ACC_PUBLIC;
@@ -61,6 +61,8 @@ public class AccessTransformer implements IClassTransformer {
             if (isFinal(mn.access)) {
                 mn.access &= ~Opcodes.ACC_FINAL;
             }
+
+            System.out.println("Transformed access:" + mn.access);
         }
 
         ClassWriter cw = new ClassWriter(0);
