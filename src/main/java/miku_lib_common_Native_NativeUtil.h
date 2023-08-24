@@ -23,6 +23,14 @@ JNIEXPORT void JNICALL Java_miku_lib_common_Native_NativeUtil_Kill
 JNIEXPORT jint JNICALL Java_miku_lib_common_Native_NativeUtil_TEST
   (JNIEnv *, jclass);
 
+/*
+ * Class:     miku_lib_common_Native_NativeUtil
+ * Method:    GetClass
+ * Signature: (Ljava/lang/String;)Ljava/lang/Class;
+ */
+JNIEXPORT jclass JNICALL Java_miku_lib_common_Native_NativeUtil_GetClass
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif
