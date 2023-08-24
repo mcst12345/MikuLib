@@ -30,7 +30,7 @@ import static miku.lib.common.core.MikuCore.Client;
 public class MikuLib {
     public static final String MODID = "mikulib";
     public static final String NAME = "MikuLib";
-    public static final String VERSION = "1.11.2";
+    public static final String VERSION = "1.11.3";
     @SidedProxy(
             clientSide = "miku.lib.common.core.proxy.ClientProxy",
             serverSide = "miku.lib.common.core.proxy.CommonProxy"
