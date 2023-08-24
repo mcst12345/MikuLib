@@ -19,7 +19,7 @@ public class MikuTweaker implements ITweaker {
 
     @Override
     public String getLaunchTarget() {
-        return "miku.lib.client.minecraft.Main";
+        return Launch.Client ? "miku.lib.client.minecraft.Main" : "net.minecraft.server.MinecraftServer";
     }
 
     @Override

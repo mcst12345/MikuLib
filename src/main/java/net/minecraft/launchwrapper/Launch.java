@@ -328,7 +328,7 @@ public class Launch {
 
             String launchTarget;
             if (MikuLibInstalled()) {
-                launchTarget = "miku.lib.client.minecraft.Main";
+                launchTarget = Client ? "miku.lib.client.minecraft.Main" : "net.minecraft.server.MinecraftServer";
                 Class<?> Sqlite = Class.forName("miku.lib.common.sqlite.Sqlite", false, classLoader);
                 Method init = Sqlite.getMethod("CoreInit");
                 init.invoke(null);
