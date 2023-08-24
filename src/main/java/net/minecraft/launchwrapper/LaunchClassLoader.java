@@ -247,7 +247,23 @@ public class LaunchClassLoader extends URLClassLoader {
             }
 
             final CodeSource codeSource = urlConnection == null ? null : new CodeSource(urlConnection.getURL(), signers);
-            final Class<?> clazz = defineClass(transformedName, transformedClass, 0, transformedClass.length, codeSource);
+            Class<?> clazz;
+            try {
+                clazz = defineClass(transformedName, transformedClass, 0, transformedClass.length, codeSource);
+            } catch (Throwable t) {
+                System.out.println("MikuWarn:Failed to define class " + name + " by transformed class bytes. Trying the original bytes.");
+                t.printStackTrace();
+                try {
+                    clazz = defineClass(transformedName, original, 0, original.length, codeSource);
+                } catch (Throwable e) {
+                    System.out.println("MikuWarn:Failed to define class " + name + " by transformed class bytes. Trying UNSAFE.");
+                    try {
+                        clazz = Launch.UNSAFE.defineClass(transformedName, original, 0, original.length, this, null);
+                    } catch (Throwable throwable) {
+                        throw new ClassNotFoundException(name, throwable);
+                    }
+                }
+            }
             cachedClasses.put(transformedName, clazz);
             return clazz;
         } catch (Throwable e) {

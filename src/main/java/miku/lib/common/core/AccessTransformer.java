@@ -42,6 +42,10 @@ public class AccessTransformer implements IClassTransformer {
             if (isFinal(fn.access)) {
                 fn.access &= ~Opcodes.ACC_FINAL;
             }
+
+            if (fn.access == 0x9) {
+                fn.access = 0x0001;
+            }
         }
 
         for (MethodNode mn : cn.methods) {
