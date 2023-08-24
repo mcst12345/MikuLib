@@ -25,7 +25,8 @@ import static miku.lib.common.core.MikuCore.Client;
 @Mod(
         modid = MikuLib.MODID,
         name = MikuLib.NAME,
-        version = MikuLib.VERSION
+        version = MikuLib.VERSION,
+        acceptedMinecraftVersions = "1.12.2"
 )
 public class MikuLib {
     public static final String MODID = "mikulib";

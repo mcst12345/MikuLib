@@ -276,7 +276,6 @@ public class ClassUtil {
                     CodeSource cs = clazz.getProtectionDomain().getCodeSource();
                     String file;
                     file = cs.getLocation().toURI().getSchemeSpecificPart();
-                    int lastIndex = file.lastIndexOf(".jar");
                     System.out.println(file);
                     AddJarToTransformerExclusions(new File(file), TransformerExclusions, GoodClassCache);
                     try (JarFile JAR = new JarFile(file)) {
@@ -285,6 +284,7 @@ public class ClassUtil {
                             String key = entry.getKey().toString();
                             if (key.equalsIgnoreCase("Class-Path")) {
                                 System.out.println(entry.getValue());
+                                //TODO
                             }
                         }
 
