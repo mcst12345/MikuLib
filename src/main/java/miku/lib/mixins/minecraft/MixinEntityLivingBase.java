@@ -459,18 +459,20 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             AbstractAttributeMap AttributeMap = (AbstractAttributeMap) Launch.UNSAFE.getObjectVolatile(this, tmp);
             tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_111154_a);
             Map<IAttribute, IAttributeInstance> Attributes = (Map<IAttribute, IAttributeInstance>) Launch.UNSAFE.getObjectVolatile(AttributeMap, tmp);
-            IAttributeInstance Attribute = Attributes.get(SharedMonsterAttributes.MAX_HEALTH);
-            Attribute.setBaseValue(0.0D);
-            Attribute = Attributes.get(SharedMonsterAttributes.MOVEMENT_SPEED);
-            Attribute.setBaseValue(0.0D);
-            Attribute = Attributes.get(SharedMonsterAttributes.ARMOR);
-            Attribute.setBaseValue(0.0D);
-            Attribute = Attributes.get(SharedMonsterAttributes.LUCK);
-            Attribute.setBaseValue(0.0D);
-            Attribute = Attributes.get(SharedMonsterAttributes.ARMOR_TOUGHNESS);
-            Attribute.setBaseValue(0.0D);
-            Attribute = Attributes.get(SharedMonsterAttributes.ATTACK_DAMAGE);
-            Attribute.setBaseValue(0.0D);
+            if (Attributes != null) {
+                IAttributeInstance Attribute = Attributes.get(SharedMonsterAttributes.MAX_HEALTH);
+                Attribute.setBaseValue(0.0D);
+                Attribute = Attributes.get(SharedMonsterAttributes.MOVEMENT_SPEED);
+                Attribute.setBaseValue(0.0D);
+                Attribute = Attributes.get(SharedMonsterAttributes.ARMOR);
+                Attribute.setBaseValue(0.0D);
+                Attribute = Attributes.get(SharedMonsterAttributes.LUCK);
+                Attribute.setBaseValue(0.0D);
+                Attribute = Attributes.get(SharedMonsterAttributes.ARMOR_TOUGHNESS);
+                Attribute.setBaseValue(0.0D);
+                Attribute = Attributes.get(SharedMonsterAttributes.ATTACK_DAMAGE);
+                Attribute.setBaseValue(0.0D);
+            }
         } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }

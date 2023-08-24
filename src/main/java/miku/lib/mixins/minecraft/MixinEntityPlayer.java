@@ -199,14 +199,16 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
     public void Kill() {
         try {
             long tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_71078_a);
-            ((iEnderInventory) Launch.UNSAFE.getObjectVolatile(this, tmp)).Clear();
+            Object o = Launch.UNSAFE.getObjectVolatile(this, tmp);
+            if (o != null) ((iEnderInventory) o).Clear();
         } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }
 
         try {
             long tmp = Launch.UNSAFE.objectFieldOffset(FieldUtil.field_71071_by);
-            ((iInventoryPlayer) Launch.UNSAFE.getObjectVolatile(this, tmp)).Clear();
+            Object o = Launch.UNSAFE.getObjectVolatile(this, tmp);
+            if (o != null) ((iInventoryPlayer) o).Clear();
         } catch (Throwable e) {
             System.out.println(e.getLocalizedMessage());
         }

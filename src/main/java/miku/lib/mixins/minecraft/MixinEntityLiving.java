@@ -17,6 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -89,11 +90,22 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
         }
     }
 
-    @Inject(at=@At("HEAD"),method = "handleStatusUpdate", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "handleStatusUpdate", cancellable = true)
     @SideOnly(Side.CLIENT)
-    public void handleStatusUpdate(byte id, CallbackInfo ci){
-        if(EntityUtil.isProtected(this)){
-            if(id == (byte) 3 || id == (byte) 30 || id == (byte) 29 || id == (byte) 37 || id == (byte) 33 || id == (byte) 36 || id == (byte) 20 || id == (byte) 2 || id == (byte) 35)ci.cancel();
+    public void handleStatusUpdate(byte id, CallbackInfo ci) {
+        if (EntityUtil.isProtected(this)) {
+            if (id == (byte) 3 || id == (byte) 30 || id == (byte) 29 || id == (byte) 37 || id == (byte) 33 || id == (byte) 36 || id == (byte) 20 || id == (byte) 2 || id == (byte) 35)
+                ci.cancel();
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck!
+     */
+    @Overwrite
+    public boolean isAIDisabled() {
+        if (this.dataManager.get(AI_FLAGS) == null || EntityUtil.isDEAD(this)) return false;
+        return (this.dataManager.get(AI_FLAGS).byteValue() & 1) != 0;
     }
 }
