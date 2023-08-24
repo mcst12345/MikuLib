@@ -18,7 +18,8 @@ public class MixinWorldInfo {
     @Overwrite
     public void setDifficulty(EnumDifficulty newDifficulty) {
         if (newDifficulty == null || this.difficulty == null) {
-            if (this.difficulty == null) this.difficulty = EnumDifficulty.NORMAL;
+            if (this.difficulty == null)
+                this.difficulty = newDifficulty == null ? EnumDifficulty.NORMAL : newDifficulty;
             return;
         }
         net.minecraftforge.common.ForgeHooks.onDifficultyChange(newDifficulty, this.difficulty);
