@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.MethodNode;
 import static java.lang.reflect.Modifier.*;
 
 public class AccessTransformer implements IClassTransformer {
+    private static final boolean debug = System.getProperty("Miku_AT_debug") != null;
     public AccessTransformer() {
         System.out.println("AccessTransformer is running.");
     }
@@ -25,13 +26,17 @@ public class AccessTransformer implements IClassTransformer {
             cn = new ClassNode();
             cr.accept(cn, 0);
         } catch (Throwable t) {
-            System.out.println("Error transforming class:" + transformedName);
+            System.out.println("AT Error transforming class:" + transformedName);
+            t.printStackTrace();
             return basicClass;
         }
 
+        if (debug) System.out.println("Processing class:" + transformedName);
+
         for (FieldNode fn : cn.fields) {
             if (fn.name.equals("$VALUES")) continue;
-            System.out.println("Original access:" + fn.access);
+            int original = fn.access;
+
             if (isPrivate(fn.access)) {
                 fn.access &= ~Opcodes.ACC_PRIVATE;
                 fn.access |= Opcodes.ACC_PUBLIC;
@@ -44,12 +49,17 @@ public class AccessTransformer implements IClassTransformer {
                 fn.access &= ~Opcodes.ACC_FINAL;
             }
 
-            System.out.println("Transformed access:" + fn.access);
+            if (debug && fn.access != original) {
+                System.out.println("Field:" + fn.name);
+                System.out.println("Original access:" + original);
+                System.out.println("Transformed access:" + fn.access);
+            }
         }
 
         for (MethodNode mn : cn.methods) {
             if (mn.name.equals("<clinit>")) continue;
-            System.out.println("Original access:" + mn.access);
+            int original = mn.access;
+
             if (isPrivate(mn.access)) {
                 mn.access &= ~Opcodes.ACC_PRIVATE;
                 mn.access |= Opcodes.ACC_PUBLIC;
@@ -62,7 +72,11 @@ public class AccessTransformer implements IClassTransformer {
                 mn.access &= ~Opcodes.ACC_FINAL;
             }
 
-            System.out.println("Transformed access:" + mn.access);
+            if (debug && mn.access != original) {
+                System.out.println("Method:" + mn.name);
+                System.out.println("Original access:" + original);
+                System.out.println("Transformed access:" + mn.access);
+            }
         }
 
         ClassWriter cw = new ClassWriter(0);
