@@ -21,6 +21,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mixin(value = CommandHandler.class)
 public abstract class MixinCommandHandler {
@@ -42,6 +43,10 @@ public abstract class MixinCommandHandler {
     @Shadow
     @Final
     private static Logger LOGGER;
+
+    @Shadow
+    @Final
+    private Set<ICommand> commandSet;
 
     /**
      * @author mcst12345
@@ -161,5 +166,26 @@ public abstract class MixinCommandHandler {
 
         sender.setCommandStat(CommandResultStats.Type.SUCCESS_COUNT, i);
         return i;
+    }
+
+    /**
+     * @author mcst12345
+     * @reason THE FUCK?
+     */
+    @Overwrite
+    public ICommand registerCommand(ICommand command) {
+        if (command == null) return null;
+        this.commandMap.put(command.getName(), command);
+        this.commandSet.add(command);
+
+        for (String s : command.getAliases()) {
+            ICommand icommand = this.commandMap.get(s);
+
+            if (icommand == null || !icommand.getName().equals(s)) {
+                this.commandMap.put(s, command);
+            }
+        }
+
+        return command;
     }
 }
