@@ -277,7 +277,7 @@ public class ClassUtil {
                     String file;
                     file = cs.getLocation().toURI().getSchemeSpecificPart();
                     int lastIndex = file.lastIndexOf(".jar");
-                    file = file.substring(5, lastIndex + 4);
+                    System.out.println(file);
                     AddJarToTransformerExclusions(new File(file), TransformerExclusions, GoodClassCache);
                     try (JarFile JAR = new JarFile(file)) {
                         Attributes MainAttributes = JAR.getManifest().getMainAttributes();

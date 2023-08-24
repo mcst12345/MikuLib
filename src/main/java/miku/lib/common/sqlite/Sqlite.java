@@ -6,6 +6,8 @@ import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -39,7 +41,7 @@ public class Sqlite {
                 CreateTable("BANNED_MODS", "ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
-                CreateTable("BANNED_GUIS","ID TEXT PRIMARY KEY    NOT NULL");
+                if (Launch.Client) CreateTable("BANNED_GUIS", "ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_CLASS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("LOG_CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 System.out.println("Init database.");
@@ -188,13 +190,16 @@ public class Sqlite {
         }
     }
 
-    public static boolean IS_MOB_BANNED(@Nullable Entity entity){
+    public static boolean IS_MOB_BANNED(@Nullable Entity entity) {
         return entity != null && SqliteCaches.BANNED_MOBS.contains(entity.getClass());
     }
-    public static boolean IS_ITEM_BANNED(@Nullable Item item){
+
+    public static boolean IS_ITEM_BANNED(@Nullable Item item) {
         return item != null && SqliteCaches.BANNED_ITEMS.contains(item.getClass());
     }
-    public static boolean IS_GUI_BANNED(@Nullable Gui gui){
+
+    @SideOnly(Side.CLIENT)
+    public static boolean IS_GUI_BANNED(@Nullable Gui gui) {
         return gui != null && SqliteCaches.BANNED_GUIS.contains(gui.getClass());
     }
 
