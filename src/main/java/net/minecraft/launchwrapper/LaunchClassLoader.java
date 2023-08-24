@@ -256,10 +256,13 @@ public class LaunchClassLoader extends URLClassLoader {
                 try {
                     clazz = defineClass(transformedName, original, 0, original.length, codeSource);
                 } catch (Throwable e) {
-                    System.out.println("MikuWarn:Failed to define class " + name + " by transformed class bytes. Trying UNSAFE.");
+                    System.out.println("MikuWarn:Failed to define class " + name + " by original class bytes. Trying UNSAFE.");
+                    e.printStackTrace();
                     try {
                         clazz = Launch.UNSAFE.defineClass(transformedName, original, 0, original.length, this, null);
                     } catch (Throwable throwable) {
+                        System.out.println("MikuFATAL:Failed to define class " + name + ". Is the class bytes null?");
+                        throwable.printStackTrace();
                         throw new ClassNotFoundException(name, throwable);
                     }
                 }

@@ -26,10 +26,16 @@ public class AccessTransformer implements IClassTransformer {
             cn = new ClassNode();
             cr.accept(cn, 0);
         } catch (Throwable t) {
-            System.out.println("AT Error transforming class:" + transformedName);
+            System.out.println("MikuWarn:AT Error transforming class:" + transformedName + ",ignoring it.");
             t.printStackTrace();
             return basicClass;
         }
+
+        if (isInterface(cn.access)) {
+            if (debug) System.out.println("MikuInfo:AT ignoring interface:" + transformedName);
+            return basicClass;
+        }
+
 
         if (debug) System.out.println("Processing class:" + transformedName);
 
