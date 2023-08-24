@@ -330,6 +330,9 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
                             this.tick();
                         } catch (Throwable e) {
                             System.out.println("MikuWarn:catch exception when ticking:" + e);
+                            if (e instanceof ReportedException) {
+                                ((ReportedException) e).getCause().printStackTrace();
+                            } else e.printStackTrace();
                         }
                         i = 0L;
                     }
@@ -342,6 +345,9 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
                                 this.tick();
                             } catch (Throwable e) {
                                 System.out.println("MikuWarn:catch exception when ticking:" + e);
+                                if (e instanceof ReportedException) {
+                                    ((ReportedException) e).getCause().printStackTrace();
+                                } else e.printStackTrace();
                             }
                         }
                     }
