@@ -113,11 +113,30 @@ public class Launch {
                     }
                 }
             } else {
-                //TODO
+                File f = new File("libJNI.dll");
+                if (!f.exists()) {
+                    try (InputStream lib = Launch.class.getResourceAsStream("/libJNI.dll")) {
+                        assert lib != null;
+                        FileUtils.copyInputStreamToFile(lib, f);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    if (!Md5Utils.getFileMD5String(f).equals(LibMd5)) {
+                        Files.delete(f.toPath());
+                        try (InputStream lib = Launch.class.getResourceAsStream("/libJNI.dll")) {
+                            assert lib != null;
+                            FileUtils.copyInputStreamToFile(lib, f);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         FuckNative();
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);

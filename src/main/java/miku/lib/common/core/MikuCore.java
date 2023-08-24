@@ -75,7 +75,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                 File f = new File("libJNI.so");
                 System.load(f.getAbsolutePath());
             } else {
-                //TODO
+                File f = new File("libJNI.dll");
+                System.load(f.getAbsolutePath());
             }
             System.out.println(NativeUtil.TEST());
         }
