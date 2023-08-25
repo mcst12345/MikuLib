@@ -17,7 +17,6 @@
     "MixinForgeChunkManager",
     "MixinForgeEventFactory",
     "MixinForgeHooks",
-    "MixinForgeModContainer",
     "MixinForgeRegistry",
     "MixinGameData",
     "MixinItemHandlerHelper",
@@ -31,6 +30,7 @@
     "MixinRegistryDelegate"
   ],
   "client": [
+    "ClientMixinForgeModContainer",
     "MixinAnimationItemOverrideList",
     "MixinClientCommandHandler",
     "MixinCloudRenderer",
@@ -43,7 +43,8 @@
     "MixinGuiUtils"
   ],
   "server": [
-    "MixinFMLServerHandler"
+    "MixinFMLServerHandler",
+    "ServerMixinForgeModContainer"
   ],
   "required": true,
   "setSourceFile": false

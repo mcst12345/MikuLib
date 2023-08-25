@@ -21,6 +21,7 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.village.VillageSiege;
 import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -78,6 +79,30 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
 
     @Shadow
     public abstract ChunkProviderServer getChunkProvider();
+
+    @Shadow
+    public abstract boolean areAllPlayersAsleep();
+
+    @Shadow
+    protected abstract void wakeAllPlayers();
+
+    @Shadow
+    @Final
+    private WorldEntitySpawner entitySpawner;
+
+    @Shadow
+    @Final
+    protected VillageSiege villageSiege;
+
+    @Shadow
+    @Final
+    private Teleporter worldTeleporter;
+
+    @Shadow
+    public List<Teleporter> customTeleporters;
+
+    @Shadow
+    protected abstract void sendQueuedBlockEvents();
 
     protected MixinWorldServer(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);
@@ -455,5 +480,83 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
                 }
             }
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void tick() {
+        super.tick();
+
+        try {
+            if (this.getWorldInfo().isHardcoreModeEnabled() && this.getDifficulty() != EnumDifficulty.HARD) {
+                this.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        if (this.provider == null) {
+            System.out.println("MikuFATAL:WorldProvider is null!");
+            throw new RuntimeException("WorldProvider is null!");
+        }
+
+        this.provider.getBiomeProvider().cleanupCache();
+
+        try {
+            if (this.areAllPlayersAsleep()) {
+                if (this.getGameRules().getBoolean("doDaylightCycle")) {
+                    long i = this.getWorldTime() + 24000L;
+                    this.setWorldTime(i - i % 24000L);
+                }
+
+                this.wakeAllPlayers();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        this.profiler.startSection("mobSpawner");
+
+        try {
+            if (this.getGameRules().getBoolean("doMobSpawning") && this.worldInfo.getTerrainType() != WorldType.DEBUG_ALL_BLOCK_STATES) {
+                this.entitySpawner.findChunksForSpawning((WorldServer) (Object) this, this.spawnHostileMobs, this.spawnPeacefulMobs, this.worldInfo.getWorldTotalTime() % 400L == 0L);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        this.profiler.endStartSection("chunkSource");
+        this.chunkProvider.tick();
+        int j = this.calculateSkylightSubtracted(1.0F);
+
+        if (j != this.getSkylightSubtracted()) {
+            this.setSkylightSubtracted(j);
+        }
+
+        this.worldInfo.setWorldTotalTime(this.worldInfo.getWorldTotalTime() + 1L);
+
+        if (this.getGameRules().getBoolean("doDaylightCycle")) {
+            this.setWorldTime(this.getWorldTime() + 1L);
+        }
+
+        this.profiler.endStartSection("tickPending");
+        this.tickUpdates(false);
+        this.profiler.endStartSection("tickBlocks");
+        this.updateBlocks();
+        this.profiler.endStartSection("chunkMap");
+        this.playerChunkMap.tick();
+        this.profiler.endStartSection("village");
+        this.villageCollection.tick();
+        this.villageSiege.tick();
+        this.profiler.endStartSection("portalForcer");
+        this.worldTeleporter.removeStalePortalLocations(this.getTotalWorldTime());
+        for (Teleporter tele : customTeleporters) {
+            tele.removeStalePortalLocations(getTotalWorldTime());
+        }
+        this.profiler.endSection();
+        this.sendQueuedBlockEvents();
     }
 }

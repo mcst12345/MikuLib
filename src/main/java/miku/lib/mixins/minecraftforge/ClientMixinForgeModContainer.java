@@ -14,7 +14,6 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.model.animation.CapabilityAnimation;
 import net.minecraftforge.common.network.ForgeNetworkHandler;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.fluids.UniversalBucket;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -43,13 +42,10 @@ import java.util.Collections;
 import java.util.List;
 
 @Mixin(value = ForgeModContainer.class, remap = false)
-public abstract class MixinForgeModContainer extends DummyModContainer implements WorldAccessContainer {
+public abstract class ClientMixinForgeModContainer extends DummyModContainer implements WorldAccessContainer {
     @Shadow
     @Final
     static Logger log;
-
-    @Shadow
-    public UniversalBucket universalBucket;
 
     /**
      * @author mcst12345
