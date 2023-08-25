@@ -72,7 +72,7 @@ import java.util.List;
 import java.util.Random;
 
 @Mixin(value = ForgeEventFactory.class, remap = false)
-public class MixinForgeEventFactory {
+public class ClientMixinForgeEventFactory {
 
     /**
      * @author mcst12345
