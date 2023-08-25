@@ -44,8 +44,12 @@ public class KillEntity implements IMessage {
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(KillEntity message, MessageContext ctx) {
             WorldClient world = Minecraft.getMinecraft().world;
-            EntityPlayer sender = (EntityPlayer) world.getEntityByID(message.sender);
-            if(!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the package sender
+            EntityPlayer sender = null;
+            try {
+                sender = (EntityPlayer) world.getEntityByID(message.sender);
+            } catch (Throwable ignored) {
+            }
+            if (!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the package sender
             Entity entity = world.getEntityByID(message.entity);
             if (entity != null) {
                 try {
