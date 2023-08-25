@@ -96,7 +96,9 @@
     "MixinViewFrustum",
     "MixinWorldClient"
   ],
-  "server": [],
+  "server": [
+    "MixinDedicatedServer"
+  ],
   "required": true,
   "setSourceFile": false
 }

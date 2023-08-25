@@ -1,19 +1,28 @@
 package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.GameProfileRepository;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.common.api.iMinecraftServer;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.FieldUtil;
+import miku.lib.server.api.iDedicatedServer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.init.Bootstrap;
 import net.minecraft.network.NetworkSystem;
 import net.minecraft.network.ServerStatusResponse;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.profiler.Snooper;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerEula;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.management.PlayerList;
+import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.datafix.DataFixesManager;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.*;
@@ -21,18 +30,19 @@ import net.minecraft.world.storage.ISaveFormat;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.awt.*;
 import java.io.File;
+import java.net.Proxy;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
 @Mixin(value = MinecraftServer.class)
 public abstract class MixinMinecraftServer implements iMinecraftServer {
@@ -205,6 +215,10 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
 
     @Shadow
     public abstract NetworkSystem getNetworkSystem();
+
+    @Shadow
+    @Final
+    public static File USER_CACHE_FILE;
 
     /**
      * @author mcst12345
@@ -457,5 +471,115 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
         this.playerList.setPlayerManager(new WorldServer[]{overWorld});
         this.setDifficultyForAllWorlds(this.getDifficulty());
         this.initialWorldChunkLoad();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason The fuck?
+     */
+    @SideOnly(Side.SERVER)
+    @Overwrite
+    public static void main(String[] p_main_0_) {
+        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
+        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
+        ServerEula eula = new ServerEula(new File("eula.txt"));
+        if (!eula.hasAcceptedEULA()) {
+            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
+            eula.createEULAFile();
+            return;
+        }
+
+        Bootstrap.register();
+
+        try {
+            boolean flag = true;
+            String s = null;
+            String s1 = ".";
+            String s2 = null;
+            boolean flag1 = false;
+            boolean flag2 = false;
+            int l = -1;
+
+            for (int i1 = 0; i1 < p_main_0_.length; ++i1) {
+                String s3 = p_main_0_[i1];
+                String s4 = i1 == p_main_0_.length - 1 ? null : p_main_0_[i1 + 1];
+                boolean flag3 = false;
+
+                if (!"nogui".equals(s3) && !"--nogui".equals(s3)) {
+                    if ("--port".equals(s3) && s4 != null) {
+                        flag3 = true;
+
+                        try {
+                            l = Integer.parseInt(s4);
+                        } catch (NumberFormatException var13) {
+                        }
+                    } else if ("--singleplayer".equals(s3) && s4 != null) {
+                        flag3 = true;
+                        s = s4;
+                    } else if ("--universe".equals(s3) && s4 != null) {
+                        flag3 = true;
+                        s1 = s4;
+                    } else if ("--world".equals(s3) && s4 != null) {
+                        flag3 = true;
+                        s2 = s4;
+                    } else if ("--demo".equals(s3)) {
+                        flag1 = true;
+                    } else if ("--bonusChest".equals(s3)) {
+                        flag2 = true;
+                    }
+                } else {
+                    flag = false;
+                }
+
+                if (flag3) {
+                    ++i1;
+                }
+            }
+
+            YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
+            MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
+            GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
+            PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(s1, USER_CACHE_FILE.getName()));
+            final DedicatedServer dedicatedserver = new DedicatedServer(new File(s1), DataFixesManager.createFixer(), yggdrasilauthenticationservice, minecraftsessionservice, gameprofilerepository, playerprofilecache);
+
+            if (s != null) {
+                dedicatedserver.setServerOwner(s);
+            }
+
+            if (s2 != null) {
+                dedicatedserver.setFolderName(s2);
+            }
+
+            if (l >= 0) {
+                dedicatedserver.setServerPort(l);
+            }
+
+            if (flag1) {
+                dedicatedserver.setDemo(true);
+            }
+
+            if (flag2) {
+                dedicatedserver.canCreateBonusChest(true);
+            }
+
+            if (flag && !GraphicsEnvironment.isHeadless()) {
+                try {
+                    dedicatedserver.setGuiEnabled();
+                } catch (Throwable t) {
+                    System.out.println("MikuWarn:Failed to create server gui.");
+                    t.printStackTrace();
+                    ((iDedicatedServer) dedicatedserver).setGuiDisabled();
+                }
+            }
+
+            dedicatedserver.startServerThread();
+            Runtime.getRuntime().addShutdownHook(new Thread("Server Shutdown Thread") {
+                public void run() {
+                    dedicatedserver.stopServer();
+                }
+            });
+        } catch (Exception exception) {
+            LOGGER.fatal("Failed to start the minecraft server", exception);
+        }
     }
 }
