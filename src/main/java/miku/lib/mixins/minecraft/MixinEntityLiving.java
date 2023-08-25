@@ -64,7 +64,6 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
             byte b0 = manager.get(AI_FLAGS);
             manager.set(AI_FLAGS, (byte) (b0 | 1));
         } catch (Throwable e) {
-            System.out.println(e.getLocalizedMessage());
         }
     }
 
