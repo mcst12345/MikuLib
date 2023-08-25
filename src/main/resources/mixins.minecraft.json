@@ -43,6 +43,7 @@
     "MixinUtil",
     "MixinVillageSiege",
     "MixinWorld",
+    "MixinWorldEntitySpawner",
     "MixinWorldInfo",
     "MixinWorldServer"
   ],
