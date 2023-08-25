@@ -1,9 +1,9 @@
 package miku.lib.common.core;
 
-import com.sun.jna.Platform;
 import miku.lib.common.core.proxy.CommonProxy;
 import miku.lib.common.util.MikuEventBus;
 import miku.lib.common.util.Misc;
+import miku.lib.common.util.Platform;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;

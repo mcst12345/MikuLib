@@ -1,6 +1,5 @@
 package miku.lib.common.util;
 
-import com.sun.jna.Platform;
 import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AnnotationNode;

@@ -20,12 +20,9 @@
  * A copy is also included in the downloadable source code package
  * containing JNA, in file "AL2.0".
  */
-package com.sun.jna;
+package miku.lib.common.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//Well, this file is copied from jna. We don't have jna on server-side,so I created this.
 
 /**
  * Provide simplified platform information.
@@ -74,17 +71,8 @@ public final class Platform {
      * Whether in-DLL callbacks are supported.
      */
     public static final boolean HAS_DLL_CALLBACKS;
-    /**
-     * Canonical resource prefix for the current platform.  This value is
-     * used to load bundled native libraries from the class path.
-     */
-    public static final String RESOURCE_PREFIX;
 
     private static final int osType;
-    /**
-     * Current platform architecture.
-     */
-    public static final String ARCH;
 
     static {
         String osName = System.getProperty("os.name");
@@ -123,7 +111,7 @@ public final class Platform {
         try {
             Class.forName("java.nio.Buffer");
             hasBuffers = true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ignored) {
         }
         // NOTE: we used to do Class.forName("java.awt.Component"), but that
         // has the unintended side effect of actually loading AWT native libs,
@@ -135,8 +123,6 @@ public final class Platform {
         C_LIBRARY_NAME = osType == WINDOWS ? "msvcrt" : osType == WINDOWSCE ? "coredll" : "c";
         MATH_LIBRARY_NAME = osType == WINDOWS ? "msvcrt" : osType == WINDOWSCE ? "coredll" : "m";
         HAS_DLL_CALLBACKS = osType == WINDOWS;
-        ARCH = getCanonicalArchitecture(System.getProperty("os.arch"), isSoftFloat());
-        RESOURCE_PREFIX = getNativeLibraryResourcePrefix();
     }
 
     private Platform() {
@@ -213,48 +199,23 @@ public final class Platform {
         return !isWindowsCE() || !"J9".equals(System.getProperty("java.vm.name"));
     }
 
-    public static boolean is64Bit() {
-        String model = System.getProperty("sun.arch.data.model",
-                System.getProperty("com.ibm.vm.bitmode"));
-        if (model != null) {
-            return "64".equals(model);
-        }
-        if ("x86-64".equals(ARCH)
-                || "ia64".equals(ARCH)
-                || "ppc64".equals(ARCH) || "ppc64le".equals(ARCH)
-                || "sparcv9".equals(ARCH)
-                || "amd64".equals(ARCH)) {
-            return true;
-        }
-        return Native.POINTER_SIZE == 8;
-    }
-
-    public static boolean isIntel() {
-        return ARCH.startsWith("x86");
-    }
-
-    public static boolean isPPC() {
-        return ARCH.startsWith("ppc");
-    }
-
-    public static boolean isARM() {
-        return ARCH.startsWith("arm");
-    }
-
-    public static boolean isSPARC() {
-        return ARCH.startsWith("sparc");
-    }
-
     static String getCanonicalArchitecture(String arch, boolean softfloat) {
         arch = arch.toLowerCase().trim();
-        if ("powerpc".equals(arch)) {
-            arch = "ppc";
-        } else if ("powerpc64".equals(arch)) {
-            arch = "ppc64";
-        } else if ("i386".equals(arch) || "i686".equals(arch)) {
-            arch = "x86";
-        } else if ("x86_64".equals(arch) || "amd64".equals(arch)) {
-            arch = "x86-64";
+        switch (arch) {
+            case "powerpc":
+                arch = "ppc";
+                break;
+            case "powerpc64":
+                arch = "ppc64";
+                break;
+            case "i386":
+            case "i686":
+                arch = "x86";
+                break;
+            case "x86_64":
+            case "amd64":
+                arch = "x86-64";
+                break;
         }
         // Work around OpenJDK mis-reporting os.arch
         // https://bugs.openjdk.java.net/browse/JDK-8073139
@@ -270,31 +231,6 @@ public final class Platform {
         return arch;
     }
 
-    private static boolean isSoftFloat() {
-        try {
-            File self = new File("/proc/self/exe");
-            ELFAnalyser ahfd = ELFAnalyser.analyse(self.getCanonicalPath());
-            return ahfd.isArmSoftFloat();
-        } catch (IOException ex) {
-            // asume hardfloat
-            Logger.getLogger(Platform.class.getName()).log(Level.FINE, null, ex);
-        }
-        return false;
-    }
-
-    /**
-     * Generate a canonical String prefix based on the current OS
-     * type/arch/name.
-     */
-    static String getNativeLibraryResourcePrefix() {
-        String prefix = System.getProperty("jna.prefix");
-        if (prefix != null) {
-            return prefix;
-        } else {
-            return getNativeLibraryResourcePrefix(getOSType(), System.getProperty("os.arch"), System.getProperty("os.name"));
-        }
-    }
-
     /**
      * Generate a canonical String prefix based on the given OS
      * type/arch/name.
@@ -303,9 +239,6 @@ public final class Platform {
      * @param arch   from <code>os.arch</code> System property
      * @param name   from <code>os.name</code> System property
      */
-    static String getNativeLibraryResourcePrefix(int osType, String arch, String name) {
-        return getNativeLibraryResourcePrefix(osType, arch, name, isSoftFloat());
-    }
 
     static String getNativeLibraryResourcePrefix(int osType, String arch, String name, boolean isSoftfloat) {
         String osPrefix;

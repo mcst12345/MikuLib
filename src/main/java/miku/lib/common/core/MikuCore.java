@@ -1,11 +1,7 @@
 package miku.lib.common.core;
 
-import com.sun.jna.Platform;
 import miku.lib.common.Native.NativeUtil;
-import miku.lib.common.util.FileUtils;
-import miku.lib.common.util.JarFucker;
-import miku.lib.common.util.Md5Utils;
-import miku.lib.common.util.Misc;
+import miku.lib.common.util.*;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.commons.lang3.RandomStringUtils;
