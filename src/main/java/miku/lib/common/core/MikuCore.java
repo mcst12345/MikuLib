@@ -29,6 +29,7 @@ public class MikuCore implements IFMLLoadingPlugin {
     private static final String md5;
 
     static {
+
         if (!Client) {
             try (InputStream is = MikuCore.class.getResourceAsStream("/jna-4.4.0.jar")) {
                 assert is != null;
