@@ -43,11 +43,10 @@ public abstract class MixinWorldEntitySpawner {
 
     /**
      * @author mcst12345
-     * @reason Why you throw NPE on cat_server?
+     * @reason FUCK!
      */
     @Overwrite
     public int findChunksForSpawning(WorldServer worldServerIn, boolean spawnHostileMobs, boolean spawnPeacefulMobs, boolean spawnOnSetTickRate) {
-        System.out.println("MikuInfo:FindingChunksForSpawning.");
         if (!spawnHostileMobs && !spawnPeacefulMobs) {
             return 0;
         } else {
