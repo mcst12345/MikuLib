@@ -21,7 +21,6 @@ public enum NetworkHandler {
         channel.registerMessage(KillAllEntities.MessageHandler.class,KillAllEntities.class,index++,Side.SERVER);
         channel.registerMessage(GameModeChange.MessageHandler.class,GameModeChange.class,index++,Side.SERVER);
         channel.registerMessage(KillEntity.MessageHandler.class, KillEntity.class,index++,Side.CLIENT);
-        channel.registerMessage(DisplayTheGui.MessageHandler.class, DisplayTheGui.class,index++,Side.CLIENT);
     }
 
     public void sendMessageToServer(IMessage msg) {

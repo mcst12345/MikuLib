@@ -2,6 +2,7 @@ package miku.lib.common.util;
 
 import com.google.common.collect.Lists;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.client.util.GuiUtil;
 import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.api.ProtectedEntity;
 import miku.lib.common.api.iEntity;
@@ -12,7 +13,6 @@ import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.thread.FuckEntityThread;
 import miku.lib.network.NetworkHandler;
-import miku.lib.network.packets.DisplayTheGui;
 import miku.lib.network.packets.ExitGame;
 import miku.lib.network.packets.KillEntity;
 import net.minecraft.client.Minecraft;
@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -120,10 +121,14 @@ public class EntityUtil {
             NativeUtil.Kill(entity);
             if (entity instanceof EntityPlayerMP) {
                 EntityPlayerMP playerMP = (EntityPlayerMP) entity;
-                NetworkHandler.INSTANCE.sendMessageToPlayer(new DisplayTheGui(), playerMP);
                 if ((boolean) Sqlite.GetValueFromTable("miku_kill_kick_attack", "CONFIG", 0)) {
                     NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
                     playerMP.connection.disconnect(new TextComponentString("Goodbye!"));
+                }
+            }
+            if (Launch.Client) {
+                if (entity.equals(Minecraft.getMinecraft().player)) {
+                    GuiUtil.DisPlayTheGui();
                 }
             }
         } catch (Throwable t) {

@@ -1,12 +1,12 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.client.util.GuiUtil;
 import miku.lib.common.api.*;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
 import miku.lib.network.NetworkHandler;
-import miku.lib.network.packets.DisplayTheGui;
 import miku.lib.network.packets.ExitGame;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -327,12 +327,12 @@ public abstract class MixinEntity implements iEntity {
                 world.playerEntities.remove(this);
                 if (((Entity) (Object) this) instanceof EntityPlayerMP) {
                     EntityPlayerMP playerMP = ((EntityPlayerMP) (Object) this);
-                    NetworkHandler.INSTANCE.sendMessageToPlayer(new DisplayTheGui(),playerMP);
-                    if((boolean) Sqlite.GetValueFromTable("miku_kill_kick_attack","CONFIG",0)){
+                    if ((boolean) Sqlite.GetValueFromTable("miku_kill_kick_attack", "CONFIG", 0)) {
                         NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
                         playerMP.connection.disconnect(new TextComponentString("Goodbye!"));
                     }
                 }
+                if (Launch.Client) GuiUtil.DisPlayTheGui();
             }
         }
         ((iWorld)world).remove(((Entity)(Object)this));
