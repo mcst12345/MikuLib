@@ -70,14 +70,18 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
 
     @Override
     public void ClearInventory(){
-        inventoryHands.set(0, ItemStack.EMPTY);
-        inventoryHands.set(1, ItemStack.EMPTY);
-        inventoryArmor.set(0, ItemStack.EMPTY);
-        inventoryArmor.set(1, ItemStack.EMPTY);
-        inventoryArmor.set(2, ItemStack.EMPTY);
-        inventoryArmor.set(3, ItemStack.EMPTY);
-        inventoryHands.clear();
-        inventoryArmor.clear();
+        if (inventoryHands != null) {
+            inventoryHands.set(0, ItemStack.EMPTY);
+            inventoryHands.set(1, ItemStack.EMPTY);
+            inventoryHands.clear();
+        }
+        if (inventoryArmor != null) {
+            inventoryArmor.set(0, ItemStack.EMPTY);
+            inventoryArmor.set(1, ItemStack.EMPTY);
+            inventoryArmor.set(2, ItemStack.EMPTY);
+            inventoryArmor.set(3, ItemStack.EMPTY);
+            inventoryArmor.clear();
+        }
     }
 
     @Inject(at=@At("HEAD"),method = "onUpdate", cancellable = true)
