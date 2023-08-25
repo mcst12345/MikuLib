@@ -1,6 +1,7 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
+import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
@@ -47,7 +48,12 @@ public class KillEntity implements IMessage {
             if(!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the package sender
             Entity entity = world.getEntityByID(message.entity);
             if (entity != null) {
-                ((iEntity)entity).kill();
+                try {
+                    NativeUtil.Kill(entity);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                    ((iEntity) entity).kill();
+                }
             }
             return null;
         }
