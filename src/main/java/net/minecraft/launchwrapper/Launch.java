@@ -36,7 +36,9 @@ import java.util.*;
 public class Launch {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     public static final Unsafe UNSAFE;
-    private static final Field field;
+    private static final Field unsafe_field;
+    private static final Field loadedLibraryNames_field;
+    private static final ClassLoader SystemClassLoader = ClassLoader.getSystemClassLoader();
 
     public static InstrumentationImpl getInstrumentation() {
         return instrumentation;
@@ -46,17 +48,22 @@ public class Launch {
 
     static {
         try {
-            field = Unsafe.class.getDeclaredField("theUnsafe");
-            field.setAccessible(true);
+            loadedLibraryNames_field = ClassLoader.class.getDeclaredField("loadedLibraryNames");
+            loadedLibraryNames_field.setAccessible(true);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
         try {
-            UNSAFE = (Unsafe) field.get(null);
+            unsafe_field = Unsafe.class.getDeclaredField("theUnsafe");
+            unsafe_field.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            UNSAFE = (Unsafe) unsafe_field.get(null);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        NoReflection(InstrumentationImpl.class);
         if (Platform.isWindows()) {
             try (InputStream is = Launch.class.getResourceAsStream("/native.win.md5")) {
                 assert is != null;
@@ -255,6 +262,7 @@ public class Launch {
 
         try {
             if (Platform.isWindows()) {
+                ((Vector<String>) loadedLibraryNames_field.get(null)).removeIf(s -> s.contains("attach"));
                 instrumentation = (InstrumentationImpl) WindowsHack.Hack();
             } else {
                 instrumentation = (InstrumentationImpl) LinuxHack.hack();
@@ -262,6 +270,8 @@ public class Launch {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+
+        NoReflection(InstrumentationImpl.class);
 
         if (instrumentation != null) {
             System.out.println("Redefine supported:" + instrumentation.isRedefineClassesSupported());
