@@ -32,7 +32,7 @@ import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
 import java.util.*;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings("ALL")
 public class Launch {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     public static final Unsafe UNSAFE;
