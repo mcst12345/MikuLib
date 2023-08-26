@@ -37,7 +37,12 @@ public class Launch {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     public static final Unsafe UNSAFE;
     private static final Field field;
-    public static InstrumentationImpl instrumentation;
+
+    public static InstrumentationImpl getInstrumentation() {
+        return instrumentation;
+    }
+
+    private static InstrumentationImpl instrumentation;
 
     static {
         try {
@@ -50,23 +55,6 @@ public class Launch {
             UNSAFE = (Unsafe) field.get(null);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-
-        LoadMixin();
-
-        try {
-            if (Platform.isWindows()) {
-                instrumentation = (InstrumentationImpl) WindowsHack.Hack();
-            } else {
-                instrumentation = (InstrumentationImpl) LinuxHack.hack();
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-
-        if (instrumentation != null) {
-            System.out.println("Redefine supported:" + instrumentation.isRedefineClassesSupported());
-            System.out.println("This is a test message:" + instrumentation.getObjectSize(UNSAFE));
         }
         NoReflection(InstrumentationImpl.class);
         if (Platform.isWindows()) {
@@ -111,6 +99,21 @@ public class Launch {
     private static final String LibMd5;
 
     private Launch() {
+        LoadMixin();
+        try {
+            if (Platform.isWindows()) {
+                instrumentation = (InstrumentationImpl) WindowsHack.Hack();
+            } else {
+                instrumentation = (InstrumentationImpl) LinuxHack.hack();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        if (instrumentation != null) {
+            System.out.println("Redefine supported:" + instrumentation.isRedefineClassesSupported());
+            System.out.println("This is a test message:" + instrumentation.getObjectSize(UNSAFE));
+        }
         try {
             if (!Platform.isWindows()) {
                 File f = new File("libJNI.so");
