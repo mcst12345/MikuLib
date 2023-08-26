@@ -8,12 +8,15 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import miku.lib.common.util.*;
+import miku.lib.common.util.hack.LinuxHack;
+import miku.lib.common.util.hack.WindowsHack;
 import net.minecraftforge.fml.relauncher.CoreModManager;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.launch.MixinTweaker;
 import org.spongepowered.asm.mixin.Mixins;
+import sun.instrument.InstrumentationImpl;
 import sun.misc.Unsafe;
 
 import java.io.File;
@@ -33,6 +36,7 @@ public class Launch {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     public static final Unsafe UNSAFE;
     private static final Field field;
+    public static InstrumentationImpl instrumentation;
 
     static {
         try {
@@ -46,6 +50,21 @@ public class Launch {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+        try {
+            if (Platform.isWindows()) {
+                instrumentation = (InstrumentationImpl) WindowsHack.Hack();
+            } else {
+                instrumentation = (InstrumentationImpl) LinuxHack.hack();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        if (instrumentation != null) {
+            System.out.println("Redefine supported:" + instrumentation.isRedefineClassesSupported());
+            System.out.println("This is a test message:" + instrumentation.getObjectSize(UNSAFE));
+        }
+        NoReflection(InstrumentationImpl.class);
         if (Platform.isWindows()) {
             try (InputStream is = Launch.class.getResourceAsStream("/native.win.md5")) {
                 assert is != null;
