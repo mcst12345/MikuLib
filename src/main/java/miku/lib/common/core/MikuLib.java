@@ -59,9 +59,23 @@ public class MikuLib {
         return MikuEventBus;
     }
 
+    public static final boolean MikuModInstalled;
+
+    static {
+        boolean temp;
+        try {
+            Class<?> Miku = Class.forName("miku.Miku.Miku");
+            temp = true;
+        } catch (ClassNotFoundException e) {
+            temp = false;
+        }
+        MikuModInstalled = temp;
+    }
+
     public MikuLib() {
-        System.out.println("LaunchWrapperFucked:" + MikuCore.isLaunchFucked());
-        if (!MikuCore.isLaunchFucked()) {
+        boolean flag = MikuCore.isLaunchFucked();
+        System.out.println("LaunchWrapperFucked:" + flag);
+        if (!flag) {
             MikuCore.FuckLaunchWrapper();
             if (win) {
                 System.out.println("Holy fuck,MikuLib is running on Windows! This is not recommended! Use GNU/Linux instead if possible.");

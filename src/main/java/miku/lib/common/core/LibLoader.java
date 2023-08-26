@@ -22,9 +22,9 @@ public class LibLoader {
     @SubscribeEvent
     public static void RegisterEntity(RegistryEvent.Register<EntityEntry> event) {
         int id = 0;
-        Register.RegisterEntity("miku_tnt", MikuTNT.class, "MikuTNT", id++, MikuLib.INSTANCE);
-        Register.RegisterEntity("miku_arrow", MikuArrow.class, "MikuArrow", id++, MikuLib.INSTANCE);
-        Register.RegisterEntity("lain", Lain.class, "Lain", id++, MikuLib.INSTANCE);
+        Register.RegisterEntity("mikulib", "miku_tnt", MikuTNT.class, "MikuTNT", id++, MikuLib.INSTANCE);
+        Register.RegisterEntity("mikulib", "miku_arrow", MikuArrow.class, "MikuArrow", id++, MikuLib.INSTANCE);
+        Register.RegisterEntity("mikulib", "lain", Lain.class, "Lain", id++, MikuLib.INSTANCE);
     }
 
     @SubscribeEvent
