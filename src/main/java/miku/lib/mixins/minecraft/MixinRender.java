@@ -4,7 +4,6 @@ import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinRender<T extends Entity> {
     @Inject(at=@At("HEAD"),method = "shouldRender", cancellable = true)
     public void shouldRender(T livingEntity, ICamera camera, double camX, double camY, double camZ, CallbackInfoReturnable<Boolean> cir){
-        if(EntityUtil.isDEAD(livingEntity))cir.setReturnValue(false);
-        if(EntityUtil.isProtected(livingEntity) && (livingEntity instanceof EntityPlayer))cir.setReturnValue(true);
+        if (EntityUtil.isDEAD(livingEntity)) cir.setReturnValue(false);
+        if (EntityUtil.isProtected(livingEntity)) cir.setReturnValue(true);
     }
 
     @Inject(at = @At("HEAD"), method = "bindEntityTexture", cancellable = true)
