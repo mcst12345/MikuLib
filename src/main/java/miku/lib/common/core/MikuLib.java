@@ -29,6 +29,15 @@ import static miku.lib.common.core.MikuCore.Client;
         acceptedMinecraftVersions = "1.12.2"
 )
 public class MikuLib {
+    public static boolean isLAIN() {
+        return LAIN;
+    }
+
+    public static void setLAIN() {
+        MikuLib.LAIN = true;
+    }
+
+    private static boolean LAIN;
     public static final String MODID = "mikulib";
     public static final String NAME = "MikuLib";
     public static final String VERSION = "1.11.3";
