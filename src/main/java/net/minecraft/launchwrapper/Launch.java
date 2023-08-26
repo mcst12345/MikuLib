@@ -32,6 +32,7 @@ import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class Launch {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     public static final Unsafe UNSAFE;
@@ -105,6 +106,7 @@ public class Launch {
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
     private static final String LibMd5;
+
     private Launch() {
         try {
             if (!Platform.isWindows()) {
@@ -258,6 +260,7 @@ public class Launch {
             throw new RuntimeException(e);
         }
     }
+
     private void launch(String[] args) {
 
         LoadMixin();
