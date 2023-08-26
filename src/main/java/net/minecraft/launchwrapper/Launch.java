@@ -99,21 +99,6 @@ public class Launch {
     private static final String LibMd5;
 
     private Launch() {
-        LoadMixin();
-        try {
-            if (Platform.isWindows()) {
-                instrumentation = (InstrumentationImpl) WindowsHack.Hack();
-            } else {
-                instrumentation = (InstrumentationImpl) LinuxHack.hack();
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-
-        if (instrumentation != null) {
-            System.out.println("Redefine supported:" + instrumentation.isRedefineClassesSupported());
-            System.out.println("This is a test message:" + instrumentation.getObjectSize(UNSAFE));
-        }
         try {
             if (!Platform.isWindows()) {
                 File f = new File("libJNI.so");
@@ -178,8 +163,6 @@ public class Launch {
         classLoader = new LaunchClassLoader(ucl.getURLs());
         blackboard = new HashMap<>();
         Thread.currentThread().setContextClassLoader(classLoader);
-
-
     }
 
     public static void NoReflection(Class<?> clazz){
@@ -258,11 +241,6 @@ public class Launch {
 
     private static void LoadMixin() {
         try {
-            System.loadLibrary("attach");
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-        try {
             System.out.println("Loading mixin in javaagent mode.");
             VirtualMachine vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
             vm.loadAgent(System.getProperty("user.dir") + "/libraries/mixin.jar");
@@ -273,6 +251,22 @@ public class Launch {
     }
 
     private void launch(String[] args) {
+        LoadMixin();
+
+        try {
+            if (Platform.isWindows()) {
+                instrumentation = (InstrumentationImpl) WindowsHack.Hack();
+            } else {
+                instrumentation = (InstrumentationImpl) LinuxHack.hack();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        if (instrumentation != null) {
+            System.out.println("Redefine supported:" + instrumentation.isRedefineClassesSupported());
+            System.out.println("This is a test message:" + instrumentation.getObjectSize(UNSAFE));
+        }
 
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
@@ -346,6 +340,7 @@ public class Launch {
             } while (!tweakClassNames.isEmpty());
 
             MixinBootstrap.init();
+
             if (MikuLibInstalled()) {
                 Mixins.addConfiguration("mixins.forge.json");
                 Mixins.addConfiguration("mixins.minecraft.json");
