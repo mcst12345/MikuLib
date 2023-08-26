@@ -62,9 +62,21 @@ public class WindowsVirtualMachine extends HotSpotVirtualMachine {
     }
 
     static {
-        System.loadLibrary("attach");
-        init();
-        stub = generateStub();
+        try {
+            System.loadLibrary("attach");
+        } catch (Throwable ignored) {
+
+        }
+        try {
+            init();
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+        try {
+            stub = generateStub();
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
     static native void init();
