@@ -51,6 +51,9 @@ public class Launch {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+
+        LoadMixin();
+
         try {
             if (Platform.isWindows()) {
                 instrumentation = (InstrumentationImpl) WindowsHack.Hack();
@@ -250,11 +253,16 @@ public class Launch {
         }
     }
 
-    protected static void LoadMixin(){
+    private static void LoadMixin() {
+        try {
+            System.loadLibrary("attach");
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         try {
             System.out.println("Loading mixin in javaagent mode.");
             VirtualMachine vm = VirtualMachine.attach(ManagementFactory.getRuntimeMXBean().getName().split("@")[0]);
-            vm.loadAgent(System.getProperty("user.dir")+"/libraries/mixin.jar");
+            vm.loadAgent(System.getProperty("user.dir") + "/libraries/mixin.jar");
             System.out.println("Success!");
         } catch (AgentLoadException | IOException | AgentInitializationException | AttachNotSupportedException e) {
             throw new RuntimeException(e);
@@ -263,7 +271,6 @@ public class Launch {
 
     private void launch(String[] args) {
 
-        LoadMixin();
         OptionParser parser = new OptionParser();
         parser.allowsUnrecognizedOptions();
 
