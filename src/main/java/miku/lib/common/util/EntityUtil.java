@@ -89,7 +89,9 @@ public class EntityUtil {
 
     public static synchronized boolean isDEAD(Entity entity) {
         if (entity == null || isProtected(entity)) return false;
-        return DEAD.contains(entity) || ((iEntity) entity).isDEAD() || Dead.contains(entity.getUniqueID()) || entity.dimension == -25;
+        boolean result = DEAD.contains(entity) || ((iEntity) entity).isDEAD() || Dead.contains(entity.getUniqueID()) || entity.dimension == -25;
+        if (result) System.out.println(entity.getName() + " is dead.");
+        return result;
     }//can the entity be alive.
 
     public synchronized static void Kill(@Nullable Entity entity) {//Kill Entity

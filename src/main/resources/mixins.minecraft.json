@@ -87,6 +87,7 @@
     "MixinRenderGlobal",
     "MixinRenderItemFrame",
     "MixinRenderLivingBase",
+    "MixinRenderManager",
     "MixinRenderPlayer",
     "MixinSimpleReloadableResourceManager",
     "MixinSoundManager",
