@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Lists;
 import miku.lib.client.api.iWorldClient;
-import miku.lib.common.api.ProtectedEntity;
 import miku.lib.common.api.iChunk;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iWorld;
@@ -251,7 +250,7 @@ public abstract class MixinWorld implements iWorld {
             return false;
         if (DEBUG()) System.out.println(entityIn.getClass().toString());
         // Do not drop any items while restoring blocksnapshots. Prevents dupes
-        if ((!this.isRemote && !EntityUtil.isProtected(entityIn)) && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
+        if (!this.isRemote && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
             return false;
 
         int i = MathHelper.floor(entityIn.posX / 16.0D);
@@ -380,8 +379,7 @@ public abstract class MixinWorld implements iWorld {
                     throw new ReportedException(crashreport);
             }
 
-            if (entity.isDead && !EntityUtil.isProtected(entity) && !SpecialItem.isTimeStop() && !(entity instanceof ProtectedEntity))
-            {
+            if (entity.isDead && !EntityUtil.isProtected(entity) && !SpecialItem.isTimeStop()) {
                 this.weatherEffects.remove(i--);
             }
         }

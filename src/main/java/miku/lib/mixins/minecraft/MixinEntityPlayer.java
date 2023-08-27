@@ -22,6 +22,7 @@ import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -186,12 +187,15 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
     @Inject(at = @At("HEAD"), method = "attackTargetEntityWithCurrentItem", cancellable = true)
     public void attackTargetEntityWithCurrentItem(Entity targetEntity, CallbackInfo ci){
         if (EntityUtil.isProtected(this)) {
-            if(EntityUtil.isProtected(targetEntity)) {
-                if(((ProtectedEntity)targetEntity).CanBeKilled()){
-                    EntityUtil.Kill(targetEntity);
-                }
-            } else EntityUtil.Kill(targetEntity);
-            ci.cancel();
+            ItemStack itemstack = this.getHeldItem(EnumHand.MAIN_HAND);
+            if (itemstack == ItemStack.EMPTY) {
+                if (EntityUtil.isProtected(targetEntity)) {
+                    if (((ProtectedEntity) targetEntity).CanBeKilled()) {
+                        EntityUtil.Kill(targetEntity);
+                    }
+                } else EntityUtil.Kill(targetEntity);
+                ci.cancel();
+            }
         }
     }
 
