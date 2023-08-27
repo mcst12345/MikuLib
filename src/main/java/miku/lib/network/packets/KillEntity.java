@@ -1,6 +1,7 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
+import miku.lib.client.api.iMinecraft;
 import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.api.iEntity;
 import miku.lib.common.util.EntityUtil;
@@ -43,7 +44,7 @@ public class KillEntity implements IMessage {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(KillEntity message, MessageContext ctx) {
-            WorldClient world = Minecraft.getMinecraft().world;
+            WorldClient world = ((iMinecraft) Minecraft.getMinecraft()).MikuWorld();
             EntityPlayer sender = null;
             try {
                 sender = (EntityPlayer) world.getEntityByID(message.sender);
