@@ -31,7 +31,7 @@ public class SetHealth extends CommandBase {
     @Override
     @Nonnull
     public String getUsage(@Nonnull ICommandSender sender) {
-        return "commands.miku.set_health";
+        return "commands.miku.set_health.usage";
     }
 
     @Override

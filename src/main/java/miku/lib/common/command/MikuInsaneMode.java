@@ -21,7 +21,7 @@ public class MikuInsaneMode extends CommandBase {
     @Override
     @Nonnull
     public String getUsage(@Nonnull ICommandSender sender) {
-        return "commands.miku.insane";
+        return "commands.miku.insane.usage";
     }
 
     @Override

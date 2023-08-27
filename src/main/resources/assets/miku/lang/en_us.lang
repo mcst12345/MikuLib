@@ -14,7 +14,8 @@ key.miku.kill_all=Kill all entities
 key.miku.game_mode=Change game mode
 
 #command
-commands.miku_kill.usage=/miku_kill [player|entity]
-commands.set_health.usage=/set_health [player|entity] [amount]
-commands.clear_db_cache.usage=/clear_db_cache
-commands.sql.usage=/sql [sql statement]
+commands.miku.miku_kill.usage=/miku_kill [player|entity]
+commands.miku.clear_db_cache.usage=/clear_db_cache
+commands.miku.sql.usage=/sql [sql statement]
+commands.miku.set_health.usage=/set_health [player|entity] [amount]
+commands.miku.insane.usage=/miku_insane_mode [boolean]

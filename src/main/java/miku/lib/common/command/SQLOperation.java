@@ -20,7 +20,7 @@ public class SQLOperation extends CommandBase {
     @Override
     @Nonnull
     public String getUsage(@Nonnull ICommandSender sender) {
-        return "commands.sql.usage";
+        return "commands.miku.sql.usage";
     }
 
     @Override

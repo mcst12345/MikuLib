@@ -21,7 +21,7 @@ public class ClearDBCache extends CommandBase {
     @Override
     @Nonnull
     public String getUsage(@Nonnull ICommandSender sender) {
-        return "commands.clear_db_cache.usage";
+        return "commands.miku.clear_db_cache.usage";
     }
 
     @Override
