@@ -19,6 +19,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
@@ -357,26 +358,28 @@ public abstract class MixinWorld implements iWorld {
      * @reason ...
      */
     @Overwrite
-    public void updateEntities()
-    {
-        if(loadedEntityList.getClass() != ArrayList.class){
+    public void updateEntities() {
+        if (loadedEntityList.getClass() != ArrayList.class) {
             loadedEntityList = new ArrayList<>();
         }
-        for(Entity e : protected_entities){
-            if(loadedEntityList.contains(e))continue;
+        for (Entity e : protected_entities) {
+            if (loadedEntityList.contains(e)) continue;
             loadedEntityList.add(e);
         }
-        EntityUtil.REMOVE((World)(Object)this);
-        if(EntityUtil.isKilling())return;
+        EntityUtil.REMOVE((World) (Object) this);
+        if (EntityUtil.isKilling()) return;
+
+        if (MikuLib.isLAIN()) {
+            loadedEntityList.removeIf(e -> e instanceof EntityMob);
+        }
+
         this.profiler.startSection("entities");
         this.profiler.startSection("global");
 
-        for (int i = 0; i < this.weatherEffects.size(); ++i)
-        {
+        for (int i = 0; i < this.weatherEffects.size(); ++i) {
             Entity entity = this.weatherEffects.get(i);
 
-            try
-            {
+            try {
                 if (entity.updateBlocked || ((iEntity) entity).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity)) || (MikuInsaneMode.isMikuInsaneMode() && !EntityUtil.isProtected(entity)))
                     continue;
                 ++entity.ticksExisted;

@@ -6,7 +6,6 @@ package miku.lib.common.entity;
 
 import miku.lib.common.api.ProtectedEntity;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.entity.ai.LainRemoveMobs;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveIndoors;
@@ -53,6 +52,5 @@ public class Lain extends EntityCreature implements ProtectedEntity {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIMoveIndoors(this));
         this.tasks.addTask(2, new EntityAILookIdle(this));
-        this.tasks.addTask(3, new LainRemoveMobs(this));
     }
 }
