@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Lists;
 import miku.lib.client.api.iWorldClient;
@@ -49,6 +50,11 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    @Override
+    public List<Entity> getProtectedEntities() {
+        return ImmutableList.copyOf(protected_entities);
+    }
+
     /**
      * @author mcst12345
      * @reason Fuck!
@@ -74,7 +80,7 @@ public abstract class MixinWorld implements iWorld {
         return true;
     }
 
-    protected final HashSet<Entity> protected_entities = new HashSet<>();
+    private final HashSet<Entity> protected_entities = new HashSet<>();
 
     public boolean HasEffect(EntityLivingBase entity) {
         for (MikuEffect effect : effects) {

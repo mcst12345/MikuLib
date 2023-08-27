@@ -11,4 +11,6 @@ public interface iWorld {
     void AddEffect(MikuEffect effect);
     List<MikuEffect> GetEntityEffects(EntityLivingBase entity);
     boolean HasEffect(EntityLivingBase entity);
+
+    List<Entity> getProtectedEntities();
 }

@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iViewFrustum;
 import miku.lib.client.util.ContainerLocalRenderInformation;
+import miku.lib.common.api.iWorld;
 import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -285,6 +286,9 @@ public abstract class MixinRenderGlobal {
             this.world.profiler.endStartSection("entities");
             List<Entity> list1 = Lists.newArrayList();
             List<Entity> list2 = Lists.newArrayList();
+
+            list1.addAll(((iWorld) this.world).getProtectedEntities());
+
             BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
 
             for (ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation : this.RenderINFOS) {
