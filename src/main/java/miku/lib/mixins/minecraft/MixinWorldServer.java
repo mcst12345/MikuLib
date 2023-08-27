@@ -98,7 +98,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
     @Final
     private Teleporter worldTeleporter;
 
-    @Shadow
+    @Shadow(remap = false)
     public List<Teleporter> customTeleporters;
 
     @Shadow

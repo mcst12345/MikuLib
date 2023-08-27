@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 
 import static net.minecraftforge.items.ItemHandlerHelper.insertItemStacked;
 
-@Mixin(value = ItemHandlerHelper.class)
+@Mixin(value = ItemHandlerHelper.class, remap = false)
 public class MixinItemHandlerHelper {
     /**
      * @author mcst12345

@@ -478,7 +478,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
      * @reason The fuck?
      */
     @SideOnly(Side.SERVER)
-    @Overwrite
+    @Overwrite(remap = false)
     public static void main(String[] p_main_0_) {
         //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
         //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028

@@ -27,7 +27,6 @@
     "MixinObjectHolderRegistry",
     "MixinOreDictionary",
     "MixinProxyInjector",
-    "MixinRegistryDelegate",
     "MixinUniversalBucket"
   ],
   "client": [
