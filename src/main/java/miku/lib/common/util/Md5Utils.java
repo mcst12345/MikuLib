@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+//From CatServer.
+
 public class Md5Utils {
     private static final char[] hexDigits = new char[]{
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',

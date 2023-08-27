@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 
 //What the fuck did I write?
-//Well,at least it runs.
+//Well, at least it runs.
 public abstract class MikuEffect {//You don't have to register.Just write a class that is extends from this.
     protected boolean shouldRemove = false;//should the effect be removed.
     public final EntityLivingBase entity;//the entity who suffers the effect.

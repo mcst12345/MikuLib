@@ -15,6 +15,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
+//Why did I use so many synchronized in this class???
+
 public class ClassUtil {
     private static final List<File> BadMods = new ArrayList<>();
     private static final Map<String, Boolean> GoodClassCache = new ConcurrentSkipListMap<>();
@@ -105,6 +107,12 @@ public class ClassUtil {
         return LOADED;
     }
 
+    /*
+     * Scans a mod file.
+     * It will delete the file if it is the mod "bathappy".
+     * It will modify the mod file if the mod isn't in the whitelist.
+     * It will try to remove signatures if the mod is in the whitelist.
+     */
     public synchronized static void ScanModJarFile(File file) throws IOException {
         if (file.getName().endsWith(".jar")) {
             String modid = null;
@@ -230,6 +238,10 @@ public class ClassUtil {
         }
     }
 
+    /*
+     * Init.
+     * Should only be called once,by the launchwrapper.
+     */
     public static synchronized boolean Init() throws IOException {
         String className = Thread.currentThread().getStackTrace()[2].getClassName();//调用的类名
 
@@ -278,6 +290,7 @@ public class ClassUtil {
                     file = cs.getLocation().toURI().getSchemeSpecificPart();
                     System.out.println(file);
                     AddJarToTransformerExclusions(new File(file), TransformerExclusions, GoodClassCache);
+                    //Server side doesn't use -cp ,the classpath is saved in the ServerCoreJar's manifest.
                     /*try (JarFile JAR = new JarFile(file)) {
                         Attributes MainAttributes = JAR.getManifest().getMainAttributes();
                         for (Map.Entry<Object, Object> entry : MainAttributes.entrySet()) {
@@ -300,7 +313,7 @@ public class ClassUtil {
             }
         }
 
-
+        //These things don't use a refmap.
         TransformerExclusions.add("net.minecraft.server.MinecraftServer");
         GoodClassCache.put("net.minecraft.server.MinecraftServer", true);
         TransformerExclusions.add("net.minecraft.server.MinecraftServer$1");

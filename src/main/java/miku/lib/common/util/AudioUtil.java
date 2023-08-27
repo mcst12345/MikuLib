@@ -12,13 +12,14 @@ public class AudioUtil {
         AudioInputStream as;
         try {
             if (isPlaying) {
-                System.out.println("[info]Already playing music");
+                System.out.println("MikuInfo:Already playing music");
                 return;
             }
             isPlaying = true;
             File MusicFile = new File(path);
             if (!MusicFile.exists()) {
-                throw new RuntimeException("Audio File Not Found!");
+                System.out.println("MikuWarn:audio file " + path + " doesn't exists.");
+                return;
             }
             as = AudioSystem.getAudioInputStream(MusicFile);
             AudioFormat format = as.getFormat();

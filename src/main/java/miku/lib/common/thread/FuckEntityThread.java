@@ -26,7 +26,7 @@ public class FuckEntityThread extends Thread {
                 if (world2.loadedEntityList.contains(toBeFucked)) world2.loadedEntityList.remove(toBeFucked);
                 else count2++;
             } else count2 = -1;
-            //TODO (MinecraftServer)}
+            //TODO (MinecraftServer)
         }
     }
 }

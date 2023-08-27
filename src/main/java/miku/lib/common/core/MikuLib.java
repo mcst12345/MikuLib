@@ -31,7 +31,7 @@ import static miku.lib.common.core.MikuCore.Client;
 public class MikuLib {
     public static boolean isLAIN() {
         return LAIN;
-    }
+    }//Is Lain existed.
 
     public static void setLAIN() {
         MikuLib.LAIN = true;
@@ -57,19 +57,6 @@ public class MikuLib {
 
     public static EventBus MikuEventBus() {
         return MikuEventBus;
-    }
-
-    public static final boolean MikuModInstalled;
-
-    static {
-        boolean temp;
-        try {
-            Class<?> Miku = Class.forName("miku.Miku.Miku");
-            temp = true;
-        } catch (ClassNotFoundException e) {
-            temp = false;
-        }
-        MikuModInstalled = temp;
     }
 
     public MikuLib() {

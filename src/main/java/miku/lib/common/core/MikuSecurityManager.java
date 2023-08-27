@@ -2,7 +2,7 @@ package miku.lib.common.core;
 
 import java.security.Permission;
 
-//No usage at present
+//No usage at present.
 public class MikuSecurityManager extends SecurityManager {
     public MikuSecurityManager() {
     }

@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+//Things I don't know where to put them.
+
 public class Misc {
     public static Object EmptyItemList(int size) {
         return NonNullList.withSize(size, ItemStack.EMPTY);

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+//shitmountain.
+//TODO:Rewrite this shit.
 public class Sqlite {
 
     protected static boolean loaded = false;
@@ -96,9 +98,10 @@ public class Sqlite {
             System.out.println("Class not found:" + s);
         }
     }
-        @Nullable
+
+    @Nullable
     public static Object GetValueFromTable(String NAME,String TABLE, int TYPE){// 0-bool 1-int 2-long 3-str
-            if (SqliteCaches.Configs.get(NAME) != null) return SqliteCaches.Configs.get(NAME);
+        if (SqliteCaches.Configs.get(NAME) != null) return SqliteCaches.Configs.get(NAME);
         try {
             ResultSet rs = stmt.executeQuery("SELECT * FROM "+TABLE+";");
             String result = null;
@@ -167,7 +170,7 @@ public class Sqlite {
 
     public static void CreateConfigValue(String NAME, String TABLE, String VALUE){
         String sql = "INSERT OR IGNORE INTO "+TABLE+" (NAME,VALUE)" +
-                    "VALUES ('"+NAME+"','"+VALUE+"')";
+                "VALUES ('"+NAME+"','"+VALUE+"')";
         try {
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
@@ -248,8 +251,7 @@ public class Sqlite {
         try {
             Class.forName(clazz);
             return true;
-        }
-        catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e){
             return false;
         }
     }

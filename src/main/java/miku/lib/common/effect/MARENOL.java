@@ -16,6 +16,7 @@ public class MARENOL extends MikuEffect{//https://www.youtube.com/watch?v=BKl4gZ
     @Override
     public void perform() {
         switch (level){
+            //TODO:Add special render effect.
             case 1:
             case 2:
                 break;
