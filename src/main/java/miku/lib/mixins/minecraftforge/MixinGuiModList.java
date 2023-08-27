@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraftforge;
 
 import miku.lib.client.api.iGuiModList;
 import miku.lib.client.util.INFO;
+import miku.lib.common.core.MikuLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -70,15 +71,12 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
         ForgeVersion.CheckResult vercheck = ForgeVersion.getResult(selectedMod);
 
         String logoFile = selectedMod.getMetadata().logoFile;
-        if (!logoFile.isEmpty())
-        {
+        if (miku || !MikuLib.isLAIN()) if (!logoFile.isEmpty()) {
             TextureManager tm = mc.getTextureManager();
             IResourcePack pack = FMLClientHandler.instance().getResourcePackFor(selectedMod.getModId());
-            try
-            {
+            try {
                 BufferedImage logo = null;
-                if (pack != null)
-                {
+                if (pack != null) {
                     logo = pack.getPackImage();
                 }
                 else
@@ -116,56 +114,113 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
             IModGuiFactory guiFactory = FMLClientHandler.instance().getGuiFactoryFor(selectedMod);
             configModButton.visible = true;
             configModButton.enabled = false;
-            if (guiFactory != null)
-            {
+            if (guiFactory != null) {
                 configModButton.enabled = guiFactory.hasConfigGui();
             }
-            lines.add(selectedMod.getMetadata().name);
-            lines.add(String.format("Version: %s (%s)", selectedMod.getDisplayVersion(), selectedMod.getVersion()));
-            lines.add(String.format("Mod ID: '%s' Mod State: %s", selectedMod.getModId(), Loader.instance().getModState(selectedMod)));
-
-            if (!selectedMod.getMetadata().credits.isEmpty())
-            {
-                lines.add("Credits: " + selectedMod.getMetadata().credits);
+            if (!MikuLib.isLAIN()) {
+                lines.add(selectedMod.getMetadata().name);
+                lines.add(String.format("Version: %s (%s)", selectedMod.getDisplayVersion(), selectedMod.getVersion()));
+                lines.add(String.format("Mod ID: '%s' Mod State: %s", selectedMod.getModId(), Loader.instance().getModState(selectedMod)));
+            } else {
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
             }
 
-            lines.add("Authors: " + selectedMod.getMetadata().getAuthorList());
-            lines.add("URL: " + selectedMod.getMetadata().url);
+            if (!selectedMod.getMetadata().credits.isEmpty()) {
+                if (!MikuLib.isLAIN()) {
+                    lines.add("Credits: " + selectedMod.getMetadata().credits);
+                } else {
+                    lines.add("Let's all love Lain");
+                }
+            }
 
-            if (selectedMod.getMetadata().childMods.isEmpty())
-                lines.add("No child mods for this mod");
-            else
-                lines.add("Child mods: " + selectedMod.getMetadata().getChildModList());
+            if (!MikuLib.isLAIN()) {
+                lines.add("Authors: " + selectedMod.getMetadata().getAuthorList());
+                lines.add("URL: " + selectedMod.getMetadata().url);
+            } else {
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
+            }
 
-            if (vercheck.status == ForgeVersion.Status.OUTDATED || vercheck.status == ForgeVersion.Status.BETA_OUTDATED)
-                lines.add(s);
+            if (selectedMod.getMetadata().childMods.isEmpty()) {
+                if (!MikuLib.isLAIN()) {
+                    lines.add("No child mods for this mod");
+                } else {
+                    lines.add("Let's all love Lain");
+                }
+            } else {
+                if (!MikuLib.isLAIN()) {
+                    lines.add("Child mods: " + selectedMod.getMetadata().getChildModList());
+                } else {
+                    lines.add("Let's all love Lain");
+                }
+            }
 
-            lines.add(null);
-            lines.add(selectedMod.getMetadata().description);
-            if(miku)lines.clear();
-        }
-        else
-        {
-            lines.add(WHITE + selectedMod.getName());
-            lines.add(WHITE + "Version: " + selectedMod.getVersion());
-            lines.add(WHITE + "Mod State: " + Loader.instance().getModState(selectedMod));
-            if (vercheck.status == ForgeVersion.Status.OUTDATED || vercheck.status == ForgeVersion.Status.BETA_OUTDATED)
-                lines.add(s);
+            if (vercheck.status == ForgeVersion.Status.OUTDATED || vercheck.status == ForgeVersion.Status.BETA_OUTDATED) {
+                if (!MikuLib.isLAIN()) {
+                    lines.add(s);
+                } else {
+                    lines.add("Let's all love Lain");
+                }
+            }
 
-            lines.add(null);
-            lines.add(RED + "No mod information found");
-            lines.add(RED + "Ask your mod author to provide a mod mcmod.info file");
-        }
-
-        if ((vercheck.status == ForgeVersion.Status.OUTDATED || vercheck.status == ForgeVersion.Status.BETA_OUTDATED) && vercheck.changes.size() > 0)
-        {
-            lines.add(null);
-            lines.add("Changes:");
-            for (Map.Entry<ComparableVersion, String> entry : vercheck.changes.entrySet())
-            {
-                lines.add("  " + entry.getKey() + ":");
-                lines.add(entry.getValue());
+            if (!MikuLib.isLAIN()) {
                 lines.add(null);
+                lines.add(selectedMod.getMetadata().description);
+            } else {
+                lines.add(null);
+                lines.add("Let's all love Lain");
+            }
+            if (miku) lines.clear();
+        }
+        else {
+            if (!MikuLib.isLAIN()) {
+                lines.add(WHITE + selectedMod.getName());
+                lines.add(WHITE + "Version: " + selectedMod.getVersion());
+                lines.add(WHITE + "Mod State: " + Loader.instance().getModState(selectedMod));
+            } else {
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
+            }
+            if (vercheck.status == ForgeVersion.Status.OUTDATED || vercheck.status == ForgeVersion.Status.BETA_OUTDATED) {
+                if (!MikuLib.isLAIN()) {
+                    lines.add(s);
+                } else {
+                    lines.add("Let's all love Lain");
+                }
+            }
+
+            if (!MikuLib.isLAIN()) {
+                lines.add(null);
+                lines.add(RED + "No mod information found");
+                lines.add(RED + "Ask your mod author to provide a mod mcmod.info file");
+            } else {
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
+            }
+        }
+
+        if ((vercheck.status == ForgeVersion.Status.OUTDATED || vercheck.status == ForgeVersion.Status.BETA_OUTDATED) && vercheck.changes.size() > 0) {
+            if (!MikuLib.isLAIN()) {
+                lines.add(null);
+                lines.add("Changes:");
+            } else {
+                lines.add("Let's all love Lain");
+                lines.add("Let's all love Lain");
+            }
+            for (Map.Entry<ComparableVersion, String> entry : vercheck.changes.entrySet()) {
+                if (!MikuLib.isLAIN()) {
+                    lines.add("  " + entry.getKey() + ":");
+                    lines.add(entry.getValue());
+                    lines.add(null);
+                } else {
+                    lines.add("Let's all love Lain");
+                    lines.add("Let's all love Lain");
+                    lines.add("Let's all love Lain");
+                }
             }
         }
 
