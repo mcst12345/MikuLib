@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iViewFrustum;
 import miku.lib.client.util.ContainerLocalRenderInformation;
+import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -237,6 +238,9 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     public void renderEntities(Entity renderViewEntity, ICamera camera, float partialTicks) {
+        if (Sqlite.DEBUG()) {
+            System.out.println("MikuInfo:Rendering entity " + renderViewEntity.getClass() + ".");
+        }
         int pass = net.minecraftforge.client.MinecraftForgeClient.getRenderPass();
         if (this.renderEntitiesStartupCounter > 0) {
             if (pass > 0) return;

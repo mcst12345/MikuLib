@@ -244,7 +244,7 @@ public abstract class MixinWorld implements iWorld {
         if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))
             return false;
         if (DEBUG()) System.out.println(entityIn.getClass().toString());
-        // do not drop any items while restoring blocksnapshots. Prevents dupes
+        // Do not drop any items while restoring blocksnapshots. Prevents dupes
         if (!this.isRemote && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
             return false;
 
