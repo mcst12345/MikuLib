@@ -4,6 +4,7 @@ import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iWorldClient;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
@@ -109,19 +110,44 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
         if(EntityUtil.isProtected(entityIn))ci.cancel();
     }
 
-    @Inject(at=@At("HEAD"),method = "onEntityAdded", cancellable = true)
-    public void onEntityAdded(Entity entityIn, CallbackInfo ci){
-        if(EntityUtil.isDEAD(entityIn))ci.cancel();
+    @Inject(at = @At("HEAD"), method = "onEntityAdded", cancellable = true)
+    public void onEntityAdded(Entity entityIn, CallbackInfo ci) {
+        if (EntityUtil.isDEAD(entityIn)) ci.cancel();
     }
 
-    @Inject(at=@At("HEAD"),method = "onEntityRemoved", cancellable = true)
-    public void onEntityRemoved(Entity entityIn, CallbackInfo ci){
-        if(EntityUtil.isProtected(entityIn))ci.cancel();
+    @Inject(at = @At("HEAD"), method = "onEntityRemoved", cancellable = true)
+    public void onEntityRemoved(Entity entityIn, CallbackInfo ci) {
+        if (EntityUtil.isProtected(entityIn)) ci.cancel();
     }
 
-    @Inject(at=@At("HEAD"),method = "addEntityToWorld", cancellable = true)
-    public void addEntityToWorld(int entityID, Entity entityToSpawn, CallbackInfo ci){
-        if(EntityUtil.isDEAD(entityToSpawn))ci.cancel();
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void addEntityToWorld(int entityID, Entity entityToSpawn) {
+        if (EntityUtil.isDEAD(entityToSpawn)) {
+            if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity " + entityToSpawn.getClass());
+            return;
+        }
+
+        Entity entity = this.getEntityByID(entityID);
+
+        if (Sqlite.DEBUG()) System.out.println("MikuInfo:Adding entity " + entityToSpawn.getClass() + " to world.");
+
+        if (entity != null) {
+            this.removeEntity(entity);
+        }
+
+        this.entityList.add(entityToSpawn);
+        entityToSpawn.setEntityId(entityID);
+
+        if (!this.spawnEntity(entityToSpawn)) {
+            this.entitySpawnQueue.add(entityToSpawn);
+        }
+
+        this.entitiesById.addKey(entityID, entityToSpawn);
     }
 
     @Inject(at = @At("TAIL"), method = "getEntityByID", cancellable = true)

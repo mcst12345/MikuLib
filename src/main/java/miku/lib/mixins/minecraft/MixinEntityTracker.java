@@ -12,6 +12,7 @@ import net.minecraft.entity.item.*;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.IAnimals;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.util.IntHashMap;
@@ -54,7 +55,8 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn, int trackingRange, final int updateFrequency, boolean sendVelocityUpdates) {
-        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || EntityUtil.isProtected(entityIn)) return;
+        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+            return;
         try {
             if (this.trackedEntityHashTable.containsItem(entityIn.getEntityId())) {
                 throw new IllegalStateException("Entity is already tracked!");
@@ -94,7 +96,8 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn) {
-        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || EntityUtil.isProtected(entityIn)) return;
+        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+            return;
         if (net.minecraftforge.fml.common.registry.EntityRegistry.instance().tryTrackingEntity((EntityTracker) (Object) this, entityIn))
             return;
 
@@ -174,7 +177,8 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn, int trackingRange, int updateFrequency) {
-        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || EntityUtil.isProtected(entityIn)) return;
+        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+            return;
         this.track(entityIn, trackingRange, updateFrequency, false);
     }
 

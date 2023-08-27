@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import io.netty.buffer.Unpooled;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.GuardianSound;
@@ -239,6 +240,9 @@ public abstract class MixinNetHandlerPlayClient {
         EntityLivingBase entitylivingbase = (EntityLivingBase) EntityList.createEntityByID(packetIn.getEntityType(), ((iMinecraft) this.client).MikuWorld());
 
         if (entitylivingbase != null) {
+            if (Sqlite.DEBUG()) {
+                System.out.println("MikuInfo:Spawn mob:" + entitylivingbase.getClass());
+            }
             EntityTracker.updateServerPosition(entitylivingbase, d0, d1, d2);
             entitylivingbase.renderYawOffset = (float) (packetIn.getHeadPitch() * 360) / 256.0F;
             entitylivingbase.rotationYawHead = (float) (packetIn.getHeadPitch() * 360) / 256.0F;
