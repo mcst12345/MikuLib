@@ -1327,7 +1327,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.shutdown();
         }
 
-        this.timer.updateTimer();
+        if (!stop) this.timer.updateTimer();
         this.MikuProfiler.startSection("scheduledExecutables");
 
         if (!MikuInsaneMode.isMikuInsaneMode()) {
@@ -1416,14 +1416,16 @@ public abstract class MixinMinecraft implements iMinecraft {
         ++this.fpsCounter;
         boolean flag = this.isSingleplayer() && this.currentScreen != null && this.currentScreen.doesGuiPauseGame() && !this.integratedServer.getPublic();
 
-        if (this.isGamePaused != flag) {
-            if (this.isGamePaused) {
-                this.renderPartialTicksPaused = this.timer.renderPartialTicks;
-            } else {
-                this.timer.renderPartialTicks = this.renderPartialTicksPaused;
-            }
+        if (!stop) {
+            if (this.isGamePaused != flag) {
+                if (this.isGamePaused) {
+                    this.renderPartialTicksPaused = this.timer.renderPartialTicks;
+                } else {
+                    this.timer.renderPartialTicks = this.renderPartialTicksPaused;
+                }
 
-            this.isGamePaused = flag;
+                this.isGamePaused = flag;
+            }
         }
 
         long k = System.nanoTime();
