@@ -35,6 +35,7 @@ public class LibLoader {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void RegisterModel(ModelRegistryEvent event) {
+        System.out.println("MikuInfo:Registering renders.");
         RenderingRegistry.registerEntityRenderingHandler(Lain.class, manager -> new RenderLain(manager, new ModelLain(), 0.0f));
     }
 }
