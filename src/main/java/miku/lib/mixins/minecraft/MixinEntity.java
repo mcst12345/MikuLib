@@ -91,6 +91,9 @@ public abstract class MixinEntity implements iEntity {
     @Final
     private static DataParameter<String> CUSTOM_NAME;
 
+    @Shadow
+    private int entityId;
+
     /**
      * @author mcst12345
      * @reason Let's all love Lain
@@ -243,5 +246,17 @@ public abstract class MixinEntity implements iEntity {
 
             return I18n.translateToLocal("entity." + s + ".name");
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Let's all love Lain
+     */
+    @Overwrite
+    public String toString() {
+        if (MikuLib.isLAIN()) {
+            return "Let's all love Lain";
+        }
+        return String.format("%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]", this.getClass().getSimpleName(), this.getName(), this.entityId, this.world == null ? "~NULL~" : this.world.getWorldInfo().getWorldName(), this.posX, this.posY, this.posZ);
     }
 }
