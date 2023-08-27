@@ -293,7 +293,12 @@ public abstract class MixinRenderGlobal {
 
                 if (!classinheritancemultimap.isEmpty()) {
                     for (Entity entity2 : classinheritancemultimap) {
-                        if (!entity2.shouldRenderInPass(pass)) continue;
+                        if (!entity2.shouldRenderInPass(pass)) {
+                            if (Sqlite.DEBUG()) {
+                                System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
+                            }
+                            continue;
+                        }
                         boolean flag = this.renderManager.shouldRender(entity2, camera, d0, d1, d2) || entity2.isRidingOrBeingRiddenBy(this.mc.player);
 
                         if (flag) {
@@ -310,6 +315,10 @@ public abstract class MixinRenderGlobal {
                                 if (this.renderManager.isRenderMultipass(entity2)) {
                                     list2.add(entity2);
                                 }
+                            }
+                        } else {
+                            if (Sqlite.DEBUG()) {
+                                System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
                             }
                         }
                     }
