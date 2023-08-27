@@ -287,7 +287,12 @@ public abstract class MixinRenderGlobal {
             List<Entity> list1 = Lists.newArrayList();
             List<Entity> list2 = Lists.newArrayList();
 
-            list1.addAll(((iWorld) this.world).getProtectedEntities());
+            for (Entity e : ((iWorld) this.world).getProtectedEntities()) {
+                if (Sqlite.DEBUG()) {
+                    System.out.println("Adding entity:" + e.getClass());
+                }
+                list1.add(e);
+            }
 
             BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
 
