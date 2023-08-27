@@ -4,6 +4,7 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Lists;
 import miku.lib.client.api.iFontRenderer;
+import miku.lib.common.core.MikuLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -58,31 +59,34 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
     private static final ResourceLocation MikuText = new ResourceLocation("miku:texts/splashes.txt");
 
     @Inject(at=@At("TAIL"),method = "<init>")
-    public void init(CallbackInfo ci){
-        try {
-            List<String> list = Lists.newArrayList();
-            IResource iresource = Minecraft.getMinecraft().getResourceManager().getResource(MikuText);
-            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8));
-            String s;
+    public void init(CallbackInfo ci) {
+        if (MikuLib.isLAIN()) {
+            this.splashText = "Let's all love Lain";
+        } else {
+            try {
+                List<String> list = Lists.newArrayList();
+                IResource iresource = Minecraft.getMinecraft().getResourceManager().getResource(MikuText);
+                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(iresource.getInputStream(), StandardCharsets.UTF_8));
+                String s;
 
-            while ((s = bufferedreader.readLine()) != null) {
-                s = s.trim();
+                while ((s = bufferedreader.readLine()) != null) {
+                    s = s.trim();
 
-                if (!s.isEmpty()) {
-                    list.add(s);
+                    if (!s.isEmpty()) {
+                        list.add(s);
+                    }
                 }
+
+                if (!list.isEmpty()) {
+
+                    do {
+                        this.splashText = list.get(RANDOM.nextInt(list.size()));
+
+                    } while (this.splashText.hashCode() == 39393939);//What the fuck is this number?
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            if (!list.isEmpty())
-            {
-
-                do {
-                    this.splashText = list.get(RANDOM.nextInt(list.size()));
-
-                } while (this.splashText.hashCode() == 39393939);//What the fuck is this number?
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
