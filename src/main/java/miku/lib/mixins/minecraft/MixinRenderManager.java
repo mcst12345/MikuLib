@@ -90,6 +90,8 @@ public abstract class MixinRenderManager {
             render = this.getEntityRenderObject(entityIn);
 
             if (render != null && this.renderEngine != null) {
+                if (Sqlite.DEBUG())
+                    System.out.println("MikuInfo:Rendering entity at X:" + x + " Y:" + x + " Z:" + z + " Yaw:" + yaw + " partialTicks:" + partialTicks);
                 try {
                     render.setRenderOutlines(this.renderOutlines);
                     render.doRender(entityIn, x, y, z, yaw, partialTicks);
@@ -115,6 +117,8 @@ public abstract class MixinRenderManager {
                         throwable.printStackTrace();
                     }
                 }
+            } else {
+                System.out.println("MikuWarn:Failed to render entity:" + entityIn.getClass() + ",maybe render is null or renderEngine is null");
             }
         } catch (Throwable t) {
             System.out.println("MikuWarn:Catch exception rendering entity:" + entityIn.getClass());
