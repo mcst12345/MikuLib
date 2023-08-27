@@ -251,7 +251,7 @@ public abstract class MixinWorld implements iWorld {
             return false;
         if (DEBUG()) System.out.println(entityIn.getClass().toString());
         // Do not drop any items while restoring blocksnapshots. Prevents dupes
-        if (!this.isRemote && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
+        if ((!this.isRemote && !EntityUtil.isProtected(entityIn)) && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
             return false;
 
         int i = MathHelper.floor(entityIn.posX / 16.0D);
