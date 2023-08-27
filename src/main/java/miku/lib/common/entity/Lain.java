@@ -12,6 +12,8 @@ import net.minecraft.entity.ai.EntityAIMoveIndoors;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.world.World;
 
+//https://bgm.tv/subject/2582
+
 public class Lain extends EntityCreature implements ProtectedEntity {
     static {
         MikuLib.setLAIN();
