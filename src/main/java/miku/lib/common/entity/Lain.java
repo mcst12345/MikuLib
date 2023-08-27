@@ -19,7 +19,6 @@ public class Lain extends EntityCreature implements ProtectedEntity {
 
     public Lain(World worldIn) {
         super(worldIn);
-        MikuLib.setLAIN();
     }
 
     @Override
@@ -52,5 +51,14 @@ public class Lain extends EntityCreature implements ProtectedEntity {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIMoveIndoors(this));
         this.tasks.addTask(2, new EntityAILookIdle(this));
+    }
+
+    @Override
+    public void onUpdate() {
+        this.deathTime = 0;
+        this.hurtTime = 0;
+        super.onUpdate();
+        this.deathTime = 0;
+        this.hurtTime = 0;
     }
 }

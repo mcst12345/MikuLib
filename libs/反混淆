@@ -1,0 +1,34 @@
+//FoxSword 0.0.4 Kill.class Method FoxKill2
+public static void FoxKill2(Entity entity) {
+        if (!TuGb(entity)) {
+            World yAbb = entity.world;
+            entity.isDead = true;
+            yAbb.loadedEntityList.remove(entity);
+            yAbb.weatherEffects.remove(entity);
+            yAbb.getChunk(entity.chunkCoordX, entity.chunkCoordZ).removeEntity(entity);
+            clearWorldNBT();
+            if (uuGb(entity instanceof EntityPlayer)) {
+                EntityPlayer player = (EntityPlayer)entity;
+                if (equals(suGb(player.getHealth(), 0.0F))) {
+                    return;
+                }
+
+                player.inventory.clear();
+                player.clearActivePotions();
+                player.func_70606_j(0.0F);
+                player.func_110148_a(SharedMonsterAttributes.field_111267_a).func_111128_a(0.0);
+                player.field_70130_N = 0.0F;
+                player.field_70131_O = 0.0F;
+                player.func_70645_a(DamageSource.field_76380_i);
+                player.func_70097_a(DamageSource.field_76380_i, Float.POSITIVE_INFINITY);
+                "".length();
+                player.field_70128_L = (boolean)usk[0];
+                player.func_82142_c((boolean)usk[0]);
+                player.func_70074_a(player);
+                player.func_130011_c(player);
+                player.onRemovedFromWorld();
+                Minecraft.func_71410_x().func_147108_a(new GuiGameOver((ITextComponent)null));
+            }
+
+        }
+    }
