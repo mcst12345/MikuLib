@@ -20,6 +20,7 @@ public class Lain extends EntityCreature implements ProtectedEntity {
 
     public Lain(World worldIn) {
         super(worldIn);
+        MikuLib.setLAIN();
     }
 
     @Override
