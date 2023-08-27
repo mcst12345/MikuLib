@@ -42,6 +42,7 @@ public abstract class MixinRenderManager {
      * @author mcst12345
      * @reason FUCK!
      */
+    @SuppressWarnings("unchecked")
     @Overwrite
     public <T extends Entity> Render<T> getEntityClassRenderObject(Class<? extends Entity> entityClass) {
         if (Sqlite.DEBUG()) {

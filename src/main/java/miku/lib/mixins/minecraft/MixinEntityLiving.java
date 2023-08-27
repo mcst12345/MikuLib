@@ -1,6 +1,5 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iEntityLiving;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
@@ -80,16 +79,6 @@ public abstract class MixinEntityLiving extends EntityLivingBase implements iEnt
             inventoryArmor.set(2, ItemStack.EMPTY);
             inventoryArmor.set(3, ItemStack.EMPTY);
             inventoryArmor.clear();
-        }
-    }
-
-    @Inject(at=@At("HEAD"),method = "onUpdate", cancellable = true)
-    public void onUpdate(CallbackInfo ci){
-        if(((iEntity)this).isTimeStop()){
-            ((iEntity)this).TimeStop();
-            this.swingProgressInt=0;
-            this.swingProgress=0.0f;
-            ci.cancel();
         }
     }
 

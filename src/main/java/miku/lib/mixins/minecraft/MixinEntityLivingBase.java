@@ -1,6 +1,5 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.common.api.iEntity;
 import miku.lib.common.api.iEntityLivingBase;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
@@ -605,12 +604,6 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      */
     @Overwrite
     public void onUpdate() {
-        if (((iEntity) this).isTimeStop()) {
-            ((iEntity) this).TimeStop();
-            this.swingProgressInt = 0;
-            this.swingProgress = 0.0f;
-            return;
-        }
         boolean Flag;
         try {
             Flag = net.minecraftforge.common.ForgeHooks.onLivingUpdate((EntityLivingBase) (Object) this) && !EntityUtil.isProtected(this);
