@@ -28,6 +28,7 @@ import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.shader.ShaderGroup;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.BlockRenderLayer;
@@ -239,9 +240,6 @@ public abstract class MixinRenderGlobal {
      */
     @Overwrite
     public void renderEntities(Entity renderViewEntity, ICamera camera, float partialTicks) {
-        if (Sqlite.DEBUG()) {
-            System.out.println("MikuInfo:Rendering entity " + renderViewEntity.getClass() + ".");
-        }
         int pass = net.minecraftforge.client.MinecraftForgeClient.getRenderPass();
         if (this.renderEntitiesStartupCounter > 0) {
             if (pass > 0) return;
@@ -304,7 +302,8 @@ public abstract class MixinRenderGlobal {
                     for (Entity entity2 : classinheritancemultimap) {
                         if (!entity2.shouldRenderInPass(pass)) {
                             if (Sqlite.DEBUG()) {
-                                System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
+                                if (!(entity2 instanceof EntityPlayer))
+                                    System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
                             }
                             continue;
                         }
@@ -327,7 +326,8 @@ public abstract class MixinRenderGlobal {
                             }
                         } else {
                             if (Sqlite.DEBUG()) {
-                                System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
+                                if (!(entity2 instanceof EntityPlayer))
+                                    System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
                             }
                         }
                     }

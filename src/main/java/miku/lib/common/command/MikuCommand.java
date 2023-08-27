@@ -9,6 +9,6 @@ public class MikuCommand {
         Register.RegisterCommands(new ClearDBCache());
         Register.RegisterCommands(new SQLOperation());
         Register.RegisterCommands(new MikuInsaneMode());
-        Register.RegisterCommands(new ShowClientEntities(), true);
+        Register.RegisterCommands(new ShowClientEntities());
     }
 }
