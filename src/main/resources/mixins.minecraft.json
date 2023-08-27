@@ -74,6 +74,7 @@
     "MixinGuiScreen",
     "MixinGuiScreenAdvancements",
     "MixinGuiScreenDemo",
+    "MixinI18N",
     "MixinIntegratedServer",
     "MixinInventoryEffectRenderer",
     "MixinItemRenderer",
