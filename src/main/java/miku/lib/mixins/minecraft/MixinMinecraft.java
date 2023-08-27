@@ -1002,11 +1002,12 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void runTick() throws IOException
     {
+        boolean stop = SpecialItem.isTimeStop();
         if (this.rightClickDelayTimer > 0) {
             --this.rightClickDelayTimer;
         }
 
-        if (!MikuInsaneMode.isMikuInsaneMode()) try {
+        if (!MikuInsaneMode.isMikuInsaneMode() && !stop) try {
             FMLCommonHandler.instance().onPreClientTick();
         } catch (Throwable e) {
             System.out.println("MikuWarn:Catch exception at onPreClientTick");
@@ -1104,11 +1105,13 @@ public abstract class MixinMinecraft implements iMinecraft {
 
         if (this.MikuWorld != null) {
             if (this.player != null) {
-                ++this.joinPlayerCounter;
+                if (!stop) {
+                    ++this.joinPlayerCounter;
 
-                if (this.joinPlayerCounter == 30) {
-                    this.joinPlayerCounter = 0;
-                    this.MikuWorld.joinEntityInSurroundings(this.player);
+                    if (this.joinPlayerCounter == 30) {
+                        this.joinPlayerCounter = 0;
+                        this.MikuWorld.joinEntityInSurroundings(this.player);
+                    }
                 }
             }
 
@@ -1122,21 +1125,20 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.MikuProfiler.endStartSection("levelRenderer");
 
-            if (!this.isGamePaused && !TimeStop && !SpecialItem.isTimeStop())
-            {
+            if (!this.isGamePaused && !TimeStop && !stop) {
                 this.renderGlobal.updateClouds();
             }
 
             this.MikuProfiler.endStartSection("level");
 
             if (!this.isGamePaused) {
-                if (this.MikuWorld.getLastLightningBolt() > 0 && !TimeStop && !SpecialItem.isTimeStop()) {
+                if (this.MikuWorld.getLastLightningBolt() > 0 && !TimeStop && !stop) {
                     this.MikuWorld.setLastLightningBolt(this.MikuWorld.getLastLightningBolt() - 1);
                 }
 
                 this.MikuWorld.updateEntities();
             }
-        } else if (this.MikuEntityRenderer.isShaderActive() && !TimeStop && !SpecialItem.isTimeStop()) {
+        } else if (this.MikuEntityRenderer.isShaderActive() && !TimeStop && !stop) {
             this.MikuEntityRenderer.stopUseShader();
         }
 
@@ -1147,9 +1149,11 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
 
         if (this.MikuWorld != null) {
-            if (!this.isGamePaused && !SpecialItem.isTimeStop() && !TimeStop) {
-                this.MikuWorld.setAllowedSpawnTypes(this.MikuWorld.getDifficulty() != EnumDifficulty.PEACEFUL, true);
-                this.tutorial.update();
+            if (!this.isGamePaused) {
+                if (!stop && !TimeStop) {
+                    this.MikuWorld.setAllowedSpawnTypes(this.MikuWorld.getDifficulty() != EnumDifficulty.PEACEFUL, true);
+                    this.tutorial.update();
+                }
 
                 try {
                     this.MikuWorld.tick();
@@ -1161,14 +1165,13 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.MikuProfiler.endStartSection("animateTick");
 
-            if (!this.isGamePaused && this.MikuWorld != null && !TimeStop && !SpecialItem.isTimeStop()) {
+            if (!this.isGamePaused && this.MikuWorld != null) {
                 this.MikuWorld.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
             }
 
             this.MikuProfiler.endStartSection("particles");
 
-            if (!this.isGamePaused && !TimeStop && !SpecialItem.isTimeStop())
-            {
+            if (!this.isGamePaused) {
                 this.effectRenderer.updateEffects();
             }
         } else if (this.networkManager != null) {
@@ -1177,7 +1180,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         }
 
         this.MikuProfiler.endSection();
-        if (!MikuInsaneMode.isMikuInsaneMode()) try {
+        if (!MikuInsaneMode.isMikuInsaneMode() && !TimeStop && !stop) try {
             FMLCommonHandler.instance().onPostClientTick();
         } catch (Throwable e) {
             System.out.println("MikuWarn:catch exception at onPostClientTick");
@@ -1316,6 +1319,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      */
     @Overwrite
     public void runGameLoop() throws IOException {
+        boolean stop = SpecialItem.isTimeStop();
         long i = System.nanoTime();
         this.MikuProfiler.startSection("root");
 
@@ -1362,7 +1366,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.MikuProfiler.endSection();
 
         if (!this.skipRenderWorld) {
-            if (!MikuInsaneMode.isMikuInsaneMode()) try {
+            if (!MikuInsaneMode.isMikuInsaneMode() && !stop) try {
                 FMLCommonHandler.instance().onRenderTickStart(this.timer.renderPartialTicks);
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Catch exception at onRenderTickStart");
@@ -1373,7 +1377,7 @@ public abstract class MixinMinecraft implements iMinecraft {
             this.MikuProfiler.endStartSection("toasts");
             this.toastGui.drawToast(new ScaledResolution((Minecraft) (Object) this));
             this.MikuProfiler.endSection();
-            if (!MikuInsaneMode.isMikuInsaneMode()) try {
+            if (!MikuInsaneMode.isMikuInsaneMode() && !stop) try {
                 FMLCommonHandler.instance().onRenderTickEnd(this.timer.renderPartialTicks);
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Catch exception at onRenderTickEnd");
@@ -1383,16 +1387,18 @@ public abstract class MixinMinecraft implements iMinecraft {
 
         this.MikuProfiler.endSection();
 
-        if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart && !this.gameSettings.hideGUI) {
-            if (!this.MikuProfiler.profilingEnabled) {
-                this.MikuProfiler.clearProfiling();
-            }
+        if (!stop) {
+            if (this.gameSettings.showDebugInfo && this.gameSettings.showDebugProfilerChart && !this.gameSettings.hideGUI) {
+                if (!this.MikuProfiler.profilingEnabled) {
+                    this.MikuProfiler.clearProfiling();
+                }
 
-            this.MikuProfiler.profilingEnabled = true;
-            this.displayDebugInfo(i1);
-        } else {
-            this.MikuProfiler.profilingEnabled = false;
-            this.prevFrameTime = System.nanoTime();
+                this.MikuProfiler.profilingEnabled = true;
+                this.displayDebugInfo(i1);
+            } else {
+                this.MikuProfiler.profilingEnabled = false;
+                this.prevFrameTime = System.nanoTime();
+            }
         }
 
         this.framebuffer.unbindFramebuffer();
@@ -1424,16 +1430,18 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.frameTimer.addFrame(k - this.startNanoTime);
         this.startNanoTime = k;
 
-        while (getSystemTime() >= this.debugUpdateTime + 1000L) {
-            debugFPS = this.fpsCounter;
-            this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", debugFPS, RenderChunk.renderChunksUpdated, RenderChunk.renderChunksUpdated == 1 ? "" : "s", (float) this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : this.gameSettings.limitFramerate, this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : "");
-            RenderChunk.renderChunksUpdated = 0;
-            this.debugUpdateTime += 1000L;
-            this.fpsCounter = 0;
-            this.usageSnooper.addMemoryStatsToSnooper();
+        if (!stop) {
+            while (getSystemTime() >= this.debugUpdateTime + 1000L) {
+                debugFPS = this.fpsCounter;
+                this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", debugFPS, RenderChunk.renderChunksUpdated, RenderChunk.renderChunksUpdated == 1 ? "" : "s", (float) this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : this.gameSettings.limitFramerate, this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : "");
+                RenderChunk.renderChunksUpdated = 0;
+                this.debugUpdateTime += 1000L;
+                this.fpsCounter = 0;
+                this.usageSnooper.addMemoryStatsToSnooper();
 
-            if (!this.usageSnooper.isSnooperRunning()) {
-                this.usageSnooper.startSnooper();
+                if (!this.usageSnooper.isSnooperRunning()) {
+                    this.usageSnooper.startSnooper();
+                }
             }
         }
 

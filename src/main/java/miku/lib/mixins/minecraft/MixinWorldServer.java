@@ -490,40 +490,42 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
     public void tick() {
         super.tick();
 
-        try {
-            if (this.getWorldInfo().isHardcoreModeEnabled() && this.getDifficulty() != EnumDifficulty.HARD) {
-                this.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+        boolean stop = SpecialItem.isTimeStop();
 
-        if (this.provider == null) {
-            System.out.println("MikuFATAL:WorldProvider is null!");
-            throw new RuntimeException("WorldProvider is null!");
+        if (!stop) {
+            try {
+                if (this.getWorldInfo().isHardcoreModeEnabled() && this.getDifficulty() != EnumDifficulty.HARD) {
+                    this.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
 
         this.provider.getBiomeProvider().cleanupCache();
 
-        try {
-            if (this.areAllPlayersAsleep()) {
-                if (this.getGameRules().getBoolean("doDaylightCycle")) {
-                    long i = this.getWorldTime() + 24000L;
-                    this.setWorldTime(i - i % 24000L);
-                }
+        if (!stop) {
+            try {
+                if (this.areAllPlayersAsleep()) {
+                    if (this.getGameRules().getBoolean("doDaylightCycle")) {
+                        long i = this.getWorldTime() + 24000L;
+                        this.setWorldTime(i - i % 24000L);
+                    }
 
-                this.wakeAllPlayers();
+                    this.wakeAllPlayers();
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
-        } catch (Throwable t) {
-            t.printStackTrace();
         }
 
         this.profiler.startSection("mobSpawner");
 
         try {
-            if (this.getGameRules().getBoolean("doMobSpawning") && this.worldInfo.getTerrainType() != WorldType.DEBUG_ALL_BLOCK_STATES) {
-                this.entitySpawner.findChunksForSpawning((WorldServer) (Object) this, this.spawnHostileMobs, this.spawnPeacefulMobs, this.worldInfo.getWorldTotalTime() % 400L == 0L);
-            }
+            if (!stop)
+                if (this.getGameRules().getBoolean("doMobSpawning") && this.worldInfo.getTerrainType() != WorldType.DEBUG_ALL_BLOCK_STATES) {
+                    this.entitySpawner.findChunksForSpawning((WorldServer) (Object) this, this.spawnHostileMobs, this.spawnPeacefulMobs, this.worldInfo.getWorldTotalTime() % 400L == 0L);
+                }
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -532,14 +534,16 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
         this.chunkProvider.tick();
         int j = this.calculateSkylightSubtracted(1.0F);
 
-        if (j != this.getSkylightSubtracted()) {
-            this.setSkylightSubtracted(j);
-        }
+        if (!stop) {
+            if (j != this.getSkylightSubtracted()) {
+                this.setSkylightSubtracted(j);
+            }
 
-        this.worldInfo.setWorldTotalTime(this.worldInfo.getWorldTotalTime() + 1L);
+            this.worldInfo.setWorldTotalTime(this.worldInfo.getWorldTotalTime() + 1L);
 
-        if (this.getGameRules().getBoolean("doDaylightCycle")) {
-            this.setWorldTime(this.getWorldTime() + 1L);
+            if (this.getGameRules().getBoolean("doDaylightCycle")) {
+                this.setWorldTime(this.getWorldTime() + 1L);
+            }
         }
 
         this.profiler.endStartSection("tickPending");
@@ -548,13 +552,17 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
         this.updateBlocks();
         this.profiler.endStartSection("chunkMap");
         this.playerChunkMap.tick();
-        this.profiler.endStartSection("village");
-        this.villageCollection.tick();
-        this.villageSiege.tick();
-        this.profiler.endStartSection("portalForcer");
-        this.worldTeleporter.removeStalePortalLocations(this.getTotalWorldTime());
-        for (Teleporter tele : customTeleporters) {
-            tele.removeStalePortalLocations(getTotalWorldTime());
+        if (!stop) {
+            this.profiler.endStartSection("village");
+            this.villageCollection.tick();
+            this.villageSiege.tick();
+        }
+        if (!stop) {
+            this.profiler.endStartSection("portalForcer");
+            this.worldTeleporter.removeStalePortalLocations(this.getTotalWorldTime());
+            for (Teleporter tele : customTeleporters) {
+                tele.removeStalePortalLocations(getTotalWorldTime());
+            }
         }
         this.profiler.endSection();
         this.sendQueuedBlockEvents();

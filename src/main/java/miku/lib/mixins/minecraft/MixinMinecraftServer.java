@@ -9,11 +9,13 @@ import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.FieldUtil;
 import miku.lib.server.api.iDedicatedServer;
+import net.minecraft.advancements.FunctionManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.network.NetworkSystem;
 import net.minecraft.network.ServerStatusResponse;
+import net.minecraft.network.play.server.SPacketTimeUpdate;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.profiler.Snooper;
 import net.minecraft.server.MinecraftServer;
@@ -21,7 +23,9 @@ import net.minecraft.server.ServerEula;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.server.management.PlayerProfileCache;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.Util;
 import net.minecraft.util.datafix.DataFixesManager;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
@@ -42,7 +46,10 @@ import java.awt.*;
 import java.io.File;
 import java.net.Proxy;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Queue;
 import java.util.*;
+import java.util.concurrent.FutureTask;
 
 @Mixin(value = MinecraftServer.class)
 public abstract class MixinMinecraftServer implements iMinecraftServer {
@@ -61,17 +68,100 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
     @Final
     public Profiler profiler;
 
-    @Shadow
-    public abstract void updateTimeLightAndEntities();
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void updateTimeLightAndEntities() {
+        this.profiler.startSection("jobs");
+
+        synchronized (this.futureTaskQueue) {
+            while (!this.futureTaskQueue.isEmpty()) {
+                Util.runTask(this.futureTaskQueue.poll(), LOGGER);
+            }
+        }
+
+        this.profiler.endStartSection("levels");
+        net.minecraftforge.common.chunkio.ChunkIOExecutor.tick();
+
+        Integer[] ids = net.minecraftforge.common.DimensionManager.getIDs(this.tickCounter % 200 == 0);
+        for (int id : ids) {
+            long i = System.nanoTime();
+
+            if (id == 0 || this.getAllowNether()) {
+                WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
+                this.profiler.func_194340_a(() ->
+                        worldserver.getWorldInfo().getWorldName());
+
+                if (this.tickCounter % 20 == 0) {
+                    this.profiler.startSection("timeSync");
+                    this.playerList.sendPacketToAllPlayersInDimension(new SPacketTimeUpdate(worldserver.getTotalWorldTime(), worldserver.getWorldTime(), worldserver.getGameRules().getBoolean("doDaylightCycle")), worldserver.provider.getDimension());
+                    this.profiler.endSection();
+                }
+
+                this.profiler.startSection("tick");
+                if (!SpecialItem.isTimeStop())
+                    net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreWorldTick(worldserver);
+
+                try {
+                    worldserver.tick();
+                } catch (Throwable throwable1) {
+                    CrashReport crashreport = CrashReport.makeCrashReport(throwable1, "Exception ticking world");
+                    worldserver.addWorldInfoToCrashReport(crashreport);
+                    throw new ReportedException(crashreport);
+                }
+
+                try {
+                    worldserver.updateEntities();
+                } catch (Throwable throwable) {
+                    CrashReport crashreport1 = CrashReport.makeCrashReport(throwable, "Exception ticking world entities");
+                    worldserver.addWorldInfoToCrashReport(crashreport1);
+                    throw new ReportedException(crashreport1);
+                }
+
+                if (!SpecialItem.isTimeStop())
+                    net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostWorldTick(worldserver);
+                this.profiler.endSection();
+                this.profiler.startSection("tracker");
+                worldserver.getEntityTracker().tick();
+                this.profiler.endSection();
+                this.profiler.endSection();
+            }
+
+            worldTickTimes.get(id)[this.tickCounter % 100] = System.nanoTime() - i;
+        }
+
+        this.profiler.endStartSection("dim_unloading");
+        net.minecraftforge.common.DimensionManager.unloadWorlds(worldTickTimes);
+        this.profiler.endStartSection("connection");
+        this.getNetworkSystem().networkTick();
+        this.profiler.endStartSection("players");
+        this.playerList.onTick();
+        this.profiler.endStartSection("commandFunctions");
+        this.getFunctionManager().update();
+        this.profiler.endStartSection("tickables");
+
+        for (ITickable tickable : this.tickables) {
+            tickable.update();
+        }
+
+        this.profiler.endSection();
+    }
 
     @Shadow
     private long nanoTimeSinceStatusRefresh;
 
-    @Shadow @Final private ServerStatusResponse statusResponse;
+    @Shadow
+    @Final
+    private ServerStatusResponse statusResponse;
 
-    @Shadow @Final private Random random;
+    @Shadow
+    @Final
+    private Random random;
 
-    @Shadow public abstract int getMaxPlayers();
+    @Shadow
+    public abstract int getMaxPlayers();
 
     @Shadow public abstract int getCurrentPlayerCount();
 
@@ -220,6 +310,23 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
     @Final
     public static File USER_CACHE_FILE;
 
+    @Shadow
+    @Final
+    public Queue<FutureTask<?>> futureTaskQueue;
+
+    @Shadow
+    public abstract boolean getAllowNether();
+
+    @Shadow
+    public Hashtable<Integer, long[]> worldTickTimes;
+
+    @Shadow
+    public abstract FunctionManager getFunctionManager();
+
+    @Shadow
+    @Final
+    private List<ITickable> tickables;
+
     /**
      * @author mcst12345
      * @reason F
@@ -244,7 +351,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
         }
 
         this.profiler.startSection("root");
-        if(!SpecialItem.isTimeStop())this.updateTimeLightAndEntities();
+        this.updateTimeLightAndEntities();
 
         if (i - this.nanoTimeSinceStatusRefresh >= 5000000000L && !SpecialItem.isTimeStop())
         {
@@ -511,7 +618,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
 
                         try {
                             l = Integer.parseInt(s4);
-                        } catch (NumberFormatException var13) {
+                        } catch (NumberFormatException ignored) {
                         }
                     } else if ("--singleplayer".equals(s3) && s4 != null) {
                         flag3 = true;
