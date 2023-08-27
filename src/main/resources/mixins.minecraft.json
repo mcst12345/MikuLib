@@ -12,6 +12,7 @@
     "MixinChunkGeneratorEnd",
     "MixinChunkGeneratorHell",
     "MixinCommandHandler",
+    "MixinCommandSummon",
     "MixinEnderInventory",
     "MixinEntity",
     "MixinEntityAIMate",
