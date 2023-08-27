@@ -14,6 +14,8 @@ import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
+import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.SummonEntityOnClient;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -22,6 +24,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
@@ -49,6 +52,15 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    @Override
+    public void summonEntity(Entity entity) {
+        int i = MathHelper.floor(entity.posX / 16.0D);
+        int j = MathHelper.floor(entity.posZ / 16.0D);
+        this.getChunk(i, j).addEntity(entity);
+        this.loadedEntityList.add(entity);
+        this.onEntityAdded(entity);
+    }
+
     @Override
     public List<Entity> getProtectedEntities() {
         return ImmutableList.copyOf(protected_entities);
@@ -246,12 +258,19 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public boolean spawnEntity(Entity entityIn) {
-        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))
+        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn))) {
+            if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return false;
+        }
         if (DEBUG()) System.out.println(entityIn.getClass().toString());
         // Do not drop any items while restoring blocksnapshots. Prevents dupes
         if (!this.isRemote && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
             return false;
+
+        if (EntityUtil.isProtected(entityIn) && !(entityIn instanceof EntityPlayer)) {
+            NBTTagCompound nbt = new NBTTagCompound();
+            NetworkHandler.INSTANCE.sendMessageToAllPlayer(new SummonEntityOnClient(entityIn.getClass().toString().substring(5).trim(), entityIn.writeToNBT(nbt)), (World) (Object) this);
+        }
 
         int i = MathHelper.floor(entityIn.posX / 16.0D);
         int j = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -286,8 +305,10 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void onEntityAdded(Entity entityIn) {
-        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)))
+        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn))) {
+            if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return;
+        }
         for (IWorldEventListener eventListener : this.eventListeners) {
             eventListener.onEntityAdded(entityIn);
         }
@@ -590,8 +611,10 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void updateEntityWithOptionalForce(Entity entityIn, boolean forceUpdate) {
-        if (EntityUtil.isDEAD(entityIn) || ((iEntity) entityIn).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))
+        if (EntityUtil.isDEAD(entityIn) || ((iEntity) entityIn).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn))) {
+            if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return;
+        }
         if (!(entityIn instanceof EntityPlayer)) {
             int j2 = MathHelper.floor(entityIn.posX);
             int k2 = MathHelper.floor(entityIn.posZ);
