@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Mixin(value = UniversalBucket.class)
+@Mixin(value = UniversalBucket.class, remap = false)
 public abstract class MixinUniversalBucket extends Item {
     @Shadow
     @Nullable
