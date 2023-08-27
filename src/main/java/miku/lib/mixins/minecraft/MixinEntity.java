@@ -9,6 +9,7 @@ import miku.lib.common.util.FieldUtil;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ExitGame;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -20,11 +21,13 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ITeleporter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -75,14 +78,30 @@ public abstract class MixinEntity implements iEntity {
         if(EntityUtil.isDEAD((Entity)(Object)this))cir.setReturnValue(null);
     }
 
-    @Inject(at=@At("HEAD"),method = "changeDimension(ILnet/minecraftforge/common/util/ITeleporter;)Lnet/minecraft/entity/Entity;", cancellable = true,remap = false)
-    public void changeDimension(int dimensionIn, ITeleporter teleporter, CallbackInfoReturnable<Entity> cir){
-        if(EntityUtil.isDEAD((Entity)(Object)this))cir.setReturnValue(null);
+    @Inject(at = @At("HEAD"), method = "changeDimension(ILnet/minecraftforge/common/util/ITeleporter;)Lnet/minecraft/entity/Entity;", cancellable = true, remap = false)
+    public void changeDimension(int dimensionIn, ITeleporter teleporter, CallbackInfoReturnable<Entity> cir) {
+        if (EntityUtil.isDEAD((Entity) (Object) this)) cir.setReturnValue(null);
     }
 
     @Final
     @Shadow
     protected static final DataParameter<Byte> FLAGS = EntityDataManager.createKey(Entity.class, DataSerializers.BYTE);
+
+    @Shadow
+    @Final
+    private static DataParameter<String> CUSTOM_NAME;
+
+    /**
+     * @author mcst12345
+     * @reason Let's all love Lain
+     */
+    @Overwrite
+    public String getCustomNameTag() {
+        if (MikuLib.isLAIN()) {
+            return "Let's all love Lain";
+        }
+        return this.dataManager.get(CUSTOM_NAME);
+    }
 
     protected boolean isTimeStop = false;
 
@@ -190,5 +209,39 @@ public abstract class MixinEntity implements iEntity {
     @Inject(at = @At("HEAD"), method = "<clinit>")
     private static void Entity(CallbackInfo ci) {
         MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Let's all love Lain
+     */
+    @Overwrite
+    public boolean hasCustomName() {
+        if (MikuLib.isLAIN()) {
+            return false;
+        }
+        return !this.dataManager.get(CUSTOM_NAME).isEmpty();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Let's all love Lain
+     */
+    @Overwrite
+    public String getName() {
+        if (MikuLib.isLAIN()) {
+            return "Let's all love Lain";
+        }
+        if (this.hasCustomName()) {
+            return this.getCustomNameTag();
+        } else {
+            String s = EntityList.getEntityString((Entity) (Object) this);
+
+            if (s == null) {
+                s = "generic";
+            }
+
+            return I18n.translateToLocal("entity." + s + ".name");
+        }
     }
 }

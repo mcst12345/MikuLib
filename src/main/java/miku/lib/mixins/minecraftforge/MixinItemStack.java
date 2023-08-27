@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraftforge;
 
+import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.block.Block;
@@ -12,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,11 +30,35 @@ import java.util.Random;
 
 @Mixin(value = ItemStack.class)
 public abstract class MixinItemStack {
+    /**
+     * @author mcst12345
+     * @reason Let's all love Lain
+     */
+    @Overwrite
+    public String getDisplayName() {
+        if (MikuLib.isLAIN()) {
+            return "Let's all love Lain";
+        }
+        NBTTagCompound nbttagcompound = this.getSubCompound("display");
+
+        if (nbttagcompound != null) {
+            if (nbttagcompound.hasKey("Name", 8)) {
+                return nbttagcompound.getString("Name");
+            }
+
+            if (nbttagcompound.hasKey("LocName", 8)) {
+                return I18n.translateToLocal(nbttagcompound.getString("LocName"));
+            }
+        }
+
+        return this.getItem().getItemStackDisplayName((ItemStack) (Object) this);
+    }
 
     @Shadow
     public abstract Item getItem();
 
-    @Shadow private int stackSize;
+    @Shadow
+    private int stackSize;
 
     @Shadow
     private boolean isEmpty;
@@ -62,6 +88,10 @@ public abstract class MixinItemStack {
 
     @Shadow
     public abstract boolean isItemStackDamageable();
+
+    @Shadow
+    @Nullable
+    public abstract NBTTagCompound getSubCompound(String key);
 
     @Inject(at = @At("HEAD"), method = "isItemStackDamageable", cancellable = true)
     public void isItemStackDamageable(CallbackInfoReturnable<Boolean> cir) {
@@ -246,5 +276,18 @@ public abstract class MixinItemStack {
             System.out.println("MikuWarn:Catch exception at onPlayerStoppedUsing,item:" + this.getItem().getRegistryName());
             t.printStackTrace();
         }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Let's all love Lain
+     */
+    @Overwrite
+    public boolean hasDisplayName() {
+        if (MikuLib.isLAIN()) {
+            return false;
+        }
+        NBTTagCompound nbttagcompound = this.getSubCompound("display");
+        return nbttagcompound != null && nbttagcompound.hasKey("Name", 8);
     }
 }

@@ -9,6 +9,7 @@
     "MixinCommandSetDimension",
     "MixinDimensionManager",
     "MixinEventBus",
+    "MixinFluid",
     "MixinFluidEvent",
     "MixinFluidRegistry",
     "MixinFMLCommonHandler",
@@ -26,7 +27,8 @@
     "MixinObjectHolderRegistry",
     "MixinOreDictionary",
     "MixinProxyInjector",
-    "MixinRegistryDelegate"
+    "MixinRegistryDelegate",
+    "MixinUniversalBucket"
   ],
   "client": [
     "ClientMixinForgeEventFactory",
