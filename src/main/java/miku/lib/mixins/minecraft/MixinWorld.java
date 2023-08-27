@@ -586,9 +586,9 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void updateEntityWithOptionalForce(Entity entityIn, boolean forceUpdate) {
-        if (EntityUtil.isDEAD(entityIn)) return;
-        if (!(entityIn instanceof EntityPlayer))
-        {
+        if (EntityUtil.isDEAD(entityIn) || ((iEntity) entityIn).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn)))
+            return;
+        if (!(entityIn instanceof EntityPlayer)) {
             int j2 = MathHelper.floor(entityIn.posX);
             int k2 = MathHelper.floor(entityIn.posZ);
 
