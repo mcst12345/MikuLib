@@ -26,6 +26,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.security.ProtectionDomain;
@@ -39,6 +40,7 @@ public class Launch {
     private static final Field unsafe_field;
     private static final Field loadedLibraryNames_field;
     private static final ClassLoader SystemClassLoader = ClassLoader.getSystemClassLoader();
+    public static final Method AddURL;
 
     public static InstrumentationImpl getInstrumentation() {
         return instrumentation;
@@ -47,6 +49,11 @@ public class Launch {
     private static InstrumentationImpl instrumentation;
 
     static {
+        try {
+            AddURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
         try {
             loadedLibraryNames_field = ClassLoader.class.getDeclaredField("loadedLibraryNames");
             loadedLibraryNames_field.setAccessible(true);
@@ -233,7 +240,7 @@ public class Launch {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
         new Launch().launch(args);
     }
 
@@ -257,7 +264,7 @@ public class Launch {
         }
     }
 
-    private void launch(String[] args) {
+    private void launch(String[] args) throws ClassNotFoundException {
         LoadMixin();
 
         try {
@@ -275,7 +282,8 @@ public class Launch {
 
         if (instrumentation != null) {
             System.out.println("Redefine supported:" + instrumentation.isRedefineClassesSupported());
-            System.out.println("This is a test message:" + instrumentation.getObjectSize(UNSAFE));
+        } else {
+            System.out.println("MikuWarn:Failed to get instrumentation,some feature may be unavaible.");
         }
 
         OptionParser parser = new OptionParser();
@@ -329,12 +337,17 @@ public class Launch {
 
                     LogWrapper.log(Level.INFO, "Loading tweak class name %s", tweakName);
                     classLoader.addClassLoaderExclusion(tweakName.substring(0, tweakName.lastIndexOf('.')));
-                    ITweaker tweaker = (ITweaker) Class.forName(tweakName, true, classLoader).getConstructor().newInstance();
-                    tweakers.add(tweaker);
-                    it.remove();
-                    if (primaryTweaker == null) {
-                        LogWrapper.log(Level.INFO, "Using primary tweak class name %s", tweakName);
-                        primaryTweaker = tweaker;
+                    try {
+                        ITweaker tweaker = (ITweaker) Class.forName(tweakName, true, classLoader).getConstructor().newInstance();
+                        tweakers.add(tweaker);
+                        it.remove();
+                        if (primaryTweaker == null) {
+                            LogWrapper.log(Level.INFO, "Using primary tweak class name %s", tweakName);
+                            primaryTweaker = tweaker;
+                        }
+                    } catch (Throwable t) {
+                        System.out.println("MikuWarn:Failed to instancing a tweaker:" + tweakName);
+                        t.printStackTrace();
                     }
                 }
 
@@ -342,9 +355,14 @@ public class Launch {
                     ITweaker tweaker = it.next();
                     if (tweaker instanceof MixinTweaker) continue;
                     LogWrapper.log(Level.INFO, "Calling tweak class %s", tweaker.getClass().getName());
-                    tweaker.acceptOptions(options.valuesOf(nonOption), minecraftHome, assetsDir, profileName);
-                    tweaker.injectIntoClassLoader(classLoader);
-                    allTweakers.add(tweaker);
+                    try {
+                        tweaker.acceptOptions(options.valuesOf(nonOption), minecraftHome, assetsDir, profileName);
+                        tweaker.injectIntoClassLoader(classLoader);
+                        allTweakers.add(tweaker);
+                    } catch (Throwable t) {
+                        System.out.println("MikuWarn:Catch exception when calling tweaker:" + tweaker.getClass() + ",ignoring it.");
+                        t.printStackTrace();
+                    }
                     it.remove();
                 }
             } while (!tweakClassNames.isEmpty());

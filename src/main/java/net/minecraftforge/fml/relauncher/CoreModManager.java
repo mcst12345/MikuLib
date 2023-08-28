@@ -41,8 +41,6 @@ import org.apache.logging.log4j.core.LoggerContext;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -63,7 +61,6 @@ public class CoreModManager {
     private static final List<String> accessTransformers = Lists.newArrayList();
     private static final Set<String> rootNames = Sets.newHashSet();
 
-    protected static final boolean Miku1 = true;
     static boolean deobfuscatedEnvironment;
 
     static {
@@ -117,7 +114,7 @@ public class CoreModManager {
             FMLLog.log.debug("Injection complete");
 
             FMLLog.log.debug("Running coremod plugin for {} \\{{}\\}", name, coreModInstance.getClass().getName());
-            Map<String, Object> data = new HashMap<>();
+            Map<String, Object> data = new HashMap<String, Object>();
             data.put("mcLocation", mcDir);
             data.put("coremodList", loadPlugins);
             data.put("runtimeDeobfuscationEnabled", !deobfuscatedEnvironment);
@@ -128,7 +125,7 @@ public class CoreModManager {
             if (setupClass != null) {
                 try {
                     IFMLCallHook call = (IFMLCallHook) Class.forName(setupClass, true, classLoader).newInstance();
-                    Map<String, Object> callData = new HashMap<>();
+                    Map<String, Object> callData = new HashMap<String, Object>();
                     callData.put("runtimeDeobfuscationEnabled", !deobfuscatedEnvironment);
                     callData.put("mcLocation", mcDir);
                     callData.put("classLoader", classLoader);
@@ -194,7 +191,7 @@ public class CoreModManager {
             throw new RuntimeException("The patch transformer failed to load! This is critical, loading cannot continue!", e);
         }
 
-        loadPlugins = new ArrayList<>();
+        loadPlugins = new ArrayList<FMLPluginWrapper>();
         for (String rootPluginName : rootPlugins) {
             loadCoreMod(classLoader, rootPluginName, new File(FMLTweaker.getJarLocation()));
         }
@@ -378,11 +375,7 @@ public class CoreModManager {
     private static void handleCascadingTweak(File coreMod, JarFile jar, String cascadedTweaker, LaunchClassLoader classLoader, Integer sortingOrder) {
         try {
             // Have to manually stuff the tweaker into the parent classloader
-            if (ADDURL == null) {
-                ADDURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-                ADDURL.setAccessible(true);
-            }
-            ADDURL.invoke(classLoader.getClass().getClassLoader(), coreMod.toURI().toURL());
+            Launch.AddURL.invoke(classLoader.getClass().getClassLoader(), coreMod.toURI().toURL());
             classLoader.addURL(coreMod.toURI().toURL());
             CoreModManager.tweaker.injectCascadingTweak(cascadedTweaker);
             tweakSorting.put(cascadedTweaker, sortingOrder);
@@ -427,20 +420,13 @@ public class CoreModManager {
         try {
             FMLLog.log.debug("Instantiating coremod class {}", coreModName);
             classLoader.addTransformerExclusion(coreModClass);
-            Class<?> coreModClazz;
-            try {
-                coreModClazz = Class.forName(coreModClass, true, classLoader);
-            } catch (Throwable t) {
-                System.out.println("MikuWarn:Failed to Instantiate coremod:" + coreModClass);
-                t.printStackTrace();
-                return null;
-            }
-            Name coreModNameAnn = coreModClazz.getAnnotation(Name.class);
+            Class<?> coreModClazz = Class.forName(coreModClass, true, classLoader);
+            Name coreModNameAnn = coreModClazz.getAnnotation(IFMLLoadingPlugin.Name.class);
             if (coreModNameAnn != null && !Strings.isNullOrEmpty(coreModNameAnn.value())) {
                 coreModName = coreModNameAnn.value();
                 FMLLog.log.trace("coremod named {} is loading", coreModName);
             }
-            MCVersion requiredMCVersion = coreModClazz.getAnnotation(MCVersion.class);
+            MCVersion requiredMCVersion = coreModClazz.getAnnotation(IFMLLoadingPlugin.MCVersion.class);
             if (!Arrays.asList(rootPlugins).contains(coreModClass) && (requiredMCVersion == null || Strings.isNullOrEmpty(requiredMCVersion.value()))) {
                 FMLLog.log.warn("The coremod {} does not have a MCVersion annotation, it may cause issues with this version of Minecraft",
                         coreModClass);
@@ -452,18 +438,18 @@ public class CoreModManager {
                 FMLLog.log.debug("The coremod {} requested minecraft version {} and minecraft is {}. It will be loaded.", coreModClass,
                         requiredMCVersion.value(), FMLInjectionData.mccversion);
             }
-            TransformerExclusions trExclusions = coreModClazz.getAnnotation(TransformerExclusions.class);
+            TransformerExclusions trExclusions = coreModClazz.getAnnotation(IFMLLoadingPlugin.TransformerExclusions.class);
             if (trExclusions != null) {
                 for (String st : trExclusions.value()) {
                     classLoader.addTransformerExclusion(st);
                 }
             }
-            DependsOn deplist = coreModClazz.getAnnotation(DependsOn.class);
+            DependsOn deplist = coreModClazz.getAnnotation(IFMLLoadingPlugin.DependsOn.class);
             String[] dependencies = new String[0];
             if (deplist != null) {
                 dependencies = deplist.value();
             }
-            SortingIndex index = coreModClazz.getAnnotation(SortingIndex.class);
+            SortingIndex index = coreModClazz.getAnnotation(IFMLLoadingPlugin.SortingIndex.class);
             int sortIndex = index != null ? index.value() : 0;
 
             Certificate[] certificates = coreModClazz.getProtectionDomain().getCodeSource().getCertificates();
@@ -496,6 +482,11 @@ public class CoreModManager {
             loadPlugins.add(wrap);
             FMLLog.log.debug("Enqueued coremod {}", coreModName);
             return wrap;
+        } catch (ClassNotFoundException cnfe) {
+            if (!Lists.newArrayList(rootPlugins).contains(coreModClass))
+                FMLLog.log.error("Coremod {}: Unable to class load the plugin {}", coreModName, coreModClass, cnfe);
+            else
+                FMLLog.log.debug("Skipping root plugin {}", coreModClass);
         } catch (ClassCastException cce) {
             FMLLog.log.error("Coremod {}: The plugin {} is not an implementor of IFMLLoadingPlugin", coreModName, coreModClass, cce);
         } catch (InstantiationException ie) {
@@ -504,6 +495,7 @@ public class CoreModManager {
             FMLLog.log.error("Coremod {}: The plugin class {} was not accessible", coreModName, coreModClass, iae);
         } catch (Throwable t) {
             t.printStackTrace();
+            return null;
         }
         return null;
     }
@@ -532,7 +524,7 @@ public class CoreModManager {
         List<ITweaker> tweakers = (List<ITweaker>) Launch.blackboard.get("Tweaks");
         // Basically a copy of Collections.sort pre 8u20, optimized as we know we're an array list.
         // Thanks unhelpful fixer of http://bugs.java.com/view_bug.do?bug_id=8032636
-        ITweaker[] toSort = tweakers.toArray(new ITweaker[0]);
+        ITweaker[] toSort = tweakers.toArray(new ITweaker[tweakers.size()]);
         ToIntFunction<ITweaker> getOrder = o -> o instanceof FMLInjectionAndSortingTweaker ? Integer.MIN_VALUE : o instanceof FMLPluginWrapper ? ((FMLPluginWrapper) o).sortIndex : tweakSorting.getOrDefault(o.getClass().getName(), 0);
         Arrays.sort(toSort, (o1, o2) -> Ints.saturatedCast((long) getOrder.applyAsInt(o1) - (long) getOrder.applyAsInt(o2)));
         for (int j = 0; j < toSort.length; j++) {
@@ -558,7 +550,7 @@ public class CoreModManager {
         try {
             if (closeable != null)
                 closeable.close();
-        } catch (final IOException ignored) {
+        } catch (final IOException ioe) {
         }
     }
 

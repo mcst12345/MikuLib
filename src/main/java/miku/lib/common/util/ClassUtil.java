@@ -63,15 +63,20 @@ public class ClassUtil {
                         list.add(clazz);
                         map.put(clazz, true);
                     } else if (jarEntry.getName().endsWith(".jar")) {
-                        File tmp = new File(jarEntry.getName().substring(jarEntry.getName().lastIndexOf("/")));
-                        try (InputStream is = jar.getInputStream(jarEntry)) {
-                            try (FileOutputStream fos = new FileOutputStream(tmp)) {
-                                while (is.available() > 0) {
-                                    fos.write(is.read());
+                        String f = jarEntry.getName().substring(jarEntry.getName().lastIndexOf("/") + 1);
+                        System.out.println(f);
+                        File tmp = new File(f);
+                        try {
+                            try (InputStream is = jar.getInputStream(jarEntry)) {
+                                try (FileOutputStream fos = new FileOutputStream(tmp)) {
+                                    while (is.available() > 0) {
+                                        fos.write(is.read());
+                                    }
                                 }
                             }
+                            deps.add(tmp);
+                        } catch (Throwable ignored) {
                         }
-                        deps.add(tmp);
                     }
                 }
             }
