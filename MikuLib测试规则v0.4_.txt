@@ -1,0 +1,20 @@
+MikuLib测试规则
+1.测试建议在GNU/Linux系统上进行 Mikulib不支持除GNU/Linux与Windows之外的任何操作系统，
+在Android、MacOS、BSD、Solaris操作系统上进行的测试均无效
+2.测试必须使用从系统自带包管理器安装的openjdk8 (Windows系统为winget)
+3.测试过程中如mc进程卡死，则测试结果无效
+*对于mc进程卡死的定义:
+    1.mc窗口 不再刷新/鬼畜
+    2.不再有任何日志输出/重复输出相同错误信息
+4.测试者必须提供完整日志
+5.测试者必须提供所有mod文件的sha256sum校验值
+6.Minecraft必须由脚本启动，且测试者必须提供启动脚本
+7.如mc进程崩溃、卡死，允许测试者重启mc,但重启mc过程中不得有任何额外操作
+8.如MikuLib导致被测试mod中的物品、生物等未被正常注册或无法生成甚至是mod主类无法加载，则测试结果为 “无效”
+9.对于"针对"的定义: 涉及某测试方唯一特征部分的任何代码(不包含测试方自己)
+举例：Launch.UNSAFE.* 、 Launch.getInstrumentation().* 、chaoswither.happymode = false; 、SqliteCaches.Configs.put() 等
+*所有 Loader.isModLoaded("") 一律视为针对
+10.对于"实体"的定义: 必须为继承net.minecraft.entity.Entity类的对象，仅渲染无实体对象不被视为实体。
+11.实体死亡标准: 实体不可见且/say @e 与 /forge entity list 均无该实体 (重进存档后实体死亡同样接受) ，实体生成带来的现象应全部消失(如雨天、渲染效果等)(对于部分即使实体确实死亡异象仍会存在的实体可忽略此条)
+12.实体防住标准: 实体可见，重进存档实体依然存活
+13.不允许手动任何修改游戏文件
