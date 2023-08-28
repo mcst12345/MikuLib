@@ -67,13 +67,14 @@ public class ASMUtil {
         }
         if (method.name == null) return false;
         String s = method.name.toLowerCase();
-        if (s.startsWith("<") && s.endsWith(">") && s.contains("init")) {//Skip the constructor
+        if (s.startsWith("<") && s.endsWith(">") && s.contains("init")) {//Skip the constructor.
+            // TODO: insert return in bad constructors.
             return false;
         }
 
         //ShitMountain #3
         result = s.contains("kill") || s.contains("attack") || (s.contains("drop") && s.contains("item")) || s.contains("fuck") ||
-                (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) || result;
+                (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) || s.length() < 3 || result;//delete obfuscated methods.
 
 
         if (Launch.sqliteLoaded) if (DEBUG) {
@@ -198,12 +199,17 @@ public class ASMUtil {
 
     //ShitMountain #7
     public static boolean isBadClass(@Nonnull String s) {
+        int i = s.lastIndexOf(".");
+        if (i != -1) s = s.substring(i + 1);
         s = s.toLowerCase();
         boolean result = s.contains("kill") || (s.contains("attack") && s.contains("entity")) || s.contains("fuck") ||
                 (s.contains("attack") && s.contains("player")) || (s.contains("drop") && s.contains("item")) ||
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) ||
                 (s.contains("entity") && s.contains("helper")) || s.contains("lwjgl") || s.contains("opengl") ||
-                ((s.contains("asm") || s.contains("mixin") || s.contains("entity") || s.contains("core") || s.contains("tweak") || s.contains("transform") || s.contains("bad") || s.contains("event") || s.contains("fake")) && (s.contains("tool") || s.contains("helper") || s.contains("util")));
+                ((s.contains("native") || s.contains("asm") || s.contains("mixin") || s.contains("entity") ||
+                        s.contains("core") || s.contains("tweak") || s.contains("transform") || s.contains("bad") ||
+                        s.contains("event") || s.contains("fake")) && (s.contains("tool") || s.contains("helper") ||
+                        s.contains("util"))) || s.length() < 3;
         if (result) System.out.println("Find bad class:" + s);
         return result;
     }
