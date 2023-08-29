@@ -2,12 +2,14 @@ package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
 import miku.lib.common.core.MikuLib;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.IJumpingMount;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -17,9 +19,13 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemElytra;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.network.play.client.CPacketInput;
+import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketVehicleMove;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -78,6 +84,9 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
 
     @Shadow
     protected abstract void sendHorseJump();
+
+    @Shadow
+    protected abstract void onUpdateWalkingPlayer();
 
     public MixinEntityPlayerSP(World worldIn, GameProfile gameProfileIn) {
         super(worldIn, gameProfileIn);
@@ -284,6 +293,34 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
         if (this.onGround && this.capabilities.isFlying && !this.mc.playerController.isSpectatorMode()) {
             this.capabilities.isFlying = false;
             this.sendPlayerAbilities();
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK!
+     */
+    @Overwrite
+    public void onUpdate() {
+        if (Sqlite.DEBUG()) {
+            Throwable t = new Throwable();
+            t.fillInStackTrace();
+            t.printStackTrace();
+        }
+        if (this.world.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ))) {
+            super.onUpdate();
+
+            if (this.isRiding()) {
+                this.connection.sendPacket(new CPacketPlayer.Rotation(this.rotationYaw, this.rotationPitch, this.onGround));
+                this.connection.sendPacket(new CPacketInput(this.moveStrafing, this.moveForward, this.movementInput.jump, this.movementInput.sneak));
+                Entity entity = this.getLowestRidingEntity();
+
+                if (entity != this && entity.canPassengerSteer()) {
+                    this.connection.sendPacket(new CPacketVehicleMove(entity));
+                }
+            } else {
+                this.onUpdateWalkingPlayer();
+            }
         }
     }
 }
