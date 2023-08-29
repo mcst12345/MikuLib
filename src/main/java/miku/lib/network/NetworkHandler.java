@@ -15,15 +15,16 @@ public enum NetworkHandler {
 
     NetworkHandler(){
         int index = 0;
-        channel.registerMessage(ExitGame.MessageHandler.class,ExitGame.class, index++, Side.CLIENT);
-        channel.registerMessage(TimeStop.MessageHandler.class,TimeStop.class, index++, Side.SERVER);
-        channel.registerMessage(ClientTimeStop.MessageHandler.class,ClientTimeStop.class,index++,Side.CLIENT);
-        channel.registerMessage(KillAllEntities.MessageHandler.class,KillAllEntities.class,index++,Side.SERVER);
-        channel.registerMessage(GameModeChange.MessageHandler.class,GameModeChange.class,index++,Side.SERVER);
+        channel.registerMessage(ExitGame.MessageHandler.class, ExitGame.class, index++, Side.CLIENT);
+        channel.registerMessage(TimeStop.MessageHandler.class, TimeStop.class, index++, Side.SERVER);
+        channel.registerMessage(ClientTimeStop.MessageHandler.class, ClientTimeStop.class, index++, Side.CLIENT);
+        channel.registerMessage(KillAllEntities.MessageHandler.class, KillAllEntities.class, index++, Side.SERVER);
+        channel.registerMessage(GameModeChange.MessageHandler.class, GameModeChange.class, index++, Side.SERVER);
         channel.registerMessage(KillEntity.MessageHandler.class, KillEntity.class, index++, Side.CLIENT);
         channel.registerMessage(ShowEntityList.MessageHandler.class, ShowEntityList.class, index++, Side.CLIENT);
         channel.registerMessage(SummonEntityOnClient.MessageHandler.class, SummonEntityOnClient.class, index++, Side.CLIENT);
-        channel.registerMessage(MikuModeChange.MessageHandler.class, MikuModeChange.class, index, Side.SERVER);
+        channel.registerMessage(MikuModeChange.MessageHandler.class, MikuModeChange.class, index++, Side.SERVER);
+        channel.registerMessage(RecordTimePoint.MessageHandler.class, RecordTimePoint.class, index, Side.SERVER);
     }
 
     public void sendMessageToServer(IMessage msg) {

@@ -80,4 +80,34 @@ public class FileUtils {
     }
 
     public static final int EOF = -1;
+
+    public static void copyFileUsingFileChannels(File source, File dest) throws IOException {
+        try (FileInputStream is = new FileInputStream(source)) {
+            try (FileChannel ic = is.getChannel()) {
+                try (FileOutputStream os = new FileOutputStream(dest)) {
+                    try (FileChannel oc = os.getChannel()) {
+                        oc.transferFrom(ic, 0, ic.size());
+                    }
+                }
+            }
+        }
+    }
+
+    public static void CopyDir(File src, File dest) throws IOException {
+        if (src == null || dest == null) return;
+        if ((!src.isDirectory() && src.exists()) || (!dest.isDirectory() && dest.exists())) {
+            throw new IllegalArgumentException("Failed to copy directory! One of the target exists but isn't directory!");
+        }
+        dest.mkdir();
+        if (src.listFiles() == null) {
+            return;
+        }
+        for (File file : src.listFiles()) {
+            if (file.isFile()) {
+                copyFile(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
+            } else {
+                CopyDir(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
+            }
+        }
+    }
 }

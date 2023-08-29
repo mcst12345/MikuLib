@@ -40,7 +40,7 @@ public class MikuLib {
     private static boolean LAIN;
     public static final String MODID = "mikulib";
     public static final String NAME = "MikuLib";
-    public static final String VERSION = "1.11.4";
+    public static final String VERSION = "1.2";
     @SidedProxy(
             clientSide = "miku.lib.common.core.proxy.ClientProxy",
             serverSide = "miku.lib.common.core.proxy.CommonProxy"
