@@ -1167,7 +1167,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.MikuProfiler.endStartSection("animateTick");
 
-            if (!this.isGamePaused && this.MikuWorld != null) {
+            if (!this.isGamePaused && this.MikuWorld != null && !stop && !TimeStop) {
                 this.MikuWorld.doVoidFogParticles(MathHelper.floor(this.player.posX), MathHelper.floor(this.player.posY), MathHelper.floor(this.player.posZ));
             }
 

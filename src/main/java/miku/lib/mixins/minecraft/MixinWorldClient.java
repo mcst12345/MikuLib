@@ -2,15 +2,23 @@ package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iWorldClient;
+import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.storage.ISaveHandler;
@@ -25,21 +33,31 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Random;
 import java.util.Set;
 
 @Mixin(value = WorldClient.class)
 public abstract class MixinWorldClient extends World implements iWorldClient {
-    @Shadow @Final private Set<Entity> entityList;
+    @Shadow
+    @Final
+    private Set<Entity> entityList;
 
-    @Shadow @Final private Set<Entity> entitySpawnQueue;
+    @Shadow
+    @Final
+    private Set<Entity> entitySpawnQueue;
 
-    @Shadow private ChunkProviderClient clientChunkProvider;
+    @Shadow
+    private ChunkProviderClient clientChunkProvider;
+
+    @Shadow
+    @Final
+    private Minecraft mc;
 
     protected MixinWorldClient(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);
     }
 
-    public void REMOVE(Entity entity){
+    public void REMOVE(Entity entity) {
         entityList.remove(entity);
         entitySpawnQueue.remove(entity);
     }
@@ -53,8 +71,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
     {
         Entity entity = this.entitiesById.removeObject(entityID);
 
-        if (entity != null && !EntityUtil.isProtected(entity))
-        {
+        if (entity != null && !EntityUtil.isProtected(entity)) {
             this.entityList.remove(entity);
             this.removeEntity(entity);
         }
@@ -64,11 +81,47 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
 
     /**
      * @author mcst12345
+     * @reason Stop!
+     */
+    @Overwrite
+    public void doVoidFogParticles(int posX, int posY, int posZ) {
+        if (SpecialItem.isTimeStop() || ((iWorld) this).isTimeStop()) return;
+        Random random = new Random();
+        ItemStack itemstack = this.mc.player.getHeldItemMainhand();
+        boolean flag = this.mc.playerController.getCurrentGameType() == GameType.CREATIVE && !itemstack.isEmpty() && itemstack.getItem() == Item.getItemFromBlock(Blocks.BARRIER);
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+
+        for (int j = 0; j < 667; ++j) {
+            this.showBarrierParticles(posX, posY, posZ, 16, random, flag, blockpos$mutableblockpos);
+            this.showBarrierParticles(posX, posY, posZ, 32, random, flag, blockpos$mutableblockpos);
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Stop!
+     */
+    @Overwrite
+    public void showBarrierParticles(int x, int y, int z, int offset, Random random, boolean holdingBarrier, BlockPos.MutableBlockPos pos) {
+        if (SpecialItem.isTimeStop() || ((iWorld) this).isTimeStop()) return;
+        int i = x + this.rand.nextInt(offset) - this.rand.nextInt(offset);
+        int j = y + this.rand.nextInt(offset) - this.rand.nextInt(offset);
+        int k = z + this.rand.nextInt(offset) - this.rand.nextInt(offset);
+        pos.setPos(i, j, k);
+        IBlockState iblockstate = this.getBlockState(pos);
+        iblockstate.getBlock().randomDisplayTick(iblockstate, this, pos, random);
+
+        if (holdingBarrier && iblockstate.getBlock() == Blocks.BARRIER) {
+            this.spawnParticle(EnumParticleTypes.BARRIER, (float) i + 0.5F, (float) j + 0.5F, (float) k + 0.5F, 0.0D, 0.0D, 0.0D);
+        }
+    }
+
+    /**
+     * @author mcst12345
      * @reason F K
      */
     @Overwrite
-    public void tick()
-    {
+    public void tick() {
         super.tick();
 
         if(SpecialItem.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop())return;
