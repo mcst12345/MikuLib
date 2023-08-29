@@ -16,6 +16,8 @@ import java.util.Objects;
 
 //shitmountain.
 //TODO:Rewrite this shit.
+
+@SuppressWarnings("unchecked")
 public class Sqlite {
 
     protected static boolean loaded = false;
