@@ -1022,7 +1022,6 @@ public abstract class MixinMinecraft implements iMinecraft {
                 player.world.playerEntities.add(player);
                 player.world.onEntityAdded(player);
             }
-            if (stop || TimeStop) player.onUpdate();
         }
 
         this.MikuProfiler.startSection("gui");
@@ -1134,8 +1133,8 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.MikuProfiler.endStartSection("level");
 
-            if (!this.isGamePaused && !stop && !TimeStop) {
-                if (this.MikuWorld.getLastLightningBolt() > 0 && !TimeStop && !stop) {
+            if (!this.isGamePaused) {
+                if (!TimeStop && !stop && this.MikuWorld.getLastLightningBolt() > 0) {
                     this.MikuWorld.setLastLightningBolt(this.MikuWorld.getLastLightningBolt() - 1);
                 }
 
