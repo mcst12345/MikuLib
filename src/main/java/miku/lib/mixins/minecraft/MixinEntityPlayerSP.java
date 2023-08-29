@@ -2,7 +2,6 @@ package miku.lib.mixins.minecraft;
 
 import com.mojang.authlib.GameProfile;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -302,11 +301,6 @@ public abstract class MixinEntityPlayerSP extends EntityPlayer {
      */
     @Overwrite
     public void onUpdate() {
-        if (Sqlite.DEBUG()) {
-            Throwable t = new Throwable();
-            t.fillInStackTrace();
-            t.printStackTrace();
-        }
         if (this.world.isBlockLoaded(new BlockPos(this.posX, 0.0D, this.posZ))) {
             super.onUpdate();
 
