@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -811,6 +812,41 @@ public abstract class MixinGuiIngame extends Gui {
                     i1 -= 10;
                 }
             }
+        }
+    }
+
+    @Overwrite
+    public void updateTick() {
+        if (SpecialItem.isTimeStop() || ((iMinecraft) this.mc).isTimeStop()) return;
+        if (this.overlayMessageTime > 0) {
+            --this.overlayMessageTime;
+        }
+
+        if (this.titlesTimer > 0) {
+            --this.titlesTimer;
+
+            if (this.titlesTimer <= 0) {
+                this.displayedTitle = "";
+                this.displayedSubTitle = "";
+            }
+        }
+
+        ++this.updateCounter;
+
+        if (this.mc.player != null) {
+            ItemStack itemstack = this.mc.player.inventory.getCurrentItem();
+
+            if (itemstack.isEmpty()) {
+                this.remainingHighlightTicks = 0;
+            } else if (!this.highlightingItemStack.isEmpty() && itemstack.getItem() == this.highlightingItemStack.getItem() && ItemStack.areItemStackTagsEqual(itemstack, this.highlightingItemStack) && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.highlightingItemStack.getMetadata())) {
+                if (this.remainingHighlightTicks > 0) {
+                    --this.remainingHighlightTicks;
+                }
+            } else {
+                this.remainingHighlightTicks = 40;
+            }
+
+            this.highlightingItemStack = itemstack;
         }
     }
 }

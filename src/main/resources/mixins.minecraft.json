@@ -106,6 +106,7 @@
     "MixinSoundManager",
     "MixinTeleportToTeam",
     "MixinTileEntityEndPortalRenderer",
+    "MixinTimer",
     "MixinTutorial",
     "MixinViewFrustum",
     "MixinWorldClient"

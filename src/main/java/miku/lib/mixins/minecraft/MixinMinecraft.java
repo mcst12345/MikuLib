@@ -1373,7 +1373,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 t.printStackTrace();
             }
             this.MikuProfiler.endStartSection("gameRenderer");
-            this.MikuEntityRenderer.updateCameraAndRender(this.isGamePaused ? this.renderPartialTicksPaused : this.timer.renderPartialTicks, i);
+            this.MikuEntityRenderer.updateCameraAndRender((this.isGamePaused || stop || TimeStop) ? this.renderPartialTicksPaused : this.timer.renderPartialTicks, i);
             this.MikuProfiler.endStartSection("toasts");
             this.toastGui.drawToast(new ScaledResolution((Minecraft) (Object) this));
             this.MikuProfiler.endSection();

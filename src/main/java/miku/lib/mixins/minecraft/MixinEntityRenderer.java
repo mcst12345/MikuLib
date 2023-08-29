@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraft;
 import com.google.common.base.Predicates;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
+import miku.lib.common.item.SpecialItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -285,6 +286,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      */
     @Overwrite
     public void updateFogColor(float partialTicks) {
+
         World world = ((iMinecraft) this.mc).MikuWorld();
         Entity entity = this.mc.getRenderViewEntity();
         float f = 0.25F + 0.75F * (float) this.mc.gameSettings.renderDistanceChunks / 32.0F;
@@ -1083,6 +1085,8 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      */
     @Overwrite
     public void updateRenderer() {
+        boolean time_stop = SpecialItem.isTimeStop() || ((iMinecraft) this.mc).isTimeStop();
+
         if (OpenGlHelper.shadersSupported && ShaderLinkHelper.getStaticShaderLinkHelper() == null) {
             ShaderLinkHelper.setNewStaticShaderLinkHelper();
         }
@@ -1092,19 +1096,21 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
         this.fogColor2 = this.fogColor1;
         this.thirdPersonDistancePrev = 4.0F;
 
-        if (this.mc.gameSettings.smoothCamera) {
-            float f = this.mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
-            float f1 = f * f * f * 8.0F;
-            this.smoothCamFilterX = this.mouseFilterXAxis.smooth(this.smoothCamYaw, 0.05F * f1);
-            this.smoothCamFilterY = this.mouseFilterYAxis.smooth(this.smoothCamPitch, 0.05F * f1);
-            this.smoothCamPartialTicks = 0.0F;
-            this.smoothCamYaw = 0.0F;
-            this.smoothCamPitch = 0.0F;
-        } else {
-            this.smoothCamFilterX = 0.0F;
-            this.smoothCamFilterY = 0.0F;
-            this.mouseFilterXAxis.reset();
-            this.mouseFilterYAxis.reset();
+        if (!time_stop) {
+            if (this.mc.gameSettings.smoothCamera) {
+                float f = this.mc.gameSettings.mouseSensitivity * 0.6F + 0.2F;
+                float f1 = f * f * f * 8.0F;
+                this.smoothCamFilterX = this.mouseFilterXAxis.smooth(this.smoothCamYaw, 0.05F * f1);
+                this.smoothCamFilterY = this.mouseFilterYAxis.smooth(this.smoothCamPitch, 0.05F * f1);
+                this.smoothCamPartialTicks = 0.0F;
+                this.smoothCamYaw = 0.0F;
+                this.smoothCamPitch = 0.0F;
+            } else {
+                this.smoothCamFilterX = 0.0F;
+                this.smoothCamFilterY = 0.0F;
+                this.mouseFilterXAxis.reset();
+                this.mouseFilterYAxis.reset();
+            }
         }
 
         if (this.mc.getRenderViewEntity() == null) {
