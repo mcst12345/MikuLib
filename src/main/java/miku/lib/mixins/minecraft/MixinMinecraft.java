@@ -1022,7 +1022,7 @@ public abstract class MixinMinecraft implements iMinecraft {
                 player.world.playerEntities.add(player);
                 player.world.onEntityAdded(player);
             }
-            if (stop) player.onUpdate();
+            if (stop || TimeStop) player.onUpdate();
         }
 
         this.MikuProfiler.startSection("gui");
