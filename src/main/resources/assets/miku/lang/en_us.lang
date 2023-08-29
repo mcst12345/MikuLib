@@ -12,6 +12,8 @@ key.miku.in_game_focus_while=Force In Game Focus
 key.miku.time_stop=Time Stop
 key.miku.kill_all=Kill all entities
 key.miku.game_mode=Change game mode
+key.miku.miku_mode=Change item mode
+key.miku.rtp=Record time point
 
 #command
 commands.miku.miku_kill.usage=/miku_kill [player|entity]

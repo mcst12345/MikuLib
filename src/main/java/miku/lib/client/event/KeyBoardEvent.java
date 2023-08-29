@@ -1,11 +1,11 @@
 package miku.lib.client.event;
 
 import miku.lib.common.api.iEntityPlayer;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.GameModeChange;
 import miku.lib.network.packets.KillAllEntities;
+import miku.lib.network.packets.MikuModeChange;
 import miku.lib.network.packets.TimeStop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -33,13 +33,13 @@ public class KeyBoardEvent {
 
     @SideOnly(Side.CLIENT)//key to change your game mode
     public static final KeyBinding GAME_MODE = new KeyBinding("key.miku.game_mode", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_M, "key.category.miku");
-
-
-    @SideOnly(Side.CLIENT)
+    @SideOnly(Side.CLIENT)//key to change SpecialItem's mode
     public static final KeyBinding MIKU_MODE = new KeyBinding("key.miku.miku_mode", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_U, "key.category.miku");
 
+    public static final KeyBinding RECORD_TIME_POINT = new KeyBinding("key.miku.rtp", KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, Keyboard.KEY_R, "key.category.miku");
+
     @SideOnly(Side.CLIENT)
-    public static void Init(){
+    public static void Init() {
         ClientRegistry.registerKeyBinding(TIME_STOP);
         ClientRegistry.registerKeyBinding(KILL_ALL);
         ClientRegistry.registerKeyBinding(GAME_MODE);
@@ -77,12 +77,10 @@ public class KeyBoardEvent {
         }
         if (MIKU_MODE.isPressed()) {
             EntityPlayer player = Minecraft.getMinecraft().player;
-            if (SpecialItem.Get(player) != null) {
-                SpecialItem item = SpecialItem.Get(player);
-                if (item != null) {
-                    item.ModeChange();
-                }
-            }
+            NetworkHandler.INSTANCE.sendMessageToServer(new MikuModeChange(player.getEntityId(), player.dimension));
+        }
+        if (RECORD_TIME_POINT.isPressed()) {
+            //TODO
         }
     }
 }

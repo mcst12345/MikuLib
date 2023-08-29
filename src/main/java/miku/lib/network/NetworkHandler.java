@@ -23,6 +23,7 @@ public enum NetworkHandler {
         channel.registerMessage(KillEntity.MessageHandler.class, KillEntity.class, index++, Side.CLIENT);
         channel.registerMessage(ShowEntityList.MessageHandler.class, ShowEntityList.class, index++, Side.CLIENT);
         channel.registerMessage(SummonEntityOnClient.MessageHandler.class, SummonEntityOnClient.class, index++, Side.CLIENT);
+        channel.registerMessage(MikuModeChange.MessageHandler.class, MikuModeChange.class, index, Side.SERVER);
     }
 
     public void sendMessageToServer(IMessage msg) {

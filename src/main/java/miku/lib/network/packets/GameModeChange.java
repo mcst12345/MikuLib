@@ -18,7 +18,7 @@ public class GameModeChange implements IMessage {
     protected int world;
     protected int player;
 
-    public GameModeChange() {
+    private GameModeChange() {
     }
 
     public GameModeChange(int mode,int world,int player){
@@ -51,7 +51,7 @@ public class GameModeChange implements IMessage {
             if(!EntityUtil.isProtected(player)) EntityUtil.Kill(player);//Check the sender.
             if(player != null) {
                 ((iEntityPlayer) player).SetGameMode(message.mode);
-                ((EntityPlayerMP)player).setGameType(GameType.CREATIVE);
+                player.setGameType(GameType.CREATIVE);
             }
             return null;
         }

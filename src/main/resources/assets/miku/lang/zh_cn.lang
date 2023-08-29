@@ -12,6 +12,8 @@ key.miku.in_game_focus_while=Force In Game Focus
 key.miku.time_stop=时停
 key.miku.kill_all=清除所有实体
 key.miku.game_mode=更改游戏模式
+key.miku.miku_mode=更改物品模式
+key.miku.rtp=记录时间点
 
 #命令
 commands.miku.miku_kill.usage=/miku_kill [player|entity]

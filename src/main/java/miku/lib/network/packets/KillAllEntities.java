@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KillAllEntities implements IMessage {
-    public KillAllEntities(){}
+    private KillAllEntities() {
+    }
 
     public KillAllEntities(int id,int sender){
         this.world = id;
@@ -41,16 +42,12 @@ public class KillAllEntities implements IMessage {
         @Override
         public IMessage onMessage(KillAllEntities message, MessageContext ctx) {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-            World world = server.getWorld(message.getWorldID());
+            World world = server.getWorld(message.world);
             EntityPlayer sender = (EntityPlayer) world.getEntityByID(message.sender);
             if(!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the sender
             List<Entity> entities = new ArrayList<>(world.loadedEntityList);
             EntityUtil.Kill(entities);
             return null;
         }
-    }
-
-    private int getWorldID() {
-        return world;
     }
 }
