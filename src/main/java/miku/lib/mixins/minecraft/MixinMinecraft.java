@@ -1046,7 +1046,7 @@ public abstract class MixinMinecraft implements iMinecraft {
         this.MikuProfiler.endStartSection("textures");
 
         if (this.MikuWorld != null) {
-            if (!(TimeStop && !EntityUtil.isProtected(player))) this.renderEngine.tick();
+            if (!TimeStop && !stop) this.renderEngine.tick();
         }
 
         if (this.currentScreen == null && this.player != null)
@@ -1133,7 +1133,7 @@ public abstract class MixinMinecraft implements iMinecraft {
 
             this.MikuProfiler.endStartSection("level");
 
-            if (!this.isGamePaused) {
+            if (!this.isGamePaused && !stop && !TimeStop) {
                 if (this.MikuWorld.getLastLightningBolt() > 0 && !TimeStop && !stop) {
                     this.MikuWorld.setLastLightningBolt(this.MikuWorld.getLastLightningBolt() - 1);
                 }
