@@ -52,6 +52,7 @@ public class Sqlite {
                 CreateConfigValue("method_info", "LOG_CONFIG", "true");
                 CreateConfigValue("field_info", "LOG_CONFIG", "true");
                 CreateConfigValue("ignore_info", "LOG_CONFIG", "false");
+                CreateConfigValue("render_info", "LOG_CONFIG", "false");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS", "ID", SqliteCaches.HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS", "ID", SqliteCaches.BANNED_MODS);
@@ -133,32 +134,34 @@ public class Sqlite {
                     break;
                 }
             }
-            if(result == null) {
+            if (result == null) {
                 rs.close();
                 return null;
+            } else {
+                switch (TYPE) {
+                    case 0: {
+                        rs.close();
+                        return result.equals("true");
+                    }
+                    case 1: {
+                        rs.close();
+                        return Integer.parseInt(result);
+                    }
+                    case 2: {
+                        rs.close();
+                        return Long.parseLong(result);
+                    }
+                    case 3: {
+                        rs.close();
+                        return result;
+                    }
+                    default: {
+                        rs.close();
+
+                    }
+                }
             }
-            switch (TYPE){
-                case 0: {
-                    rs.close();
-                    return result.equals("true");
-                }
-                case 1: {
-                    rs.close();
-                    return Integer.parseInt(result);
-                }
-                case 2: {
-                    rs.close();
-                    return Long.parseLong(result);
-                }
-                case 3: {
-                    rs.close();
-                    return result;
-                }
-                default: {
-                    rs.close();
-                    return null;
-                }
-            }
+            return null;
         } catch (SQLException | NullPointerException e) {
             if (e instanceof SQLException && loaded) {
                 e.printStackTrace();
@@ -266,11 +269,20 @@ public class Sqlite {
         }
     }
 
-    public static boolean DEBUG(){
-        return (boolean) GetValueFromTable("debug","CONFIG",0);
+    public static boolean DEBUG() {
+        return (boolean) GetValueFromTable("debug", "CONFIG", 0);
     }
 
-    private static boolean hasReturn(String s){
+    private static boolean hasReturn(String s) {
         return s.startsWith("SELECT ");
+    }
+
+    public static boolean GetBooleanFromTable(String name, String table, int type) {
+        try {
+            return (boolean) GetValueFromTable(name, table, type);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            return false;
+        }
     }
 }

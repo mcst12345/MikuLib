@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -45,7 +46,7 @@ public abstract class MixinRenderManager {
     @SuppressWarnings("unchecked")
     @Overwrite
     public <T extends Entity> Render<T> getEntityClassRenderObject(Class<? extends Entity> entityClass) {
-        if (Sqlite.DEBUG()) {
+        if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG", 0)) {
             System.out.println("MikuInfo:Getting render for entity:" + entityClass);
         }
         Render<T> render = (Render<T>) this.entityRenderMap.get(entityClass);
@@ -67,7 +68,7 @@ public abstract class MixinRenderManager {
         Render<Entity> render = this.getEntityRenderObject(entityIn);
         if (EntityUtil.isProtected(entityIn)) {
             boolean result = render != null;
-            if (result)
+            if (result && !(entityIn instanceof EntityPlayer))
                 System.out.println("MikuWarn:The fuck? Can't get render of a protected entity! " + entityIn.getClass());
             return result;
         } else if (EntityUtil.isDEAD(entityIn)) {
@@ -91,7 +92,7 @@ public abstract class MixinRenderManager {
             render = this.getEntityRenderObject(entityIn);
 
             if (render != null && this.renderEngine != null) {
-                if (Sqlite.DEBUG())
+                if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG", 0))
                     System.out.println("MikuInfo:Rendering entity at X:" + x + " Y:" + x + " Z:" + z + " Yaw:" + yaw + " partialTicks:" + partialTicks);
                 try {
                     render.setRenderOutlines(this.renderOutlines);
