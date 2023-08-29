@@ -287,7 +287,7 @@ public abstract class MixinRenderGlobal {
 
             for (Entity e : ((iWorld) this.world).getProtectedEntities()) {
                 if (!list1.contains(e)) {
-                    if (Sqlite.DEBUG()) {
+                    if (Sqlite.DEBUG() && !(e instanceof EntityPlayer)) {
                         System.out.println("Adding entity:" + e.getClass());
                     }
                     list1.add(e);
