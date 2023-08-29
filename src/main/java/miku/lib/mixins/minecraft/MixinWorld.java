@@ -51,6 +51,16 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    private boolean timeStop = false;
+
+    public void SetTimeStop() {
+        timeStop = !timeStop;
+    }
+
+    public boolean isTimeStop() {
+        return timeStop;
+    }
+
     @Override
     public void summonEntity(Entity entity) {
         int i = MathHelper.floor(entity.posX / 16.0D);

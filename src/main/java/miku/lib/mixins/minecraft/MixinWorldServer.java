@@ -241,7 +241,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
      */
     @Overwrite
     public void updateBlockTick(@Nonnull BlockPos pos, @Nonnull Block blockIn, int delay, int priority) {
-        if (MikuInsaneMode.isMikuInsaneMode()) return;
+        if (MikuInsaneMode.isMikuInsaneMode() || SpecialItem.isTimeStop()) return;
         Material material = blockIn.getDefaultState().getMaterial();
 
         if (this.scheduledUpdatesAreImmediate && material != Material.AIR) {

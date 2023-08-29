@@ -8,6 +8,7 @@
     "MixinBiome",
     "MixinBiomeDecorator",
     "MixinBlock",
+    "MixinBlockFalling",
     "MixinBlockNote",
     "MixinChunk",
     "MixinChunkGeneratorEnd",

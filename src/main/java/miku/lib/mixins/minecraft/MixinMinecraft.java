@@ -6,6 +6,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.gui.TheGui;
+import miku.lib.common.api.iWorld;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.item.SpecialItem;
@@ -175,7 +176,8 @@ public abstract class MixinMinecraft implements iMinecraft {
 
     @Override
     public void SetTimeStop(){
-        TimeStop=!TimeStop;
+        TimeStop = !TimeStop;
+        ((iWorld) MikuWorld).SetTimeStop();
     }
 
     @Override
