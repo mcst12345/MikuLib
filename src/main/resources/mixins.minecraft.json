@@ -93,6 +93,7 @@
     "MixinLayerSpiderEyes",
     "MixinLayerWitherAura",
     "MixinMinecraft",
+    "MixinMovementInputFromOptions",
     "MixinNetHandlerPlayClient",
     "MixinNetworkPlayerInfo",
     "MixinParticleManager",
