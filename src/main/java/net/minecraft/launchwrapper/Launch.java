@@ -232,7 +232,6 @@ public class Launch {
         FuckNative();
         NoReflection(Field.class);
         NoReflection(Class.class);
-        NoReflection(Thread.class);
         NoReflection(CoreModManager.class);
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);
