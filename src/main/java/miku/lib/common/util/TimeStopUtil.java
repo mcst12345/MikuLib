@@ -27,6 +27,11 @@ public class TimeStopUtil {
     }
 
     public synchronized static void Record() {
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("yyyy-MM-dd--HH:mm:ss");
+        Date date = new Date();
+        String time = sdf.format(date);
+        System.out.println("MikuInfo:Saving time point at " + time);
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         server.getPlayerList().saveAllPlayerData();
         for (WorldServer worldserver : server.worlds) {
@@ -40,40 +45,25 @@ public class TimeStopUtil {
                 worldserver.flushToDisk();
             }
         }
+        File world;
+        File save = new File("saved_time_points" + File.separator + time);
         if (Launch.Client) {
             if (folder_name == null) {
                 throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
             }
-            File world = new File("saves" + File.separator + folder_name);
-            if (!world.exists()) {
-                throw new RuntimeException("The fuck?");
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern("yyyy-MM-dd--HH:mm:ss");
-            Date date = new Date();
-            String time = sdf.format(date);
-            File save = new File("saved_time_points" + File.separator + time);
-            try {
-                FileUtils.copyDir(world, save);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            world = new File("saves" + File.separator + folder_name);
         } else {
-            File world = new File("world");
-            if (!world.exists()) {
-                throw new RuntimeException("The fuck?");
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern("yyyy-MM-dd--HH:mm:ss");
-            Date date = new Date();
-            String time = sdf.format(date);
-            File save = new File("saved_time_points" + File.separator + time);
-            try {
-                FileUtils.copyDir(world, save);
-                saved.add(save);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            world = new File("world");
+
+        }
+        if (!world.exists()) {
+            throw new RuntimeException("The fuck?");
+        }
+        try {
+            System.out.println("MikuInfo:Coping folder");
+            FileUtils.copyDir(world, save);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
