@@ -48,16 +48,14 @@ public class MikuTransformer implements IClassTransformer {
         if (!ClassUtil.Loaded() || basicClass == null) return basicClass;
         if (name.equals("javax.annotation.Resource") || name.equals("javax.annotation.Nullable") || name.equals("org.apache.log4j.Logger") || name.equals("optifine.OptiFineForgeTweaker"))
             return basicClass;
+        if (!name.equals(transformedName)) {
+            if (ClassUtil.isMinecraftClass(name)) {
+                return basicClass;
+            }
+        }
         final boolean goodClass = ClassUtil.isGoodClass(name);
         final boolean libraryClass = ClassUtil.isLibraryClass(name);
         if (!goodClass && !libraryClass) {
-            if (!name.equals(transformedName)) {
-                if (ClassUtil.isMinecraftClass(name)) {
-                    return basicClass;
-                }
-            }
-
-
             System.out.println("Examine class:" + transformedName);
 
             cached_methods.clear();
