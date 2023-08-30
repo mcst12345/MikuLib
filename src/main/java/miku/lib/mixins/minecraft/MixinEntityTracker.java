@@ -55,7 +55,7 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn, int trackingRange, final int updateFrequency, boolean sendVelocityUpdates) {
-        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+        if (EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
             return;
         try {
             if (this.trackedEntityHashTable.containsItem(entityIn.getEntityId())) {
@@ -96,7 +96,7 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn) {
-        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+        if (EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
             return;
         if (net.minecraftforge.fml.common.registry.EntityRegistry.instance().tryTrackingEntity((EntityTracker) (Object) this, entityIn))
             return;
@@ -188,7 +188,7 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void tick() {
-        if (SpecialItem.isTimeStop() || EntityUtil.isKilling()) return;
+        if (EntityUtil.isKilling()) return;
         List<EntityPlayerMP> list = Lists.newArrayList();
 
         for (EntityTrackerEntry entitytrackerentry : this.entries) {

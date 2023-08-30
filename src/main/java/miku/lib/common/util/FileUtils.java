@@ -93,7 +93,7 @@ public class FileUtils {
         }
     }
 
-    public static void CopyDir(File src, File dest) throws IOException {
+    public static void copyDir(File src, File dest) throws IOException {
         if (src == null || dest == null) return;
         if ((!src.isDirectory() && src.exists()) || (!dest.isDirectory() && dest.exists())) {
             throw new IllegalArgumentException("Failed to copy directory! One of the target exists but isn't directory!");
@@ -106,7 +106,7 @@ public class FileUtils {
             if (file.isFile()) {
                 copyFile(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
             } else {
-                CopyDir(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
+                copyDir(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
             }
         }
     }

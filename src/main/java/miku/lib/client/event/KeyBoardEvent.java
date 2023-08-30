@@ -3,10 +3,7 @@ package miku.lib.client.event;
 import miku.lib.common.api.iEntityPlayer;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.network.NetworkHandler;
-import miku.lib.network.packets.GameModeChange;
-import miku.lib.network.packets.KillAllEntities;
-import miku.lib.network.packets.MikuModeChange;
-import miku.lib.network.packets.TimeStop;
+import miku.lib.network.packets.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
@@ -36,6 +33,7 @@ public class KeyBoardEvent {
     @SideOnly(Side.CLIENT)//key to change SpecialItem's mode
     public static final KeyBinding MIKU_MODE = new KeyBinding("key.miku.miku_mode", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_U, "key.category.miku");
 
+    @SideOnly(Side.CLIENT)//key to record a time point
     public static final KeyBinding RECORD_TIME_POINT = new KeyBinding("key.miku.rtp", KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, Keyboard.KEY_R, "key.category.miku");
 
     @SideOnly(Side.CLIENT)
@@ -44,6 +42,7 @@ public class KeyBoardEvent {
         ClientRegistry.registerKeyBinding(KILL_ALL);
         ClientRegistry.registerKeyBinding(GAME_MODE);
         ClientRegistry.registerKeyBinding(MIKU_MODE);
+        ClientRegistry.registerKeyBinding(RECORD_TIME_POINT);
     }
 
     @SubscribeEvent
@@ -80,7 +79,7 @@ public class KeyBoardEvent {
             NetworkHandler.INSTANCE.sendMessageToServer(new MikuModeChange(player.getEntityId(), player.dimension));
         }
         if (RECORD_TIME_POINT.isPressed()) {
-            //TODO
+            NetworkHandler.INSTANCE.sendMessageToServer(new RecordTimePoint());
         }
     }
 }
