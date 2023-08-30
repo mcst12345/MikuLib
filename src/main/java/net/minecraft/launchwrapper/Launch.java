@@ -130,12 +130,6 @@ public class Launch {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-
-        NoReflection(Field.class);
-        NoReflection(Class.class);
-        NoReflection(Thread.class);
-        NoReflection(CoreModManager.class);
-
         try {
             AddURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
         } catch (NoSuchMethodException e) {
@@ -236,6 +230,10 @@ public class Launch {
         }
 
         FuckNative();
+        NoReflection(Field.class);
+        NoReflection(Class.class);
+        NoReflection(Thread.class);
+        NoReflection(CoreModManager.class);
         NoReflection(ClassLoader.class);
         NoReflection(SecureClassLoader.class);
         NoReflection(URLClassLoader.class);
