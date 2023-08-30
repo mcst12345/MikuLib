@@ -47,8 +47,95 @@ public class Launch {
     }
 
     private static InstrumentationImpl instrumentation;
+    private static final Field fieldAccessor;
+
+    private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
+    public static File minecraftHome;
+    public static File assetsDir;
+    public static Map<String, Object> blackboard;
+    public static LaunchClassLoader classLoader;
+    public static Field Transformers;
+    public static boolean sqliteLoaded;
+    public static Class<?> NativeLib;
+    public static Field NativeLibName;
+    protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
+    private static final String LibMd5;
+    private static final Field overrideAccessor;
+    private static final Method reflectionDATA;
+    private static final Class<?> ReflectionData;
+    private static final Field declaredFields;
+    private static final Field publicFields;
+    private static final Field declaredPublicFields;
+    private static final Field declaredMethods;
+    private static final Field publicMethods;
+    private static final Field declaredPublicMethods;
 
     static {
+        try {
+            fieldAccessor = Field.class.getDeclaredField("fieldAccessor");
+            fieldAccessor.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            overrideAccessor = Field.class.getDeclaredField("overrideFieldAccessor");
+            overrideAccessor.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            reflectionDATA = Class.class.getDeclaredMethod("reflectionData");
+            reflectionDATA.setAccessible(true);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            ReflectionData = Class.forName("java.lang.Class$ReflectionData");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            declaredFields = ReflectionData.getDeclaredField("declaredFields");
+            declaredFields.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            publicFields = ReflectionData.getDeclaredField("publicFields");
+            publicFields.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            declaredPublicFields = ReflectionData.getDeclaredField("declaredPublicFields");
+            declaredPublicFields.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            declaredMethods = ReflectionData.getDeclaredField("declaredMethods");
+            declaredMethods.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            publicMethods = ReflectionData.getDeclaredField("publicMethods");
+            publicMethods.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            declaredPublicMethods = ReflectionData.getDeclaredField("declaredPublicMethods");
+            declaredPublicFields.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+
+        NoReflection(Field.class);
+        NoReflection(Class.class);
+        NoReflection(Thread.class);
+        NoReflection(CoreModManager.class);
+
         try {
             AddURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
         } catch (NoSuchMethodException e) {
@@ -100,17 +187,6 @@ public class Launch {
         }
     }
 
-    private static final String DEFAULT_TWEAK = "net.minecraft.launchwrapper.VanillaTweaker";
-    public static File minecraftHome;
-    public static File assetsDir;
-    public static Map<String, Object> blackboard;
-    public static LaunchClassLoader classLoader;
-    public static Field Transformers;
-    public static boolean sqliteLoaded;
-    public static Class<?> NativeLib;
-    public static Field NativeLibName;
-    protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
-    private static final String LibMd5;
 
     private Launch() {
         try {
@@ -181,39 +257,27 @@ public class Launch {
 
     public static void NoReflection(Class<?> clazz){
         try {
-            Field fieldAccessor = Field.class.getDeclaredField("fieldAccessor");
             fieldAccessor.setAccessible(true);
-            Field overrideAccessor = Field.class.getDeclaredField("overrideFieldAccessor");
-            overrideAccessor.setAccessible(true);
             Field[] fields = clazz.getDeclaredFields();
             for (Field f : fields) {
                 fieldAccessor.set(f, EMPTY_FIELD_ACCESSOR);
                 overrideAccessor.set(f, EMPTY_FIELD_ACCESSOR);
             }
-            Method method = Class.class.getDeclaredMethod("reflectionData");
-            method.setAccessible(true);
-            Object DATA = method.invoke(clazz);
-            Class<?> ReflectionData = Class.forName("java.lang.Class$ReflectionData");
-            Field declaredFields = ReflectionData.getDeclaredField("declaredFields");
-            Field publicFields = ReflectionData.getDeclaredField("publicFields");
-            Field declaredPublicFields = ReflectionData.getDeclaredField("declaredPublicFields");
-            Field declaredMethods = ReflectionData.getDeclaredField("declaredMethods");
-            Field publicMethods = ReflectionData.getDeclaredField("publicMethods");
-            Field declaredPublicMethods = ReflectionData.getDeclaredField("declaredPublicMethods");
+            Object DATA = reflectionDATA.invoke(clazz);
             long tmp;
             tmp = UNSAFE.objectFieldOffset(declaredFields);
             UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
             tmp = UNSAFE.objectFieldOffset(publicFields);
-            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            UNSAFE.putObjectVolatile(DATA, tmp, new Field[0]);
             tmp = UNSAFE.objectFieldOffset(declaredPublicFields);
-            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            UNSAFE.putObjectVolatile(DATA, tmp, new Field[0]);
             tmp = UNSAFE.objectFieldOffset(declaredMethods);
-            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            UNSAFE.putObjectVolatile(DATA, tmp, new Field[0]);
             tmp = UNSAFE.objectFieldOffset(publicMethods);
-            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
+            UNSAFE.putObjectVolatile(DATA, tmp, new Field[0]);
             tmp = UNSAFE.objectFieldOffset(declaredPublicMethods);
-            UNSAFE.putObjectVolatile(DATA,tmp,new Field[0]);
-        } catch (NoSuchMethodException | ClassNotFoundException | NoSuchFieldException | InvocationTargetException |
+            UNSAFE.putObjectVolatile(DATA, tmp, new Field[0]);
+        } catch (InvocationTargetException |
                  IllegalAccessException e) {
             throw new RuntimeException(e);
         }
