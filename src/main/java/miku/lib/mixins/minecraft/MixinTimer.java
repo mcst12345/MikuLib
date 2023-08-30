@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
-import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Timer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,7 +31,7 @@ public class MixinTimer {
      */
     @Overwrite
     public void updateTimer() {
-        if (SpecialItem.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop()) return;
+        if (TimeStopUtil.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop()) return;
         long i = Minecraft.getSystemTime();
         this.elapsedPartialTicks = (i - this.lastSyncSysClock) / this.tickLength;
         this.lastSyncSysClock = i;

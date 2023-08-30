@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.common.api.iWorld;
-import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.state.IBlockState;
@@ -37,7 +37,7 @@ public abstract class MixinBlockFalling {
      */
     @Overwrite
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-        if (((iWorld) worldIn).isTimeStop() || SpecialItem.isTimeStop()) return;
+        if (((iWorld) worldIn).isTimeStop() || TimeStopUtil.isTimeStop()) return;
         worldIn.scheduleUpdate(pos, (BlockFalling) (Object) this, this.tickRate(worldIn));
     }
 
@@ -47,7 +47,7 @@ public abstract class MixinBlockFalling {
      */
     @Overwrite
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-        if (((iWorld) worldIn).isTimeStop() || SpecialItem.isTimeStop()) return;
+        if (((iWorld) worldIn).isTimeStop() || TimeStopUtil.isTimeStop()) return;
         if (!worldIn.isRemote) {
             this.checkFallable(worldIn, pos);
         }
@@ -59,7 +59,7 @@ public abstract class MixinBlockFalling {
      */
     @Overwrite
     private void checkFallable(World worldIn, BlockPos pos) {
-        if (((iWorld) worldIn).isTimeStop() || SpecialItem.isTimeStop()) return;
+        if (((iWorld) worldIn).isTimeStop() || TimeStopUtil.isTimeStop()) return;
         if ((worldIn.isAirBlock(pos.down()) || canFallThrough(worldIn.getBlockState(pos.down()))) && pos.getY() >= 0) {
 
             if (!fallInstantly && worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32))) {

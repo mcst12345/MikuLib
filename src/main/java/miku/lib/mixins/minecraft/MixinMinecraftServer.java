@@ -6,8 +6,8 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.common.api.iMinecraftServer;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.FieldUtil;
+import miku.lib.common.util.TimeStopUtil;
 import miku.lib.server.api.iDedicatedServer;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.command.CommandBase;
@@ -101,7 +101,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
                 }
 
                 this.profiler.startSection("tick");
-                if (!SpecialItem.isTimeStop())
+                if (!TimeStopUtil.isTimeStop())
                     net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreWorldTick(worldserver);
 
                 try {
@@ -120,7 +120,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
                     throw new ReportedException(crashreport1);
                 }
 
-                if (!SpecialItem.isTimeStop())
+                if (!TimeStopUtil.isTimeStop())
                     net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostWorldTick(worldserver);
                 this.profiler.endSection();
                 this.profiler.startSection("tracker");
@@ -334,7 +334,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
     @Overwrite
     public void tick() {
         long i = System.nanoTime();
-        if (!SpecialItem.isTimeStop()) {
+        if (!TimeStopUtil.isTimeStop()) {
             try {
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreServerTick();
             } catch (Throwable e) {
@@ -342,7 +342,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
                 e.printStackTrace();
             }
         }
-        if (!SpecialItem.isTimeStop()) ++this.tickCounter;
+        if (!TimeStopUtil.isTimeStop()) ++this.tickCounter;
 
         if (this.startProfiling) {
             this.startProfiling = false;
@@ -353,15 +353,13 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
         this.profiler.startSection("root");
         this.updateTimeLightAndEntities();
 
-        if (i - this.nanoTimeSinceStatusRefresh >= 5000000000L && !SpecialItem.isTimeStop())
-        {
+        if (i - this.nanoTimeSinceStatusRefresh >= 5000000000L && !TimeStopUtil.isTimeStop()) {
             this.nanoTimeSinceStatusRefresh = i;
             this.statusResponse.setPlayers(new ServerStatusResponse.Players(this.getMaxPlayers(), this.getCurrentPlayerCount()));
             GameProfile[] agameprofile = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
             int j = MathHelper.getInt(this.random, 0, this.getCurrentPlayerCount() - agameprofile.length);
 
-            for (int k = 0; k < agameprofile.length; ++k)
-            {
+            for (int k = 0; k < agameprofile.length; ++k) {
                 agameprofile[k] = this.playerList.getPlayers().get(j + k).getGameProfile();
             }
 
@@ -379,22 +377,21 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
         }
 
         this.profiler.startSection("tallying");
-        if(!SpecialItem.isTimeStop())this.tickTimeArray[this.tickCounter % 100] = System.nanoTime() - i;
+        if (!TimeStopUtil.isTimeStop()) this.tickTimeArray[this.tickCounter % 100] = System.nanoTime() - i;
         this.profiler.endSection();
         this.profiler.startSection("snooper");
 
-        if (!this.usageSnooper.isSnooperRunning() && this.tickCounter > 100 && !SpecialItem.isTimeStop())
-        {
+        if (!this.usageSnooper.isSnooperRunning() && this.tickCounter > 100 && !TimeStopUtil.isTimeStop()) {
             this.usageSnooper.startSnooper();
         }
 
-        if (this.tickCounter % 6000 == 0 && !SpecialItem.isTimeStop()) {
+        if (this.tickCounter % 6000 == 0 && !TimeStopUtil.isTimeStop()) {
             this.usageSnooper.addMemoryStatsToSnooper();
         }
 
         this.profiler.endSection();
         this.profiler.endSection();
-        if (!SpecialItem.isTimeStop()) {
+        if (!TimeStopUtil.isTimeStop()) {
             try {
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostServerTick();
             } catch (Throwable t) {

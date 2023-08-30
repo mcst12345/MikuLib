@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.List;
 
 public class TimeStopUtil {
+    private static boolean TimeStop = false;
+    private static boolean saving;
     public static String folder_name;
     private static final List<File> saved = new ArrayList<>();
     private static final File saves;
@@ -27,6 +29,7 @@ public class TimeStopUtil {
     }
 
     public synchronized static void Record() {
+        saving = true;
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("yyyy-MM-dd--HH:mm:ss");
         Date date = new Date();
@@ -66,5 +69,18 @@ public class TimeStopUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        saving = false;
+    }
+
+    public static boolean isSaving() {
+        return saving;
+    }
+
+    public static boolean isTimeStop() {
+        return TimeStop;
+    }
+
+    public static void SetTimeStop() {
+        TimeStop = !TimeStop;
     }
 }

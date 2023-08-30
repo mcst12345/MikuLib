@@ -4,9 +4,9 @@ import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iWorldClient;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
@@ -85,7 +85,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
      */
     @Overwrite
     public void doVoidFogParticles(int posX, int posY, int posZ) {
-        if (SpecialItem.isTimeStop() || ((iWorld) this).isTimeStop()) return;
+        if (TimeStopUtil.isTimeStop() || ((iWorld) this).isTimeStop()) return;
         Random random = new Random();
         ItemStack itemstack = this.mc.player.getHeldItemMainhand();
         boolean flag = this.mc.playerController.getCurrentGameType() == GameType.CREATIVE && !itemstack.isEmpty() && itemstack.getItem() == Item.getItemFromBlock(Blocks.BARRIER);
@@ -103,7 +103,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
      */
     @Overwrite
     public void showBarrierParticles(int x, int y, int z, int offset, Random random, boolean holdingBarrier, BlockPos.MutableBlockPos pos) {
-        if (SpecialItem.isTimeStop() || ((iWorld) this).isTimeStop()) return;
+        if (TimeStopUtil.isTimeStop() || ((iWorld) this).isTimeStop()) return;
         int i = x + this.rand.nextInt(offset) - this.rand.nextInt(offset);
         int j = y + this.rand.nextInt(offset) - this.rand.nextInt(offset);
         int k = z + this.rand.nextInt(offset) - this.rand.nextInt(offset);
@@ -124,7 +124,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
     public void tick() {
         super.tick();
 
-        if(SpecialItem.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop())return;
+        if (TimeStopUtil.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop()) return;
 
         this.setTotalWorldTime(this.getTotalWorldTime() + 1L);
 

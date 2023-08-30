@@ -3,7 +3,7 @@ package miku.lib.mixins.minecraft;
 import com.google.common.base.Predicates;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -1085,7 +1085,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
      */
     @Overwrite
     public void updateRenderer() {
-        boolean time_stop = SpecialItem.isTimeStop() || ((iMinecraft) this.mc).isTimeStop();
+        boolean time_stop = TimeStopUtil.isTimeStop() || ((iMinecraft) this.mc).isTimeStop();
 
         if (OpenGlHelper.shadersSupported && ShaderLinkHelper.getStaticShaderLinkHelper() == null) {
             ShaderLinkHelper.setNewStaticShaderLinkHelper();

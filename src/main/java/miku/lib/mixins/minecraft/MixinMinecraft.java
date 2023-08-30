@@ -9,9 +9,9 @@ import miku.lib.client.gui.TheGui;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
@@ -1004,7 +1004,7 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Overwrite
     public void runTick() throws IOException
     {
-        boolean stop = SpecialItem.isTimeStop();
+        boolean stop = TimeStopUtil.isTimeStop();
         if (this.rightClickDelayTimer > 0) {
             --this.rightClickDelayTimer;
         }
@@ -1321,7 +1321,7 @@ public abstract class MixinMinecraft implements iMinecraft {
      */
     @Overwrite
     public void runGameLoop() throws IOException {
-        boolean stop = SpecialItem.isTimeStop();
+        boolean stop = TimeStopUtil.isTimeStop();
         long i = System.nanoTime();
         this.MikuProfiler.startSection("root");
 

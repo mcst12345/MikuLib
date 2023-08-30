@@ -10,10 +10,10 @@ import miku.lib.common.api.iWorld;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -80,7 +80,7 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void immediateBlockTick(BlockPos pos, IBlockState state, Random random) {
-        if (MikuInsaneMode.isMikuInsaneMode() || SpecialItem.isTimeStop()) return;
+        if (MikuInsaneMode.isMikuInsaneMode() || TimeStopUtil.isTimeStop()) return;
         this.scheduledUpdatesAreImmediate = true;
         state.getBlock().updateTick((World) (Object) this, pos, state, random);
         this.scheduledUpdatesAreImmediate = false;
@@ -272,7 +272,7 @@ public abstract class MixinWorld implements iWorld {
             if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return false;
         }
-        if ((SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
+        if ((TimeStopUtil.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
             if (!EntityUtil.isGoodEntity(entityIn)) {
                 toSpawn.add(entityIn);
                 return true;
@@ -331,7 +331,7 @@ public abstract class MixinWorld implements iWorld {
         if (EntityUtil.isKilling() && !EntityUtil.isGoodEntity(entityIn)) {
             return;
         }
-        if ((SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
+        if ((TimeStopUtil.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
             if (!EntityUtil.isGoodEntity(entityIn)) {
                 toSpawn.add(entityIn);
                 return;
@@ -381,7 +381,7 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void updateEntities() {
-        boolean stop = SpecialItem.isTimeStop();
+        boolean stop = TimeStopUtil.isTimeStop();
         if (loadedEntityList.getClass() != ArrayList.class) {
             loadedEntityList = new ArrayList<>();
         }
@@ -422,15 +422,15 @@ public abstract class MixinWorld implements iWorld {
                 removeEntity(entity);
             }
 
-            if (entity.isDead && !EntityUtil.isProtected(entity) && !SpecialItem.isTimeStop()) {
+            if (entity.isDead && !EntityUtil.isProtected(entity) && !TimeStopUtil.isTimeStop()) {
                 this.weatherEffects.remove(i--);
             }
         }
 
         this.profiler.endStartSection("remove");
-        if(!SpecialItem.isTimeStop())this.loadedEntityList.removeAll(this.unloadedEntityList);
+        if (!TimeStopUtil.isTimeStop()) this.loadedEntityList.removeAll(this.unloadedEntityList);
 
-        if(!SpecialItem.isTimeStop())for (Entity entity1 : this.unloadedEntityList) {
+        if (!TimeStopUtil.isTimeStop()) for (Entity entity1 : this.unloadedEntityList) {
             int j = entity1.chunkCoordX;
             int k1 = entity1.chunkCoordZ;
 
@@ -439,11 +439,11 @@ public abstract class MixinWorld implements iWorld {
             }
         }
 
-        if(!SpecialItem.isTimeStop())for (Entity entity : this.unloadedEntityList) {
+        if (!TimeStopUtil.isTimeStop()) for (Entity entity : this.unloadedEntityList) {
             this.onEntityRemoved(entity);
         }
 
-        if(!SpecialItem.isTimeStop())this.unloadedEntityList.clear();
+        if (!TimeStopUtil.isTimeStop()) this.unloadedEntityList.clear();
         this.tickPlayers();
         this.profiler.endStartSection("regular");
 
@@ -633,7 +633,7 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void updateEntityWithOptionalForce(Entity entityIn, boolean forceUpdate) {
-        if (EntityUtil.isDEAD(entityIn) || ((iEntity) entityIn).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entityIn))) {
+        if (EntityUtil.isDEAD(entityIn) || ((iEntity) entityIn).isTimeStop() || (TimeStopUtil.isTimeStop() && !EntityUtil.isProtected(entityIn))) {
             if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return;
         }

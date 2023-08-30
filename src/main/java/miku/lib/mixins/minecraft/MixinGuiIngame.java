@@ -1,8 +1,8 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -817,7 +817,7 @@ public abstract class MixinGuiIngame extends Gui {
 
     @Overwrite
     public void updateTick() {
-        if (SpecialItem.isTimeStop() || ((iMinecraft) this.mc).isTimeStop()) return;
+        if (TimeStopUtil.isTimeStop() || ((iMinecraft) this.mc).isTimeStop()) return;
         if (this.overlayMessageTime > 0) {
             --this.overlayMessageTime;
         }

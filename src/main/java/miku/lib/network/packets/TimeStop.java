@@ -1,8 +1,8 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.TimeStopUtil;
 import miku.lib.network.NetworkHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -41,7 +41,7 @@ public class TimeStop implements IMessage {
 
         @Override
         public IMessage onMessage(TimeStop message, MessageContext ctx) {
-            SpecialItem.SetTimeStop();
+            TimeStopUtil.SetTimeStop();
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
             World world = server.getWorld(message.world);
             EntityPlayer sender = (EntityPlayer) world.getEntityByID(message.sender);

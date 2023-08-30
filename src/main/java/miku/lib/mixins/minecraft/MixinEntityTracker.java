@@ -1,8 +1,8 @@
 package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Lists;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.*;
@@ -12,7 +12,6 @@ import net.minecraft.entity.item.*;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.IAnimals;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.util.IntHashMap;
@@ -55,7 +54,7 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn, int trackingRange, final int updateFrequency, boolean sendVelocityUpdates) {
-        if (EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+        if (EntityUtil.isKilling())
             return;
         try {
             if (this.trackedEntityHashTable.containsItem(entityIn.getEntityId())) {
@@ -96,7 +95,7 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn) {
-        if (EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+        if (EntityUtil.isKilling())
             return;
         if (net.minecraftforge.fml.common.registry.EntityRegistry.instance().tryTrackingEntity((EntityTracker) (Object) this, entityIn))
             return;
@@ -177,7 +176,7 @@ public class MixinEntityTracker {
      */
     @Overwrite
     public void track(Entity entityIn, int trackingRange, int updateFrequency) {
-        if (SpecialItem.isTimeStop() || EntityUtil.isKilling() || (EntityUtil.isProtected(entityIn) && entityIn instanceof EntityPlayer))
+        if (TimeStopUtil.isTimeStop() || EntityUtil.isKilling())
             return;
         this.track(entityIn, trackingRange, updateFrequency, false);
     }

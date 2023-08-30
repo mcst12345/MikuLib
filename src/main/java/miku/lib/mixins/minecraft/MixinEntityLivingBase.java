@@ -4,9 +4,9 @@ import miku.lib.common.api.iEntityLivingBase;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
@@ -661,7 +661,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      */
     @Overwrite
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        boolean stop = SpecialItem.isTimeStop();
+        boolean stop = TimeStopUtil.isTimeStop();
         if (!net.minecraftforge.common.ForgeHooks.onLivingAttack((EntityLivingBase) (Object) this, source, amount))
             return false;
         if (this.isEntityInvulnerable(source)) {

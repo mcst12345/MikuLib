@@ -31,19 +31,9 @@ public class SpecialItem extends Item {
     protected static final short max_mode = 1;
     protected short mode = 0;
 
-    protected static boolean TimeStop = false;
-
-    public static boolean isTimeStop() {
-        return TimeStop;
-    }
-
     public SpecialItem() {
         this.setMaxStackSize(1);
         this.setTranslationKey("hidden");
-    }
-
-    public static void SetTimeStop() {
-        TimeStop=!TimeStop;
     }
 
     @Override
@@ -144,7 +134,7 @@ public class SpecialItem extends Item {
         if (!(player instanceof EntityPlayer)) return;
         if(!hasOwner(stack)){
             setOwner(stack, (EntityPlayer) player);
-            playerList.put(((EntityPlayer) player).getUniqueID(), this);
+            playerList.put(player.getUniqueID(), this);
         }
         else if (!this.isOwner(stack,(EntityPlayer) player))EntityUtil.Kill(player);
     }

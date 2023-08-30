@@ -3,8 +3,8 @@ package miku.lib.mixins.minecraft;
 import com.google.common.collect.Lists;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -118,7 +118,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
         this.profiler.endStartSection("players");
 
         for (Entity entity : this.playerEntities) {
-            if (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity)) continue;
+            if (TimeStopUtil.isTimeStop() && !EntityUtil.isProtected(entity)) continue;
             Entity entity1 = entity.getRidingEntity();
 
             if (entity1 != null) {
@@ -184,7 +184,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
 
     @Inject(at=@At("HEAD"),method = "setEntityState", cancellable = true)
     public void setEntityState(Entity entityIn, byte state, CallbackInfo ci){
-        if (SpecialItem.isTimeStop()) ci.cancel();
+        if (TimeStopUtil.isTimeStop()) ci.cancel();
         if (EntityUtil.isProtected(entityIn)) {
             if (state == (byte) 3 || state == (byte) 30 || state == (byte) 29 || state == (byte) 37 || state == (byte) 33 || state == (byte) 36 || state == (byte) 20 || state == (byte) 2 || state == (byte) 35)
                 ci.cancel();
@@ -223,10 +223,9 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
     @Overwrite
     public void updateEntities()
     {
-        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty())
-        {
-            if (this.updateEntityTick++ >= 300)
-            {
+        if (TimeStopUtil.isSaving()) return;
+        if (this.playerEntities.isEmpty() && getPersistentChunks().isEmpty()) {
+            if (this.updateEntityTick++ >= 300) {
                 return;
             }
         } else {
@@ -243,7 +242,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
      */
     @Overwrite
     public void updateBlockTick(@Nonnull BlockPos pos, @Nonnull Block blockIn, int delay, int priority) {
-        if (MikuInsaneMode.isMikuInsaneMode() || SpecialItem.isTimeStop()) return;
+        if (MikuInsaneMode.isMikuInsaneMode() || TimeStopUtil.isTimeStop() || TimeStopUtil.isSaving()) return;
         Material material = blockIn.getDefaultState().getMaterial();
 
         if (this.scheduledUpdatesAreImmediate && material != Material.AIR) {
@@ -286,7 +285,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
      */
     @Overwrite
     public boolean tickUpdates(boolean runAllPending) {
-        if (MikuInsaneMode.isMikuInsaneMode() || SpecialItem.isTimeStop()) return true;
+        if (MikuInsaneMode.isMikuInsaneMode() || TimeStopUtil.isTimeStop() || TimeStopUtil.isSaving()) return true;
         if (this.worldInfo.getTerrainType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
             return false;
         } else {
@@ -355,7 +354,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
      */
     @Overwrite
     public void updateBlocks() {
-        if (MikuInsaneMode.isMikuInsaneMode() || SpecialItem.isTimeStop()) return;
+        if (MikuInsaneMode.isMikuInsaneMode() || TimeStopUtil.isTimeStop() || TimeStopUtil.isSaving()) return;
         this.playerCheckLight();
 
         if (this.worldInfo.getTerrainType() == WorldType.DEBUG_ALL_BLOCK_STATES) {
@@ -490,9 +489,10 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
      */
     @Overwrite
     public void tick() {
+        if (TimeStopUtil.isSaving()) return;
         super.tick();
 
-        boolean stop = SpecialItem.isTimeStop();
+        boolean stop = TimeStopUtil.isTimeStop();
 
         if (!stop) {
             try {

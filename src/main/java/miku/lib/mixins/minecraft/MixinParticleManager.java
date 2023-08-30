@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
-import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
@@ -16,7 +16,7 @@ public class MixinParticleManager {
      */
     @Overwrite
     private void tickParticle(final Particle particle) {
-        if (SpecialItem.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop()) return;
+        if (TimeStopUtil.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop()) return;
         try {
             particle.onUpdate();
         } catch (Throwable throwable) {

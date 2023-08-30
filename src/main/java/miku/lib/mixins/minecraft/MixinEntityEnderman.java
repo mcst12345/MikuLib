@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.item.SpecialItem;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.SoundEvents;
@@ -24,7 +24,7 @@ public abstract class MixinEntityEnderman extends EntityMob {
      */
     @Overwrite
     public boolean teleportTo(double x, double y, double z) {
-        if (SpecialItem.isTimeStop()) return false;
+        if (TimeStopUtil.isTimeStop()) return false;
         net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, x, y, z, 0);
         if (MikuLib.MikuEventBus().post(event)) return false;
         boolean flag = this.attemptTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ());
@@ -39,6 +39,6 @@ public abstract class MixinEntityEnderman extends EntityMob {
 
     @Inject(at = @At("HEAD"), method = "isScreaming", cancellable = true)
     public void isScreaming(CallbackInfoReturnable<Boolean> cir) {
-        if (SpecialItem.isTimeStop()) cir.setReturnValue(false);
+        if (TimeStopUtil.isTimeStop()) cir.setReturnValue(false);
     }
 }
