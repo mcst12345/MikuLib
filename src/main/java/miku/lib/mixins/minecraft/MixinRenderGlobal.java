@@ -303,9 +303,8 @@ public abstract class MixinRenderGlobal {
                 if (!classinheritancemultimap.isEmpty()) {
                     for (Entity entity2 : classinheritancemultimap) {
                         if (!entity2.shouldRenderInPass(pass)) {
-                            if (Sqlite.DEBUG()) {
-                                if (!(entity2 instanceof EntityPlayer))
-                                    System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
+                            if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG", 0)) {
+                                System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
                             }
                             continue;
                         }
@@ -327,9 +326,8 @@ public abstract class MixinRenderGlobal {
                                 }
                             }
                         } else {
-                            if (Sqlite.DEBUG()) {
-                                if (!(entity2 instanceof EntityPlayer))
-                                    System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
+                            if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG", 0)) {
+                                System.out.println("MikuInfo:ignoring entity:" + entity2.getClass());
                             }
                         }
                     }
