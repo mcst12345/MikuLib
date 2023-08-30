@@ -184,8 +184,10 @@ public abstract class MixinWorldServer extends World implements IThreadListener 
 
     @Inject(at=@At("HEAD"),method = "setEntityState", cancellable = true)
     public void setEntityState(Entity entityIn, byte state, CallbackInfo ci){
-        if(EntityUtil.isProtected(entityIn)){
-            if(state == (byte) 3 || state == (byte) 30 || state == (byte) 29 || state == (byte) 37 || state == (byte) 33 || state == (byte) 36 || state == (byte) 20 || state == (byte) 2 || state == (byte) 35)ci.cancel();
+        if (SpecialItem.isTimeStop()) ci.cancel();
+        if (EntityUtil.isProtected(entityIn)) {
+            if (state == (byte) 3 || state == (byte) 30 || state == (byte) 29 || state == (byte) 37 || state == (byte) 33 || state == (byte) 36 || state == (byte) 20 || state == (byte) 2 || state == (byte) 35)
+                ci.cancel();
         }
     }
     /**

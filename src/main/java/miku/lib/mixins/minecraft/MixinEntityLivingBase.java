@@ -4,8 +4,10 @@ import miku.lib.common.api.iEntityLivingBase;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
+import miku.lib.common.item.SpecialItem;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -13,6 +15,7 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -27,10 +30,7 @@ import net.minecraft.network.play.server.SPacketEntityEquipment;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.CombatTracker;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -322,6 +322,70 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
     @Nullable
     public abstract PotionEffect removeActivePotionEffect(@Nullable Potion potioneffectin);
 
+    @Shadow
+    public abstract IAttributeInstance getEntityAttribute(IAttribute attribute);
+
+    @Shadow
+    protected abstract boolean canBlockDamageSource(DamageSource damageSourceIn);
+
+    @Shadow
+    protected abstract void damageShield(float damage);
+
+    @Shadow
+    protected abstract void blockUsingShield(EntityLivingBase p_190629_1_);
+
+    @Shadow
+    public float limbSwingAmount;
+
+    @Shadow
+    public int maxHurtResistantTime;
+
+    @Shadow
+    protected float lastDamage;
+
+    @Shadow
+    protected abstract void damageEntity(DamageSource damageSrc, float damageAmount);
+
+    @Shadow
+    public int maxHurtTime;
+
+    @Shadow
+    public int hurtTime;
+
+    @Shadow
+    public float attackedAtYaw;
+
+    @Shadow
+    public abstract void setRevengeTarget(@Nullable EntityLivingBase livingBase);
+
+    @Shadow
+    public abstract void knockBack(Entity entityIn, float strength, double xRatio, double zRatio);
+
+    @Shadow
+    protected abstract boolean checkTotemDeathProtection(DamageSource p_190628_1_);
+
+    @Shadow
+    @Nullable
+    protected abstract SoundEvent getDeathSound();
+
+    @Shadow
+    protected abstract float getSoundVolume();
+
+    @Shadow
+    protected abstract float getSoundPitch();
+
+    @Shadow
+    public abstract void onDeath(DamageSource cause);
+
+    @Shadow
+    protected abstract void playHurtSound(DamageSource source);
+
+    @Shadow
+    private DamageSource lastDamageSource;
+
+    @Shadow
+    private long lastDamageStamp;
+
     /**
      * @author mcst12345
      * @reason FUCK!
@@ -538,16 +602,21 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
         world.setEntityState(this, (byte) 3);
     }
 
-    @Inject(at = @At("HEAD"), method = "setHealth", cancellable = true)
-    public void setHealth(float health, CallbackInfo ci){
-        if(EntityUtil.isProtected(this)){
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public void setHealth(float health) {
+        if (EntityUtil.isProtected(this)) {
             this.dataManager.set(HEALTH, 20.0f);
-            ci.cancel();
+            return;
         }
-        if(EntityUtil.isDEAD(this)){
+        if (EntityUtil.isDEAD(this)) {
             this.dataManager.set(HEALTH, 0.0f);
-            ci.cancel();
+            return;
         }
+        this.dataManager.set(HEALTH, Float.valueOf(MathHelper.clamp(health, 0.0F, this.getMaxHealth())));
     }
 
     @Override
@@ -586,16 +655,189 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "getHealth", cancellable = true)
-    public final void getHealth(CallbackInfoReturnable<Float> cir) {
-        if(EntityUtil.isProtected(this))cir.setReturnValue(20.0f);
-        if(EntityUtil.isDEAD(this))cir.setReturnValue(0.0f);
+    /**
+     * @author mcst12345
+     * @reason fuck
+     */
+    @Overwrite
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        boolean stop = SpecialItem.isTimeStop();
+        if (!net.minecraftforge.common.ForgeHooks.onLivingAttack((EntityLivingBase) (Object) this, source, amount))
+            return false;
+        if (this.isEntityInvulnerable(source)) {
+            return false;
+        } else if (this.world.isRemote) {
+            return false;
+        } else {
+            this.idleTime = 0;
+
+            if (this.getHealth() <= 0.0F) {
+                return false;
+            } else if (source.isFireDamage() && this.isPotionActive(MobEffects.FIRE_RESISTANCE)) {
+                return false;
+            } else {
+                float f = amount;
+
+                if ((source == DamageSource.ANVIL || source == DamageSource.FALLING_BLOCK) && !this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).isEmpty()) {
+                    this.getItemStackFromSlot(EntityEquipmentSlot.HEAD).damageItem((int) (amount * 4.0F + this.rand.nextFloat() * amount * 2.0F), (EntityLivingBase) (Object) this);
+                    amount *= 0.75F;
+                }
+
+                boolean flag = false;
+
+                if (amount > 0.0F && this.canBlockDamageSource(source)) {
+                    this.damageShield(amount);
+                    amount = 0.0F;
+
+                    if (!source.isProjectile()) {
+                        Entity entity = source.getImmediateSource();
+
+                        if (entity instanceof EntityLivingBase) {
+                            this.blockUsingShield((EntityLivingBase) entity);
+                        }
+                    }
+
+                    flag = true;
+                }
+
+                if (!stop) this.limbSwingAmount = 1.5F;
+                boolean flag1 = true;
+
+                if ((float) this.hurtResistantTime > (float) this.maxHurtResistantTime / 2.0F) {
+                    if (!stop) if (amount <= this.lastDamage) {
+                        return false;
+                    }
+
+                    this.damageEntity(source, amount - this.lastDamage);
+                    this.lastDamage = amount;
+                    flag1 = false;
+                } else {
+                    this.lastDamage = amount;
+                    if (!stop) this.hurtResistantTime = this.maxHurtResistantTime;
+                    this.damageEntity(source, amount);
+                    if (!stop) this.maxHurtTime = 10;
+                    if (!stop) this.hurtTime = this.maxHurtTime;
+                }
+
+                if (!stop) this.attackedAtYaw = 0.0F;
+                Entity entity1 = source.getTrueSource();
+
+                if (entity1 != null && !stop) {
+                    if (entity1 instanceof EntityLivingBase) {
+                        this.setRevengeTarget((EntityLivingBase) entity1);
+                    }
+
+                    if (entity1 instanceof EntityPlayer) {
+                        this.recentlyHit = 100;
+                        this.attackingPlayer = (EntityPlayer) entity1;
+                    } else if (entity1 instanceof net.minecraft.entity.passive.EntityTameable) {
+                        net.minecraft.entity.passive.EntityTameable entitywolf = (net.minecraft.entity.passive.EntityTameable) entity1;
+
+                        if (entitywolf.isTamed()) {
+                            this.recentlyHit = 100;
+                            this.attackingPlayer = null;
+                        }
+                    }
+                }
+
+                if (flag1) {
+                    if (flag) {
+                        this.world.setEntityState(this, (byte) 29);
+                    } else if (source instanceof EntityDamageSource && ((EntityDamageSource) source).getIsThornsDamage()) {
+                        this.world.setEntityState(this, (byte) 33);
+                    } else {
+                        byte b0;
+
+                        if (source == DamageSource.DROWN) {
+                            b0 = 36;
+                        } else if (source.isFireDamage()) {
+                            b0 = 37;
+                        } else {
+                            b0 = 2;
+                        }
+
+                        this.world.setEntityState(this, b0);
+                    }
+
+                    if (!stop) if (source != DamageSource.DROWN && (!flag || amount > 0.0F)) {
+                        this.markVelocityChanged();
+                    }
+
+                    if (entity1 != null && !stop) {
+                        double d1 = entity1.posX - this.posX;
+                        double d0;
+
+                        for (d0 = entity1.posZ - this.posZ; d1 * d1 + d0 * d0 < 1.0E-4D; d0 = (Math.random() - Math.random()) * 0.01D) {
+                            d1 = (Math.random() - Math.random()) * 0.01D;
+                        }
+
+                        this.attackedAtYaw = (float) (MathHelper.atan2(d0, d1) * (180D / Math.PI) - (double) this.rotationYaw);
+                        this.knockBack(entity1, 0.4F, d1, d0);
+                    } else {
+                        this.attackedAtYaw = (float) ((int) (Math.random() * 2.0D) * 180);
+                    }
+                }
+
+                if (!stop) if (this.getHealth() <= 0.0F) {
+                    if (!this.checkTotemDeathProtection(source)) {
+                        SoundEvent soundevent = this.getDeathSound();
+
+                        if (flag1 && soundevent != null) {
+                            this.playSound(soundevent, this.getSoundVolume(), this.getSoundPitch());
+                        }
+
+                        this.onDeath(source);
+                    }
+                } else if (flag1) {
+                    this.playHurtSound(source);
+                }
+
+                boolean flag2 = !flag || amount > 0.0F;
+
+                if (!stop) if (flag2) {
+                    this.lastDamageSource = source;
+                    this.lastDamageStamp = this.world.getTotalWorldTime();
+                }
+
+                if (((EntityLivingBase) (Object) this) instanceof EntityPlayerMP) {
+                    CriteriaTriggers.ENTITY_HURT_PLAYER.trigger((EntityPlayerMP) (Object) this, source, f, amount, flag);
+                }
+
+                if (entity1 instanceof EntityPlayerMP) {
+                    CriteriaTriggers.PLAYER_HURT_ENTITY.trigger((EntityPlayerMP) entity1, this, source, f, amount, flag);
+                }
+
+                return flag2;
+            }
+        }
     }
 
-    @Inject(at = @At("HEAD"), method = "getMaxHealth", cancellable = true)
-    public final void GetMaxHealth(CallbackInfoReturnable<Float> cir) {
-        if(EntityUtil.isProtected(this))cir.setReturnValue(20.0f);
-        if(EntityUtil.isDEAD(this))cir.setReturnValue(0.0f);
+    @Inject(at = @At("HEAD"), method = "getHealth", cancellable = true)
+    public final void getHealth(CallbackInfoReturnable<Float> cir) {
+        if (EntityUtil.isProtected(this)) cir.setReturnValue(20.0f);
+        if (EntityUtil.isDEAD(this)) cir.setReturnValue(0.0f);
+    }
+
+    /**
+     * @author mcst12345
+     * @reason fuck!
+     */
+    @Overwrite
+    public final float getHealth() {
+        if (EntityUtil.isProtected(this)) return 20.0f;
+        if (EntityUtil.isDEAD(this)) return 0.0f;
+        return this.dataManager.get(HEALTH);
+    }
+
+    /**
+     * @author mcst12345
+     * @reason Fuck
+     */
+    @Overwrite
+    public final float getMaxHealth() {
+        if (EntityUtil.isProtected(this)) return 20.0f;
+        if (EntityUtil.isDEAD(this)) return 0.0f;
+        return (float) this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
     }
 
     /**
