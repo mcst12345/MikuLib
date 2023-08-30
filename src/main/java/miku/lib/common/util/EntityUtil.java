@@ -17,8 +17,10 @@ import miku.lib.network.packets.ExitGame;
 import miku.lib.network.packets.KillEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
@@ -41,7 +43,7 @@ public class EntityUtil {
 
     private static boolean Killing = false;
 
-    public static synchronized boolean isProtected(@Nullable Object object) {
+    public static boolean isProtected(@Nullable Object object) {
         if (!(object instanceof Entity)) return false;
         Entity entity = (Entity) object;
         if (entity instanceof EntityPlayer) {
@@ -87,14 +89,14 @@ public class EntityUtil {
         return false;
     }//is entity protected
 
-    public static synchronized boolean isDEAD(Entity entity) {
+    public static boolean isDEAD(Entity entity) {
         if (entity == null || isProtected(entity)) return false;
         boolean result = DEAD.contains(entity) || ((iEntity) entity).isDEAD() || Dead.contains(entity.getUniqueID()) || entity.dimension == -25;
         if (result) System.out.println(entity.getName() + " is dead.");
         return result;
     }//can the entity be alive.
 
-    public synchronized static void Kill(@Nullable Entity entity) {//Kill Entity
+    public static void Kill(@Nullable Entity entity) {//Kill Entity
         if (entity == null) return;
         if (isProtected(entity)) {
             if (entity instanceof ProtectedEntity) ((ProtectedEntity) entity).SetHealth(0);
@@ -158,18 +160,18 @@ public class EntityUtil {
         return Killing;
     }
 
-    public static synchronized void RangeKill(World world, double x, double y, double z, double range) {
+    public static void RangeKill(World world, double x, double y, double z, double range) {
         List<Entity> list = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(x - range, y - range, z - range, x + range, y + range, z + range));
         Kill(list);
     }
 
-    public static synchronized void Kill(Collection<Entity> entities) {//Kill a list if entity
+    public static void Kill(Collection<Entity> entities) {//Kill a list if entity
         for (Entity entity : entities) {
             Kill(entity);
         }
     }
 
-    public static synchronized void KillNoSizeEntity(Entity entity) {
+    public static void KillNoSizeEntity(Entity entity) {
         List<Entity> entities = Lists.newArrayList();
         for (int dist = 0; dist <= 100; dist += 2) {
             AxisAlignedBB bb = entity.getEntityBoundingBox();
@@ -186,14 +188,23 @@ public class EntityUtil {
         Kill(entities);
     }
 
-    public static synchronized void RangeKill(final Entity Player, int range) {
+    public static void RangeKill(final Entity Player, int range) {
         List<Entity> list = Player.getEntityWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(Player.posX - range, Player.posY - range, Player.posZ - range, Player.posX + range, Player.posY + range, Player.posZ + range));
         list.removeIf(miku.lib.common.util.EntityUtil::isProtected);
         Kill(list);
     }
 
-    public static synchronized void REMOVE(World world) {//REMOVE dead entities from world
+    public static void REMOVE(World world) {//REMOVE dead entities from world
         world.loadedEntityList.removeAll(DEAD);
         world.loadedEntityList.removeIf(e -> e.getUniqueID() != null && Dead.contains(e.getUniqueID()));
+    }
+
+    public static boolean isGoodEntity(@Nullable Entity entity) {
+        if (entity == null) return false;
+        Class<? extends Entity> cls = entity.getClass();
+        return cls == EntityItem.class || cls == EntityEnderEye.class || cls == EntityEnderPearl.class || cls == EntityTNTPrimed.class ||
+                cls == EntityExpBottle.class || cls == EntityFallingBlock.class || cls == EntityArrow.class || cls == EntityEgg.class ||
+                cls == EntityFishHook.class || cls == EntityPotion.class || cls == EntityLargeFireball.class || cls == EntityDragonFireball.class ||
+                cls == EntitySmallFireball.class || cls == EntitySnowball.class || cls == EntityTippedArrow.class;
     }
 }

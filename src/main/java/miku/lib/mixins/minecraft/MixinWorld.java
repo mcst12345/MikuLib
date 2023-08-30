@@ -51,6 +51,7 @@ import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    private static final List<Entity> toSpawn = new ArrayList<>();
     private boolean timeStop = false;
 
     public void SetTimeStop() {
@@ -225,6 +226,7 @@ public abstract class MixinWorld implements iWorld {
         return list;
     }
 
+    @SuppressWarnings("unchecked")
     public void remove(Entity entity) {
         long tmp;
         try {
@@ -267,10 +269,18 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public boolean spawnEntity(Entity entityIn) {
-        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn))) {
+        if (entityIn == null) return false;
+        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isDEAD(entityIn))) {
             if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return false;
         }
+        if ((SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
+            if (!EntityUtil.isGoodEntity(entityIn)) {
+                toSpawn.add(entityIn);
+                return true;
+            }
+        }
+        if (EntityUtil.isKilling() && !EntityUtil.isGoodEntity(entityIn)) return false;
         if (DEBUG()) {
             System.out.println(entityIn.getClass().toString());
             Throwable t = new Throwable();
@@ -280,13 +290,8 @@ public abstract class MixinWorld implements iWorld {
             Stream.of(Thread.currentThread().getStackTrace()).forEach(System.out::println);
         }
         // Do not drop any items while restoring blocksnapshots. Prevents dupes
-        if (!this.isRemote && (entityIn == null || (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots)))
+        if (!this.isRemote && (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots))
             return false;
-
-        //if (EntityUtil.isProtected(entityIn) && !(entityIn instanceof EntityPlayer)) {
-        //    NBTTagCompound nbt = new NBTTagCompound();
-        //    NetworkHandler.INSTANCE.sendMessageToAllPlayer(new SummonEntityOnClient(entityIn.getClass().toString().substring(5).trim(), entityIn.writeToNBT(nbt)), (World) (Object) this);
-        //}
 
         int i = MathHelper.floor(entityIn.posX / 16.0D);
         int j = MathHelper.floor(entityIn.posZ / 16.0D);
@@ -321,9 +326,18 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void onEntityAdded(Entity entityIn) {
-        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isKilling() || EntityUtil.isDEAD(entityIn) || (SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn))) {
+        if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isDEAD(entityIn))) {
             if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return;
+        }
+        if (EntityUtil.isKilling() && !EntityUtil.isGoodEntity(entityIn)) {
+            return;
+        }
+        if ((SpecialItem.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
+            if (!EntityUtil.isGoodEntity(entityIn)) {
+                toSpawn.add(entityIn);
+                return;
+            }
         }
         for (IWorldEventListener eventListener : this.eventListeners) {
             eventListener.onEntityAdded(entityIn);
@@ -369,6 +383,7 @@ public abstract class MixinWorld implements iWorld {
      */
     @Overwrite
     public void updateEntities() {
+        boolean stop = SpecialItem.isTimeStop();
         if (loadedEntityList.getClass() != ArrayList.class) {
             loadedEntityList = new ArrayList<>();
         }
@@ -378,6 +393,15 @@ public abstract class MixinWorld implements iWorld {
         }
         EntityUtil.REMOVE((World) (Object) this);
         if (EntityUtil.isKilling()) return;
+
+        if (!stop) {
+            Iterator<Entity> iterator = toSpawn.iterator();
+            while (iterator.hasNext()) {
+                Entity entity = iterator.next();
+                boolean result = spawnEntity(entity);
+                if (result) iterator.remove();
+            }
+        }
 
         if (MikuLib.isLAIN()) {
             loadedEntityList.removeIf(e -> e instanceof EntityMob);
@@ -390,32 +414,14 @@ public abstract class MixinWorld implements iWorld {
             Entity entity = this.weatherEffects.get(i);
 
             try {
-                if (entity.updateBlocked || ((iEntity) entity).isTimeStop() || (SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity)) || (MikuInsaneMode.isMikuInsaneMode() && !EntityUtil.isProtected(entity)))
+                if (entity.updateBlocked || ((iEntity) entity).isTimeStop() || ((stop || MikuInsaneMode.isMikuInsaneMode()) && !EntityUtil.isProtected(entity)))
                     continue;
                 ++entity.ticksExisted;
                 entity.onUpdate();
             }
-            catch (Throwable throwable2)
-            {
-                CrashReport crashreport = CrashReport.makeCrashReport(throwable2, "Ticking entity");
-                CrashReportCategory crashreportcategory = crashreport.makeCategory("Entity being ticked");
-
-                if (entity == null)
-                {
-                    crashreportcategory.addCrashSection("Entity", "~~NULL~~");
-                }
-                else
-                {
-                    entity.addEntityCrashInfo(crashreportcategory);
-                }
-
-                if (net.minecraftforge.common.ForgeModContainer.removeErroringEntities)
-                {
-                    net.minecraftforge.fml.common.FMLLog.log.fatal("{}", crashreport.getCompleteReport());
-                    removeEntity(entity);
-                }
-                else
-                    throw new ReportedException(crashreport);
+            catch (Throwable throwable2) {
+                System.out.println("MikuWarn:Catch exception when updating entity:" + entity.getName() + "," + entity.getClass());
+                removeEntity(entity);
             }
 
             if (entity.isDead && !EntityUtil.isProtected(entity) && !SpecialItem.isTimeStop()) {
@@ -451,10 +457,10 @@ public abstract class MixinWorld implements iWorld {
         for (int i1 = 0; i1 < this.loadedEntityList.size(); ++i1)
         {
             Entity entity2 = this.loadedEntityList.get(i1);
-            if(EntityUtil.isProtected(entity2)){
+            if (EntityUtil.isProtected(entity2)) {
                 protected_entities.add(entity2);
             }
-            if(SpecialItem.isTimeStop() && !EntityUtil.isProtected(entity2))continue;
+            if (stop && !EntityUtil.isProtected(entity2)) continue;
             Entity entity3 = entity2.getRidingEntity();
 
             if (entity3 != null)
@@ -507,7 +513,7 @@ public abstract class MixinWorld implements iWorld {
             this.profiler.endSection();
         }
 
-        if (!SpecialItem.isTimeStop() && !MikuInsaneMode.isMikuInsaneMode()) {
+        if (!stop && !MikuInsaneMode.isMikuInsaneMode()) {
             this.profiler.endStartSection("blockEntities");
 
             this.processingLoadedTiles = true; //FML Move above remove to prevent CMEs
