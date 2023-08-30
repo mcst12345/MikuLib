@@ -46,7 +46,7 @@ public abstract class MixinRenderManager {
     @SuppressWarnings("unchecked")
     @Overwrite
     public <T extends Entity> Render<T> getEntityClassRenderObject(Class<? extends Entity> entityClass) {
-        if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG", 0)) {
+        if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG")) {
             System.out.println("MikuInfo:Getting render for entity:" + entityClass);
         }
         Render<T> render = (Render<T>) this.entityRenderMap.get(entityClass);
@@ -92,7 +92,7 @@ public abstract class MixinRenderManager {
             render = this.getEntityRenderObject(entityIn);
 
             if (render != null && this.renderEngine != null) {
-                if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG", 0))
+                if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("render_info", "LOG_CONFIG"))
                     System.out.println("MikuInfo:Rendering entity at X:" + x + " Y:" + x + " Z:" + z + " Yaw:" + yaw + " partialTicks:" + partialTicks);
                 try {
                     render.setRenderOutlines(this.renderOutlines);

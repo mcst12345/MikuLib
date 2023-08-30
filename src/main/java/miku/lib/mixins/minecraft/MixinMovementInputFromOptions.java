@@ -21,7 +21,7 @@ public abstract class MixinMovementInputFromOptions extends MovementInput {
      */
     @Overwrite
     public void updatePlayerMoveState() {
-        boolean debug = Sqlite.DEBUG();
+        boolean debug = Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("key_info", "LOG_CONFIG");
 
         this.moveStrafe = 0.0F;
         this.moveForward = 0.0F;

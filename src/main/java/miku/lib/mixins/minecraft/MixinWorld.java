@@ -47,8 +47,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static miku.lib.common.sqlite.Sqlite.DEBUG;
-
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
     private static final List<Entity> toSpawn = new ArrayList<>();
@@ -281,7 +279,7 @@ public abstract class MixinWorld implements iWorld {
             }
         }
         if (EntityUtil.isKilling() && !EntityUtil.isGoodEntity(entityIn)) return false;
-        if (DEBUG()) {
+        if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("entity_info", "LOG_CONFIG")) {
             System.out.println(entityIn.getClass().toString());
             Throwable t = new Throwable();
             t.fillInStackTrace();

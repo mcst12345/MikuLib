@@ -55,6 +55,8 @@ public class Sqlite {
                 CreateConfigValue("field_info", "LOG_CONFIG", "true");
                 CreateConfigValue("ignore_info", "LOG_CONFIG", "false");
                 CreateConfigValue("render_info", "LOG_CONFIG", "false");
+                CreateConfigValue("key_info", "LOG_CONFIG", "false");
+                CreateConfigValue("entity_info", "LOG_CONFIG", "false");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS", "ID", SqliteCaches.HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS", "ID", SqliteCaches.BANNED_MODS);
@@ -102,16 +104,20 @@ public class Sqlite {
         }
     }
 
+    /*
+     * Get a value from MikuDatabase.
+     * Type 0 refers to bool, 1 refers to int, 2 refers to long, 3 refers to string.
+     */
     @Nullable
-    public static Object GetValueFromTable(String NAME,String TABLE, int TYPE){// 0-bool 1-int 2-long 3-str
+    public static Object GetValueFromTable(String NAME, String TABLE, int TYPE) {
         if (SqliteCaches.Configs.get(NAME) != null) return SqliteCaches.Configs.get(NAME);
         try {
-            ResultSet rs = stmt.executeQuery("SELECT * FROM "+TABLE+";");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE + ";");
             String result = null;
-            while(rs.next()){
-                if(Objects.equals(rs.getString("NAME"), NAME)) {
+            while (rs.next()) {
+                if (Objects.equals(rs.getString("NAME"), NAME)) {
                     result = rs.getString("VALUE");
-                    switch (TYPE){
+                    switch (TYPE) {
                         case 0: {
                             SqliteCaches.Configs.put(NAME, result.equals("true"));
                             break;
@@ -279,9 +285,9 @@ public class Sqlite {
         return s.startsWith("SELECT ");
     }
 
-    public static boolean GetBooleanFromTable(String name, String table, int type) {
+    public static boolean GetBooleanFromTable(String name, String table) {
         try {
-            return (boolean) GetValueFromTable(name, table, type);
+            return (boolean) GetValueFromTable(name, table, 0);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             return false;
