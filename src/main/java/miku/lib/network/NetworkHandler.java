@@ -24,7 +24,8 @@ public enum NetworkHandler {
         channel.registerMessage(ShowEntityList.MessageHandler.class, ShowEntityList.class, index++, Side.CLIENT);
         channel.registerMessage(SummonEntityOnClient.MessageHandler.class, SummonEntityOnClient.class, index++, Side.CLIENT);
         channel.registerMessage(MikuModeChange.MessageHandler.class, MikuModeChange.class, index++, Side.SERVER);
-        channel.registerMessage(RecordTimePoint.MessageHandler.class, RecordTimePoint.class, index, Side.SERVER);
+        channel.registerMessage(RecordTimePoint.MessageHandler.class, RecordTimePoint.class, index++, Side.SERVER);
+        channel.registerMessage(BackToTimePoint.MessageHandler.class, BackToTimePoint.class, index, Side.SERVER);
     }
 
     public void sendMessageToServer(IMessage msg) {
