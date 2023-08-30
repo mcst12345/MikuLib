@@ -62,6 +62,7 @@ public class TimeStopUtil {
         try {
             System.out.println("MikuInfo:Coping folder");
             FileUtils.copyDir(world, save);
+            saved.add(save);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
