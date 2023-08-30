@@ -39,7 +39,7 @@ public class TimeStopUtil {
                 worldserver.disableLevelSaving = false;
             }
         }
-        server.saveAllWorlds(false);
+        server.saveAllWorlds(true);
         for (WorldServer worldserver : server.worlds) {
             if (worldserver != null) {
                 worldserver.flushToDisk();
