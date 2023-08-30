@@ -83,4 +83,8 @@ public class TimeStopUtil {
     public static void SetTimeStop() {
         TimeStop = !TimeStop;
     }
+
+    public synchronized static void BackToPoint(String point) {
+
+    }
 }

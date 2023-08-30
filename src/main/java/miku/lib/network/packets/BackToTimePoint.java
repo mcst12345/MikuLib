@@ -22,7 +22,7 @@ public class BackToTimePoint implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         int tmp = buf.readInt();
-        buf.readCharSequence(tmp, Charset.defaultCharset());
+        this.record = (String) buf.readCharSequence(tmp, Charset.defaultCharset());
     }
 
     @Override
