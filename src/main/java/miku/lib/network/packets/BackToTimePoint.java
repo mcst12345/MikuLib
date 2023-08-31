@@ -1,6 +1,7 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
+import miku.lib.common.util.TimeStopUtil;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -36,7 +37,7 @@ public class BackToTimePoint implements IMessage {
         @Override
         @SideOnly(Side.SERVER)
         public IMessage onMessage(BackToTimePoint message, MessageContext ctx) {
-
+            TimeStopUtil.BackToPoint(message.record);
             return null;
         }
     }

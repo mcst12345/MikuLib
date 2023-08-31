@@ -99,14 +99,13 @@ public class FileUtils {
             throw new IllegalArgumentException("Failed to copy directory! One of the target exists but isn't directory!");
         }
         dest.mkdir();
-        if (src.listFiles() == null) {
-            return;
-        }
-        for (File file : src.listFiles()) {
-            if (file.isFile()) {
-                copyFile(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
-            } else {
-                copyDir(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
+        if (src.listFiles() != null) {
+            for (File file : src.listFiles()) {
+                if (file.isFile()) {
+                    copyFile(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
+                } else {
+                    copyDir(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
+                }
             }
         }
     }

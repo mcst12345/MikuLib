@@ -7,6 +7,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,7 +58,6 @@ public class TimeStopUtil {
             world = new File("saves" + File.separator + folder_name);
         } else {
             world = new File("world");
-
         }
         if (!world.exists()) {
             throw new RuntimeException("The fuck?");
@@ -85,6 +85,30 @@ public class TimeStopUtil {
     }
 
     public synchronized static void BackToPoint(String point) {
+        File save = new File("saved_time_points" + File.separator + point);
+        if (!save.exists()) {
+            System.out.println("MikuWarn:TimePoint " + point + " does not exist.");
+            return;
+        }
+        File world;
+        if (Launch.Client) {
+            if (folder_name == null) {
+                throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
+            }
+            world = new File("saves" + File.separator + folder_name);
+        } else {
+            world = new File("world");
+        }
+        if (!world.exists()) {
+            throw new RuntimeException("The fuck?");
+        }
+        try {
+            Files.delete(world.toPath());
+            FileUtils.copyDir(save, world);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
     }
 }
