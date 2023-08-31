@@ -16,6 +16,7 @@ import java.util.List;
 public class TimeStopUtil {
     private static boolean TimeStop = false;
     private static boolean saving;
+    public static long seed;
     public static String folder_name;
     private static final List<File> saved = new ArrayList<>();
     private static final File saves;
@@ -110,5 +111,6 @@ public class TimeStopUtil {
         }
 
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        //server.loadAllWorlds(server.getFolderName(),server.getWorldName(),seed,);
     }
 }
