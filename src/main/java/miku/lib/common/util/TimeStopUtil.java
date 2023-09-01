@@ -147,6 +147,7 @@ public class TimeStopUtil {
         }
         players.forEach(player -> {
             if (player instanceof EntityPlayerMP) {
+                server.getPlayerList().recreatePlayerEntity((EntityPlayerMP) player, player.dimension, true);
                 NetworkHandler.INSTANCE.sendMessageToPlayer(new ReloadClient(), (EntityPlayerMP) player);
             }
         });
