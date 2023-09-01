@@ -2,8 +2,10 @@ package miku.lib.common.util;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 
 //Well, in some case (For example, on the server side) we don't have commons-io.jar, so I wrote this shit.
+//Why don't you provide common-io on the server side,forge!Aaahhhhhhhhhhhhhhhhhhhhhhhhh!
 
 public class FileUtils {
     public static final long ONE_KB = 1024;
@@ -107,6 +109,24 @@ public class FileUtils {
                     copyDir(file, new File(dest.getAbsolutePath() + File.separator + file.getName()));
                 }
             }
+        }
+    }
+
+    public static void deleteDir(File dir) throws IOException {
+        if (!dir.isDirectory()) {
+            return;
+        }
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (!file.isDirectory()) {
+                    Files.delete(file.toPath());
+                } else {
+                    deleteDir(file);
+                }
+            }
+        } else {
+            Files.delete(dir.toPath());
         }
     }
 }

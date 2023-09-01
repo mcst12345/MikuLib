@@ -9,7 +9,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -117,7 +116,7 @@ public class TimeStopUtil {
             throw new RuntimeException("The fuck?");
         }
         try {
-            Files.delete(world.toPath());
+            FileUtils.deleteDir(world);
             FileUtils.copyDir(save, world);
         } catch (IOException e) {
             throw new RuntimeException(e);
