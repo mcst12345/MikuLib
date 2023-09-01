@@ -6,6 +6,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +31,13 @@ public class TimeStopUtil {
         if (!saves.isDirectory()) {
             if (!saves.mkdir()) {
                 throw new RuntimeException("MikuFATAL:Failed to create directory:saved_time_points");
+            } else {
+                File[] files = saves.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isDirectory()) saved.add(file);
+                    }
+                }
             }
         }
     }
@@ -123,7 +131,9 @@ public class TimeStopUtil {
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
     }
 
+    @Nullable
     public static File SwitchTimePoint() {
+        if (saved.isEmpty()) return null;
         if (saved.get(current_time_point + 1) != null) {
             current_time_point++;
         } else {

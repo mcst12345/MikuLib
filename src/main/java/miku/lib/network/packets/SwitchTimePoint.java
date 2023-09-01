@@ -41,15 +41,17 @@ public class SwitchTimePoint implements IMessage {
         @Override
         public IMessage onMessage(SwitchTimePoint message, MessageContext ctx) {
             File file = TimeStopUtil.SwitchTimePoint();
-            try {
-                MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-                World world = server.getWorld(message.world);
-                EntityPlayerMP sender = (EntityPlayerMP) world.getEntityByID(message.sender);
-                if (sender != null) {
-                    sender.sendMessage(new TextComponentString("Switching time point:" + file.getName()));
+            if (file != null) {
+                try {
+                    MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+                    World world = server.getWorld(message.world);
+                    EntityPlayerMP sender = (EntityPlayerMP) world.getEntityByID(message.sender);
+                    if (sender != null) {
+                        sender.sendMessage(new TextComponentString("Switching time point:" + file.getName()));
+                    }
+                } catch (Throwable throwable) {
+                    System.out.println("MikuWarn:Can't get message sender of package:SwitchTimePoint.");
                 }
-            } catch (Throwable throwable) {
-                System.out.println("MikuWarn:Can't get message sender of package:SwitchTimePoint.");
             }
             return null;
         }
