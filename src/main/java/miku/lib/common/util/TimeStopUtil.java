@@ -100,7 +100,9 @@ public class TimeStopUtil {
     public synchronized static void BackToPoint() {
         File save = saved.get(current_time_point);
         if (!save.exists()) {
-            throw new IllegalStateException("The fuck? A saved time point doesn't exist!");
+            System.out.println("The fuck? A saved time point doesn't exist!");
+            saved.remove(current_time_point);
+            return;
         }
         File world;
         if (Launch.Client) {
