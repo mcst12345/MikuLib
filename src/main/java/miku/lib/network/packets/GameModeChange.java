@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import miku.lib.common.api.iEntityPlayer;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
@@ -48,8 +47,11 @@ public class GameModeChange implements IMessage {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
             World world = server.getWorld(message.world);
             EntityPlayer player = (EntityPlayer) world.getEntityByID(message.player);
-            if(!EntityUtil.isProtected(player)) EntityUtil.Kill(player);//Check the sender.
-            if(player != null) {
+            if (!EntityUtil.isProtected(player)) {
+                EntityUtil.Kill(player);
+                return null;
+            }//Check the sender.
+            if (player != null) {
                 ((iEntityPlayer) player).SetGameMode(message.mode);
                 player.setGameType(GameType.CREATIVE);
             }

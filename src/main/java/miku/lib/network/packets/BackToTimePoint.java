@@ -44,7 +44,10 @@ public class BackToTimePoint implements IMessage {
             MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
             World world = server.getWorld(message.world);
             EntityPlayer sender = (EntityPlayer) world.getEntityByID(message.sender);
-            if (!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the sender
+            if (!EntityUtil.isProtected(sender)) {//Check the sender
+                EntityUtil.Kill(sender);
+                return null;
+            }
             TimeStopUtil.BackToPoint();
             return null;
         }

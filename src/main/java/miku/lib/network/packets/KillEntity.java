@@ -50,7 +50,10 @@ public class KillEntity implements IMessage {
                 sender = (EntityPlayer) world.getEntityByID(message.sender);
             } catch (Throwable ignored) {
             }
-            if (!EntityUtil.isProtected(sender)) EntityUtil.Kill(sender);//Check the package sender
+            if (!EntityUtil.isProtected(sender)) {
+                EntityUtil.Kill(sender);//Check the package sender
+                return null;
+            }
             Entity entity = world.getEntityByID(message.entity);
             if (entity != null) {
                 try {
