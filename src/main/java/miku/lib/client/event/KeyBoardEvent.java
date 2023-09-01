@@ -35,6 +35,11 @@ public class KeyBoardEvent {
 
     @SideOnly(Side.CLIENT)//key to record a time point
     public static final KeyBinding RECORD_TIME_POINT = new KeyBinding("key.miku.rtp", KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, Keyboard.KEY_R, "key.category.miku");
+    @SideOnly(Side.CLIENT)
+    public static final KeyBinding BACK_TO_TIME_POINT = new KeyBinding("key.miku.bttp", KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, Keyboard.KEY_B, "key.category.miku");
+
+    @SideOnly(Side.CLIENT)
+    public static final KeyBinding SWITCH_TIME_POINT = new KeyBinding("key.miku.stp", KeyConflictContext.UNIVERSAL, KeyModifier.CONTROL, Keyboard.KEY_B, "key.category.miku");
 
     @SideOnly(Side.CLIENT)
     public static void Init() {
@@ -43,6 +48,8 @@ public class KeyBoardEvent {
         ClientRegistry.registerKeyBinding(GAME_MODE);
         ClientRegistry.registerKeyBinding(MIKU_MODE);
         ClientRegistry.registerKeyBinding(RECORD_TIME_POINT);
+        ClientRegistry.registerKeyBinding(BACK_TO_TIME_POINT);
+        ClientRegistry.registerKeyBinding(SWITCH_TIME_POINT);
     }
 
     @SubscribeEvent
@@ -80,6 +87,12 @@ public class KeyBoardEvent {
         }
         if (RECORD_TIME_POINT.isPressed()) {
             NetworkHandler.INSTANCE.sendMessageToServer(new RecordTimePoint());
+        }
+        if (SWITCH_TIME_POINT.isPressed()) {
+            NetworkHandler.INSTANCE.sendMessageToServer(new SwitchTimePoint(Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
+        }
+        if (BACK_TO_TIME_POINT.isPressed()) {
+            NetworkHandler.INSTANCE.sendMessageToServer(new BackToTimePoint(Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
         }
     }
 }

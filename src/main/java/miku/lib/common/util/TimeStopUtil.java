@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TimeStopUtil {
+    private static int current_time_point = 0;
     private static boolean TimeStop = false;
     private static boolean saving;
     public static long seed;
@@ -88,11 +89,10 @@ public class TimeStopUtil {
         TimeStop = !TimeStop;
     }
 
-    public synchronized static void BackToPoint(String point) {
-        File save = new File("saved_time_points" + File.separator + point);
+    public synchronized static void BackToPoint() {
+        File save = saved.get(current_time_point);
         if (!save.exists()) {
-            System.out.println("MikuWarn:TimePoint " + point + " does not exist.");
-            return;
+            throw new IllegalStateException("The fuck? A saved time point doesn't exist!");
         }
         File world;
         if (Launch.Client) {
@@ -121,5 +121,14 @@ public class TimeStopUtil {
         }
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
+    }
+
+    public static File SwitchTimePoint() {
+        if (saved.get(current_time_point + 1) != null) {
+            current_time_point++;
+        } else {
+            current_time_point = 0;
+        }
+        return saved.get(current_time_point);
     }
 }
