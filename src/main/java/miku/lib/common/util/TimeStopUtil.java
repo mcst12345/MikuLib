@@ -3,6 +3,7 @@ package miku.lib.common.util;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.io.File;
@@ -18,6 +19,8 @@ public class TimeStopUtil {
     private static boolean saving;
     public static long seed;
     public static String folder_name;
+    public static WorldType worldType;
+    public static String generatorOptions;
     private static final List<File> saved = new ArrayList<>();
     private static final File saves;
 
@@ -110,7 +113,13 @@ public class TimeStopUtil {
             throw new RuntimeException(e);
         }
 
+        if (worldType == null) {
+            throw new RuntimeException("The fuck? worldType is null?");
+        }
+        if (generatorOptions == null) {
+            throw new RuntimeException("The fuck? generatorOptions is null?");
+        }
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        //server.loadAllWorlds(server.getFolderName(),server.getWorldName(),seed,);
+        server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
     }
 }

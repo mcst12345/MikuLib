@@ -33,6 +33,8 @@ public abstract class MixinIntegratedServer extends MinecraftServer {
     @Inject(at = @At("TAIL"), method = "<init>")
     public void IntegratedServer(Minecraft clientIn, String folderNameIn, String worldNameIn, WorldSettings worldSettingsIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn, CallbackInfo ci) {
         TimeStopUtil.folder_name = folderNameIn;
+        TimeStopUtil.worldType = worldSettingsIn.getTerrainType();
+        TimeStopUtil.generatorOptions = worldSettingsIn.getGeneratorOptions();
     }
 
     @Shadow

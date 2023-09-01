@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraft;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import miku.lib.common.util.TimeStopUtil;
 import miku.lib.server.api.iDedicatedServer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -138,9 +139,9 @@ public abstract class MixinDedicatedServer extends MinecraftServer implements IS
             this.setPlayerIdleTimeout(this.settings.getIntProperty("player-idle-timeout", 0));
 
             if (this.settings.getIntProperty("difficulty", 1) < 0) {
-                this.settings.setProperty("difficulty", Integer.valueOf(0));
+                this.settings.setProperty("difficulty", 0);
             } else if (this.settings.getIntProperty("difficulty", 1) > 3) {
-                this.settings.setProperty("difficulty", Integer.valueOf(3));
+                this.settings.setProperty("difficulty", 3);
             }
 
             this.canSpawnStructures = this.settings.getBooleanProperty("generate-structures", true);
@@ -159,7 +160,7 @@ public abstract class MixinDedicatedServer extends MinecraftServer implements IS
 
             LOGGER.info("Generating keypair");
             this.setKeyPair(CryptManager.generateKeyPair());
-            LOGGER.info("Starting Minecraft server on {}:{}", this.getServerHostname().isEmpty() ? "*" : this.getServerHostname(), Integer.valueOf(this.getServerPort()));
+            LOGGER.info("Starting Minecraft server on {}:{}", this.getServerHostname().isEmpty() ? "*" : this.getServerHostname(), this.getServerPort());
 
             try {
                 this.getNetworkSystem().addEndpoint(inetaddress, this.getServerPort());
@@ -195,6 +196,7 @@ public abstract class MixinDedicatedServer extends MinecraftServer implements IS
                 String s = this.settings.getStringProperty("level-seed", "");
                 String s1 = this.settings.getStringProperty("level-type", "DEFAULT");
                 String s2 = this.settings.getStringProperty("generator-settings", "");
+                TimeStopUtil.generatorOptions = s2;
                 long k = (new Random()).nextLong();
 
                 if (!s.isEmpty()) {
@@ -215,6 +217,8 @@ public abstract class MixinDedicatedServer extends MinecraftServer implements IS
                     worldtype = WorldType.DEFAULT;
                 }
 
+                TimeStopUtil.worldType = worldtype;
+
                 this.isCommandBlockEnabled();
                 this.getOpPermissionLevel();
                 this.isSnooperEnabled();
@@ -222,7 +226,7 @@ public abstract class MixinDedicatedServer extends MinecraftServer implements IS
                 this.setBuildLimit(this.settings.getIntProperty("max-build-height", 256));
                 this.setBuildLimit((this.getBuildLimit() + 8) / 16 * 16);
                 this.setBuildLimit(MathHelper.clamp(this.getBuildLimit(), 64, 256));
-                this.settings.setProperty("max-build-height", Integer.valueOf(this.getBuildLimit()));
+                this.settings.setProperty("max-build-height", this.getBuildLimit());
                 TileEntitySkull.setProfileCache(this.getPlayerProfileCache());
                 TileEntitySkull.setSessionService(this.getMinecraftSessionService());
                 PlayerProfileCache.setOnlineMode(this.isServerInOnlineMode());

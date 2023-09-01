@@ -23,7 +23,6 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.network.NetworkSystem;
 import net.minecraft.network.ServerStatusResponse;
@@ -1126,7 +1125,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             try {
                 return Futures.immediateFuture(callable.call());
             } catch (Exception exception) {
-                return Futures.immediateFailedCheckedFuture(exception);
+                return Futures.immediateFailedFuture(exception);
             }
         }
     }
