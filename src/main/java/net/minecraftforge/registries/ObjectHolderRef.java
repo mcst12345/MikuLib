@@ -122,7 +122,7 @@ class ObjectHolderRef {
         }
     }
 
-    private static class FinalFieldHelper {
+    public static class FinalFieldHelper {
         private static Field modifiersField;
         private static Object reflectionFactory;
         private static Method newFieldAccessor;

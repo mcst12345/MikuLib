@@ -18,11 +18,15 @@ import org.spongepowered.asm.launch.MixinTweaker;
 import org.spongepowered.asm.mixin.Mixins;
 import sun.instrument.InstrumentationImpl;
 import sun.misc.Unsafe;
+import sun.reflect.ConstructorAccessor;
+import sun.reflect.FieldAccessor;
+import sun.reflect.ReflectionFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -69,8 +73,72 @@ public class Launch {
     private static final Field declaredMethods;
     private static final Field publicMethods;
     private static final Field declaredPublicMethods;
+    private static final Field modifiersField;
+    private static final Method newFieldAccessor;
+    private static final Object reflectionFactory;
+    private static final Method fieldAccessorSet;
+    private static final Method newConstructorAccessor;
+    private static final Method newInstance;
+
+    public static Field getModifiersField() {
+        return modifiersField;
+    }
+
+    public static Method getNewFieldAccessor() {
+        return newFieldAccessor;
+    }
+
+    public static Object getReflectionFactory() {
+        return reflectionFactory;
+    }
+
+    public static Method getFieldAccessorSet() {
+        return fieldAccessorSet;
+    }
+
+    public static Method getNewConstructorAccessor() {
+        return newConstructorAccessor;
+    }
+
+    public static Method getNewInstance() {
+        return newInstance;
+    }
+
 
     static {
+        try {
+            newInstance = ConstructorAccessor.class.getDeclaredMethod("newInstance", Object[].class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            newConstructorAccessor = ReflectionFactory.class.getDeclaredMethod("newConstructorAccessor", Constructor.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            fieldAccessorSet = FieldAccessor.class.getDeclaredMethod("set", Object.class, Object.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            Method getReflectionFactory = ReflectionFactory.class.getDeclaredMethod("getReflectionFactory");
+            getReflectionFactory.setAccessible(true);
+            reflectionFactory = getReflectionFactory.invoke(null);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            newFieldAccessor = ReflectionFactory.class.getDeclaredMethod("newFieldAccessor", Field.class, boolean.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
         try {
             fieldAccessor = Field.class.getDeclaredField("fieldAccessor");
             fieldAccessor.setAccessible(true);
