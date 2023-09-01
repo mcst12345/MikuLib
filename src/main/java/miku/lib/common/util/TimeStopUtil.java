@@ -136,7 +136,7 @@ public class TimeStopUtil {
     @Nullable
     public static File SwitchTimePoint() {
         if (saved.isEmpty()) return null;
-        if (saved.get(current_time_point + 1) != null) {
+        if (current_time_point + 1 < saved.size() && saved.get(current_time_point + 1) != null) {
             current_time_point++;
         } else {
             current_time_point = 0;
