@@ -1,5 +1,6 @@
 package miku.lib.common.util;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
@@ -131,6 +132,14 @@ public class TimeStopUtil {
         }
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
+        for (WorldServer worldServer : server.worlds) {
+            for (EntityPlayer entity : worldServer.playerEntities) {
+                worldServer.updateEntityWithOptionalForce(entity, false);
+            }
+        }
+        for (WorldServer worldServer : server.worlds) {
+            worldServer.resetUpdateEntityTick();
+        }
         saving = false;
     }
 
