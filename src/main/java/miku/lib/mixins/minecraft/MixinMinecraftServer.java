@@ -333,6 +333,8 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
      */
     @Overwrite
     public void tick() {
+        if (TimeStopUtil.isSaving()) return;
+
         long i = System.nanoTime();
         if (!TimeStopUtil.isTimeStop()) {
             try {

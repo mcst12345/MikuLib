@@ -62,6 +62,7 @@ public abstract class MixinIntegratedServer extends MinecraftServer {
      */
     @Overwrite
     public void tick() {
+        if (TimeStopUtil.isSaving()) return;
         boolean flag = this.isGamePaused;
         this.isGamePaused = Minecraft.getMinecraft().getConnection() != null && Minecraft.getMinecraft().isGamePaused();
 
