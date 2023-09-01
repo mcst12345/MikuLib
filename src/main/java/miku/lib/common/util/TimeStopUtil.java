@@ -97,6 +97,7 @@ public class TimeStopUtil {
     }
 
     public synchronized static void BackToPoint() {
+        saving = true;
         File save = saved.get(current_time_point);
         if (!save.exists()) {
             System.out.println("The fuck? A saved time point doesn't exist!");
@@ -130,6 +131,7 @@ public class TimeStopUtil {
         }
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
+        saving = false;
     }
 
     @Nullable
