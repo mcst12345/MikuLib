@@ -2,8 +2,6 @@ package miku.lib.common.util;
 
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ClientReloadWorld;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
@@ -136,12 +134,7 @@ public class TimeStopUtil {
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
         for (WorldServer worldServer : server.worlds) {
-            for (EntityPlayer entity : worldServer.playerEntities) {
-                if (entity instanceof EntityPlayerMP) {
-                    EntityPlayerMP player = (EntityPlayerMP) entity;
-                    NetworkHandler.INSTANCE.sendMessageToPlayer(new ClientReloadWorld(), player);
-                }
-            }
+            NetworkHandler.INSTANCE.sendMessageToAllPlayer(new ClientReloadWorld(), worldServer);
         }
         for (WorldServer worldServer : server.worlds) {
             worldServer.resetUpdateEntityTick();
