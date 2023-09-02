@@ -3,8 +3,7 @@ package miku.lib.common.util;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.network.play.server.SPacketPlayerAbilities;
-import net.minecraft.network.play.server.SPacketRespawn;
+import net.minecraft.network.play.server.SPacketJoinGame;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
@@ -139,8 +138,7 @@ public class TimeStopUtil {
             for (EntityPlayer entity : worldServer.playerEntities) {
                 if (entity instanceof EntityPlayerMP) {
                     EntityPlayerMP player = (EntityPlayerMP) entity;
-                    player.connection.sendPacket(new SPacketRespawn(player.dimension, worldServer.getDifficulty(), worldServer.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
-                    player.connection.sendPacket(new SPacketPlayerAbilities(player.capabilities));
+                    player.connection.sendPacket(new SPacketJoinGame(player.getEntityId(), player.interactionManager.getGameType(), worldServer.getWorldInfo().isHardcoreModeEnabled(), player.dimension, worldServer.getDifficulty(), server.getMaxPlayers(), worldServer.getWorldInfo().getTerrainType(), worldServer.getGameRules().getBoolean("reducedDebugInfo")));
                 }
             }
         }
