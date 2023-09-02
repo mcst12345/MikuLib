@@ -4,6 +4,7 @@ import miku.lib.common.sqlite.Sqlite;
 import miku.lib.network.packets.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -43,14 +44,21 @@ public enum NetworkHandler {
         }
         channel.sendTo(msg, player);
     }
+
     public void sendMessageToAllPlayer(IMessage msg, World world) {
-        for(EntityPlayer player : world.playerEntities){
-            if(player instanceof EntityPlayerMP) {
+        for (EntityPlayer player : world.playerEntities) {
+            if (player instanceof EntityPlayerMP) {
                 if (Sqlite.DEBUG()) {
                     System.out.println("MikuInfo:Sending message to player:" + player.getName() + ",message:" + msg.getClass());
                 }
                 sendMessageToPlayer(msg, (EntityPlayerMP) player);
             }
+        }
+    }
+
+    public void sendMessageToAllPlayer(IMessage msg, MinecraftServer server) {
+        for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
+            sendMessageToPlayer(msg, player);
         }
     }
 }
