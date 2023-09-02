@@ -134,11 +134,9 @@ public class TimeStopUtil {
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
         for (WorldServer worldServer : server.worlds) {
-            NetworkHandler.INSTANCE.sendMessageToAllPlayer(new ClientReloadWorld(), worldServer);
-        }
-        for (WorldServer worldServer : server.worlds) {
             worldServer.resetUpdateEntityTick();
         }
+        NetworkHandler.INSTANCE.sendMessageToAllPlayer(new ClientReloadWorld(), server);
         saving = false;
     }
 
