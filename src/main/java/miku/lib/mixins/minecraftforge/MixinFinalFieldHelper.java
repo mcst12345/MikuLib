@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-@Mixin(value = ObjectHolderRef.FinalFieldHelper.class)
+@Mixin(value = ObjectHolderRef.FinalFieldHelper.class, remap = false)
 public class MixinFinalFieldHelper {
 
 
