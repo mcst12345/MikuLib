@@ -1,7 +1,9 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.client.api.iChunkProviderClient;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iWorldClient;
+import miku.lib.common.api.iMapStorage;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.sqlite.Sqlite;
@@ -18,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
@@ -38,6 +41,18 @@ import java.util.Set;
 
 @Mixin(value = WorldClient.class)
 public abstract class MixinWorldClient extends World implements iWorldClient {
+    @Override
+    public void reload() {
+        ((iChunkProviderClient) clientChunkProvider).reload();
+        visibleChunks.clear();
+        if (mapStorage != null) {
+            ((iMapStorage) mapStorage).clearData();
+        }
+        if (perWorldStorage != null) {
+            ((iMapStorage) perWorldStorage).clearData();
+        }
+    }
+
     @Shadow
     @Final
     private Set<Entity> entityList;
@@ -52,6 +67,9 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
     @Shadow
     @Final
     private Minecraft mc;
+
+    @Shadow
+    protected Set<ChunkPos> visibleChunks;
 
     protected MixinWorldClient(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);

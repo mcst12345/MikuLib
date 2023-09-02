@@ -1,18 +1,25 @@
 package miku.lib.mixins.minecraft;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import miku.lib.client.api.iChunkProviderClient;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(value = ChunkProviderClient.class)
-public class MixinChunkProviderClient {
+public abstract class MixinChunkProviderClient implements IChunkProvider, iChunkProviderClient {
+    @Override
+    public void reload() {
+        loadedChunks.clear();
+    }
+
     @Shadow
     @Final
     private World world;

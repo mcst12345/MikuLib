@@ -6,8 +6,8 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iNetHandlerPlayClient;
+import miku.lib.client.api.iWorldClient;
 import miku.lib.client.gui.TheGui;
-import miku.lib.common.api.iMapStorage;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
@@ -75,7 +75,6 @@ import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraft.world.storage.ISaveFormat;
-import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
@@ -104,17 +103,10 @@ public abstract class MixinMinecraft implements iMinecraft {
     @Override
     public void reloadWorld() {
         if (MikuWorld == null) return;
-        MapStorage mapStorage = MikuWorld.getMapStorage();
-        if (mapStorage != null) {
-            ((iMapStorage) mapStorage).clearData();
-        }
+        ((iWorldClient) MikuWorld).reload();
         if (this.player != null) {
             ((iNetHandlerPlayClient) this.player.connection).setWorld(MikuWorld);
         }
-        this.entityRenderer.resetData();
-        this.renderGlobal.setWorldAndLoadRenderers(MikuWorld);
-        this.effectRenderer.clearEffects(MikuWorld);
-        TileEntityRendererDispatcher.instance.setWorld(MikuWorld);
         net.minecraftforge.client.MinecraftForgeClient.clearRenderCache();
     }
 
