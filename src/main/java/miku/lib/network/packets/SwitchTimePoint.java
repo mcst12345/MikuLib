@@ -19,7 +19,7 @@ public class SwitchTimePoint implements IMessage {
     private SwitchTimePoint() {
     }
 
-    public SwitchTimePoint(int sender, int world) {
+    public SwitchTimePoint(int world, int sender) {
         this.sender = sender;
         this.world = world;
     }

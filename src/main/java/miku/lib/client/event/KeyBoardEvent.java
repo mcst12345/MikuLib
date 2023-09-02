@@ -56,11 +56,13 @@ public class KeyBoardEvent {
     @SideOnly(Side.CLIENT)
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (TIME_STOP.isPressed()) {
+            System.out.println(Minecraft.getMinecraft().player.dimension);
             if (EntityUtil.isProtected(Minecraft.getMinecraft().player)) {
                 NetworkHandler.INSTANCE.sendMessageToServer(new TimeStop(Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
             }
         }
         if (KILL_ALL.isPressed()) {
+            System.out.println(Minecraft.getMinecraft().player.dimension);
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
                 NetworkHandler.INSTANCE.sendMessageToServer(new KillAllEntities(Minecraft.getMinecraft().player.dimension,Minecraft.getMinecraft().player.getEntityId()));
                 List<Entity> entities = new ArrayList<>(Minecraft.getMinecraft().player.world.loadedEntityList);
@@ -68,6 +70,7 @@ public class KeyBoardEvent {
             }
         }
         if(GAME_MODE.isPressed()){
+            System.out.println(Minecraft.getMinecraft().player.dimension);
             if(EntityUtil.isProtected(Minecraft.getMinecraft().player)){
                 int mode;
                 int current = ((iEntityPlayer) Minecraft.getMinecraft().player).GetGameMode();
@@ -83,15 +86,18 @@ public class KeyBoardEvent {
         }
         if (MIKU_MODE.isPressed()) {
             EntityPlayer player = Minecraft.getMinecraft().player;
+            System.out.println(Minecraft.getMinecraft().player.dimension);
             NetworkHandler.INSTANCE.sendMessageToServer(new MikuModeChange(player.getEntityId(), player.dimension));
         }
         if (RECORD_TIME_POINT.isPressed()) {
             NetworkHandler.INSTANCE.sendMessageToServer(new RecordTimePoint());
         }
         if (SWITCH_TIME_POINT.isPressed()) {
+            System.out.println(Minecraft.getMinecraft().player.dimension);
             NetworkHandler.INSTANCE.sendMessageToServer(new SwitchTimePoint(Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
         }
         if (BACK_TO_TIME_POINT.isPressed()) {
+            System.out.println(Minecraft.getMinecraft().player.dimension);
             NetworkHandler.INSTANCE.sendMessageToServer(new BackToTimePoint(Minecraft.getMinecraft().player.dimension, Minecraft.getMinecraft().player.getEntityId()));
         }
     }
