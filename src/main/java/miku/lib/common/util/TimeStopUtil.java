@@ -33,12 +33,12 @@ public class TimeStopUtil {
         if (!saves.isDirectory()) {
             if (!saves.mkdir()) {
                 throw new RuntimeException("MikuFATAL:Failed to create directory:saved_time_points");
-            } else {
-                File[] files = saves.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.isDirectory()) saved.add(file);
-                    }
+            }
+        } else {
+            File[] files = saves.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) saved.add(file);
                 }
             }
         }
