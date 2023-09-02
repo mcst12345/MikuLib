@@ -39,6 +39,7 @@
     "MixinItemEnchantedBook",
     "MixinItemPotion",
     "MixinItemTippedArrow",
+    "MixinMapStorage",
     "MixinMinecraftServer",
     "MixinNetHandlerPlayServer",
     "MixinPlayerChunkMapEntry",
