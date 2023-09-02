@@ -27,4 +27,6 @@ public interface iMinecraft {
     WorldClient MikuWorld();
 
     IReloadableResourceManager GetResourceManager();
+
+    void reloadWorld();
 }

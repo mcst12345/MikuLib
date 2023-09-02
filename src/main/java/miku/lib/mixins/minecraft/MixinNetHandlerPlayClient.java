@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import io.netty.buffer.Unpooled;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.client.api.iNetHandlerPlayClient;
 import miku.lib.common.sqlite.Sqlite;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
@@ -45,7 +46,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Mixin(value = NetHandlerPlayClient.class)
-public abstract class MixinNetHandlerPlayClient {
+public abstract class MixinNetHandlerPlayClient implements iNetHandlerPlayClient {
+    @Override
+    public void setWorld(WorldClient world) {
+        this.world = world;
+    }
+
     @Shadow
     private Minecraft client;
 
