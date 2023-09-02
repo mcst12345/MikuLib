@@ -27,7 +27,6 @@ public enum NetworkHandler {
         channel.registerMessage(RecordTimePoint.MessageHandler.class, RecordTimePoint.class, index++, Side.SERVER);
         channel.registerMessage(BackToTimePoint.MessageHandler.class, BackToTimePoint.class, index++, Side.SERVER);
         channel.registerMessage(SwitchTimePoint.MessageHandler.class, SwitchTimePoint.class, index++, Side.SERVER);
-        channel.registerMessage(ReloadClient.MessageHandler.class, ReloadClient.class, index, Side.CLIENT);
     }
 
     public void sendMessageToServer(IMessage msg) {

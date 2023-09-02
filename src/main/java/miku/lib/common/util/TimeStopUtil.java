@@ -1,10 +1,10 @@
 package miku.lib.common.util;
 
-import miku.lib.network.NetworkHandler;
-import miku.lib.network.packets.ReloadClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.network.play.server.SPacketPlayerAbilities;
+import net.minecraft.network.play.server.SPacketRespawn;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
@@ -135,22 +135,18 @@ public class TimeStopUtil {
         }
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
-        List<EntityPlayer> players = new ArrayList<>();
         for (WorldServer worldServer : server.worlds) {
             for (EntityPlayer entity : worldServer.playerEntities) {
-                worldServer.updateEntityWithOptionalForce(entity, false);
-                players.add(entity);
+                if (entity instanceof EntityPlayerMP) {
+                    EntityPlayerMP player = (EntityPlayerMP) entity;
+                    player.connection.sendPacket(new SPacketRespawn(player.dimension, worldServer.getDifficulty(), worldServer.getWorldInfo().getTerrainType(), player.interactionManager.getGameType()));
+                    player.connection.sendPacket(new SPacketPlayerAbilities(player.capabilities));
+                }
             }
         }
         for (WorldServer worldServer : server.worlds) {
             worldServer.resetUpdateEntityTick();
         }
-        players.forEach(player -> {
-            if (player instanceof EntityPlayerMP) {
-                server.getPlayerList().recreatePlayerEntity((EntityPlayerMP) player, player.dimension, true);
-                NetworkHandler.INSTANCE.sendMessageToPlayer(new ReloadClient(), (EntityPlayerMP) player);
-            }
-        });
         saving = false;
     }
 
