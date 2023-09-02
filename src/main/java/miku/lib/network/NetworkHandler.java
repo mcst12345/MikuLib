@@ -1,5 +1,6 @@
 package miku.lib.network;
 
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.network.packets.*;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -31,14 +32,23 @@ public enum NetworkHandler {
     }
 
     public void sendMessageToServer(IMessage msg) {
+        if (Sqlite.DEBUG()) {
+            System.out.println("MikuInfo:Sending message to server,message:" + msg.getClass());
+        }
         channel.sendToServer(msg);
     }
     public void sendMessageToPlayer(IMessage msg, EntityPlayerMP player) {
+        if (Sqlite.DEBUG()) {
+            System.out.println("MikuInfo:Sending message to player:" + player.getName() + ",message:" + msg.getClass());
+        }
         channel.sendTo(msg, player);
     }
     public void sendMessageToAllPlayer(IMessage msg, World world) {
         for(EntityPlayer player : world.playerEntities){
-            if(player instanceof EntityPlayerMP){
+            if(player instanceof EntityPlayerMP) {
+                if (Sqlite.DEBUG()) {
+                    System.out.println("MikuInfo:Sending message to player:" + player.getName() + ",message:" + msg.getClass());
+                }
                 sendMessageToPlayer(msg, (EntityPlayerMP) player);
             }
         }
