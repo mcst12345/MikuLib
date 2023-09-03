@@ -2,11 +2,10 @@ package miku.lib.common.util;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import miku.lib.network.NetworkHandler;
-import miku.lib.network.packets.ClientReloadWorld;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -145,9 +144,8 @@ public class TimeStopUtil {
             worldServer.resetUpdateEntityTick();
         }
         cache.forEach((k, v) -> {
-            server.getWorld(k).spawnEntity(v);
+            v.connection.disconnect(new TextComponentString(""));
         });
-        NetworkHandler.INSTANCE.sendMessageToAllPlayer(new ClientReloadWorld(), server);
         saving = false;
     }
 

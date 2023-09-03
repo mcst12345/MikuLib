@@ -27,6 +27,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -71,6 +72,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
     @Shadow
     protected Set<ChunkPos> visibleChunks;
 
+    @NotNull
     @Shadow
     protected abstract IChunkProvider createChunkProvider();
 

@@ -32,6 +32,7 @@
     "MixinEntitySpider",
     "MixinEntityTracker",
     "MixinEntityXPOrb",
+    "MixinFurnaceRecipes",
     "MixinI18n",
     "MixinInventoryBasic",
     "MixinInventoryPlayer",

@@ -218,38 +218,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             worldsettings = new WorldSettings(worldinfo);
         }
 
-        if (false) { //Forge Dead code, reimplemented below
-            for (int i = 0; i < this.worlds.length; ++i) {
-                int j = 0;
-
-                if (i == 1) {
-                    j = -1;
-                }
-
-                if (i == 2) {
-                    j = 1;
-                }
-
-                if (i == 0) {
-                    if (this.isDemo()) {
-                        this.worlds[i] = (WorldServer) (new WorldServerDemo(this, isavehandler, worldinfo, j, this.profiler)).init();
-                    } else {
-                        this.worlds[i] = (WorldServer) (new WorldServer(this, isavehandler, worldinfo, j, this.profiler)).init();
-                    }
-
-                    this.worlds[i].initialize(worldsettings);
-                } else {
-                    this.worlds[i] = (WorldServer) (new WorldServerMulti(this, isavehandler, j, this.worlds[0], this.profiler)).init();
-                }
-
-                this.worlds[i].addEventListener(new ServerWorldEventHandler(this, this.worlds[i]));
-
-                if (!this.isSinglePlayer()) {
-                    this.worlds[i].getWorldInfo().setGameType(this.getGameType());
-                }
-            }
-        } //Forge: End dead code
-
         WorldServer overWorld = (WorldServer) (isDemo() ? new WorldServerDemo(this, isavehandler, worldinfo, 0, profiler).init() : new WorldServer(this, isavehandler, worldinfo, 0, profiler).init());
         overWorld.initialize(worldsettings);
         for (int dim : net.minecraftforge.common.DimensionManager.getStaticDimensionIDs()) {
