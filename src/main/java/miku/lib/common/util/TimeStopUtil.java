@@ -1,11 +1,8 @@
 package miku.lib.common.util;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.entity.player.EntityPlayerMP;
+import miku.lib.common.api.iServer;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -19,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 public class TimeStopUtil {
-    private static final Int2ObjectMap<EntityPlayerMP> cache = new Int2ObjectOpenHashMap<>();
     private static int current_time_point = 0;
     private static boolean TimeStop = false;
     private static boolean saving;
@@ -134,18 +130,11 @@ public class TimeStopUtil {
         if (generatorOptions == null) {
             throw new RuntimeException("The fuck? generatorOptions is null?");
         }
-        cache.clear();
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
-            cache.put(player.dimension, player);
-        }
-        server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
+        ((iServer) server).reloadWorld(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
         for (WorldServer worldServer : server.worlds) {
             worldServer.resetUpdateEntityTick();
         }
-        cache.forEach((k, v) -> {
-            v.connection.disconnect(new TextComponentString(""));
-        });
         saving = false;
     }
 

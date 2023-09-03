@@ -73,7 +73,7 @@ import java.util.concurrent.FutureTask;
 public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener, ISnooperInfo {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final File USER_CACHE_FILE = new File("usercache.json");
-    private final ISaveFormat anvilConverterForAnvilFile;
+    public final ISaveFormat anvilConverterForAnvilFile;
     private final Snooper usageSnooper = new Snooper("server", this, getCurrentTimeMillis());
     private final File anvilFile;
     private final List<ITickable> tickables = Lists.newArrayList();

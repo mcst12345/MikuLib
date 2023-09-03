@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.api.iServer;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.client.Minecraft;
@@ -29,7 +30,15 @@ import java.io.File;
 import java.net.Proxy;
 
 @Mixin(value = IntegratedServer.class)
-public abstract class MixinIntegratedServer extends MinecraftServer {
+public abstract class MixinIntegratedServer extends MinecraftServer implements iServer {
+    @Override
+    public void reloadWorld(String saveName, String worldNameIn, long seed, WorldType type, String generatorOptions) {
+        this.convertMapIfNeeded(saveName);
+        ISaveHandler isavehandler = this.getActiveAnvilConverter().getSaveLoader(saveName, true);
+        this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
+        this.initialWorldChunkLoad();
+    }
+
     @Inject(at = @At("TAIL"), method = "<init>")
     public void IntegratedServer(Minecraft clientIn, String folderNameIn, String worldNameIn, WorldSettings worldSettingsIn, YggdrasilAuthenticationService authServiceIn, MinecraftSessionService sessionServiceIn, GameProfileRepository profileRepoIn, PlayerProfileCache profileCacheIn, CallbackInfo ci) {
         TimeStopUtil.folder_name = folderNameIn;
