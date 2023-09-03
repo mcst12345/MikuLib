@@ -1,6 +1,8 @@
 package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Lists;
+import miku.lib.common.api.iChunkProviderServer;
+import miku.lib.common.api.iWorldServer;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
@@ -27,6 +29,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldInfo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,7 +45,19 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 @Mixin(value = WorldServer.class)
-public abstract class MixinWorldServer extends World implements IThreadListener {
+public abstract class MixinWorldServer extends World implements IThreadListener, iWorldServer {
+    @Override
+    public void reload(ISaveHandler saveHandler) {
+        this.saveHandler = saveHandler;
+        if (this.mapStorage != null) {
+            this.mapStorage = new MapStorage(saveHandler);
+        }
+        if (this.perWorldStorage != null) {
+            this.perWorldStorage = new MapStorage(new net.minecraftforge.common.WorldSpecificSaveHandler((WorldServer) (Object) this, saveHandler));
+        }
+        ((iChunkProviderServer) chunkProvider).reload();
+    }
+
     @Shadow
     protected abstract boolean canAddEntity(Entity entityIn);
 

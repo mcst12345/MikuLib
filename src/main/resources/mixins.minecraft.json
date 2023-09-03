@@ -13,6 +13,7 @@
     "MixinChunk",
     "MixinChunkGeneratorEnd",
     "MixinChunkGeneratorHell",
+    "MixinChunkProviderServer",
     "MixinCommandHandler",
     "MixinCommandSummon",
     "MixinEnchantment",

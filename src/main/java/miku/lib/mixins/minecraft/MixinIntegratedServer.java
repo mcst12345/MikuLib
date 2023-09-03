@@ -5,7 +5,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.api.iServer;
-import miku.lib.common.api.iWorld;
+import miku.lib.common.api.iWorldServer;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.client.Minecraft;
@@ -40,7 +40,7 @@ public abstract class MixinIntegratedServer extends MinecraftServer implements i
         this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
         for (int dim : DimensionManager.getStaticDimensionIDs()) {
             WorldServer world = getWorld(dim);
-            ((iWorld) world).reload(isavehandler);
+            ((iWorldServer) world).reload(isavehandler);
         }
         this.initialWorldChunkLoad();
     }
