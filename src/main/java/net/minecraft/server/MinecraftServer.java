@@ -112,7 +112,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.CLIENT)
     private String worldName;
     private boolean isDemo;
-    private boolean enableBonusChest;
+    public boolean enableBonusChest;
     private String resourcePackUrl = "";
     private String resourcePackHash = "";
     private boolean serverIsRunning;

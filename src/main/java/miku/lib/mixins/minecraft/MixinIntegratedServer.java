@@ -38,6 +38,17 @@ public abstract class MixinIntegratedServer extends MinecraftServer implements i
         this.convertMapIfNeeded(saveName);
         ISaveHandler isavehandler = this.getActiveAnvilConverter().getSaveLoader(saveName, true);
         this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
+        WorldInfo worldinfo = isavehandler.loadWorldInfo();
+
+        if (worldinfo == null) {
+            worldinfo = new WorldInfo(this.worldSettings, worldNameIn);
+        } else {
+            worldinfo.setWorldName(worldNameIn);
+        }
+        WorldServer overworld = getWorld(0);
+        overworld.worldInfo = worldinfo;
+        overworld.getWorldInfo().setServerInitialized(false);
+        overworld.initialize(this.worldSettings);
         for (int dim : DimensionManager.getStaticDimensionIDs()) {
             WorldServer world = getWorld(dim);
             ((iWorldServer) world).reload(isavehandler);

@@ -30,6 +30,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.DimensionManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -51,6 +52,26 @@ public abstract class MixinDedicatedServer extends MinecraftServer implements IS
         this.convertMapIfNeeded(saveName);
         this.setUserMessage("menu.loadingLevel");
         ISaveHandler isavehandler = this.anvilConverterForAnvilFile.getSaveLoader(saveName, true);
+        WorldInfo worldinfo = isavehandler.loadWorldInfo();
+        WorldSettings worldsettings;
+        if (worldinfo == null) {
+            worldsettings = new WorldSettings(seed, this.getGameType(), this.canStructuresSpawn(), this.isHardcore(), type);
+            worldsettings.setGeneratorOptions(generatorOptions);
+
+            if (this.enableBonusChest) {
+                worldsettings.enableBonusChest();
+            }
+
+            worldinfo = new WorldInfo(worldsettings, worldNameIn);
+        } else {
+            worldinfo.setWorldName(worldNameIn);
+            worldsettings = new WorldSettings(worldinfo);
+        }
+
+        WorldServer overworld = getWorld(0);
+        overworld.worldInfo = worldinfo;
+        overworld.getWorldInfo().setServerInitialized(false);
+        overworld.initialize(worldsettings);
         this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
         for (int dim : DimensionManager.getStaticDimensionIDs()) {
             WorldServer world = getWorld(dim);
