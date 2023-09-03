@@ -58,7 +58,9 @@ public class MixinEntityTracker {
             return;
         try {
             if (this.trackedEntityHashTable.containsItem(entityIn.getEntityId())) {
-                throw new IllegalStateException("Entity is already tracked!");
+                System.out.println("MikuWarn:entity is already tracked,retracking it.");
+                this.trackedEntityHashTable.removeObject(entityIn.getEntityId());
+                this.entries.removeIf(entityTrackerEntry -> entityTrackerEntry.getTrackedEntity().getEntityId() == entityIn.getEntityId());
             }
 
             EntityTrackerEntry entitytrackerentry = new EntityTrackerEntry(entityIn, trackingRange, this.maxTrackingDistanceThreshold, updateFrequency, sendVelocityUpdates);
