@@ -5,6 +5,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.api.iServer;
+import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.TimeStopUtil;
 import net.minecraft.client.Minecraft;
@@ -16,6 +17,7 @@ import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.*;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.common.DimensionManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,6 +38,10 @@ public abstract class MixinIntegratedServer extends MinecraftServer implements i
         this.convertMapIfNeeded(saveName);
         ISaveHandler isavehandler = this.getActiveAnvilConverter().getSaveLoader(saveName, true);
         this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
+        for (int dim : DimensionManager.getStaticDimensionIDs()) {
+            WorldServer world = getWorld(dim);
+            ((iWorld) world).reload(isavehandler);
+        }
         this.initialWorldChunkLoad();
     }
 

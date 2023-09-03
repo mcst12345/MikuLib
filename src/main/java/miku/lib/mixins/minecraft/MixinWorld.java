@@ -35,6 +35,8 @@ import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.storage.ISaveHandler;
+import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import org.spongepowered.asm.mixin.*;
@@ -49,6 +51,13 @@ import java.util.stream.Stream;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    @Override
+    public void reload(ISaveHandler saveHandler) {
+        if (this.mapStorage != null) {
+            this.mapStorage = new MapStorage(saveHandler);
+        }
+    }
+
     private static final List<Entity> toSpawn = new ArrayList<>();
     private boolean timeStop = false;
 
@@ -187,6 +196,9 @@ public abstract class MixinWorld implements iWorld {
 
     @Shadow
     protected abstract boolean getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_, @Nullable List<AxisAlignedBB> outList);
+
+    @Shadow
+    protected MapStorage mapStorage;
 
     public void AddEffect(MikuEffect effect) {
         effects.add(effect);

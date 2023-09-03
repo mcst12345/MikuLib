@@ -3,6 +3,7 @@ package miku.lib.common.api;
 import miku.lib.common.effect.MikuEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.world.storage.ISaveHandler;
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface iWorld {
     void SetTimeStop();
 
     boolean isTimeStop();
+
+    void reload(ISaveHandler saveHandler);
 }
