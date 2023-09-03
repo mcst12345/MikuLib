@@ -1,6 +1,5 @@
 package miku.lib.mixins.minecraft;
 
-import miku.lib.client.api.iChunkProviderClient;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iWorldClient;
 import miku.lib.common.api.iMapStorage;
@@ -24,6 +23,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
+import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
@@ -43,7 +43,7 @@ import java.util.Set;
 public abstract class MixinWorldClient extends World implements iWorldClient {
     @Override
     public void reload() {
-        ((iChunkProviderClient) clientChunkProvider).reload();
+        this.chunkProvider = this.createChunkProvider();
         visibleChunks.clear();
         if (mapStorage != null) {
             ((iMapStorage) mapStorage).clearData();
@@ -70,6 +70,9 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
 
     @Shadow
     protected Set<ChunkPos> visibleChunks;
+
+    @Shadow
+    protected abstract IChunkProvider createChunkProvider();
 
     protected MixinWorldClient(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client) {
         super(saveHandlerIn, info, providerIn, profilerIn, client);
