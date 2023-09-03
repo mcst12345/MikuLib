@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.common.api.iAnvilChunkLoader;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.ChunkPos;
@@ -16,9 +17,17 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
+import java.util.Set;
 
 @Mixin(value = AnvilChunkLoader.class)
-public abstract class MixinAnvilChunkLoader implements IChunkLoader, IThreadedFileIO {
+public abstract class MixinAnvilChunkLoader implements IChunkLoader, IThreadedFileIO, iAnvilChunkLoader {
+    @Override
+    public void reload() {
+        this.chunksBeingSaved.clear();
+        this.chunksToSave.clear();
+    }
+
     @Shadow
     protected abstract void writeChunkToNBT(Chunk chunkIn, World worldIn, NBTTagCompound compound);
 
@@ -28,6 +37,14 @@ public abstract class MixinAnvilChunkLoader implements IChunkLoader, IThreadedFi
     @Shadow
     @Final
     private static Logger LOGGER;
+
+    @Shadow
+    @Final
+    private Set<ChunkPos> chunksBeingSaved;
+
+    @Shadow
+    @Final
+    private Map<ChunkPos, NBTTagCompound> chunksToSave;
 
     /**
      * @author mcst12345

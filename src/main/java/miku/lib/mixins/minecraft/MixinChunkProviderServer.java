@@ -2,8 +2,10 @@ package miku.lib.mixins.minecraft;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import miku.lib.common.api.iAnvilChunkLoader;
 import miku.lib.common.api.iChunkProviderServer;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.IChunkLoader;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,12 +29,17 @@ public class MixinChunkProviderServer implements iChunkProviderServer {
     @Final
     private Set<Long> loadingChunks;
 
+    @Shadow
+    @Final
+    public IChunkLoader chunkLoader;
+
     @Override
     public void reload() {
         List<Long> cache = new LongArrayList();
         cache.addAll(loadedChunks.keySet());
         this.loadedChunks.clear();
         this.droppedChunks.clear();
+        ((iAnvilChunkLoader) this.chunkLoader).reload();
         loadingChunks.addAll(cache);
     }
 }

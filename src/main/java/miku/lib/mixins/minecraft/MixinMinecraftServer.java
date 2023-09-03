@@ -27,6 +27,7 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.Util;
 import net.minecraft.util.datafix.DataFixesManager;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.*;
@@ -263,8 +264,35 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
     @Shadow
     private String motd;
 
-    @Shadow
-    public abstract void initialWorldChunkLoad();
+    /**
+     * @author mcst12345
+     * @reason remove unused local variables
+     */
+    @Overwrite
+    public void initialWorldChunkLoad() {
+        int i1 = 0;
+        this.setUserMessage("menu.generatingTerrain");
+        LOGGER.info("Preparing start region for level 0");
+        WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(0);
+        BlockPos blockpos = worldserver.getSpawnPoint();
+        long k1 = getCurrentTimeMillis();
+
+        for (int l1 = -192; l1 <= 192 && this.isServerRunning(); l1 += 16) {
+            for (int i2 = -192; i2 <= 192 && this.isServerRunning(); i2 += 16) {
+                long j2 = getCurrentTimeMillis();
+
+                if (j2 - k1 > 1000L) {
+                    this.outputPercentRemaining("Preparing spawn area", i1 * 100 / 625);
+                    k1 = j2;
+                }
+
+                ++i1;
+                worldserver.getChunkProvider().provideChunk(blockpos.getX() + l1 >> 4, blockpos.getZ() + i2 >> 4);
+            }
+        }
+
+        this.clearCurrentTask();
+    }
 
     @Shadow
     public abstract void convertMapIfNeeded(String worldNameIn);
@@ -326,6 +354,15 @@ public abstract class MixinMinecraftServer implements iMinecraftServer {
     @Shadow
     @Final
     private List<ITickable> tickables;
+
+    @Shadow
+    public abstract boolean isServerRunning();
+
+    @Shadow
+    protected abstract void outputPercentRemaining(String message, int percent);
+
+    @Shadow
+    protected abstract void clearCurrentTask();
 
     /**
      * @author mcst12345

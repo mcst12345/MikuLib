@@ -2,6 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Lists;
 import miku.lib.common.api.iChunkProviderServer;
+import miku.lib.common.api.iPlayerChunkMap;
 import miku.lib.common.api.iWorldServer;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
@@ -56,6 +57,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
             this.perWorldStorage = new MapStorage(new net.minecraftforge.common.WorldSpecificSaveHandler((WorldServer) (Object) this, saveHandler));
         }
         ((iChunkProviderServer) chunkProvider).reload();
+        ((iPlayerChunkMap) this.playerChunkMap).reload();
     }
 
     @Shadow
