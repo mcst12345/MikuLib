@@ -1,5 +1,6 @@
 package miku.lib.common.item;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.UnsafeUtil;
 import net.minecraft.block.state.IBlockState;
@@ -24,10 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SpecialItem extends Item {
-    protected static final Map<UUID, SpecialItem> playerList = new ConcurrentHashMap<>();
+    protected static final Map<UUID, SpecialItem> playerList = new Object2ObjectOpenHashMap<>();
     protected static final short max_mode = 1;
     protected short mode = 0;
 
@@ -62,7 +62,7 @@ public class SpecialItem extends Item {
 
     @Nullable
     public static SpecialItem Get(EntityPlayer player) {
-        return playerList.get(player);
+        return playerList.get(player.getUniqueID());
     }
 
 

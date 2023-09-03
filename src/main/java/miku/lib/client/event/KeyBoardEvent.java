@@ -22,6 +22,7 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class KeyBoardEvent {
+    public static final KeyBoardEvent INSTANCE = new KeyBoardEvent();
     @SideOnly(Side.CLIENT)//key to stop the time
     public static final KeyBinding TIME_STOP = new KeyBinding("key.miku.time_stop", KeyConflictContext.UNIVERSAL, KeyModifier.ALT, Keyboard.KEY_L, "key.category.miku");
 

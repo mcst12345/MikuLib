@@ -1,6 +1,7 @@
 package miku.lib.common.util;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.util.GuiUtil;
 import miku.lib.common.Native.NativeUtil;
@@ -32,14 +33,13 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 public class EntityUtil {
-    private static final List<UUID> Dead = new ArrayList<>();
-    private static final List<Entity> DEAD = new ArrayList<>();
+    private static final List<UUID> Dead = new ObjectArrayList<>();
+    private static final List<Entity> DEAD = new ObjectArrayList<>();
 
     private static boolean Killing = false;
 
@@ -142,8 +142,6 @@ public class EntityUtil {
 
 
         if (MikuInsaneMode.isMikuInsaneMode()) UnsafeUtil.Fuck(entity);
-
-        System.gc();
 
         if (minecraftserver != null) {
             worldserver.resetUpdateEntityTick();

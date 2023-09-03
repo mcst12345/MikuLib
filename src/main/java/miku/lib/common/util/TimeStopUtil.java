@@ -1,7 +1,10 @@
 package miku.lib.common.util;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import miku.lib.network.NetworkHandler;
 import miku.lib.network.packets.ClientReloadWorld;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
@@ -17,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TimeStopUtil {
+    private static final Int2ObjectMap<EntityPlayerMP> cache = new Int2ObjectOpenHashMap<>();
     private static int current_time_point = 0;
     private static boolean TimeStop = false;
     private static boolean saving;
@@ -131,11 +135,18 @@ public class TimeStopUtil {
         if (generatorOptions == null) {
             throw new RuntimeException("The fuck? generatorOptions is null?");
         }
+        cache.clear();
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
+            cache.put(player.dimension, player);
+        }
         server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
         for (WorldServer worldServer : server.worlds) {
             worldServer.resetUpdateEntityTick();
         }
+        cache.forEach((k, v) -> {
+            server.getWorld(k).spawnEntity(v);
+        });
         NetworkHandler.INSTANCE.sendMessageToAllPlayer(new ClientReloadWorld(), server);
         saving = false;
     }

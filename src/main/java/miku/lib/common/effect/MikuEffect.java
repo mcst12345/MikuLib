@@ -19,14 +19,19 @@ public abstract class MikuEffect {//You don't have to register.Just write a clas
     protected final int wait_time;//time the effect will wait before it performs.
     protected int level;//effect level.
 
+    private MikuEffect() {
+        throw new IllegalStateException("The fuck? You shouldn't use this constructor!");
+    }
+
     //WARN:Any class extends this should have the constructor below.
-    public MikuEffect(EntityLivingBase entity,int wait_time,int duration,int level){
+    public MikuEffect(EntityLivingBase entity, int wait_time, int duration, int level) {
         this.entity = entity;
         start = entity.ticksExisted;
         this.wait_time = wait_time;
         this.duration = duration;
         this.level = level;
     }
+
     public abstract void perform();
 
     public boolean shouldPerform(){

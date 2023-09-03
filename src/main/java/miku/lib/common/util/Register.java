@@ -1,5 +1,6 @@
 package miku.lib.common.util;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import miku.Miku.Miku;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -16,18 +17,19 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class Register {
-    public static final List<CommandBase> commands = new ArrayList<>();
-    public static final List<CommandBase> server_commands = new ArrayList<>();
+    public static final List<CommandBase> commands = new ObjectArrayList<>();
+    public static final List<CommandBase> server_commands = new ObjectArrayList<>();
+
     public static void RegisterItem(RegistryEvent.Register<Item> event, Item item, String name) {
-        RegisterItem(event,item,"miku",name);
+        RegisterItem(event, item, "miku", name);
     }
 
-    public static void RegisterItem(RegistryEvent.Register<Item> event, Item item,String mod, String name){
+    public static void RegisterItem(RegistryEvent.Register<Item> event, Item item, String mod, String name) {
         event.getRegistry().register(item.setRegistryName(mod + ":" + name));
     }
 
@@ -43,6 +45,7 @@ public class Register {
     public static void RegisterEnchantment(RegistryEvent.Register<Enchantment> event, Enchantment enchantment, String mod, String name){
         event.getRegistry().register(enchantment.setName(name).setRegistryName(mod + ":" + name));
     }
+
     public static void RegisterBlock(RegistryEvent.Register<Block> event, Block block, String name) {
         RegisterBlock(event,block,"miku",name);
     }
@@ -72,6 +75,7 @@ public class Register {
     public static void RegisterEntity(String entity,Class<? extends Entity> c,String name,int id,Object mod){
         EntityRegistry.registerModEntity(new ResourceLocation("miku",entity), c,name,id, mod,80,3,true);
     }
+
     public static void RegisterEntity(String mod,String entity,Class<? extends Entity> c,String name,int id,Object MOD){
         EntityRegistry.registerModEntity(new ResourceLocation(mod,entity), c,name,id, MOD,80,3,true);
     }

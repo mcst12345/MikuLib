@@ -9,6 +9,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+@SuppressWarnings("unused")
 public class ClientProxy extends CommonProxy{
     public ClientProxy(){}
 
@@ -17,7 +18,7 @@ public class ClientProxy extends CommonProxy{
         super.preInit(event);
         System.out.println("MikuInfo:Registering Keys.");
         KeyBoardEvent.Init();//Register key bindings.
-        MinecraftForge.EVENT_BUS.register(new KeyBoardEvent());//Register keyboard event.
+        MinecraftForge.EVENT_BUS.register(KeyBoardEvent.INSTANCE);//Register keyboard event.
         System.out.println("MikuInfo:Registering renders.");
         RenderingRegistry.registerEntityRenderingHandler(Lain.class, manager -> new RenderLain(manager, new ModelLain(), 0.0f));
     }
