@@ -33,6 +33,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.ISaveHandler;
@@ -51,10 +52,16 @@ import java.util.stream.Stream;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld {
+    /*
+     * WARNING:Should only be called from server side.
+     */
     @Override
     public void reload(ISaveHandler saveHandler) {
         if (this.mapStorage != null) {
             this.mapStorage = new MapStorage(saveHandler);
+        }
+        if (this.perWorldStorage != null) {
+            this.perWorldStorage = new MapStorage(new net.minecraftforge.common.WorldSpecificSaveHandler((WorldServer) (Object) this, saveHandler));
         }
     }
 
@@ -199,6 +206,9 @@ public abstract class MixinWorld implements iWorld {
 
     @Shadow
     protected MapStorage mapStorage;
+
+    @Shadow
+    protected MapStorage perWorldStorage;
 
     public void AddEffect(MikuEffect effect) {
         effects.add(effect);
