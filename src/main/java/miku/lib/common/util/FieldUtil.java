@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 //shitmountain
 
 public class FieldUtil {
+    private static boolean loaded = false;
     public static Field field_70134_J;
     public static Field field_190534_ay;
     public static Field isAddedToWorld;
@@ -42,6 +43,8 @@ public class FieldUtil {
 
     @SuppressWarnings("JavaReflectionMemberAccess")
     public static void Init() {
+        if (loaded) return;
+        loaded = true;
         try {
             field_70134_J = Entity.class.getDeclaredField("field_70134_J");
         } catch (NoSuchFieldException e) {

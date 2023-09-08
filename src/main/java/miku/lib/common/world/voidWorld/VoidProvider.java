@@ -1,6 +1,6 @@
-package miku.lib.common.world;
+package miku.lib.common.world.voidWorld;
 
-import miku.lib.common.world.biome.VoidBiomeProvider;
+import miku.lib.common.world.voidWorld.biome.VoidBiomeProvider;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
@@ -17,7 +17,7 @@ public class VoidProvider extends WorldProvider {
     @Override
     @Nonnull
     public DimensionType getDimensionType() {
-        return Void.Void;
+        return VoidWorld.Void;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class VoidProvider extends WorldProvider {
     @Override
     @Nonnull
     public Biome getBiomeForCoords(@Nonnull BlockPos pos){
-        return Void.VoidBiome;
+        return VoidWorld.VoidBiome;
     }
 
     @Override
@@ -160,10 +160,6 @@ public class VoidProvider extends WorldProvider {
     {
         return new Vec3d(0.0d,0.0d,0.0d);
     }
-
-    /**
-     * Gets the Sun Brightness for rendering sky.
-     * */
     @SideOnly(Side.CLIENT)
     public float getSunBrightness(float par1)
     {

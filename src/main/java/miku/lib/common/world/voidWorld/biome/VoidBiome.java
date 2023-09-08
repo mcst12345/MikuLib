@@ -1,4 +1,4 @@
-package miku.lib.common.world.biome;
+package miku.lib.common.world.voidWorld.biome;
 
 import net.minecraft.world.biome.Biome;
 

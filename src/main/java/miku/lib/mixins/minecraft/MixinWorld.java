@@ -430,15 +430,15 @@ public abstract class MixinWorld implements iWorld {
                 removeEntity(entity);
             }
 
-            if (entity.isDead && !EntityUtil.isProtected(entity) && !TimeStopUtil.isTimeStop()) {
+            if (entity.isDead && !EntityUtil.isProtected(entity) && !stop) {
                 this.weatherEffects.remove(i--);
             }
         }
 
         this.profiler.endStartSection("remove");
-        if (!TimeStopUtil.isTimeStop()) this.loadedEntityList.removeAll(this.unloadedEntityList);
+        if (!stop) this.loadedEntityList.removeAll(this.unloadedEntityList);
 
-        if (!TimeStopUtil.isTimeStop()) for (Entity entity1 : this.unloadedEntityList) {
+        if (!stop) for (Entity entity1 : this.unloadedEntityList) {
             int j = entity1.chunkCoordX;
             int k1 = entity1.chunkCoordZ;
 
@@ -447,11 +447,11 @@ public abstract class MixinWorld implements iWorld {
             }
         }
 
-        if (!TimeStopUtil.isTimeStop()) for (Entity entity : this.unloadedEntityList) {
+        if (!stop) for (Entity entity : this.unloadedEntityList) {
             this.onEntityRemoved(entity);
         }
 
-        if (!TimeStopUtil.isTimeStop()) this.unloadedEntityList.clear();
+        if (!stop) this.unloadedEntityList.clear();
         this.tickPlayers();
         this.profiler.endStartSection("regular");
 
@@ -463,6 +463,7 @@ public abstract class MixinWorld implements iWorld {
         for (int i1 = 0; i1 < this.loadedEntityList.size(); ++i1)
         {
             Entity entity2 = this.loadedEntityList.get(i1);
+            if (entity2.dimension == -114514) continue;
             if (EntityUtil.isProtected(entity2)) {
                 protected_entities.add(entity2);
             }

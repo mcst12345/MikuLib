@@ -1,8 +1,10 @@
 package miku.lib.common.util;
 
 import miku.lib.common.api.iServer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -131,11 +133,23 @@ public class TimeStopUtil {
             throw new RuntimeException("The fuck? generatorOptions is null?");
         }
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
+            if (!EntityUtil.isProtected(player)) {
+                player.connection.disconnect(new TextComponentString("disconnected."));
+            } else {
+                player.changeDimension(-114514);
+            }
+        }
+
         ((iServer) server).reloadWorld(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
         for (WorldServer worldServer : server.worlds) {
             worldServer.resetUpdateEntityTick();
         }
         saving = false;
+
+        for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
+            player.changeDimension(-114514);
+        }
     }
 
     @Nullable

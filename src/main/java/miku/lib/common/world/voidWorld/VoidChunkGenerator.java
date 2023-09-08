@@ -1,4 +1,4 @@
-package miku.lib.common.world;
+package miku.lib.common.world.voidWorld;
 
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
