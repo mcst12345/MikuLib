@@ -143,7 +143,7 @@ public class TimeStopUtil {
                 player.connection.disconnect(new TextComponentString("disconnected."));
             } else {
                 cache.put(player, player.dimension);
-                player.changeDimension(-114514);
+                player.changeDimension(-114514, EmptyTeleporter.INSTANCE);
             }
         }
 
@@ -154,7 +154,7 @@ public class TimeStopUtil {
         saving = false;
 
         for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
-            player.changeDimension(cache.get(player));
+            player.changeDimension(cache.get(player), EmptyTeleporter.INSTANCE);
         }
     }
 
