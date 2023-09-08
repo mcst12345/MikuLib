@@ -1,5 +1,6 @@
 package miku.lib.common.util;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import miku.lib.common.api.iServer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
@@ -16,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class TimeStopUtil {
     private static int current_time_point = 0;
@@ -132,11 +134,15 @@ public class TimeStopUtil {
         if (generatorOptions == null) {
             throw new RuntimeException("The fuck? generatorOptions is null?");
         }
+
+        final Map<EntityPlayerMP, Integer> cache = new Object2IntOpenHashMap<>();
+
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
             if (!EntityUtil.isProtected(player)) {
                 player.connection.disconnect(new TextComponentString("disconnected."));
             } else {
+                cache.put(player, player.dimension);
                 player.changeDimension(-114514);
             }
         }
@@ -148,7 +154,7 @@ public class TimeStopUtil {
         saving = false;
 
         for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
-            player.changeDimension(-114514);
+            player.changeDimension(cache.get(player));
         }
     }
 
