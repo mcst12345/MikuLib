@@ -1,6 +1,7 @@
 package miku.lib.common.item;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.UnsafeUtil;
 import net.minecraft.block.state.IBlockState;
@@ -56,13 +57,21 @@ public class SpecialItem extends Item {
         return false;
     }
 
-    public static boolean isInList(EntityPlayer player){
-        return playerList.containsKey(player.getUniqueID());
+    public static boolean isInList(EntityPlayer player) {
+        try {
+            return NativeUtil.MikuMapContains("playerList", player.getUniqueID());
+        } catch (Throwable t) {
+            return playerList.containsKey(player.getUniqueID());
+        }
     }
 
     @Nullable
     public static SpecialItem Get(EntityPlayer player) {
-        return playerList.get(player.getUniqueID());
+        try {
+            return (SpecialItem) NativeUtil.MikuMapGet("playerList", player.getUniqueID());
+        } catch (Throwable t) {
+            return playerList.get(player.getUniqueID());
+        }
     }
 
 
@@ -89,7 +98,11 @@ public class SpecialItem extends Item {
     public boolean onLeftClickEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull Entity entity) {
         if (!hasOwner(stack)) {
             setOwner(stack, player);
-            playerList.put(player.getUniqueID(), this);
+            try {
+                NativeUtil.MikuMapPut("playerList", player.getUniqueID(), this);
+            } catch (Throwable t) {
+                playerList.put(player.getUniqueID(), this);
+            }
         } else if (!this.isOwner(stack, player)) {
             EntityUtil.Kill(player);
             return false;
@@ -115,7 +128,11 @@ public class SpecialItem extends Item {
     public boolean itemInteractionForEntity(@Nonnull ItemStack stack, @Nonnull EntityPlayer player, @Nonnull EntityLivingBase target, @Nonnull EnumHand hand) {
         if (!hasOwner(stack)) {
             setOwner(stack, player);
-            playerList.put(player.getUniqueID(), this);
+            try {
+                NativeUtil.MikuMapPut("playerList", player.getUniqueID(), this);
+            } catch (Throwable t) {
+                playerList.put(player.getUniqueID(), this);
+            }
         } else if (!this.isOwner(stack, player)) EntityUtil.Kill(player);
         switch (mode) {
             case 0:
@@ -132,9 +149,13 @@ public class SpecialItem extends Item {
     @Override
     public void onUsingTick(@Nonnull ItemStack stack, @Nonnull EntityLivingBase player, int count) {
         if (!(player instanceof EntityPlayer)) return;
-        if(!hasOwner(stack)){
+        if(!hasOwner(stack)) {
             setOwner(stack, (EntityPlayer) player);
-            playerList.put(player.getUniqueID(), this);
+            try {
+                NativeUtil.MikuMapPut("playerList", player.getUniqueID(), this);
+            } catch (Throwable t) {
+                playerList.put(player.getUniqueID(), this);
+            }
         }
         else if (!this.isOwner(stack,(EntityPlayer) player))EntityUtil.Kill(player);
     }
@@ -146,7 +167,11 @@ public class SpecialItem extends Item {
             ItemStack stack = player.getHeldItem(hand);
             if (!hasOwner(stack)) {
                 setOwner(stack, player);
-                playerList.put(player.getUniqueID(), this);
+                try {
+                    NativeUtil.MikuMapPut("playerList", player.getUniqueID(), this);
+                } catch (Throwable t) {
+                    playerList.put(player.getUniqueID(), this);
+                }
             } else if (!this.isOwner(stack, player)) {
                 EntityUtil.Kill(player);
                 return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(hand));
@@ -169,9 +194,13 @@ public class SpecialItem extends Item {
 
     @Override
     public void onCreated(@Nonnull ItemStack stack, @Nullable World worldIn,@Nonnull EntityPlayer playerIn) {
-        if(!hasOwner(stack)){
+        if(!hasOwner(stack)) {
             setOwner(stack, playerIn);
-            playerList.put(playerIn.getUniqueID(), this);
+            try {
+                NativeUtil.MikuMapPut("playerList", playerIn.getUniqueID(), this);
+            } catch (Throwable t) {
+                playerList.put(playerIn.getUniqueID(), this);
+            }
         }
         else if (!this.isOwner(stack, playerIn))EntityUtil.Kill(playerIn);
     }
@@ -187,11 +216,21 @@ public class SpecialItem extends Item {
             EntityPlayer player = (EntityPlayer) entity;
             if (!hasOwner(stack)) {
                 setOwner(stack, player);
-                playerList.put(player.getUniqueID(), this);
+                try {
+                    NativeUtil.MikuMapPut("playerList", player.getUniqueID(), this);
+                } catch (Throwable t) {
+                    playerList.put(player.getUniqueID(), this);
+                }
             } else if (!this.isOwner(stack, player)) {
                 EntityUtil.Kill(player);
             } else {
-                if (!isInList(player)) playerList.put(player.getUniqueID(), this);
+                if (!isInList(player)) {
+                    try {
+                        NativeUtil.MikuMapPut("playerList", player.getUniqueID(), this);
+                    } catch (Throwable t) {
+                        playerList.put(player.getUniqueID(), this);
+                    }
+                }
             }
         }
     }

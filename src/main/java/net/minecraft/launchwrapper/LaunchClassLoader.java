@@ -49,6 +49,11 @@ public class LaunchClassLoader extends URLClassLoader {
     private static final MikuTransformer Miku = new MikuTransformer();
     private static final AccessTransformer AT = new AccessTransformer();
 
+    private static boolean invalidClasses(String name) {
+        return name.equals("javax.annotation.Resource") || name.equals("Config") || name.equals("javax.annotation.Nullable") ||
+                name.equals("org.slf4j.LoggerFactory") || name.equals("org.apache.log4j.Logger");
+    }
+
     public LaunchClassLoader(URL[] sources) {
         super(sources, null);
         this.sources = new ArrayList<>(Arrays.asList(sources));
@@ -132,6 +137,9 @@ public class LaunchClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> findClass(final String name) throws ClassNotFoundException {
+        if (invalidClasses(name)) {
+            throw new ClassNotFoundException(name);
+        }
         if (name.equals("ic2.core.util.Util") || name.equals("ic2.core.profile.ProfileManager")) {
             Mixins.addConfiguration("mixins.ic2.json");
             Misc.returnMixin();
@@ -146,6 +154,10 @@ public class LaunchClassLoader extends URLClassLoader {
         }
         if (name.equals("com.gildedgames.the_aether.client.AetherClientEvents")) {
             Mixins.addConfiguration("mixins.aether.json");
+            Misc.returnMixin();
+        }
+        if (name.equals("twilightforest.item.RegisterItemEvent")) {
+            Mixins.addConfiguration("mixins.twilightforest.json");
             Misc.returnMixin();
         }
 
@@ -179,8 +191,7 @@ public class LaunchClassLoader extends URLClassLoader {
                     cachedClasses.put(name, clazz);
                     return clazz;
                 } catch (ClassNotFoundException e) {
-                    if (!name.startsWith("javax.annotation"))
-                        System.out.println("MikuWarn:Class " + name + " which is in transformerExceptions can't be found in URLClassLoader.");
+                    System.out.println("MikuWarn:Class " + name + " which is in transformerExceptions can't be found in URLClassLoader.");
                 }
             }
         }
@@ -252,17 +263,17 @@ public class LaunchClassLoader extends URLClassLoader {
                 clazz = defineClass(transformedName, transformedClass, 0, transformedClass.length, codeSource);
             } catch (Throwable t) {
                 System.out.println("MikuWarn:Failed to define class " + name + " by transformed class bytes. Trying the original bytes.");
-                if (!name.startsWith("javax.")) t.printStackTrace();
+                t.printStackTrace();
                 try {
                     clazz = defineClass(transformedName, original, 0, original.length, codeSource);
                 } catch (Throwable e) {
                     System.out.println("MikuWarn:Failed to define class " + name + " by original class bytes. Trying UNSAFE.");
-                    if (!name.startsWith("javax.")) e.printStackTrace();
+                    e.printStackTrace();
                     try {
                         clazz = Launch.UNSAFE.defineClass(transformedName, original, 0, original.length, this, null);
                     } catch (Throwable throwable) {
                         System.out.println("MikuFATAL:Failed to define class " + name + ". Is the class bytes null?");
-                        if (!name.startsWith("javax.")) throwable.printStackTrace();
+                        throwable.printStackTrace();
                         throw new ClassNotFoundException(name, throwable);
                     }
                 }
@@ -273,10 +284,8 @@ public class LaunchClassLoader extends URLClassLoader {
             if (e instanceof NoYouCannotBeLoaded) {
                 System.out.println("Ignore bad class:" + name);
             } else {
-                if (!name.startsWith("javax.")) {
-                    e.printStackTrace();
-                    System.out.println("MikuWarn:Failed to load class:" + name);
-                }
+                e.printStackTrace();
+                System.out.println("MikuWarn:Failed to load class:" + name);
                 if (DEBUG) {
                     LogWrapper.log(Level.TRACE, e, "Exception encountered attempting classloading of %s", name);
                     LogManager.getLogger("LaunchWrapper").log(Level.ERROR, "Exception encountered attempting classloading of %s", e);

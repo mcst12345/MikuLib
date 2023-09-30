@@ -33,6 +33,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -91,7 +92,13 @@ public class EntityUtil {
 
     public static boolean isDEAD(Entity entity) {
         if (entity == null || isProtected(entity)) return false;
-        boolean result = DEAD.contains(entity) || ((iEntity) entity).isDEAD() || Dead.contains(entity.getUniqueID()) || entity.dimension == -25;
+        boolean result = NativeUtil.MikuListContains("Dead", entity) || ((iEntity) entity).isDEAD() || entity.dimension == -25;
+        try {
+            result = result || NativeUtil.MikuListContains("DeadUUID", entity.getUniqueID());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            result = result || Dead.contains(entity.getUniqueID()) || DEAD.contains(entity);
+        }
         if (result) System.out.println(entity.getName() + " is dead.");
         return result;
     }//can the entity be alive.
@@ -102,10 +109,19 @@ public class EntityUtil {
             if (entity instanceof ProtectedEntity) ((ProtectedEntity) entity).SetHealth(0);
             return;
         }
-        DEAD.add(entity);
-        Dead.add(entity.getUniqueID());
+        try {
+            NativeUtil.MikuListAdd("Dead", entity);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            DEAD.add(entity);
+        }
+        try {
+            NativeUtil.MikuListAdd("DeadUUID", entity.getUniqueID());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            Dead.add(entity.getUniqueID());
+        }
         Killing = true;
-
 
 
         if (!entity.world.isRemote)
@@ -193,8 +209,18 @@ public class EntityUtil {
     }
 
     public static void REMOVE(World world) {//REMOVE dead entities from world
-        world.loadedEntityList.removeAll(DEAD);
-        world.loadedEntityList.removeIf(e -> e.getUniqueID() != null && Dead.contains(e.getUniqueID()));
+        try {
+            world.loadedEntityList.removeAll(Arrays.asList(NativeUtil.GetObjectsFromList("Dead")));
+        } catch (Throwable t) {
+            t.printStackTrace();
+            world.loadedEntityList.removeAll(DEAD);
+        }
+        try {
+            world.loadedEntityList.removeIf(e -> e.getUniqueID() != null && NativeUtil.MikuListContains("DeadUUID", e.getUniqueID()));
+        } catch (Throwable t) {
+            t.printStackTrace();
+            world.loadedEntityList.removeIf(e -> e.getUniqueID() != null && Dead.contains(e.getUniqueID()));
+        }
     }
 
     public static boolean isGoodEntity(@Nullable Entity entity) {

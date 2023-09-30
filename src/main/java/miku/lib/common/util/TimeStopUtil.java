@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TimeStopUtil {
+    private static short time_point_mode;
     private static int current_time_point = 0;
     private static boolean TimeStop = false;
     private static boolean saving;

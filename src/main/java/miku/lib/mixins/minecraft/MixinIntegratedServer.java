@@ -40,18 +40,27 @@ public abstract class MixinIntegratedServer extends MinecraftServer implements i
         this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
         WorldInfo worldinfo = isavehandler.loadWorldInfo();
 
+        WorldSettings worldsettings;
+
         if (worldinfo == null) {
-            worldinfo = new WorldInfo(this.worldSettings, worldNameIn);
+            worldsettings = new WorldSettings(seed, this.getGameType(), this.canStructuresSpawn(), this.isHardcore(), type);
+            worldsettings.setGeneratorOptions(generatorOptions);
+
+            if (this.enableBonusChest) {
+                worldsettings.enableBonusChest();
+            }
+            worldinfo = new WorldInfo(worldsettings, worldNameIn);
         } else {
             worldinfo.setWorldName(worldNameIn);
         }
-        WorldServer overworld = getWorld(0);
-        overworld.worldInfo = worldinfo;
-        overworld.getWorldInfo().setServerInitialized(false);
-        overworld.initialize(this.worldSettings);
         for (int dim : DimensionManager.getStaticDimensionIDs()) {
+
             WorldServer world = getWorld(dim);
+            world.worldInfo = worldinfo;
             ((iWorldServer) world).reload(isavehandler);
+            world.getWorldInfo().setServerInitialized(false);
+            world.init();
+            world.initialize(this.worldSettings);
         }
         this.initialWorldChunkLoad();
     }

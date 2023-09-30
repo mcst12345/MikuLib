@@ -71,6 +71,7 @@ public abstract class MixinDedicatedServer extends MinecraftServer implements IS
         WorldServer overworld = getWorld(0);
         overworld.worldInfo = worldinfo;
         overworld.getWorldInfo().setServerInitialized(false);
+        overworld.init();
         overworld.initialize(worldsettings);
         this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
         for (int dim : DimensionManager.getStaticDimensionIDs()) {

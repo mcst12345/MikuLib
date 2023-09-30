@@ -41,9 +41,9 @@ public class MixinPlayerChunkMap implements iPlayerChunkMap {
 
     @Override
     public void reload() {
+        this.dirtyEntries.addAll(this.entries);
         this.entryMap.clear();
         this.entries.clear();
-        this.dirtyEntries.clear();
         this.pendingSendToPlayers.clear();
         this.entriesWithoutChunks.clear();
         this.sortMissingChunks = true;

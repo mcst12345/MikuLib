@@ -165,16 +165,16 @@ public class MikuCore implements IFMLLoadingPlugin {
                             tmp = tmp + ".exe\"";
                         }
                         LAUNCH.insert(0, tmp + " ");
-                    } else {
-                        String tmp = JAVA + "/bin/java ";
-                        if (win) {
-                            tmp = tmp.trim();
-                            tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
-                            tmp = "\"" + tmp;
-                            tmp = tmp + ".exe\"";
-                        }
-                        LAUNCH.insert(0, tmp + " ");
                     }
+                } else {
+                    String tmp = JAVA + "/bin/java ";
+                    if (win) {
+                        tmp = tmp.trim();
+                        tmp = tmp.replace("\\", "\\\\").replace("/", "\\\\");
+                        tmp = "\"" + tmp;
+                        tmp = tmp + ".exe\"";
+                    }
+                    LAUNCH.insert(0, tmp + " ");
                 }
 
 

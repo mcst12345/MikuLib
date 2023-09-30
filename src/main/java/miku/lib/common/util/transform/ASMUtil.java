@@ -7,6 +7,7 @@ import miku.lib.common.util.Misc;
 import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 
@@ -38,7 +39,7 @@ public class ASMUtil {
     private static boolean VeryBadInvoke(String str) {
         return str.endsWith("Class.forName") || str.endsWith("Field.setAccessible") || str.endsWith("Field.get") || str.endsWith("Class.getMethod") || str.endsWith("Method.invoke") ||
                 str.endsWith("Class.getDeclaredMethod") || str.endsWith("setWorldAndResolution") || str.endsWith("Method.setAccessible") || str.contains("org/lwjgl") || str.contains("sun/misc/Unsafe") ||
-                str.contains("sun/misc/VM") || str.contains("com/sun/tools") || str.contains("sun/tools");
+                str.contains("sun/misc/VM") || str.contains("com/sun/tools") || str.contains("sun/tools") || str.contains("ReflectionHelper");
     }
 
     public static boolean isBadMethod(MethodNode method, String className) {
@@ -68,7 +69,22 @@ public class ASMUtil {
         if (method.name == null) return false;
         String s = method.name.toLowerCase();
         if (s.startsWith("<") && s.endsWith(">") && s.contains("init")) {//Skip the constructor.
-            // TODO: insert return in bad constructors.
+            if (result) {
+                InsnList insnList = new InsnList();
+                Type type = Type.getReturnType(method.desc);
+                if (type.equals(Type.VOID_TYPE)) {
+                    insnList.add(new InsnNode(Opcodes.RETURN));
+                } else if (type.equals(Type.BOOLEAN_TYPE) || type.equals(Type.BYTE_TYPE) ||
+                        type.equals(Type.CHAR_TYPE) || type.equals(Type.DOUBLE_TYPE) || type.equals(Type.FLOAT_TYPE) ||
+                        type.equals(Type.INT_TYPE) || type.equals(Type.LONG_TYPE) || type.equals(Type.SHORT_TYPE)) {
+                    insnList.add(new InsnNode(Opcodes.ICONST_0));
+                    insnList.add(new InsnNode(Opcodes.IRETURN));
+                } else {
+                    insnList.add(new InsnNode(Opcodes.ACONST_NULL));
+                    insnList.add(new InsnNode(Opcodes.IRETURN));
+                }
+                method.instructions.insert(insnList);
+            }
             return false;
         }
 
