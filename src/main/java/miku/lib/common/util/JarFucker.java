@@ -84,7 +84,7 @@ public class JarFucker {
                             }
                         }
                         if (shouldAdd) {
-                            byte[] fucked = transform(cn.name.replace("/", "."), cn);
+                            byte[] fucked = transform(cn.name.replace("/", "."), cn, cr);
                             jos.putNextEntry(new JarEntry(entry.getName()));
                             jos.write(fucked);
                         }
@@ -199,14 +199,14 @@ public class JarFucker {
         return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA"));
     }
 
-    protected static byte[] transform(String transformedName, ClassNode cn) {
+    protected static byte[] transform(String transformedName, ClassNode cn, ClassReader cr) {
         System.out.println("Examine class:" + transformedName);
 
         cached_methods.clear();
         num = 0.0d;
 
 
-        if (ASMUtil.isBadClass(transformedName)) {
+        if (ASMUtil.isBadClass(transformedName) || ASMUtil.isBadSuperClass(cr.getSuperName())) {
             ASMUtil.FuckClass(cn);
             ClassWriter cw = new ClassWriter(0);
             cn.accept(cw);

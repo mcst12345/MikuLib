@@ -61,8 +61,6 @@ public abstract class MixinGuiModList extends GuiScreen implements iGuiModList {
         if (selectedMod == null)
             return;
 
-        System.out.println("Mod id is:" + selectedMod.getModId());
-
         boolean miku = Objects.equals(selectedMod.getModId(), "mikulib");
 
         ResourceLocation logoPath = null;

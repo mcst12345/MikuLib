@@ -184,9 +184,7 @@ public abstract class MixinNetHandlerPlayClient implements iNetHandlerPlayClient
         if (packetIn == null) return;
         try {
             PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, this.client);
-        } catch (Throwable t) {
-            System.out.println("MikuWarn:Catch exception at PacketThreadUtil.checkThreadAndEnqueue");
-            t.printStackTrace();
+        } catch (Throwable ignored) {
         }
         try {
             ((iMinecraft) this.client).MikuWorld().setTotalWorldTime(packetIn.getTotalWorldTime());

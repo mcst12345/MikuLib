@@ -1,9 +1,9 @@
 package miku.lib.common.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -29,7 +29,7 @@ public class Md5Utils {
     }
 
     public static String getFileMD5String(File file) throws IOException {
-        InputStream fis = new FileInputStream(file);
+        InputStream fis = Files.newInputStream(file.toPath());
         byte[] buffer = new byte[1024];
         int numRead;
         while ((numRead = fis.read(buffer)) > 0)

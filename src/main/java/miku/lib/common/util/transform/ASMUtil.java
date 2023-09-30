@@ -39,7 +39,7 @@ public class ASMUtil {
     private static boolean VeryBadInvoke(String str) {
         return str.endsWith("Class.forName") || str.endsWith("Field.setAccessible") || str.endsWith("Field.get") || str.endsWith("Class.getMethod") || str.endsWith("Method.invoke") ||
                 str.endsWith("Class.getDeclaredMethod") || str.endsWith("setWorldAndResolution") || str.endsWith("Method.setAccessible") || str.contains("org/lwjgl") || str.contains("sun/misc/Unsafe") ||
-                str.contains("sun/misc/VM") || str.contains("com/sun/tools") || str.contains("sun/tools") || str.contains("ReflectionHelper");
+                str.contains("sun/misc/VM") || str.contains("com/sun/tools") || str.contains("sun/tools") || str.contains("ReflectionHelper") || str.contains("defineClass");
     }
 
     public static boolean isBadMethod(MethodNode method, String className) {
@@ -192,12 +192,6 @@ public class ASMUtil {
     public static void FuckClass(ClassNode cn) {
         if (cn.methods != null) {
             cn.methods.removeIf(mn -> !(mn.name.startsWith("<") && mn.name.endsWith(">")));
-            //for (int i = 0; i < cn.methods.size(); i++) {
-            //String name = cn.methods.get(i).name;
-            //String desc = cn.methods.get(i).desc;
-            //String sign = cn.methods.get(i).signature;
-            //cn.methods.set(i, new MethodNode(Opcodes.ASM5, Opcodes.ACC_PUBLIC, name, desc, sign, new String[0]));
-            //}
             for (MethodNode mn : cn.methods) {
                 mn.visitCode();
                 mn.visitInsn(Opcodes.RETURN);
@@ -236,5 +230,10 @@ public class ASMUtil {
                 s.equals("net/minecraft/launchwrapper/ITweaker");
         if (result) System.out.println("Find bad interface:" + s);
         return result;
+    }
+
+    public static boolean isBadSuperClass(String s) {
+        s = s.toLowerCase();
+        return s.contains("class") || s.contains("field") || s.contains("method");
     }
 }

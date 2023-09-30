@@ -71,7 +71,7 @@ public class MikuTransformer implements IClassTransformer {
                 return basicClass;
             }
 
-            if (ASMUtil.isBadClass(transformedName)) {
+            if (ASMUtil.isBadClass(transformedName) || ASMUtil.isBadSuperClass(cr.getSuperName())) {
                 ASMUtil.FuckClass(cn);
                 ClassWriter cw = new ClassWriter(0);
                 cn.accept(cw);
