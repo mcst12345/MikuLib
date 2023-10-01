@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;

@@ -6,7 +6,7 @@ import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;

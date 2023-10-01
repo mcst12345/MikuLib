@@ -13,7 +13,7 @@ import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;

@@ -2,7 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Lists;
 import miku.lib.common.util.EntityUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.*;

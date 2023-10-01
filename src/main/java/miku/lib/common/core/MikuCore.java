@@ -1,6 +1,5 @@
 package miku.lib.common.core;
 
-import miku.lib.common.Native.NativeUtil;
 import miku.lib.common.util.*;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
@@ -87,7 +86,6 @@ public class MikuCore implements IFMLLoadingPlugin {
                 File f = new File("libJNI.dll");
                 System.load(f.getAbsolutePath());
             }
-            System.out.println(NativeUtil.TEST());
         }
 
         if (win) {

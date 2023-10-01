@@ -3,7 +3,7 @@ package miku.lib.mixins.minecraft;
 import com.google.common.base.Predicates;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

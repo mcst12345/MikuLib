@@ -13,7 +13,7 @@ import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;

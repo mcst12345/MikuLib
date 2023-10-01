@@ -17,14 +17,6 @@ JNIEXPORT void JNICALL Java_miku_lib_common_Native_NativeUtil_Kill
 
 /*
  * Class:     miku_lib_common_Native_NativeUtil
- * Method:    TEST
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_miku_lib_common_Native_NativeUtil_TEST
-  (JNIEnv *, jclass);
-
-/*
- * Class:     miku_lib_common_Native_NativeUtil
  * Method:    GetClass
  * Signature: (Ljava/lang/String;)Ljava/lang/Class;
  */
@@ -86,6 +78,22 @@ JNIEXPORT jboolean JNICALL Java_miku_lib_common_Native_NativeUtil_MikuListContai
  */
 JNIEXPORT jobjectArray JNICALL Java_miku_lib_common_Native_NativeUtil_GetObjectsFromList
   (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     miku_lib_common_Native_NativeUtil
+ * Method:    SaveObject
+ * Signature: (Ljava/lang/Object;I)V
+ */
+JNIEXPORT void JNICALL Java_miku_lib_common_Native_NativeUtil_SaveObject
+  (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class:     miku_lib_common_Native_NativeUtil
+ * Method:    GetSavedObject
+ * Signature: (I)Ljava/lang/Object;
+ */
+JNIEXPORT jobject JNICALL Java_miku_lib_common_Native_NativeUtil_GetSavedObject
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }

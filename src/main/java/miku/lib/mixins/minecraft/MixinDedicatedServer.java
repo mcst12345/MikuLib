@@ -5,7 +5,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.common.api.iServer;
 import miku.lib.common.api.iWorldServer;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import miku.lib.server.api.iDedicatedServer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;

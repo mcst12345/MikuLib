@@ -2,7 +2,7 @@ package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.util.EntityUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;

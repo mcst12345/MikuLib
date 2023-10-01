@@ -7,7 +7,7 @@ import miku.lib.client.api.iMinecraft;
 import miku.lib.common.api.iServer;
 import miku.lib.common.api.iWorldServer;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;

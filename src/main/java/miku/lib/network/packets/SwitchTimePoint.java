@@ -1,7 +1,7 @@
 package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;

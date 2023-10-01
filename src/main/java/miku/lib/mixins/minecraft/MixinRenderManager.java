@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -67,10 +66,7 @@ public abstract class MixinRenderManager {
     public boolean shouldRender(Entity entityIn, ICamera camera, double camX, double camY, double camZ) {
         Render<Entity> render = this.getEntityRenderObject(entityIn);
         if (EntityUtil.isProtected(entityIn)) {
-            boolean result = render != null;
-            if (result && !(entityIn instanceof EntityPlayer))
-                System.out.println("MikuWarn:The fuck? Can't get render of a protected entity! " + entityIn.getClass());
-            return result;
+            return render != null;
         } else if (EntityUtil.isDEAD(entityIn)) {
             return false;
         } else {

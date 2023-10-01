@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.SoundEvents;

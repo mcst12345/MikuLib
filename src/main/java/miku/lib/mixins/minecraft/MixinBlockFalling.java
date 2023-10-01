@@ -1,7 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.common.api.iWorld;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.state.IBlockState;

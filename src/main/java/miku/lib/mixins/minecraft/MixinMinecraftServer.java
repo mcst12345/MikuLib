@@ -7,7 +7,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.common.api.iMinecraftServer;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.FieldUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import miku.lib.server.api.iDedicatedServer;
 import net.minecraft.advancements.FunctionManager;
 import net.minecraft.command.CommandBase;

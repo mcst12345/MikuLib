@@ -2,7 +2,7 @@ package miku.lib.network.packets;
 
 import io.netty.buffer.ByteBuf;
 import miku.lib.common.util.EntityUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import miku.lib.network.NetworkHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

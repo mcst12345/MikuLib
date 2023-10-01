@@ -7,7 +7,7 @@ import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
-import miku.lib.common.util.TimeStopUtil;
+import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;

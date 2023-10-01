@@ -3,8 +3,6 @@ package miku.lib.common.Native;
 public class NativeUtil {
     public native static void Kill(Object o);
 
-    public native static int TEST();
-
     public native static Class<?> GetClass(String clazz);
 
     public native static void MikuMapPut(String table, Object key, Object value);
@@ -20,4 +18,8 @@ public class NativeUtil {
     public native static boolean MikuListContains(String list, Object value);
 
     public native static Object[] GetObjectsFromList(String list);
+
+    public native static void SaveObject(Object object, int hash);
+
+    public native static Object GetSavedObject(int hash);
 }
