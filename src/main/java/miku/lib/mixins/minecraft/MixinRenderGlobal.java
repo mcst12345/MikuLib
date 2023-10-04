@@ -44,6 +44,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -93,9 +96,17 @@ public abstract class MixinRenderGlobal {
     @Shadow
     protected abstract boolean isOutlineActive(Entity entityIn, Entity viewer, ICamera camera);
 
+
+    @Inject(at = @At("HEAD"), method = "spawnParticle(IZZDDDDDD[I)V", cancellable = true)
+    public void spawnParticle(int id, boolean ignoreRange, boolean minimiseParticleLevel, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, int[] parameters, CallbackInfo ci) {
+        if (!Sqlite.GetBooleanFromTable("particle", "RENDER_CONFIG")) {
+            ci.cancel();
+        }
+    }
+
     /**
      * @author mcst12345
-     * @reason :)
+     * @reason fastRender :)
      */
     @Overwrite
     public boolean isRenderEntityOutlines() {
