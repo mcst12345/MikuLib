@@ -20,6 +20,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
@@ -34,11 +35,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
 
 @Mixin(value = Entity.class)
-public abstract class MixinEntity implements iEntity {
+public abstract class MixinEntity implements iEntity, Serializable {
     public void SetTimeStop(boolean stop) {
         isTimeStop = !isTimeStop;
     }
@@ -73,9 +75,25 @@ public abstract class MixinEntity implements iEntity {
     public int dimension;
     protected int _dimension;
 
-    @Inject(at=@At("HEAD"),method = "changeDimension(I)Lnet/minecraft/entity/Entity;", cancellable = true)
-    public void changeDimension(int dimensionIn, CallbackInfoReturnable<Entity> cir){
-        if(EntityUtil.isDEAD((Entity)(Object)this))cir.setReturnValue(null);
+    /**
+     * @author mcst12345
+     * @reason Hi, ojng.
+     */
+    @Overwrite
+    public Vec3d getPositionEyes(float partialTicks) {
+        if (partialTicks == 1.0F) {
+            return new Vec3d(this.posX, this.posY + this.getEyeHeight(), this.posZ);
+        } else {
+            double d0 = this.prevPosX + (this.posX - this.prevPosX) * partialTicks;
+            double d1 = this.prevPosY + (this.posY - this.prevPosY) * partialTicks + this.getEyeHeight();
+            double d2 = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTicks;
+            return new Vec3d(d0, d1, d2);
+        }
+    }
+
+    @Inject(at = @At("HEAD"), method = "changeDimension(I)Lnet/minecraft/entity/Entity;", cancellable = true)
+    public void changeDimension(int dimensionIn, CallbackInfoReturnable<Entity> cir) {
+        if (EntityUtil.isDEAD((Entity) (Object) this)) cir.setReturnValue(null);
     }
 
     @Inject(at = @At("HEAD"), method = "changeDimension(ILnet/minecraftforge/common/util/ITeleporter;)Lnet/minecraft/entity/Entity;", cancellable = true, remap = false)
@@ -93,6 +111,18 @@ public abstract class MixinEntity implements iEntity {
 
     @Shadow
     private int entityId;
+
+    @Shadow
+    public abstract float getEyeHeight();
+
+    @Shadow
+    public double prevPosX;
+
+    @Shadow
+    public double prevPosY;
+
+    @Shadow
+    public double prevPosZ;
 
     /**
      * @author mcst12345
@@ -189,7 +219,7 @@ public abstract class MixinEntity implements iEntity {
         if (this.isTimeStop) {
             ci.cancel();
         }
-        if(EntityUtil.isProtected(this) && ((boolean)Sqlite.GetValueFromTable("auto_range_kill","CONFIG",0))){
+        if (EntityUtil.isProtected(this) && Sqlite.GetBooleanFromTable("auto_range_kill", "CONFIG")) {
             List<Entity> list = world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB(posX - 20, posY - 20, posZ - 20, posX + 20, posY + 20, posZ + 20));
             EntityUtil.Kill(list);
         }

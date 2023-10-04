@@ -3,6 +3,7 @@ package miku.lib.mixins.minecraft;
 import com.google.common.base.Predicates;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -1117,7 +1118,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             this.mc.setRenderViewEntity(this.mc.player);
         }
 
-        float f3 = ((iMinecraft) this.mc).MikuWorld().getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1F))); // Forge: fix MC-51150
+        float f3 = ((iMinecraft) this.mc).MikuWorld().getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY + this.mc.getRenderViewEntity().getEyeHeight(), this.mc.getRenderViewEntity().posZ)); // Forge: fix MC-51150
         float f4 = (float) this.mc.gameSettings.renderDistanceChunks / 32.0F;
         float f2 = f3 * (1.0F - f4) + f4;
         this.fogColor1 += (f2 - this.fogColor1) * 0.1F;
@@ -1284,7 +1285,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             f /= 2.0F;
         }
 
-        if (f != 0.0F) {
+        if (f != 0.0F && Sqlite.GetBooleanFromTable("rain_splash", "RENDER_CONFIG")) {
             this.random.setSeed((long) this.rendererUpdateCount * 312987231L);
             Entity entity = this.mc.getRenderViewEntity();
             World world = ((iMinecraft) this.mc).MikuWorld();
@@ -1317,15 +1318,15 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                             ++j;
 
                             if (this.random.nextInt(j) == 0) {
-                                d0 = (double) blockpos2.getX() + d3;
-                                d1 = (double) ((float) blockpos2.getY() + 0.1F) + axisalignedbb.maxY - 1.0D;
-                                d2 = (double) blockpos2.getZ() + d4;
+                                d0 = blockpos2.getX() + d3;
+                                d1 = blockpos2.getY() + 0.1F + axisalignedbb.maxY - 1.0D;
+                                d2 = blockpos2.getZ() + d4;
                             }
 
-                            ((iMinecraft) this.mc).MikuWorld().spawnParticle(EnumParticleTypes.WATER_DROP, (double) blockpos2.getX() + d3, (double) ((float) blockpos2.getY() + 0.1F) + axisalignedbb.maxY, (double) blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D);
+                            ((iMinecraft) this.mc).MikuWorld().spawnParticle(EnumParticleTypes.WATER_DROP, blockpos2.getX() + d3, (blockpos2.getY() + 0.1F) + axisalignedbb.maxY, blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D);
                         }
                     } else {
-                        ((iMinecraft) this.mc).MikuWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double) blockpos1.getX() + d3, (double) ((float) blockpos1.getY() + 0.1F) - axisalignedbb.minY, (double) blockpos1.getZ() + d4, 0.0D, 0.0D, 0.0D);
+                        ((iMinecraft) this.mc).MikuWorld().spawnParticle(EnumParticleTypes.SMOKE_NORMAL, blockpos1.getX() + d3, (blockpos1.getY() + 0.1F) - axisalignedbb.minY, blockpos1.getZ() + d4, 0.0D, 0.0D, 0.0D);
                     }
                 }
             }
@@ -1333,7 +1334,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             if (j > 0 && this.random.nextInt(3) < this.rainSoundCounter++) {
                 this.rainSoundCounter = 0;
 
-                if (d1 > (double) (blockpos.getY() + 1) && world.getPrecipitationHeight(blockpos).getY() > MathHelper.floor((float) blockpos.getY())) {
+                if (d1 > (blockpos.getY() + 1) && world.getPrecipitationHeight(blockpos).getY() > MathHelper.floor(blockpos.getY())) {
                     ((iMinecraft) this.mc).MikuWorld().playSound(d0, d1, d2, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1F, 0.5F, false);
                 } else {
                     ((iMinecraft) this.mc).MikuWorld().playSound(d0, d1, d2, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2F, 1.0F, false);
@@ -1356,10 +1357,11 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
 
         float f = ((iMinecraft) this.mc).MikuWorld().getRainStrength(partialTicks);
 
-        if (f > 0.0F) {
+        if (f > 0.0F && Sqlite.GetBooleanFromTable("rain", "RENDER_CONFIG")) {
             this.enableLightmap();
             Entity entity = this.mc.getRenderViewEntity();
             World world = ((iMinecraft) this.mc).MikuWorld();
+            assert entity != null;
             int i = MathHelper.floor(entity.posX);
             int j = MathHelper.floor(entity.posY);
             int k = MathHelper.floor(entity.posZ);
@@ -1370,9 +1372,9 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.alphaFunc(516, 0.1F);
-            double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
-            double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
-            double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
+            double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+            double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+            double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
             int l = MathHelper.floor(d1);
             int i1 = 5;
 
@@ -1381,7 +1383,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             }
 
             int j1 = -1;
-            float f1 = (float) this.rendererUpdateCount + partialTicks;
+            float f1 = this.rendererUpdateCount + partialTicks;
             bufferbuilder.setTranslation(-d0, -d1, -d2);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
@@ -1389,8 +1391,8 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             for (int k1 = k - i1; k1 <= k + i1; ++k1) {
                 for (int l1 = i - i1; l1 <= i + i1; ++l1) {
                     int i2 = (k1 - k + 16) * 32 + l1 - i + 16;
-                    double d3 = (double) this.rainXCoords[i2] * 0.5D;
-                    double d4 = (double) this.rainYCoords[i2] * 0.5D;
+                    double d3 = this.rainXCoords[i2] * 0.5D;
+                    double d4 = this.rainYCoords[i2] * 0.5D;
                     blockpos$mutableblockpos.setPos(l1, 0, k1);
                     Biome biome = world.getBiome(blockpos$mutableblockpos);
 
@@ -1425,19 +1427,19 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                                     bufferbuilder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
                                 }
 
-                                double d5 = -((double) (this.rendererUpdateCount + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + (double) partialTicks) / 32.0D * (3.0D + this.random.nextDouble());
-                                double d6 = (double) ((float) l1 + 0.5F) - entity.posX;
-                                double d7 = (double) ((float) k1 + 0.5F) - entity.posZ;
-                                float f3 = MathHelper.sqrt(d6 * d6 + d7 * d7) / (float) i1;
+                                double d5 = -((this.rendererUpdateCount + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + partialTicks) / 32.0D * (3.0D + this.random.nextDouble());
+                                double d6 = l1 + 0.5F - entity.posX;
+                                double d7 = k1 + 0.5F - entity.posZ;
+                                float f3 = MathHelper.sqrt(d6 * d6 + d7 * d7) / i1;
                                 float f4 = ((1.0F - f3 * f3) * 0.5F + 0.5F) * f;
                                 blockpos$mutableblockpos.setPos(l1, i3, k1);
                                 int j3 = world.getCombinedLight(blockpos$mutableblockpos, 0);
                                 int k3 = j3 >> 16 & 65535;
                                 int l3 = j3 & 65535;
-                                bufferbuilder.pos((double) l1 - d3 + 0.5D, l2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
-                                bufferbuilder.pos((double) l1 + d3 + 0.5D, l2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
-                                bufferbuilder.pos((double) l1 + d3 + 0.5D, k2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
-                                bufferbuilder.pos((double) l1 - d3 + 0.5D, k2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+                                bufferbuilder.pos(l1 - d3 + 0.5D, l2, k1 - d4 + 0.5D).tex(0.0D, k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+                                bufferbuilder.pos(l1 + d3 + 0.5D, l2, k1 + d4 + 0.5D).tex(1.0D, k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+                                bufferbuilder.pos(l1 + d3 + 0.5D, k2, k1 + d4 + 0.5D).tex(1.0D, l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+                                bufferbuilder.pos(l1 - d3 + 0.5D, k2, k1 - d4 + 0.5D).tex(0.0D, l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
                             } else {
                                 if (j1 != 1) {
                                     if (j1 == 0) {
@@ -1449,21 +1451,21 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                                     bufferbuilder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
                                 }
 
-                                double d8 = -((float) (this.rendererUpdateCount & 511) + partialTicks) / 512.0F;
-                                double d9 = this.random.nextDouble() + (double) f1 * 0.01D * (double) ((float) this.random.nextGaussian());
-                                double d10 = this.random.nextDouble() + (double) (f1 * (float) this.random.nextGaussian()) * 0.001D;
-                                double d11 = (double) ((float) l1 + 0.5F) - entity.posX;
-                                double d12 = (double) ((float) k1 + 0.5F) - entity.posZ;
-                                float f6 = MathHelper.sqrt(d11 * d11 + d12 * d12) / (float) i1;
+                                double d8 = -(this.rendererUpdateCount & 511) + partialTicks / 512.0F;
+                                double d9 = this.random.nextDouble() + f1 * 0.01D * this.random.nextGaussian();
+                                double d10 = this.random.nextDouble() + (f1 * this.random.nextGaussian()) * 0.001D;
+                                double d11 = l1 + 0.5F - entity.posX;
+                                double d12 = k1 + 0.5F - entity.posZ;
+                                float f6 = MathHelper.sqrt(d11 * d11 + d12 * d12) / i1;
                                 float f5 = ((1.0F - f6 * f6) * 0.3F + 0.5F) * f;
                                 blockpos$mutableblockpos.setPos(l1, i3, k1);
                                 int i4 = (world.getCombinedLight(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
                                 int j4 = i4 >> 16 & 65535;
                                 int k4 = i4 & 65535;
-                                bufferbuilder.pos((double) l1 - d3 + 0.5D, l2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
-                                bufferbuilder.pos((double) l1 + d3 + 0.5D, l2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
-                                bufferbuilder.pos((double) l1 + d3 + 0.5D, k2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
-                                bufferbuilder.pos((double) l1 - d3 + 0.5D, k2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
+                                bufferbuilder.pos(l1 - d3 + 0.5D, l2, k1 - d4 + 0.5D).tex(0.0D + d9, k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
+                                bufferbuilder.pos(l1 + d3 + 0.5D, l2, k1 + d4 + 0.5D).tex(1.0D + d9, k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
+                                bufferbuilder.pos(l1 + d3 + 0.5D, k2, k1 + d4 + 0.5D).tex(1.0D + d9, l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
+                                bufferbuilder.pos(l1 - d3 + 0.5D, k2, k1 - d4 + 0.5D).tex(0.0D + d9, l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
                             }
                         }
                     }

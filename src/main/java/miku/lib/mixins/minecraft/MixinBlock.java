@@ -7,8 +7,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.io.Serializable;
+
 @Mixin(value = Block.class)
-public abstract class MixinBlock {
+public abstract class MixinBlock implements Serializable {
     @Shadow
     public abstract String getTranslationKey();
 

@@ -93,8 +93,17 @@ public abstract class MixinRenderGlobal {
     @Shadow
     protected abstract boolean isOutlineActive(Entity entityIn, Entity viewer, ICamera camera);
 
-    @Shadow
-    protected abstract boolean isRenderEntityOutlines();
+    /**
+     * @author mcst12345
+     * @reason :)
+     */
+    @Overwrite
+    public boolean isRenderEntityOutlines() {
+        if (Sqlite.GetBooleanFromTable("fast", "RENDER_CONFIG")) {
+            return false;
+        }
+        return this.entityOutlineFramebuffer != null && this.entityOutlineShader != null && this.mc.player != null;
+    }
 
     @Shadow
     private Framebuffer entityOutlineFramebuffer;

@@ -38,6 +38,7 @@ public class Sqlite {
             try {
                 System.out.println("Creating tables.");
                 CreateTable("CONFIG", "NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
+                CreateTable("RENDER_CONFIG", "NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 CreateTable("HIDDEN_MODS", "ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MODS", "ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
@@ -57,6 +58,10 @@ public class Sqlite {
                 CreateConfigValue("render_info", "LOG_CONFIG", "false");
                 CreateConfigValue("key_info", "LOG_CONFIG", "false");
                 CreateConfigValue("entity_info", "LOG_CONFIG", "false");
+                CreateConfigValue("time_point_mode", "CONFIG", "0");
+                CreateConfigValue("rain_splash", "RENDER_CONFIG", "true");
+                CreateConfigValue("rain", "RENDER_CONFIG", "true");
+                CreateConfigValue("fast", "RENDER_CONFIG", "false");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS", "ID", SqliteCaches.HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS", "ID", SqliteCaches.BANNED_MODS);
@@ -100,7 +105,7 @@ public class Sqlite {
             e.printStackTrace();
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
-            System.out.println("Class not found:" + s);
+            System.out.println("MikuInfo:Class not found:" + s);
         }
     }
 
@@ -278,7 +283,7 @@ public class Sqlite {
     }
 
     public static boolean DEBUG() {
-        return (boolean) GetValueFromTable("debug", "CONFIG", 0);
+        return GetBooleanFromTable("debug", "CONFIG");
     }
 
     private static boolean hasReturn(String s) {
@@ -291,6 +296,15 @@ public class Sqlite {
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             return false;
+        }
+    }
+
+    public static int GetIntFromTable(String name, String table) {
+        try {
+            return (int) GetValueFromTable(name, table, 1);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            return 0;
         }
     }
 }

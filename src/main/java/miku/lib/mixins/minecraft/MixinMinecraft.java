@@ -89,6 +89,7 @@ import org.spongepowered.asm.mixin.*;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.Proxy;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -99,7 +100,7 @@ import java.util.concurrent.FutureTask;
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
 
 @Mixin(value = Minecraft.class)
-public abstract class MixinMinecraft implements iMinecraft {
+public abstract class MixinMinecraft implements iMinecraft, Serializable {
     @Override
     public void reloadWorld() {
         if (MikuWorld == null) return;

@@ -2,9 +2,11 @@ package miku.lib.common.util.timestop;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import miku.lib.common.api.iServer;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EmptyTeleporter;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FileUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
@@ -16,6 +18,10 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TimeStopUtil {
-    private static short time_point_mode;
+    private static int time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
     private static int current_time_point = 0;
     private static boolean TimeStop = false;
     private static boolean saving;
@@ -31,7 +37,7 @@ public class TimeStopUtil {
     public static String folder_name;
     public static WorldType worldType;
     public static String generatorOptions;
-    private static final List<File> saved = new ArrayList<>();
+    private static final List<String> savedPoints = new ArrayList<>();
     private static final File saves;
 
     static {
@@ -44,51 +50,86 @@ public class TimeStopUtil {
             File[] files = saves.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (file.isDirectory()) saved.add(file);
+                    if (file.isDirectory()) savedPoints.add(file.getAbsolutePath());
                 }
             }
         }
     }
 
     public synchronized static void Record() {
+        time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
         saving = true;
-        SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.applyPattern("yyyy-MM-dd--HH:mm:ss");
-        Date date = new Date();
-        String time = sdf.format(date);
-        System.out.println("MikuInfo:Saving time point at " + time);
-        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        server.getPlayerList().saveAllPlayerData();
-        for (WorldServer worldserver : server.worlds) {
-            if (worldserver != null) {
-                worldserver.disableLevelSaving = false;
+        if (time_point_mode == 0) {
+            SimpleDateFormat sdf = new SimpleDateFormat();
+            sdf.applyPattern("yyyy-MM-dd--HH:mm:ss");
+            Date date = new Date();
+            String time = sdf.format(date);
+            System.out.println("MikuInfo:Saving time point at " + time);
+            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+            server.getPlayerList().saveAllPlayerData();
+            for (WorldServer worldserver : server.worlds) {
+                if (worldserver != null) {
+                    worldserver.disableLevelSaving = false;
+                }
             }
-        }
-        server.saveAllWorlds(true);
-        for (WorldServer worldserver : server.worlds) {
-            if (worldserver != null) {
-                worldserver.flushToDisk();
+            server.saveAllWorlds(true);
+            for (WorldServer worldserver : server.worlds) {
+                if (worldserver != null) {
+                    worldserver.flushToDisk();
+                }
             }
-        }
-        File world;
-        File save = new File("saved_time_points" + File.separator + time);
-        if (Launch.Client) {
-            if (folder_name == null) {
-                throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
+            File world;
+            File save = new File("saved_time_points" + File.separator + time);
+            if (Launch.Client) {
+                if (folder_name == null) {
+                    throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
+                }
+                world = new File("saves" + File.separator + folder_name);
+            } else {
+                world = new File("world");
             }
-            world = new File("saves" + File.separator + folder_name);
+            if (!world.exists()) {
+                throw new RuntimeException("The fuck?");
+            }
+            try {
+                System.out.println("MikuInfo:Coping folder");
+                FileUtils.copyDir(world, save);
+                savedPoints.add(save.getAbsolutePath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         } else {
-            world = new File("world");
-        }
-        if (!world.exists()) {
-            throw new RuntimeException("The fuck?");
-        }
-        try {
-            System.out.println("MikuInfo:Coping folder");
-            FileUtils.copyDir(world, save);
-            saved.add(save);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            SimpleDateFormat sdf = new SimpleDateFormat();
+            sdf.applyPattern("yyyy-MM-dd--HH:mm:ss");
+            Date date = new Date();
+            String time = sdf.format(date);
+            System.out.println("MikuInfo:Saving time point at " + time);
+            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+            WorldServer[] worlds = server.worlds;
+            File save = new File("saved_time_points" + File.separator + time);
+            if (!save.mkdir()) {
+                throw new RuntimeException("The fuck?");
+            }
+            try {
+                ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Paths.get("saved_time_points" + File.separator + time + File.separator + "worlds")));
+                oos.writeObject(worlds);
+                oos.flush();
+                oos.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (Launch.Client) {
+                Minecraft client = Minecraft.getMinecraft();
+                try {
+                    ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Paths.get("saved_time_points" + File.separator + time + File.separator + "client")));
+                    oos.writeObject(client);
+                    oos.flush();
+                    oos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            savedPoints.add("saved_time_points" + File.separator + time);
         }
         saving = false;
     }
@@ -106,70 +147,96 @@ public class TimeStopUtil {
     }
 
     public synchronized static void BackToPoint() {
+        time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
         saving = true;
-        File save = saved.get(current_time_point);
-        if (!save.exists()) {
-            System.out.println("The fuck? A saved time point doesn't exist!");
-            saved.remove(current_time_point);
-            return;
-        }
-        File world;
-        if (Launch.Client) {
-            if (folder_name == null) {
-                throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
+        if (time_point_mode == 0) {
+            File save = new File(savedPoints.get(current_time_point));
+            if (!save.exists()) {
+                System.out.println("The fuck? A saved time point doesn't exist!");
+                savedPoints.remove(current_time_point);
+                return;
             }
-            world = new File("saves" + File.separator + folder_name);
-        } else {
-            world = new File("world");
-        }
-        if (!world.exists()) {
-            throw new RuntimeException("The fuck?");
-        }
-        try {
-            FileUtils.deleteDir(world);
-            FileUtils.copyDir(save, world);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (worldType == null) {
-            throw new RuntimeException("The fuck? worldType is null?");
-        }
-        if (generatorOptions == null) {
-            throw new RuntimeException("The fuck? generatorOptions is null?");
-        }
-
-        final Map<EntityPlayerMP, Integer> cache = new Object2IntOpenHashMap<>();
-
-        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
-            if (!EntityUtil.isProtected(player)) {
-                player.connection.disconnect(new TextComponentString("disconnected."));
+            File world;
+            if (Launch.Client) {
+                if (folder_name == null) {
+                    throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
+                }
+                world = new File("saves" + File.separator + folder_name);
             } else {
-                cache.put(player, player.dimension);
-                player.changeDimension(-114514, EmptyTeleporter.INSTANCE);
+                world = new File("world");
             }
-        }
+            if (!world.exists()) {
+                throw new RuntimeException("The fuck?");
+            }
+            try {
+                FileUtils.deleteDir(world);
+                FileUtils.copyDir(save, world);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-        ((iServer) server).reloadWorld(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
-        for (WorldServer worldServer : server.worlds) {
-            worldServer.resetUpdateEntityTick();
+            if (worldType == null) {
+                throw new RuntimeException("The fuck? worldType is null?");
+            }
+            if (generatorOptions == null) {
+                throw new RuntimeException("The fuck? generatorOptions is null?");
+            }
+
+            final Map<EntityPlayerMP, Integer> cache = new Object2IntOpenHashMap<>();
+
+            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+            for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
+                if (!EntityUtil.isProtected(player)) {
+                    player.connection.disconnect(new TextComponentString("disconnected."));
+                } else {
+                    cache.put(player, player.dimension);
+                    player.changeDimension(-114514, EmptyTeleporter.INSTANCE);
+                }
+            }
+
+            ((iServer) server).reloadWorld(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
+            for (WorldServer worldServer : server.worlds) {
+                worldServer.resetUpdateEntityTick();
+            }
+
+
+            for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
+                player.changeDimension(cache.get(player), EmptyTeleporter.INSTANCE);
+            }
+        } else {
+            File WORLDS = new File(savedPoints.get(current_time_point) + File.separator + "worlds");
+            try {
+                ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(WORLDS.toPath()));
+                WorldServer[] worlds = (WorldServer[]) ois.readObject();
+                ois.close();
+                FMLCommonHandler.instance().getMinecraftServerInstance().worlds = worlds;
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            if (Launch.Client) {
+                File CLIENT = new File(savedPoints.get(current_time_point) + File.separator + "client");
+                try {
+                    ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(CLIENT.toPath()));
+                    Minecraft client = (Minecraft) ois.readObject();
+                    ois.close();
+                    Minecraft.instance = client;
+                } catch (IOException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         saving = false;
-
-        for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
-            player.changeDimension(cache.get(player), EmptyTeleporter.INSTANCE);
-        }
     }
 
     @Nullable
     public static File SwitchTimePoint() {
-        if (saved.isEmpty()) return null;
-        if (current_time_point + 1 < saved.size() && saved.get(current_time_point + 1) != null) {
+        time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+        if (savedPoints.isEmpty()) return null;
+        if (current_time_point + 1 < savedPoints.size() && savedPoints.get(current_time_point + 1) != null) {
             current_time_point++;
         } else {
             current_time_point = 0;
         }
-        return saved.get(current_time_point);
+        return new File(savedPoints.get(current_time_point));
     }
 }

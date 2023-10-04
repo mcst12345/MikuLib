@@ -18,8 +18,4 @@ public class NativeUtil {
     public native static boolean MikuListContains(String list, Object value);
 
     public native static Object[] GetObjectsFromList(String list);
-
-    public native static void SaveObject(Object object, int hash);
-
-    public native static Object GetSavedObject(int hash);
 }

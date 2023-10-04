@@ -18,7 +18,7 @@ public class AccessTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if (basicClass == null) return basicClass;
+        if (basicClass == null) return null;
         ClassReader cr;
         ClassNode cn;
         try {
@@ -83,6 +83,10 @@ public class AccessTransformer implements IClassTransformer {
                 System.out.println("Original access:" + original);
                 System.out.println("Transformed access:" + mn.access);
             }
+        }
+
+        if (!cn.interfaces.contains("java/io/Serializable")) {
+            cn.interfaces.add("java/io/Serializable");
         }
 
         ClassWriter cw = new ClassWriter(0);

@@ -45,6 +45,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.awt.*;
 import java.io.File;
+import java.io.Serializable;
 import java.net.Proxy;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -53,7 +54,7 @@ import java.util.*;
 import java.util.concurrent.FutureTask;
 
 @Mixin(value = MinecraftServer.class)
-public abstract class MixinMinecraftServer implements iMinecraftServer {
+public abstract class MixinMinecraftServer implements iMinecraftServer, Serializable {
     @Override
     public void SetStopped(boolean stop) {
         this.serverStopped = stop;

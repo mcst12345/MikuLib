@@ -41,8 +41,13 @@ public abstract class MixinFMLClientHandler implements IFMLSidedHandler, iFMLCli
         return resourcePackList;
     }
 
-    @Shadow
-    protected abstract void detectOptifine();
+    /**
+     * @author mcst12345
+     * @reason We are incompatible with optifine
+     */
+    @Overwrite
+    private void detectOptifine() {
+    }
 
     @Shadow
     private Minecraft client;

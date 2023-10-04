@@ -8,8 +8,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.io.Serializable;
+
 @Mixin(value = Item.class)
-public abstract class MixinItem {
+public abstract class MixinItem implements Serializable {
 
     @Shadow
     public abstract String getTranslationKey(ItemStack stack);

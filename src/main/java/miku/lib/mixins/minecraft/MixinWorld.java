@@ -45,11 +45,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Stream;
 
 @Mixin(value = World.class)
-public abstract class MixinWorld implements iWorld {
+public abstract class MixinWorld implements iWorld, Serializable {
 
     private static final List<Entity> toSpawn = new ArrayList<>();
     private boolean timeStop = false;
