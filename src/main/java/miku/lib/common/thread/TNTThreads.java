@@ -14,6 +14,7 @@ public class TNTThreads extends Thread {
 
     private TNTThreads(int id) {
         this.setName("TNT-Thread-" + id);
+        this.setPriority(9);
     }
 
     private final ObjectLinkedOpenHashSet<Explosion> lists = new ObjectLinkedOpenHashSet<>();
@@ -34,7 +35,7 @@ public class TNTThreads extends Thread {
             default:
                 throw new RuntimeException("The fuck?");
         }
-        tmp = tmp > 3 ? 0 : ++tmp;
+        tmp = tmp >= 3 ? 0 : ++tmp;
     }
 
     @Override
