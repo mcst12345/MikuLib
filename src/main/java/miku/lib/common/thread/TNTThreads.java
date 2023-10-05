@@ -42,7 +42,7 @@ public class TNTThreads extends Thread {
     public void run() {
         System.out.println("TNTThread is running.");
         while (true) {
-            if (FMLCommonHandler.instance().getMinecraftServerInstance().serverIsInRunLoop() && !TimeStopUtil.isTimeStop() && !TimeStopUtil.isSaving()) {
+            if (FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning() && !TimeStopUtil.isTimeStop() && !TimeStopUtil.isSaving()) {
                 if (lists.isEmpty()) {
                     return;
                 }
