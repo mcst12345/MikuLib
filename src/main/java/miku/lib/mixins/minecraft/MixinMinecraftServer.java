@@ -6,7 +6,6 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.common.api.iMinecraftServer;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.thread.TNTThreads;
 import miku.lib.common.util.FieldUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import miku.lib.server.api.iDedicatedServer;
@@ -449,7 +448,6 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
     @Overwrite
     public void run() {
         FieldUtil.Init();
-        TNTThreads.init();
         System.out.println("Successfully fucked Minecraft Server.");
         try {
             if (this.init()) {

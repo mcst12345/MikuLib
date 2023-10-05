@@ -14,7 +14,7 @@ public class TNTThreads extends Thread {
 
     private TNTThreads(int id) {
         this.setName("TNT-Thread-" + id);
-        this.setPriority(9);
+        this.setPriority(4);
     }
 
     private final ObjectLinkedOpenHashSet<Explosion> lists = new ObjectLinkedOpenHashSet<>();
@@ -35,11 +35,15 @@ public class TNTThreads extends Thread {
             default:
                 throw new RuntimeException("The fuck?");
         }
-        tmp = tmp >= 3 ? 0 : ++tmp;
+        if (tmp >= 3) {
+            tmp = 0;
+        } else {
+            tmp++;
+        }
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         System.out.println("TNTThread is running.");
         while (true) {
             if (FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning() && !TimeStopUtil.isTimeStop() && !TimeStopUtil.isSaving()) {
@@ -48,14 +52,15 @@ public class TNTThreads extends Thread {
                 }
                 for (Explosion explosion : lists) {
                     explosion.doExplosionA();
-                    explosion.doExplosionB(true);
+                    explosion.doExplosionB(explosion.world.isRemote);
                 }
                 lists.clear();
+                System.out.println("Completed a list of explosions.");
             }
         }
     }
 
-    public static void init() {
+    static {
         System.out.println("Starting TNT Threads.");
         INSTANCE1.start();
         INSTANCE2.start();
