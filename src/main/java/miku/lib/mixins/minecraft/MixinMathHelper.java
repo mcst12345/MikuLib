@@ -23,4 +23,13 @@ public class MixinMathHelper {
     public static float cos(float value) {
         return (float) Math.cos(value);
     }
+
+    /**
+     * @author mcst12345
+     * @reason f.
+     */
+    @Overwrite
+    public static int floor(double value) {
+        return (int) Math.floor(value);
+    }
 }

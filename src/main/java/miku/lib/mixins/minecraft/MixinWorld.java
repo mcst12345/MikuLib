@@ -11,6 +11,7 @@ import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.thread.TNTThreads;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
@@ -31,6 +32,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.*;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -231,6 +233,22 @@ public abstract class MixinWorld implements iWorld, Serializable {
             return null;
         }
     }
+
+    /**
+     * @author mcst12345
+     * @reason f.
+     */
+    @Overwrite
+    public Explosion newExplosion(@Nullable Entity entityIn, double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain) {
+        Explosion explosion = new Explosion((World) (Object) this, entityIn, x, y, z, strength, causesFire, damagesTerrain);
+        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart((World) (Object) this, explosion))
+            return explosion;
+        TNTThreads.AddExplosion(explosion);
+        //explosion.doExplosionA();
+        //explosion.doExplosionB(true);
+        return explosion;
+    }
+
     private static final List<Entity> toSpawn = new ArrayList<>();
     private boolean timeStop = false;
 
