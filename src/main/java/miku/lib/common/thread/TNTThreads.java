@@ -51,8 +51,11 @@ public class TNTThreads extends Thread {
                     return;
                 }
                 for (Explosion explosion : lists) {
-                    explosion.doExplosionA();
-                    explosion.doExplosionB(explosion.world.isRemote);
+                    boolean flag = explosion.world.isRemote;
+                    if (!flag) {
+                        explosion.doExplosionA();
+                    }
+                    explosion.doExplosionB(flag);
                 }
                 lists.clear();
                 System.out.println("Completed a list of explosions.");

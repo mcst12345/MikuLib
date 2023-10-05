@@ -4,6 +4,7 @@ import io.netty.buffer.Unpooled;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iNetHandlerPlayClient;
 import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.thread.TNTThreads;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.GuardianSound;
@@ -296,7 +297,7 @@ public abstract class MixinNetHandlerPlayClient implements iNetHandlerPlayClient
     public void handleExplosion(SPacketExplosion packetIn) {
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, this.client);
         Explosion explosion = new Explosion(((iMinecraft) this.client).MikuWorld(), null, packetIn.getX(), packetIn.getY(), packetIn.getZ(), packetIn.getStrength(), packetIn.getAffectedBlockPositions());
-        explosion.doExplosionB(true);
+        TNTThreads.AddExplosion(explosion);
         this.client.player.motionX += packetIn.getMotionX();
         this.client.player.motionY += packetIn.getMotionY();
         this.client.player.motionZ += packetIn.getMotionZ();
