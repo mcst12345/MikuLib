@@ -34,9 +34,10 @@ public class TNTThreads extends Thread {
                 INSTANCE4.lists.add(explosion);
                 break;
             default:
+                System.out.println(tmp);
                 throw new RuntimeException("The fuck?");
         }
-        tmp = tmp >= 3 ? 0 : ++tmp;
+        tmp = ((tmp >= 3) ? 0 : ++tmp);
     }
 
     @Override
