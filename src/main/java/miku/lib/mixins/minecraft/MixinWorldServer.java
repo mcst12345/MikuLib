@@ -6,6 +6,7 @@ import miku.lib.common.api.iPlayerChunkMap;
 import miku.lib.common.api.iWorldServer;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
+import miku.lib.common.thread.TNTThreads;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.Block;
@@ -16,7 +17,10 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.passive.EntitySkeletonHorse;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.util.IProgressUpdate;
@@ -32,6 +36,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldInfo;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -585,5 +590,31 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
         }
         this.profiler.endSection();
         this.sendQueuedBlockEvents();
+    }
+
+    /**
+     * @author mcst12345
+     * @reason FUCK
+     */
+    @NotNull
+    @Overwrite
+    public Explosion newExplosion(@Nullable Entity entityIn, double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain) {
+        Explosion explosion = new Explosion(this, entityIn, x, y, z, strength, causesFire, damagesTerrain);
+        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this, explosion)) return explosion;
+        TNTThreads.AddExplosion(explosion);
+        //explosion.doExplosionA();
+        //explosion.doExplosionB(false);
+
+        if (!damagesTerrain) {
+            explosion.clearAffectedBlockPositions();
+        }
+
+        for (EntityPlayer entityplayer : this.playerEntities) {
+            if (entityplayer.getDistanceSq(x, y, z) < 4096.0D) {
+                ((EntityPlayerMP) entityplayer).connection.sendPacket(new SPacketExplosion(x, y, z, strength, explosion.getAffectedBlockPositions(), explosion.getPlayerKnockbackMap().get(entityplayer)));
+            }
+        }
+
+        return explosion;
     }
 }

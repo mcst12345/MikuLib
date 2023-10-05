@@ -244,8 +244,6 @@ public abstract class MixinWorld implements iWorld, Serializable {
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart((World) (Object) this, explosion))
             return explosion;
         TNTThreads.AddExplosion(explosion);
-        //explosion.doExplosionA();
-        //explosion.doExplosionB(true);
         return explosion;
     }
 
