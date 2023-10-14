@@ -204,13 +204,15 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
     @Overwrite
     public void addEntityToWorld(int entityID, Entity entityToSpawn) {
         if (EntityUtil.isDEAD(entityToSpawn)) {
-            if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity " + entityToSpawn.getClass());
+            if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("entity_info", "LOG_CONFIG"))
+                System.out.println("MikuInfo:Ignoring entity " + entityToSpawn.getClass());
             return;
         }
 
         Entity entity = this.getEntityByID(entityID);
 
-        if (Sqlite.DEBUG()) System.out.println("MikuInfo:Adding entity " + entityToSpawn.getClass() + " to world.");
+        if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("entity_info", "LOG_CONFIG"))
+            System.out.println("MikuInfo:Adding entity " + entityToSpawn.getClass() + " to world.");
 
         if (entity != null) {
             this.removeEntity(entity);

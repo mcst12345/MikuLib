@@ -1,8 +1,6 @@
 package miku.lib.common.thread;
 
-import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.world.Explosion;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +13,7 @@ public class ServerTNTThreads extends Thread {
     private static final ServerTNTThreads INSTANCE4 = new ServerTNTThreads(3);
 
     private ServerTNTThreads(int id) {
-        this.setName("TNT-Thread-" + id);
+        this.setName("Server-TNT-Thread-" + id);
     }
 
     private final List<Explosion> lists = new ArrayList<>();
@@ -54,17 +52,15 @@ public class ServerTNTThreads extends Thread {
     }
 
     @Override
-    public synchronized void run() {
+    public void run() {
         System.out.println("TNTThread is running.");
         while (true) {
-            if (FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning() && !TimeStopUtil.isTimeStop() && !TimeStopUtil.isSaving()) {
-                if (!lists.isEmpty()) {
-                    for (Explosion explosion : lists) {
-                        explosion.doExplosionA();
-                        explosion.doExplosionB(false);
-                    }
-                    lists.clear();
+            if (!lists.isEmpty()) {
+                for (Explosion explosion : lists) {
+                    explosion.doExplosionA();
+                    explosion.doExplosionB(false);
                 }
+                lists.clear();
             }
         }
     }
