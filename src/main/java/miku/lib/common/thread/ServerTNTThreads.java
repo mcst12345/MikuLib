@@ -58,15 +58,13 @@ public class ServerTNTThreads extends Thread {
         System.out.println("TNTThread is running.");
         while (true) {
             if (FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning() && !TimeStopUtil.isTimeStop() && !TimeStopUtil.isSaving()) {
-                if (lists.isEmpty()) {
-                    return;
+                if (!lists.isEmpty()) {
+                    for (Explosion explosion : lists) {
+                        explosion.doExplosionA();
+                        explosion.doExplosionB(false);
+                    }
+                    lists.clear();
                 }
-                for (Explosion explosion : lists) {
-                    explosion.doExplosionA();
-                    explosion.doExplosionB(false);
-                }
-                lists.clear();
-                System.out.println("Completed a list of explosions.");
             }
         }
     }
