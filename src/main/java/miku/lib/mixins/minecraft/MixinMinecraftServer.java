@@ -106,21 +106,8 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
                 if (!TimeStopUtil.isTimeStop())
                     net.minecraftforge.fml.common.FMLCommonHandler.instance().onPreWorldTick(worldserver);
 
-                try {
-                    worldserver.tick();
-                } catch (Throwable throwable1) {
-                    CrashReport crashreport = CrashReport.makeCrashReport(throwable1, "Exception ticking world");
-                    worldserver.addWorldInfoToCrashReport(crashreport);
-                    throw new ReportedException(crashreport);
-                }
-
-                try {
-                    worldserver.updateEntities();
-                } catch (Throwable throwable) {
-                    CrashReport crashreport1 = CrashReport.makeCrashReport(throwable, "Exception ticking world entities");
-                    worldserver.addWorldInfoToCrashReport(crashreport1);
-                    throw new ReportedException(crashreport1);
-                }
+                worldserver.tick();
+                worldserver.updateEntities();
 
                 if (!TimeStopUtil.isTimeStop())
                     net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostWorldTick(worldserver);

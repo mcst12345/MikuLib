@@ -1,25 +1,28 @@
 package miku.lib.common.thread;
 
-import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.world.Explosion;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TNTThreads extends Thread {
     private static short tmp = 0;
-    public static TNTThreads INSTANCE1 = new TNTThreads(0);
-    public static TNTThreads INSTANCE2 = new TNTThreads(1);
-    public static TNTThreads INSTANCE3 = new TNTThreads(2);
-    public static TNTThreads INSTANCE4 = new TNTThreads(3);
+    private static final TNTThreads INSTANCE1 = new TNTThreads(0);
+    private static final TNTThreads INSTANCE2 = new TNTThreads(1);
+    private static final TNTThreads INSTANCE3 = new TNTThreads(2);
+    private static final TNTThreads INSTANCE4 = new TNTThreads(3);
+    private boolean running;
 
     private TNTThreads(int id) {
         this.setName("TNT-Thread-" + id);
-        this.setPriority(4);
     }
 
-    private final ObjectLinkedOpenHashSet<Explosion> lists = new ObjectLinkedOpenHashSet<>();
+    private final List<Explosion> lists = new ArrayList<>();
 
     public static synchronized void AddExplosion(Explosion explosion) {
+        System.out.println("This is a test message! current:" + tmp);
         switch (tmp) {
             case 0:
                 INSTANCE1.lists.add(explosion);
@@ -34,10 +37,9 @@ public class TNTThreads extends Thread {
                 INSTANCE4.lists.add(explosion);
                 break;
             default:
-                System.out.println(tmp);
-                throw new RuntimeException("The fuck?");
+                INSTANCE1.lists.add(explosion);
+                tmp = 1;
         }
-        tmp = ((tmp >= 3) ? 0 : ++tmp);
     }
 
     @Override
@@ -48,6 +50,7 @@ public class TNTThreads extends Thread {
                 if (lists.isEmpty()) {
                     return;
                 }
+                running = true;
                 for (Explosion explosion : lists) {
                     boolean flag = explosion.world.isRemote;
                     if (!flag) {
@@ -57,6 +60,7 @@ public class TNTThreads extends Thread {
                 }
                 lists.clear();
                 System.out.println("Completed a list of explosions.");
+                running = false;
             }
         }
     }
@@ -67,5 +71,9 @@ public class TNTThreads extends Thread {
         INSTANCE2.start();
         INSTANCE3.start();
         INSTANCE4.start();
+    }
+
+    public static boolean isRunning() {
+        return INSTANCE1.running || INSTANCE2.running || INSTANCE3.running || INSTANCE4.running;
     }
 }

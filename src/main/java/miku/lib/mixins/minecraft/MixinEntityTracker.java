@@ -3,8 +3,6 @@ package miku.lib.mixins.minecraft;
 import com.google.common.collect.Lists;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.*;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
@@ -12,10 +10,10 @@ import net.minecraft.entity.item.*;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.IAnimals;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.util.IntHashMap;
-import net.minecraft.util.ReportedException;
 import net.minecraft.world.WorldServer;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -23,6 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -68,26 +67,8 @@ public class MixinEntityTracker {
             this.trackedEntityHashTable.addKey(entityIn.getEntityId(), entitytrackerentry);
             entitytrackerentry.updatePlayerEntities(this.world.playerEntities);
         } catch (Throwable throwable) {
-            CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Adding entity to track");
-            CrashReportCategory crashreportcategory = crashreport.makeCategory("Entity To Track");
-            crashreportcategory.addCrashSection("Tracking range", trackingRange + " blocks");
-            crashreportcategory.addDetail("Update interval", () -> {
-                String s = "Once per " + updateFrequency + " ticks";
-
-                if (updateFrequency == Integer.MAX_VALUE) {
-                    s = "Maximum (" + s + ")";
-                }
-
-                return s;
-            });
-            entityIn.addEntityCrashInfo(crashreportcategory);
-            this.trackedEntityHashTable.lookup(entityIn.getEntityId()).getTrackedEntity().addEntityCrashInfo(crashreport.makeCategory("Entity That Is Already Tracked"));
-
-            try {
-                throw new ReportedException(crashreport);
-            } catch (ReportedException reportedexception) {
-                LOGGER.error("\"Silently\" catching entity tracking error.", reportedexception);
-            }
+            System.out.println("MikuWarn:Catch exception when tracking entity:" + entityIn);
+            throwable.printStackTrace();
         }
     }
 
@@ -192,8 +173,10 @@ public class MixinEntityTracker {
         if (EntityUtil.isKilling()) return;
         List<EntityPlayerMP> list = Lists.newArrayList();
 
+        final List<EntityPlayer> playerEntities = new ArrayList<>(this.world.playerEntities);
+
         for (EntityTrackerEntry entitytrackerentry : this.entries) {
-            entitytrackerentry.updatePlayerList(this.world.playerEntities);
+            entitytrackerentry.updatePlayerList(playerEntities);
 
             if (entitytrackerentry.playerEntitiesUpdated) {
                 Entity entity = entitytrackerentry.getTrackedEntity();
@@ -203,6 +186,7 @@ public class MixinEntityTracker {
                 }
             }
         }
+
 
         for (EntityPlayerMP entityplayermp : list) {
             for (EntityTrackerEntry entitytrackerentry1 : this.entries) {

@@ -107,6 +107,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         if (restart) {
             try {
                 StringBuilder LAUNCH = new StringBuilder();
+                String args = System.getProperty("sun.java.command");
                 for (String s : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
                     if (s.contains("=")) {
                         if (!win) LAUNCH.append('"');
