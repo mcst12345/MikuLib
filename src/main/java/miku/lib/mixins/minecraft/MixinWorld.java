@@ -11,7 +11,7 @@ import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
 import miku.lib.common.sqlite.Sqlite;
-import miku.lib.common.thread.TNTThreads;
+import miku.lib.common.thread.ClientTNTThreads;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
@@ -243,7 +243,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         Explosion explosion = new Explosion((World) (Object) this, entityIn, x, y, z, strength, causesFire, damagesTerrain);
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart((World) (Object) this, explosion))
             return explosion;
-        TNTThreads.AddExplosion(explosion);
+        ClientTNTThreads.AddExplosion(explosion);
         return explosion;
     }
 

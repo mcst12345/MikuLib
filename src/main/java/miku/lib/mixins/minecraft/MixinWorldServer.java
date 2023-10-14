@@ -6,7 +6,7 @@ import miku.lib.common.api.iPlayerChunkMap;
 import miku.lib.common.api.iWorldServer;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
-import miku.lib.common.thread.TNTThreads;
+import miku.lib.common.thread.ServerTNTThreads;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.Block;
@@ -601,7 +601,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
     public Explosion newExplosion(@Nullable Entity entityIn, double x, double y, double z, float strength, boolean causesFire, boolean damagesTerrain) {
         Explosion explosion = new Explosion(this, entityIn, x, y, z, strength, causesFire, damagesTerrain);
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(this, explosion)) return explosion;
-        TNTThreads.AddExplosion(explosion);
+        ServerTNTThreads.AddExplosion(explosion);
         //explosion.doExplosionA();
         //explosion.doExplosionB(false);
 
