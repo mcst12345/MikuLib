@@ -22,4 +22,6 @@ public interface iWorld {
     void SetTimeStop();
 
     boolean isTimeStop();
+
+    boolean updatingEntities();
 }

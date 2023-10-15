@@ -7,6 +7,7 @@ import com.sun.tools.attach.VirtualMachine;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.*;
 import miku.lib.common.util.hack.LinuxHack;
 import miku.lib.common.util.hack.WindowsHack;
@@ -106,6 +107,8 @@ public class Launch {
 
 
     static {
+        Sqlite.CoreInit();
+
         try {
             newInstance = ConstructorAccessor.class.getDeclaredMethod("newInstance", Object[].class);
         } catch (NoSuchMethodException e) {
@@ -510,9 +513,6 @@ public class Launch {
             String launchTarget;
             if (MikuLibInstalled()) {
                 launchTarget = Client ? "miku.lib.client.minecraft.Main" : "net.minecraft.server.MinecraftServer";
-                Class<?> Sqlite = Class.forName("miku.lib.common.sqlite.Sqlite", false, classLoader);
-                Method init = Sqlite.getMethod("CoreInit");
-                init.invoke(null);
             } else {
                 assert primaryTweaker != null;
                 launchTarget = primaryTweaker.getLaunchTarget();

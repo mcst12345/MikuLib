@@ -99,7 +99,6 @@ public class EntityUtil {
             t.printStackTrace();
             result = result || Dead.contains(entity.getUniqueID()) || DEAD.contains(entity);
         }
-        if (result) System.out.println(entity.getName() + " is dead.");
         return result;
     }//can the entity be alive.
 
@@ -208,18 +207,18 @@ public class EntityUtil {
         Kill(list);
     }
 
-    public static void REMOVE(World world) {//REMOVE dead entities from world
+    public static void REMOVE(List<Entity> list) {//REMOVE dead entities from world
         try {
-            world.loadedEntityList.removeAll(Arrays.asList(NativeUtil.GetObjectsFromList("Dead")));
+            list.removeAll(Arrays.asList(NativeUtil.GetObjectsFromList("Dead")));
         } catch (Throwable t) {
             t.printStackTrace();
-            world.loadedEntityList.removeAll(DEAD);
+            list.removeAll(DEAD);
         }
         try {
-            world.loadedEntityList.removeIf(e -> e.getUniqueID() != null && NativeUtil.MikuListContains("DeadUUID", e.getUniqueID()));
+            list.removeIf(e -> e.getUniqueID() != null && NativeUtil.MikuListContains("DeadUUID", e.getUniqueID()));
         } catch (Throwable t) {
             t.printStackTrace();
-            world.loadedEntityList.removeIf(e -> e.getUniqueID() != null && Dead.contains(e.getUniqueID()));
+            list.removeIf(e -> e.getUniqueID() != null && Dead.contains(e.getUniqueID()));
         }
     }
 

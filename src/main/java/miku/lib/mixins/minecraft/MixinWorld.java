@@ -53,6 +53,13 @@ import java.util.stream.Stream;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld, Serializable {
+    private boolean updatingEntities;
+
+    @Override
+    public boolean updatingEntities() {
+        return updatingEntities;
+    }
+
     /**
      * @author mcst12345
      * @reason F.
@@ -594,13 +601,17 @@ public abstract class MixinWorld implements iWorld, Serializable {
     public void updateEntities() {
         boolean stop = TimeStopUtil.isTimeStop();
         if (loadedEntityList.getClass() != ArrayList.class) {
-            loadedEntityList = new ArrayList<>();
+            loadedEntityList = new ArrayList<>(loadedEntityList);
         }
         for (Entity e : protected_entities) {
             if (loadedEntityList.contains(e)) continue;
             loadedEntityList.add(e);
         }
-        EntityUtil.REMOVE((World) (Object) this);
+
+        final List<Entity> copy = new ArrayList<>(loadedEntityList);
+
+        EntityUtil.REMOVE(copy);
+
         if (EntityUtil.isKilling()) return;
 
         if (!stop) {
@@ -613,7 +624,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
 
         if (MikuLib.isLAIN()) {
-            loadedEntityList.removeIf(e -> e instanceof EntityMob);
+            copy.removeIf(e -> e instanceof EntityMob);
         }
 
         this.profiler.startSection("entities");
@@ -639,7 +650,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
 
         this.profiler.endStartSection("remove");
-        if (!stop) this.loadedEntityList.removeAll(this.unloadedEntityList);
+        if (!stop) copy.removeAll(this.unloadedEntityList);
 
         if (!stop) for (Entity entity1 : this.unloadedEntityList) {
             int j = entity1.chunkCoordX;
@@ -658,14 +669,14 @@ public abstract class MixinWorld implements iWorld, Serializable {
         this.tickPlayers();
         this.profiler.endStartSection("regular");
 
-        for(MikuEffect effect : effects){
-            if(effect.shouldRemove())effects.remove(effect);
-            if(effect.shouldPerform())effect.perform();
+        for (MikuEffect effect : effects) {
+            if (effect.shouldRemove()) effects.remove(effect);
+            if (effect.shouldPerform()) effect.perform();
         }
 
-        for (int i1 = 0; i1 < this.loadedEntityList.size(); ++i1)
-        {
-            Entity entity2 = this.loadedEntityList.get(i1);
+        updatingEntities = true;
+        for (int i1 = 0; i1 < copy.size(); ++i1) {
+            Entity entity2 = copy.get(i1);
             if (entity2.dimension == -114514) continue;
             if (EntityUtil.isProtected(entity2)) {
                 protected_entities.add(entity2);
@@ -716,12 +727,13 @@ public abstract class MixinWorld implements iWorld, Serializable {
                     this.getChunk(l1, i2).removeEntity(entity2);
                 }
 
-                this.loadedEntityList.remove(entity2);
+                copy.remove(entity2);
                 this.onEntityRemoved(entity2);
             }
 
             this.profiler.endSection();
         }
+        updatingEntities = false;
 
         if (!stop && !MikuInsaneMode.isMikuInsaneMode()) {
             this.profiler.endStartSection("blockEntities");
@@ -810,7 +822,9 @@ public abstract class MixinWorld implements iWorld, Serializable {
             this.profiler.endSection();
         }
         this.profiler.endSection();
-        EntityUtil.REMOVE((World)(Object)this);
+
+        EntityUtil.REMOVE(copy);
+        loadedEntityList = copy;
     }
 
     /**

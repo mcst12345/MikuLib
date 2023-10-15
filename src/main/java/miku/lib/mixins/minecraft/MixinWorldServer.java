@@ -314,7 +314,8 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
             int i = this.pendingTickListEntriesTreeSet.size();
 
             if (i != this.pendingTickListEntriesHashSet.size()) {
-                throw new IllegalStateException("TickNextTick list out of synch");
+                System.out.println("MikuWarn:TickNextTick list out of synch");
+                return false;
             } else {
                 if (i > 65536) {
                     i = 65536;

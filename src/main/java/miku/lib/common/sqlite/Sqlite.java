@@ -63,6 +63,7 @@ public class Sqlite {
                 CreateConfigValue("rain", "RENDER_CONFIG", "true");
                 CreateConfigValue("fast", "RENDER_CONFIG", "false");
                 CreateConfigValue("particle", "RENDER_CONFIG", "true");
+                CreateConfigValue("PERFORMANCE", "PERFORMANCE", "false");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS", "ID", SqliteCaches.HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS", "ID", SqliteCaches.BANNED_MODS);

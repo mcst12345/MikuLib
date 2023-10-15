@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -149,10 +150,13 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
 
         if (TimeStopUtil.isTimeStop() || ((iMinecraft) Minecraft.getMinecraft()).isTimeStop()) return;
 
+        if (MikuLib.isLAIN()) {
+            loadedEntityList.removeIf(e -> e instanceof EntityMob);
+        }
+
         this.setTotalWorldTime(this.getTotalWorldTime() + 1L);
 
-        if (this.getGameRules().getBoolean("doDaylightCycle"))
-        {
+        if (this.getGameRules().getBoolean("doDaylightCycle")) {
             this.setWorldTime(this.getWorldTime() + 1L);
         }
 
