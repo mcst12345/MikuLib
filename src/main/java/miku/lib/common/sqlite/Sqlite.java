@@ -44,7 +44,8 @@ public class Sqlite {
                 CreateTable("BANNED_MOBS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_ITEMS","ID TEXT PRIMARY KEY    NOT NULL");
                 CreateTable("BANNED_CLASS","ID TEXT PRIMARY KEY    NOT NULL");
-                CreateTable("LOG_CONFIG","NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
+                CreateTable("LOG_CONFIG", "NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
+                CreateTable("PERFORMANCE", "NAME TEXT PRIMARY KEY     NOT NULL,VALUE TEXT");
                 System.out.println("Init database.");
                 CreateConfigValue("auto_range_kill", "CONFIG", "true");
                 CreateConfigValue("debug", "CONFIG", "false");
