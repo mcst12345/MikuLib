@@ -69,7 +69,6 @@ public class MikuLib {
 
     public MikuLib() {
         boolean flag = MikuCore.isLaunchFucked();
-        System.out.println("LaunchWrapperFucked:" + flag);
         if (!flag) {
             MikuCore.FuckLaunchWrapper();
             if (win) {

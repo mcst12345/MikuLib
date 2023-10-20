@@ -14,6 +14,7 @@ import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.thread.ClientTNTThreads;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
+import miku.lib.common.util.Misc;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -39,7 +40,6 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -480,7 +480,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
     @Overwrite
     public boolean spawnEntity(Entity entityIn) {
         if (entityIn == null) return false;
-        if (!FMLCommonHandler.instance().getMinecraftServerInstance().isCallingFromMinecraftThread()) {
+        if (!Misc.checkThread()) {
             toSpawn.add(entityIn);
             return true;
         }
@@ -609,17 +609,17 @@ public abstract class MixinWorld implements iWorld, Serializable {
         if (EntityUtil.isKilling()) return;
 
         if (!stop) {
-            Iterator<Entity> iterator = toSpawnAfterTimeStopEnds.iterator();
-            while (iterator.hasNext()) {
-                Entity entity = iterator.next();
+            Iterator<Entity> i1 = toSpawnAfterTimeStopEnds.iterator();
+            while (i1.hasNext()) {
+                Entity entity = i1.next();
                 boolean result = spawnEntity(entity);
-                if (result) iterator.remove();
+                if (result) i1.remove();
             }
-            iterator = toSpawn.iterator();
-            while (iterator.hasNext()) {
-                Entity entity = iterator.next();
+            Iterator<Entity> i2 = toSpawn.iterator();
+            while (i2.hasNext()) {
+                Entity entity = i2.next();
                 boolean result = spawnEntity(entity);
-                if (result) iterator.remove();
+                if (result) i2.remove();
             }
         }
 

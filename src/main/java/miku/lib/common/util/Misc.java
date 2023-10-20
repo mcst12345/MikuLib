@@ -1,8 +1,11 @@
 package miku.lib.common.util;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 
@@ -22,15 +25,6 @@ public class Misc {
     public static void print(String s) {
         if (s.contains(":null")) return;
         System.out.println(s);
-    }
-
-    public static boolean Client() {
-        try {
-            Class<?> clazz = Class.forName("net.minecraft.client.Minecraft", false, Launch.classLoader);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 
     public static void returnMixin() {
@@ -101,5 +95,18 @@ public class Misc {
             // Swallow and continue
         }
         return result;
+    }
+
+    public static boolean checkThread() {
+        if (Launch.Client) {
+            if (Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
+                return true;
+            }
+        }
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        if (server != null) {
+            return server.isCallingFromMinecraftThread();
+        }
+        return false;
     }
 }
