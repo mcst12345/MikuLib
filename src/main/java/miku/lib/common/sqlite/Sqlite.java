@@ -2,7 +2,6 @@ package miku.lib.common.sqlite;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
@@ -78,7 +77,6 @@ public class Sqlite {
             throw new RuntimeException(e);
         }
         loaded = true;
-        Launch.sqliteLoaded = true;
     }
 
     public static void GetStringsFromTable(String TABLE, String KEY, ArrayList list){
@@ -118,6 +116,9 @@ public class Sqlite {
      */
     @Nullable
     public static Object GetValueFromTable(String NAME, String TABLE, int TYPE) {
+        if (!loaded) {
+            return true;
+        }
         if (SqliteCaches.Configs.get(NAME) != null) return SqliteCaches.Configs.get(NAME);
         try {
             ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE + ";");

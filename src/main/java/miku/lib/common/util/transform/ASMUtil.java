@@ -2,9 +2,9 @@ package miku.lib.common.util.transform;
 
 import miku.lib.common.core.InvokeDecompiler;
 import miku.lib.common.core.MikuTransformer;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.JarFucker;
 import miku.lib.common.util.Misc;
-import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -12,10 +12,8 @@ import org.objectweb.asm.tree.*;
 import org.objectweb.asm.tree.analysis.AnalyzerException;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import static miku.lib.common.core.MikuTransformer.DEBUG;
 
 public class ASMUtil {
 
@@ -49,7 +47,7 @@ public class ASMUtil {
             List<String> codes = InvokeDecompiler.diagnose(className, method);
             int number = 0;
             for (String s : codes) {
-                if (Launch.sqliteLoaded) if (DEBUG) {
+                if (Sqlite.DEBUG()) {
                     System.out.println(s);
                 }
                 if (VeryBadInvoke(s)) {
@@ -93,25 +91,25 @@ public class ASMUtil {
                 (s.contains("clear") && s.contains("inventory")) || (s.contains("remove") && s.contains("entity")) || s.length() < 3 || result;//delete obfuscated methods.
 
 
-        if (Launch.sqliteLoaded) if (DEBUG) {
+        if (Sqlite.DEBUG()) {
             Misc.print("Method name:" + method.name);
         }
 
         if (method.parameters != null) for (ParameterNode parameter : method.parameters) {
-            if (Launch.sqliteLoaded) if (DEBUG) {
+            if (Sqlite.DEBUG()) {
                 Misc.print("parameter name:" + parameter.name);
             }
         }
         if (method.visibleTypeAnnotations != null)
             for (TypeAnnotationNode typeAnnotation : method.visibleTypeAnnotations) {
-                if (Launch.sqliteLoaded) if (DEBUG) {
+                if (Sqlite.DEBUG()) {
                     Misc.print("typeAnnotation desc:" + typeAnnotation.desc);
                     Misc.print("typeAnnotation typePath:" + typeAnnotation.typePath.toString());
                 }
             }
         if (method.invisibleTypeAnnotations != null)
             for (TypeAnnotationNode invisibleTypeAnnotation : method.invisibleTypeAnnotations) {
-                if (Launch.sqliteLoaded) if (DEBUG) {
+                if (Sqlite.DEBUG()) {
                     Misc.print("invisibleTypeAnnotation desc:" + invisibleTypeAnnotation.desc);
                     Misc.print("invisibleTypeAnnotation typePath:" + invisibleTypeAnnotation.typePath.toString());
                 }
@@ -119,7 +117,7 @@ public class ASMUtil {
 
         if (method.attrs != null) {
             for (Attribute attr : method.attrs) {
-                if (Launch.sqliteLoaded) if (DEBUG) {
+                if (Sqlite.DEBUG()) {
                     Misc.print("attr type:" + attr.type);
                 }
             }
@@ -127,7 +125,7 @@ public class ASMUtil {
 
         if (method.localVariables != null) {
             for (LocalVariableNode localVariable : method.localVariables) {
-                if (Launch.sqliteLoaded) if (DEBUG) {
+                if (Sqlite.DEBUG()) {
 
                     Misc.print("localVariable name:" + localVariable.name);
                     if (localVariable.signature != null)
@@ -158,16 +156,10 @@ public class ASMUtil {
 
         if (field.signature != null) {
             String s = field.signature.toLowerCase();
-            if (Launch.sqliteLoaded) {
-                try {
-                    if (DEBUG && (boolean) MikuTransformer.GetValue.invoke(null, "field_info", "LOG_CONFIG", 0)) {
-                        Misc.print("name:" + field.name);
-                        Misc.print("sign:" + field.signature);
-                        Misc.print("desc:" + field.desc);
-                    }
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
+            if (Sqlite.DEBUG() && Sqlite.GetBooleanFromTable("field_info", "LOG_CONFIG")) {
+                Misc.print("name:" + field.name);
+                Misc.print("sign:" + field.signature);
+                Misc.print("desc:" + field.desc);
             }
             result = (s.matches("(.*)/set(.*)entity(.*)") || s.matches("(.*)/list(.*)entity(.*)")) && !s.matches("(.*)net/minecraft/(.*)");
         }

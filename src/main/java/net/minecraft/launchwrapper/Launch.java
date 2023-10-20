@@ -60,7 +60,6 @@ public class Launch {
     public static Map<String, Object> blackboard;
     public static LaunchClassLoader classLoader;
     public static Field Transformers;
-    public static boolean sqliteLoaded;
     public static Class<?> NativeLib;
     public static Field NativeLibName;
     protected static final EmptyFieldAccessor EMPTY_FIELD_ACCESSOR = new EmptyFieldAccessor();
