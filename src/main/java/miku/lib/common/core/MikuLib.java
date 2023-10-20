@@ -4,6 +4,10 @@ import miku.lib.common.core.proxy.CommonProxy;
 import miku.lib.common.util.MikuEventBus;
 import miku.lib.common.util.Misc;
 import miku.lib.common.util.Platform;
+import miku.lib.network.NetworkHandler;
+import miku.lib.network.packets.LainPacket;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -35,6 +39,10 @@ public class MikuLib {
 
     public static void setLAIN() {
         MikuLib.LAIN = true;
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        if (server != null) {
+            NetworkHandler.INSTANCE.sendMessageToAllPlayer(new LainPacket(), server);
+        }
     }
 
     private static boolean LAIN;

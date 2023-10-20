@@ -37,9 +37,9 @@ import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -49,10 +49,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld, Serializable {
+    private final List<Entity> toSpawn = new ArrayList<>();
     private boolean updatingEntities;
 
     @Override
@@ -254,7 +254,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         return explosion;
     }
 
-    private static final List<Entity> toSpawn = new ArrayList<>();
+    private static final List<Entity> toSpawnAfterTimeStopEnds = new ArrayList<>();
     private boolean timeStop = false;
 
     public void SetTimeStop() {
@@ -393,11 +393,6 @@ public abstract class MixinWorld implements iWorld, Serializable {
     @Shadow
     protected abstract boolean getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_, @Nullable List<AxisAlignedBB> outList);
 
-    @Shadow
-    protected MapStorage mapStorage;
-
-    @Shadow
-    protected MapStorage perWorldStorage;
 
     @Shadow
     public abstract IBlockState getBlockState(BlockPos pos);
@@ -478,7 +473,6 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
     }
 
-
     /**
      * @author mcst12345
      * @reason Fuck!
@@ -486,13 +480,17 @@ public abstract class MixinWorld implements iWorld, Serializable {
     @Overwrite
     public boolean spawnEntity(Entity entityIn) {
         if (entityIn == null) return false;
+        if (!FMLCommonHandler.instance().getMinecraftServerInstance().isCallingFromMinecraftThread()) {
+            toSpawn.add(entityIn);
+            return true;
+        }
         if ((Sqlite.IS_MOB_BANNED(entityIn) || EntityUtil.isDEAD(entityIn))) {
             if (Sqlite.DEBUG()) System.out.println("MikuInfo:Ignoring entity:" + entityIn.getClass());
             return false;
         }
         if ((TimeStopUtil.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
             if (!EntityUtil.isGoodEntity(entityIn)) {
-                toSpawn.add(entityIn);
+                toSpawnAfterTimeStopEnds.add(entityIn);
                 return true;
             }
         }
@@ -502,8 +500,6 @@ public abstract class MixinWorld implements iWorld, Serializable {
             Throwable t = new Throwable();
             t.fillInStackTrace();
             t.printStackTrace();
-            System.out.println("\n");
-            Stream.of(Thread.currentThread().getStackTrace()).forEach(System.out::println);
         }
         // Do not drop any items while restoring blocksnapshots. Prevents dupes
         if (!this.isRemote && (entityIn instanceof net.minecraft.entity.item.EntityItem && this.restoringBlockSnapshots))
@@ -551,7 +547,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
         if ((TimeStopUtil.isTimeStop()) && !EntityUtil.isProtected(entityIn)) {
             if (!EntityUtil.isGoodEntity(entityIn)) {
-                toSpawn.add(entityIn);
+                toSpawnAfterTimeStopEnds.add(entityIn);
                 return;
             }
         }
@@ -608,14 +604,18 @@ public abstract class MixinWorld implements iWorld, Serializable {
             loadedEntityList.add(e);
         }
 
-        final List<Entity> copy = new ArrayList<>(loadedEntityList);
-
-        EntityUtil.REMOVE(copy);
+        EntityUtil.REMOVE(loadedEntityList);
 
         if (EntityUtil.isKilling()) return;
 
         if (!stop) {
-            Iterator<Entity> iterator = toSpawn.iterator();
+            Iterator<Entity> iterator = toSpawnAfterTimeStopEnds.iterator();
+            while (iterator.hasNext()) {
+                Entity entity = iterator.next();
+                boolean result = spawnEntity(entity);
+                if (result) iterator.remove();
+            }
+            iterator = toSpawn.iterator();
             while (iterator.hasNext()) {
                 Entity entity = iterator.next();
                 boolean result = spawnEntity(entity);
@@ -624,7 +624,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
 
         if (MikuLib.isLAIN()) {
-            copy.removeIf(e -> e instanceof EntityMob);
+            loadedEntityList.removeIf(e -> e instanceof EntityMob);
         }
 
         this.profiler.startSection("entities");
@@ -650,7 +650,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
 
         this.profiler.endStartSection("remove");
-        if (!stop) copy.removeAll(this.unloadedEntityList);
+        if (!stop) loadedEntityList.removeAll(this.unloadedEntityList);
 
         if (!stop) for (Entity entity1 : this.unloadedEntityList) {
             int j = entity1.chunkCoordX;
@@ -675,8 +675,8 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
 
         updatingEntities = true;
-        for (int i1 = 0; i1 < copy.size(); ++i1) {
-            Entity entity2 = copy.get(i1);
+        for (int i1 = 0; i1 < loadedEntityList.size(); ++i1) {
+            Entity entity2 = loadedEntityList.get(i1);
             if (entity2.dimension == -114514) continue;
             if (EntityUtil.isProtected(entity2)) {
                 protected_entities.add(entity2);
@@ -684,8 +684,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
             if (stop && !EntityUtil.isProtected(entity2)) continue;
             Entity entity3 = entity2.getRidingEntity();
 
-            if (entity3 != null)
-            {
+            if (entity3 != null) {
                 if (!entity3.isDead && entity3.isPassenger(entity2))
                 {
                     continue;
@@ -727,7 +726,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
                     this.getChunk(l1, i2).removeEntity(entity2);
                 }
 
-                copy.remove(entity2);
+                loadedEntityList.remove(entity2);
                 this.onEntityRemoved(entity2);
             }
 
@@ -823,8 +822,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
         }
         this.profiler.endSection();
 
-        EntityUtil.REMOVE(copy);
-        loadedEntityList = copy;
+        EntityUtil.REMOVE(loadedEntityList);
     }
 
     /**

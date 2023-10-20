@@ -11,12 +11,12 @@ public class ServerTNTThreads extends Thread {
 
     private ServerTNTThreads() {
         this.setName("Server-TNT-Thread");
+        this.setPriority(3);
     }
 
     private final List<Explosion> lists = new ArrayList<>();
 
     public static void AddExplosion(Explosion explosion) {
-        System.out.println("This is a test message!");
         synchronized (INSTANCE.lists) {
             INSTANCE.lists.add(explosion);
         }
@@ -27,7 +27,6 @@ public class ServerTNTThreads extends Thread {
         while (true) {
             synchronized (lists) {
                 if (!lists.isEmpty()) {
-                    System.out.println("explode!");
                     List<Explosion> unloads = new ArrayList<>();
                     for (Explosion explosion : lists) {
                         if (!((iWorld) explosion.world).updatingEntities()) {

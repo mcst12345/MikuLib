@@ -12,6 +12,7 @@ public class ClientTNTThreads extends Thread {
 
     private ClientTNTThreads() {
         this.setName("Client-TNT-Thread");
+        this.setPriority(3);
     }
 
     private final List<Explosion> lists = new ArrayList<>();
@@ -20,7 +21,6 @@ public class ClientTNTThreads extends Thread {
         if (!Launch.Client) {
             return;
         }
-        System.out.println("This is a test message!");
         synchronized (INSTANCE.lists) {
             INSTANCE.lists.add(explosion);
         }
@@ -34,13 +34,12 @@ public class ClientTNTThreads extends Thread {
         while (true) {
             synchronized (lists) {
                 if (!lists.isEmpty()) {
-                    System.out.println("explode!");
                     List<Explosion> unloads = new ArrayList<>();
                     for (Explosion explosion : lists) {
                         if (!((iWorld) explosion.world).updatingEntities()) {
                             continue;
                         }
-                        explosion.doExplosionA();
+                        //explosion.doExplosionA();
                         explosion.doExplosionB(true);
                         unloads.add(explosion);
                     }
