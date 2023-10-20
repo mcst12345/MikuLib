@@ -63,6 +63,8 @@ public class MikuCore implements IFMLLoadingPlugin {
                 throw new RuntimeException(e);
             }
         }
+
+        Launch.classLoader.addClassLoaderExclusion("miku.lib.common.sqlite");
     }
 
     protected static boolean restart = false;
