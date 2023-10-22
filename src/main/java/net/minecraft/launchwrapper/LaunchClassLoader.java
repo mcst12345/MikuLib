@@ -80,6 +80,7 @@ public class LaunchClassLoader extends URLClassLoader {
         classLoaderExceptions.add("net.minecraftforge.fml.relauncher.");
         classLoaderExceptions.add("net.minecraftforge.fml.common.launcher");
         classLoaderExceptions.add("net.minecraft.launchwrapper");
+        classLoaderExceptions.add("miku.lib.common.sqlite");
 
         // transformer exclusions
         transformerExceptions.add("javax.");

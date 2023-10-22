@@ -22,6 +22,7 @@ import java.util.jar.JarOutputStream;
 public class MikuCore implements IFMLLoadingPlugin {
     public static final boolean Client = System.getProperty("minecraft.client.jar") != null;
     private static final String md5;
+    public static final boolean disableMD5Check = System.getProperty("DisableMD5Check") != null && System.getProperty("DisableMD5Check").equals("true");
 
     static {
 
@@ -63,8 +64,6 @@ public class MikuCore implements IFMLLoadingPlugin {
                 throw new RuntimeException(e);
             }
         }
-
-        Launch.classLoader.addClassLoaderExclusion("miku.lib.common.sqlite");
     }
 
     protected static boolean restart = false;
@@ -211,7 +210,8 @@ public class MikuCore implements IFMLLoadingPlugin {
 
     }
 
-    protected synchronized static boolean isLaunchFucked() {
+    static boolean isLaunchFucked() {
+        if (disableMD5Check) return true;
         try {
             File file1 = new File(System.getProperty("user.dir") + "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar");
             File file2 = new File(System.getProperty("user.dir") + "/libraries/launchwrapper-1.12.jar");
@@ -234,7 +234,7 @@ public class MikuCore implements IFMLLoadingPlugin {
         }
     }
 
-    public synchronized static void FuckLaunchWrapper() {
+    public static void FuckLaunchWrapper() {
         if (isLaunchFucked()) return;
         try {
             try {

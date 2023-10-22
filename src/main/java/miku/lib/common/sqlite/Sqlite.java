@@ -1,8 +1,9 @@
 package miku.lib.common.sqlite;
 
+import miku.lib.common.util.ClassUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.ModContainer;
 
 import javax.annotation.Nullable;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 //shitmountain.
 //TODO:Rewrite this shit.
@@ -19,16 +21,16 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public class Sqlite {
 
-    protected static boolean loaded = false;
+    private static boolean loaded = false;
+    private static Connection c;
+    private static Statement stmt;
+    private static Map<ArrayList<Class<?>>, ArrayList<String>> classes = new ConcurrentHashMap<>();
 
-    protected static Connection c;
-    protected static Statement stmt;
-
-    public static synchronized boolean isLoaded() {
+    public static boolean isLoaded() {
         return loaded;
     }
 
-    public static synchronized void CoreInit() {
+    public static void CoreInit() {
         if (loaded) return;
         try {
             c = DriverManager.getConnection("jdbc:sqlite:miku.db");
@@ -68,6 +70,8 @@ public class Sqlite {
                 GetStringsFromTable("HIDDEN_MODS", "ID", SqliteCaches.HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS", "ID", SqliteCaches.BANNED_MODS);
                 GetStringsFromTable("BANNED_CLASS", "ID", SqliteCaches.BANNED_CLASS);
+                GetClassFromTable("BANNED_MOBS", "ID", SqliteCaches.BANNED_MOBS);
+                GetClassFromTable("BANNED_ITEMS", "ID", SqliteCaches.BANNED_ITEMS);
 
             } catch (Exception e){
                 e.printStackTrace();
@@ -79,12 +83,12 @@ public class Sqlite {
         loaded = true;
     }
 
-    public static void GetStringsFromTable(String TABLE, String KEY, ArrayList list){
+    public static void GetStringsFromTable(String TABLE, String KEY, ArrayList<String> list) {
         try {
-            ResultSet rs = stmt.executeQuery("SELECT * FROM "+TABLE+";");
-            while(rs.next()){
+            ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE + ";");
+            while (rs.next()) {
                 list.add(rs.getString(KEY));
-                System.out.println("Add value:"+rs.getString(KEY));
+                System.out.println("Add value:" + rs.getString(KEY));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,21 +96,23 @@ public class Sqlite {
         }
     }
 
-    public static void GetClassFromTable(String TABLE,String KEY, ArrayList list) {
+    public static void GetClassFromTable(String TABLE, String KEY, ArrayList<Class<?>> list) {
         ResultSet rs;
-        String s = null;
+        String s;
         try {
             rs = stmt.executeQuery("SELECT * FROM " + TABLE + ";");
             while (rs.next()) {
                 s = rs.getString(KEY);
-                list.add(Class.forName(s));
-                System.out.println("Add class:" + rs.getString(KEY));
+                classes.computeIfAbsent(list, k -> new ArrayList<>());
+                classes.get(list).add(s);
+                //list.add(Launch.classLoader.findClass(s));
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            System.out.println("MikuInfo:Class not found:" + s);
+        } catch (NullPointerException e) {
+            System.out.println("The fuck?");
+            e.printStackTrace();
         }
     }
 
@@ -116,9 +122,6 @@ public class Sqlite {
      */
     @Nullable
     public static Object GetValueFromTable(String NAME, String TABLE, int TYPE) {
-        if (!loaded) {
-            return true;
-        }
         if (SqliteCaches.Configs.get(NAME) != null) return SqliteCaches.Configs.get(NAME);
         try {
             ResultSet rs = stmt.executeQuery("SELECT * FROM " + TABLE + ";");
@@ -217,9 +220,18 @@ public class Sqlite {
         return item != null && SqliteCaches.BANNED_ITEMS.contains(item.getClass());
     }
 
-    public static synchronized void Init() {
-        GetClassFromTable("BANNED_MOBS", "ID", SqliteCaches.BANNED_MOBS);
-        GetClassFromTable("BANNED_ITEMS", "ID", SqliteCaches.BANNED_ITEMS);
+    public static void Init() {
+        classes.forEach((k, v) -> {
+            for (String s : v) {
+                try {
+                    k.add(Launch.classLoader.findClass(s));
+                } catch (ClassNotFoundException e) {
+                    System.out.println("MikuInfo:ClassNotFound:" + s);
+                }
+            }
+        });
+
+        classes = null;
 
         if (DEBUG()) {
             for (Object o : SqliteCaches.BANNED_MOBS) {
@@ -231,24 +243,34 @@ public class Sqlite {
         }
 
         for (String s : SqliteCaches.BANNED_CLASS) {
-            if (isClassLoaded(s)) {
+            if (ClassUtil.isClassLoaded(s)) {
                 System.out.println("Class " + s + " is banned. Exiting.");
                 Runtime.getRuntime().halt(39);
                 System.exit(0);
             }
         }
 
-        Class<Loader> loader = (Class<Loader>) Loader.instance().getClass();
+
         try {
+            long tmp;
+            Object loader;
+            Class<?> loader_class = Launch.classLoader.findClass("net.minecraftforge.fml.common.Loader");
+            Field inst = loader_class.getDeclaredField("instance");
+            Object base = Launch.UNSAFE.staticFieldBase(inst);
+            tmp = Launch.UNSAFE.staticFieldOffset(inst);
+            loader = Launch.UNSAFE.getObjectVolatile(base, tmp);
             System.out.println("Init mod list.");
-            Field field = loader.getDeclaredField("namedMods");
-            field.setAccessible(true);
+            Field field = loader_class.getDeclaredField("namedMods");
+            tmp = Launch.UNSAFE.objectFieldOffset(field);
             System.out.println("Successfully set field 'namedMods' to accessible.");
-            Map<String, ModContainer> mods;// = (Map<String, ModContainer>)field.get(Loader.instance());
-            mods = (Map<String, ModContainer>) field.get(Loader.instance());
+            Map<String, ModContainer> mods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(loader, tmp);
+            if (mods == null) {
+                System.out.println("The fuck? namedMods == null ?");
+                return;
+            }
             System.out.println("Successfully get the object of namedMods.");
             Map<String, ModContainer> result = new HashMap<>();
-            mods.forEach((key,value) -> {
+            mods.forEach((key, value) -> {
                 if (!SqliteCaches.HIDDEN_MODS.contains(key)) {
                     result.put(key, value);
                 }
@@ -259,23 +281,13 @@ public class Sqlite {
                 }
             });
 
-            field.set(Loader.instance(),result);
+            Launch.UNSAFE.putObjectVolatile(loader, tmp, result);
             System.out.println("Successfully overwrite field 'nameMods'.");
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | ClassNotFoundException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
-
-    protected static boolean isClassLoaded(String clazz){
-        try {
-            Class.forName(clazz);
-            return true;
-        } catch (ClassNotFoundException e){
-            return false;
-        }
-    }
-
     @Nullable
     public static synchronized ResultSet ExecuteSQL(String s) throws SQLException {
         if (hasReturn(s)) {

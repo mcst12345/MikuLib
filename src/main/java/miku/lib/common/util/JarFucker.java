@@ -24,13 +24,13 @@ import static miku.lib.common.core.MikuTransformer.cached_methods;
 
 public class JarFucker {
     public static double num;
-    protected static boolean ShouldIgnore(String s) {
+    private static boolean ShouldIgnore(String s) {
         return (s.startsWith("META-INF/") && (s.endsWith(".RSA") || s.endsWith(".SF") || s.endsWith(".DSA"))) ||
                 s.endsWith(".exe") || s.endsWith(".dll") || s.endsWith(".so") || !s.contains(".") || s.endsWith("at.cfg") || s.endsWith(".bin") || s.endsWith(".zip") ||
                 s.endsWith(".7z") || s.endsWith(".rar") || s.endsWith(".xz") || s.endsWith(".tar") || s.endsWith(".gz") || s.equals(".jar");
     }
 
-    public synchronized static void FuckModJar(JarFile jar) {
+    public static void FuckModJar(JarFile jar) {
         if (ClassUtil.DisablejarFucker) {
             System.out.println("JarFucker is disabled. Continue.");
             return;
@@ -104,7 +104,7 @@ public class JarFucker {
         }
     }
 
-    public synchronized static void RemoveSignature(JarFile jar) {
+    public static void RemoveSignature(JarFile jar) {
         try {
             JarOutputStream jos = new JarOutputStream(Files.newOutputStream(Paths.get(jar.getName() + ".fucked")));
             for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements(); ) {
@@ -151,7 +151,7 @@ public class JarFucker {
         OverwriteFile(new File(jar.getName() + ".fucked"), new File(jar.getName()), true);
     }
 
-    public synchronized static void OverwriteFile(File source, File target, boolean backup) {
+    public static void OverwriteFile(File source, File target, boolean backup) {
         source.setReadable(true);
         source.setWritable(true);
         target.setReadable(true);
@@ -184,21 +184,21 @@ public class JarFucker {
         }
     }
 
-    protected static boolean BadMANIFEST(String s) {
+    private static boolean BadMANIFEST(String s) {
         return s.startsWith("FMLCorePlugin") || s.startsWith("FMLCorePluginContainsFMLMod") || s.startsWith("TweakClass") ||
                 s.startsWith("ForceLoadAsMod") || s.startsWith("SHA-256-Digest:") || s.startsWith("Premain-Class") ||
                 s.startsWith("Agent-Class:") || s.startsWith("Name:") || s.startsWith("Fingerprint");
     }
 
-    protected static boolean Remove(String s) {
+    private static boolean Remove(String s) {
         return s.startsWith("SHA") || s.startsWith("Name:") || s.contains("org.spongepowered.asm.launch.MixinTweaker") || s.startsWith("Fingerprint");
     }
 
-    protected static boolean isSignFile(String s) {
+    private static boolean isSignFile(String s) {
         return (s.startsWith("META-INF/") && s.endsWith(".RSA")) || (s.startsWith("META-INF/") && s.endsWith(".SF")) || (s.startsWith("META-INF/") && s.endsWith(".DSA"));
     }
 
-    protected static byte[] transform(String transformedName, ClassNode cn, ClassReader cr) {
+    private static byte[] transform(String transformedName, ClassNode cn, ClassReader cr) {
         System.out.println("Examine class:" + transformedName);
 
         cached_methods.clear();

@@ -1,4 +1,4 @@
-package miku.lib.common.thread;
+package miku.lib.client.thread;
 
 import miku.lib.common.api.iWorld;
 import net.minecraft.launchwrapper.Launch;
@@ -39,7 +39,7 @@ public class ClientTNTThreads extends Thread {
                         if (!((iWorld) explosion.world).updatingEntities()) {
                             continue;
                         }
-                        //explosion.doExplosionA();
+                        explosion.doExplosionA();
                         explosion.doExplosionB(true);
                         unloads.add(explosion);
                     }

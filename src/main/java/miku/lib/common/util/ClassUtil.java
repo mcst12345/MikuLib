@@ -15,8 +15,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 
-//Why did I use so many synchronized in this class???
-
 public class ClassUtil {
     private static final List<File> BadMods = new ArrayList<>();
     private static final Map<String, Boolean> GoodClassCache = new ConcurrentSkipListMap<>();
@@ -118,7 +116,7 @@ public class ClassUtil {
      * It will modify the mod file if the mod isn't in the whitelist.
      * It will try to remove signatures if the mod is in the whitelist.
      */
-    public synchronized static void ScanModJarFile(File file) throws IOException {
+    public static void ScanModJarFile(File file) throws IOException {
         if (file.getName().endsWith(".jar")) {
             String modid = null;
             boolean fucked = false;
@@ -247,7 +245,7 @@ public class ClassUtil {
      * Init.
      * Should only be called once,by the launchwrapper.
      */
-    public static synchronized boolean Init() throws IOException {
+    public static boolean Init() throws IOException {
 
         if (LOADED) return false;
         if (System.getProperty("DisableJarFucker") != null) if (System.getProperty("DisableJarFucker").equals("true")) {
@@ -360,6 +358,9 @@ public class ClassUtil {
         GoodClassCache.put("net.minecraft.realms.RealmsVertexFormatElement", true);
         TransformerExclusions.add("net.minecraft.realms.Tezzelator");
         GoodClassCache.put("net.minecraft.realms.Tezzelator", true);
+        TransformerExclusions.add("net/minecraft/client/ClientBrandRetriever");
+        GoodClassCache.put("net/minecraft/client/ClientBrandRetriever", true);
+
 
         File libraires = new File("libraries");
         libraires.setWritable(true);
@@ -401,7 +402,7 @@ public class ClassUtil {
         return true;
     }
 
-    private synchronized static void CreateDirectory(File d) {
+    private static void CreateDirectory(File d) {
         if (!d.exists()) {
             if (d.mkdir()) return;
             System.out.println("The fuck?");
@@ -410,15 +411,15 @@ public class ClassUtil {
         }
     }
 
-    public synchronized static void ScanLibraries() throws IOException {
-        for (String path : System.getProperty("java.class.path").split(File.pathSeparator)){
-            if(path.endsWith("1.12.2.jar"))continue;
+    public static void ScanLibraries() throws IOException {
+        for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            if (path.endsWith("1.12.2.jar")) continue;
             File file = new File(path);
-            AddJarToTransformerExclusions(file,LibraryClasses,LibraryClassCache);
+            AddJarToTransformerExclusions(file, LibraryClasses, LibraryClassCache);
         }
     }
 
-    public synchronized static void ScanMods(File directory) throws IOException {
+    public static void ScanMods(File directory) throws IOException {
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             file.setReadable(true);
             file.setWritable(true);
@@ -482,7 +483,7 @@ public class ClassUtil {
         return false;
     }
 
-    private static synchronized void AddDirectoryToTransformExclusions(@Nonnull File dir, List<String> list, Map<String, Boolean> map) throws IOException {
+    private static void AddDirectoryToTransformExclusions(@Nonnull File dir, List<String> list, Map<String, Boolean> map) throws IOException {
         if (dir.listFiles() != null) for (File file : dir.listFiles()) {
             if (!file.isDirectory()) {
                 if (file.getName().endsWith(".jar")) {
@@ -493,4 +494,14 @@ public class ClassUtil {
             }
         }
     }
+
+    public static boolean isClassLoaded(String clazz) {
+        try {
+            Launch.classLoader.findClass(clazz);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
 }
