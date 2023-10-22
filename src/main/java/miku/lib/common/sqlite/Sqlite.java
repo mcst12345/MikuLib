@@ -4,7 +4,6 @@ import miku.lib.common.util.ClassUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.fml.common.ModContainer;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -263,13 +262,13 @@ public class Sqlite {
             Field field = loader_class.getDeclaredField("namedMods");
             tmp = Launch.UNSAFE.objectFieldOffset(field);
             System.out.println("Successfully set field 'namedMods' to accessible.");
-            Map<String, ModContainer> mods = (Map<String, ModContainer>) Launch.UNSAFE.getObjectVolatile(loader, tmp);
+            Map mods = (Map) Launch.UNSAFE.getObjectVolatile(loader, tmp);
             if (mods == null) {
                 System.out.println("The fuck? namedMods == null ?");
                 return;
             }
             System.out.println("Successfully get the object of namedMods.");
-            Map<String, ModContainer> result = new HashMap<>();
+            Map result = new HashMap<>();
             mods.forEach((key, value) -> {
                 if (!SqliteCaches.HIDDEN_MODS.contains(key)) {
                     result.put(key, value);
