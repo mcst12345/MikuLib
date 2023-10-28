@@ -61,7 +61,7 @@ public abstract class MixinGuiGameOver extends GuiScreen {
     public void actionPerformed(GuiButton button) throws IOException {
         switch (button.id) {
             case 0:
-                this.mc.player.respawnPlayer();
+                ((iMinecraft) this.mc).MikuPlayer().respawnPlayer();
                 this.mc.displayGuiScreen(null);
                 break;
             case 1:
@@ -90,7 +90,7 @@ public abstract class MixinGuiGameOver extends GuiScreen {
             this.mc.loadWorld(null);
             this.mc.displayGuiScreen(new GuiMainMenu());
         } else {
-            this.mc.player.respawnPlayer();
+            ((iMinecraft) this.mc).MikuPlayer().respawnPlayer();
             this.mc.displayGuiScreen(null);
         }
     }
@@ -112,7 +112,7 @@ public abstract class MixinGuiGameOver extends GuiScreen {
             this.drawCenteredString(this.fontRenderer, this.causeOfDeath.getFormattedText(), this.width / 2, 85, 16777215);
         }
 
-        this.drawCenteredString(this.fontRenderer, I18n.format("deathScreen.score") + ": " + TextFormatting.YELLOW + this.mc.player.getScore(), this.width / 2, 100, 16777215);
+        this.drawCenteredString(this.fontRenderer, I18n.format("deathScreen.score") + ": " + TextFormatting.YELLOW + ((iMinecraft) this.mc).MikuPlayer().getScore(), this.width / 2, 100, 16777215);
 
         if (this.causeOfDeath != null && mouseY > 85 && mouseY < 85 + this.fontRenderer.FONT_HEIGHT) {
             ITextComponent itextcomponent = this.getClickedComponentAt(mouseX);

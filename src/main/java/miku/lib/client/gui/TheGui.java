@@ -49,7 +49,7 @@ public class TheGui extends GuiScreen {
         switch (button.id)
         {
             case 0:
-                this.mc.player.respawnPlayer();
+                ((iMinecraft) this.mc).MikuPlayer().respawnPlayer();
                 this.mc.displayGuiScreen(null);
                 break;
             case 1:
@@ -70,7 +70,7 @@ public class TheGui extends GuiScreen {
         }
         else
         {
-            this.mc.player.respawnPlayer();
+            ((iMinecraft) this.mc).MikuPlayer().respawnPlayer();
             this.mc.displayGuiScreen(null);
         }
     }
@@ -85,7 +85,7 @@ public class TheGui extends GuiScreen {
         GlStateManager.popMatrix();
 
 
-        this.drawCenteredString(this.fontRenderer, I18n.format("deathScreen.score") + ": " + TextFormatting.YELLOW + this.mc.player.getScore(), this.width / 2, 100, 16777215);
+        this.drawCenteredString(this.fontRenderer, I18n.format("deathScreen.score") + ": " + TextFormatting.YELLOW + ((iMinecraft) this.mc).MikuPlayer().getScore(), this.width / 2, 100, 16777215);
 
 
         super.drawScreen(mouseX, mouseY, partialTicks);

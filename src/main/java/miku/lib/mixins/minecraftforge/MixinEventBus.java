@@ -56,7 +56,7 @@ public class MixinEventBus implements iEventBus {
             if (EntityUtil.isProtected(((EntityJoinWorldEvent) event).getEntity())) return false;
         }
         if (event instanceof PlayerInteractEvent) {
-            if (EntityUtil.isProtected(((PlayerInteractEvent) event).getEntityPlayer()) && ((PlayerInteractEvent) event).getEntity() != null)
+            if (EntityUtil.isProtected(((PlayerInteractEvent) event).getEntityPlayer()))
                 return false;
         }
         if (Shutdown) return false;

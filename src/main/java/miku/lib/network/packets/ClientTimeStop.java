@@ -26,7 +26,7 @@ public class ClientTimeStop implements IMessage {
         @Override
         @SideOnly(Side.CLIENT)
         public IMessage onMessage(ClientTimeStop message, MessageContext ctx) {
-            if(EntityUtil.isProtected(Minecraft.getMinecraft().player))return null;
+            if (EntityUtil.isProtected(Minecraft.getMinecraft())) return null;
             ((iMinecraft) Minecraft.getMinecraft()).SetTimeStop();
             return null;
         }

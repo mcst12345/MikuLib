@@ -280,7 +280,7 @@ public abstract class MixinGuiIngame extends Gui {
 
         ItemStack itemstack = this.mc.player.inventory.armorItemInSlot(3);
 
-        if (!EntityUtil.isProtected(this.mc.player))
+        if (!EntityUtil.isProtected(this.mc))
             if (this.mc.gameSettings.thirdPersonView == 0 && itemstack.getItem() == Item.getItemFromBlock(Blocks.PUMPKIN)) {
                 this.renderPumpkinOverlay(scaledresolution);
             }

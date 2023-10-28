@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iGuiContainer;
+import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -138,7 +139,7 @@ public abstract class MixinGuiContainer extends GuiScreen implements iGuiContain
         this.drawGuiContainerForegroundLayer(mouseX, mouseY);
         RenderHelper.enableGUIStandardItemLighting();
         MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.GuiContainerEvent.DrawForeground((GuiContainer) (Object) this, mouseX, mouseY));
-        InventoryPlayer inventoryplayer = this.mc.player.inventory;
+        InventoryPlayer inventoryplayer = ((iMinecraft) this.mc).MikuPlayer().inventory;
         ItemStack itemstack = this.draggedStack.isEmpty() ? inventoryplayer.getItemStack() : this.draggedStack;
 
         if (!itemstack.isEmpty()) {

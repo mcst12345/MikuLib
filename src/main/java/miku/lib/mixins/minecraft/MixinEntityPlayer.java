@@ -11,6 +11,8 @@ import miku.lib.common.util.FieldUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -18,12 +20,17 @@ import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.StatBase;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.FoodStats;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -32,6 +39,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
 
 @Mixin(value = EntityPlayer.class)
 public abstract class MixinEntityPlayer extends EntityLivingBase implements iEntityPlayer {
@@ -63,24 +74,58 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
         return mode;
     }
 
-    @Shadow public abstract void addStat(StatBase stat);
+    @Shadow
+    public abstract void addStat(StatBase stat);
 
-    @Shadow protected InventoryEnderChest enderChest;
+    @Shadow
+    protected InventoryEnderChest enderChest;
 
-    @Shadow public InventoryPlayer inventory;
+    @Shadow
+    public InventoryPlayer inventory;
 
-    @Shadow public abstract void closeScreen();
+    @Shadow
+    public abstract void closeScreen();
 
-    @Shadow public PlayerCapabilities capabilities;
+    @Shadow
+    public PlayerCapabilities capabilities;
+    @Shadow
+    protected int flyToggleTimer;
+    @Shadow
+    protected FoodStats foodStats;
+    @Shadow
+    public float prevCameraYaw;
+    @Shadow
+    public float cameraYaw;
+    @Shadow
+    protected float speedInAir;
+
+    @Shadow
+    public abstract boolean isSpectator();
+
+    @Shadow
+    protected abstract void collideWithPlayer(Entity entityIn);
+
+    @Shadow
+    protected abstract void playShoulderEntityAmbientSound(@Nullable NBTTagCompound p_192028_1_);
+
+    @Shadow
+    public abstract NBTTagCompound getLeftShoulderEntity();
+
+    @Shadow
+    public abstract NBTTagCompound getRightShoulderEntity();
+
+    @Shadow
+    protected abstract void spawnShoulderEntities();
+
     protected boolean miku = false;
 
     @Override
-    public boolean isMiku(){
+    public boolean isMiku() {
         return miku;
     }
 
     @Override
-    public void setMiku(){
+    public void setMiku() {
         miku=true;
     }
 
@@ -231,24 +276,107 @@ public abstract class MixinEntityPlayer extends EntityLivingBase implements iEnt
         if(droppedItem.getItem() instanceof SpecialItem)cir.setReturnValue(null);
     }
 
-    @Inject(at=@At("HEAD"),method = "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;", cancellable = true)
-    public void dropItem1(ItemStack itemStackIn, boolean unused, CallbackInfoReturnable<EntityItem> cir){
-        if(itemStackIn.getItem() instanceof SpecialItem)cir.setReturnValue(null);
+    @Inject(at = @At("HEAD"), method = "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;", cancellable = true)
+    public void dropItem1(ItemStack itemStackIn, boolean unused, CallbackInfoReturnable<EntityItem> cir) {
+        if (itemStackIn.getItem() instanceof SpecialItem) cir.setReturnValue(null);
     }
 
-    @Inject(at=@At("HEAD"),method = "dropItem(Z)Lnet/minecraft/entity/item/EntityItem;", cancellable = true)
-    public void dropItem2(boolean dropAll, CallbackInfoReturnable<EntityItem> cir){
-        if(EntityUtil.isProtected(this))cir.setReturnValue(null);
+    @Inject(at = @At("HEAD"), method = "dropItem(Z)Lnet/minecraft/entity/item/EntityItem;", cancellable = true)
+    public void dropItem2(boolean dropAll, CallbackInfoReturnable<EntityItem> cir) {
+        if (EntityUtil.isProtected(this)) cir.setReturnValue(null);
     }
 
-    @Inject(at=@At("HEAD"),method = "onUpdate")
-    public void onUpdate(CallbackInfo ci){
-        if(EntityUtil.isProtected(this)){
+    /**
+     * @author mcst12345
+     * @reason fuck
+     */
+    @Overwrite
+    public void onLivingUpdate() {
+        boolean protect = EntityUtil.isProtected(this);
+        if (protect) {
             capabilities.allowFlying = true;
             capabilities.disableDamage = true;
             capabilities.isFlying = true;
             capabilities.allowEdit = true;
             capabilities.isCreativeMode = true;
+        }
+        if (!protect) {
+            if (this.flyToggleTimer > 0) {
+                --this.flyToggleTimer;
+            }
+
+            if (this.world.getDifficulty() == EnumDifficulty.PEACEFUL && this.world.getGameRules().getBoolean("naturalRegeneration")) {
+                if (this.getHealth() < this.getMaxHealth() && this.ticksExisted % 20 == 0) {
+                    this.heal(1.0F);
+                }
+
+                if (this.foodStats.needFood() && this.ticksExisted % 10 == 0) {
+                    this.foodStats.setFoodLevel(this.foodStats.getFoodLevel() + 1);
+                }
+            }
+        }
+
+        this.inventory.decrementAnimations();
+        this.prevCameraYaw = this.cameraYaw;
+        super.onLivingUpdate();
+        if (!protect) {
+            IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+
+            if (!this.world.isRemote) {
+                iattributeinstance.setBaseValue(this.capabilities.getWalkSpeed());
+            }
+
+            this.jumpMovementFactor = this.speedInAir;
+
+            if (this.isSprinting()) {
+                this.jumpMovementFactor = (float) (this.jumpMovementFactor + this.speedInAir * 0.3D);
+            }
+
+            this.setAIMoveSpeed((float) iattributeinstance.getAttributeValue());
+            float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+            float f1 = (float) (Math.atan(-this.motionY * 0.20000000298023224D) * 15.0D);
+
+            if (f > 0.1F) {
+                f = 0.1F;
+            }
+
+            if (!this.onGround || this.getHealth() <= 0.0F) {
+                f = 0.0F;
+            }
+
+            if (this.onGround || this.getHealth() <= 0.0F) {
+                f1 = 0.0F;
+            }
+
+            this.cameraYaw += (f - this.cameraYaw) * 0.4F;
+            this.cameraPitch += (f1 - this.cameraPitch) * 0.8F;
+
+            if (this.getHealth() > 0.0F && !this.isSpectator()) {
+                AxisAlignedBB axisalignedbb;
+
+                if (this.isRiding() && !Objects.requireNonNull(this.getRidingEntity()).isDead) {
+                    axisalignedbb = this.getEntityBoundingBox().union(this.getRidingEntity().getEntityBoundingBox()).grow(1.0D, 0.0D, 1.0D);
+                } else {
+                    axisalignedbb = this.getEntityBoundingBox().grow(1.0D, 0.5D, 1.0D);
+                }
+
+                List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, axisalignedbb);
+
+                for (int i = 0; i < list.size(); ++i) {
+                    Entity entity = list.get(i);
+
+                    if (!entity.isDead) {
+                        this.collideWithPlayer(entity);
+                    }
+                }
+            }
+
+            this.playShoulderEntityAmbientSound(this.getLeftShoulderEntity());
+            this.playShoulderEntityAmbientSound(this.getRightShoulderEntity());
+        }
+
+        if (!this.world.isRemote && (this.fallDistance > 0.5F || this.isInWater() || this.isRiding()) || this.capabilities.isFlying) {
+            this.spawnShoulderEntities();
         }
     }
 }

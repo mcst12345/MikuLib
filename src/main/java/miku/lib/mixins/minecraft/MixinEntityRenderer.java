@@ -4,6 +4,7 @@ import com.google.common.base.Predicates;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.sqlite.Sqlite;
+import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -86,7 +87,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
         this.updateLightmap(partialTicks);
 
         if (this.mc.getRenderViewEntity() == null) {
-            this.mc.setRenderViewEntity(this.mc.player);
+            this.mc.setRenderViewEntity(((iMinecraft) this.mc).MikuPlayer());
         }
 
         this.getMouseOver(partialTicks);
@@ -574,7 +575,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
         this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         RenderHelper.disableStandardItemLighting();
         ((iMinecraft) this.mc).MikuProfiler().endStartSection("terrain_setup");
-        renderglobal.setupTerrain(entity, partialTicks, icamera, this.frameCount++, this.mc.player.isSpectator());
+        renderglobal.setupTerrain(entity, partialTicks, icamera, this.frameCount++, ((iMinecraft) this.mc).MikuPlayer().isSpectator());
 
         if (pass == 0 || pass == 2) {
             ((iMinecraft) this.mc).MikuProfiler().endStartSection("updatechunks");
@@ -738,11 +739,11 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                 this.smoothCamPartialTicks = partialTicks;
                 f2 = this.smoothCamFilterX * f4;
                 f3 = this.smoothCamFilterY * f4;
-                this.mc.player.turn(f2, f3 * (float) i);
+                ((iMinecraft) this.mc).MikuPlayer().turn(f2, f3 * (float) i);
             } else {
                 this.smoothCamYaw = 0.0F;
                 this.smoothCamPitch = 0.0F;
-                this.mc.player.turn(f2, f3 * (float) i);
+                ((iMinecraft) this.mc).MikuPlayer().turn(f2, f3 * (float) i);
             }
         }
 
@@ -976,8 +977,8 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
                     f9 = MathHelper.clamp(f9, 0f, 1f);
                     f10 = MathHelper.clamp(f10, 0f, 1f);
 
-                    if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION)) {
-                        float f15 = this.getNightVisionBrightness(this.mc.player, partialTicks);
+                    if (((iMinecraft) this.mc).MikuPlayer().isPotionActive(MobEffects.NIGHT_VISION)) {
+                        float f15 = this.getNightVisionBrightness(((iMinecraft) this.mc).MikuPlayer(), partialTicks);
                         float f12 = 1.0F / f8;
 
                         if (f12 > 1.0F / f9) {
@@ -1115,7 +1116,7 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
         }
 
         if (this.mc.getRenderViewEntity() == null) {
-            this.mc.setRenderViewEntity(this.mc.player);
+            this.mc.setRenderViewEntity(((iMinecraft) this.mc).MikuPlayer());
         }
 
         float f3 = ((iMinecraft) this.mc).MikuWorld().getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().posX, this.mc.getRenderViewEntity().posY + this.mc.getRenderViewEntity().getEyeHeight(), this.mc.getRenderViewEntity().posZ)); // Forge: fix MC-51150
@@ -1229,7 +1230,9 @@ public abstract class MixinEntityRenderer implements IResourceManagerReloadListe
             }
             IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(((iMinecraft) this.mc).MikuWorld(), entity, partialTicks);
             net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup((EntityRenderer) (Object) this, entity, state, partialTicks, yaw, pitch, roll);
-            MikuLib.MikuEventBus().post(event);
+            if (!EntityUtil.isProtected(mc)) {
+                MikuLib.MikuEventBus().post(event);
+            }
             GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(event.getYaw(), 0.0F, 1.0F, 0.0F);

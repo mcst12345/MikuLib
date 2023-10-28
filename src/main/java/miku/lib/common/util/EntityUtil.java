@@ -45,7 +45,14 @@ public class EntityUtil {
     private static boolean Killing = false;
 
     public static boolean isProtected(@Nullable Object object) {
-        if (!(object instanceof Entity)) return false;
+        if (!(object instanceof Entity)) {
+            if (Launch.Client) {
+                if (object instanceof Minecraft) {
+                    return isProtected(((iMinecraft) object).MikuPlayer());
+                }
+            }
+            return false;
+        }
         Entity entity = (Entity) object;
         if (entity instanceof EntityPlayer) {
             if (entity.world.isRemote) {
@@ -146,7 +153,7 @@ public class EntityUtil {
                 }
             }
             if (Launch.Client) {
-                if (entity.equals(Minecraft.getMinecraft().player)) {
+                if (entity.equals(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer())) {
                     GuiUtil.DisPlayTheGui();
                 }
             }

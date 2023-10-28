@@ -29,7 +29,7 @@ public class MixinDebugRendererHeightMap {
      */
     @Overwrite
     public void render(float partialTicks, long finishTimeNano) {
-        EntityPlayer entityplayer = this.minecraft.player;
+        EntityPlayer entityplayer = ((iMinecraft) this.minecraft).MikuPlayer();
         World world = ((iMinecraft) this.minecraft).MikuWorld();
         double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double) partialTicks;
         double d1 = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * (double) partialTicks;

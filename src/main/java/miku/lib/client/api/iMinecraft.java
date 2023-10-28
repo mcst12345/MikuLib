@@ -1,5 +1,6 @@
 package miku.lib.client.api;
 
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -29,4 +30,6 @@ public interface iMinecraft {
     IReloadableResourceManager GetResourceManager();
 
     void reloadWorld();
+
+    EntityPlayerSP MikuPlayer();
 }

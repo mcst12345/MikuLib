@@ -1,6 +1,7 @@
 package miku.lib.mixins.minecraft;
 
 import miku.lib.client.api.iMinecraft;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCommandBlock;
 import net.minecraft.block.BlockStructure;
@@ -13,6 +14,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
@@ -65,8 +67,23 @@ public abstract class MixinPlayerControllerMP {
     @Shadow
     private float stepSoundTickCounter;
 
-    @Shadow
-    public abstract float getBlockReachDistance();
+    /**
+     * @author mcst12345
+     * @reason fuck
+     */
+    @Overwrite
+    public float getBlockReachDistance() {
+        if (EntityUtil.isProtected(mc)) {
+            return Float.MAX_VALUE;
+        }
+        try {
+            float attrib = (float) mc.player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+            return this.currentGameType.isCreative() ? attrib : attrib - 0.5F;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return Float.MAX_VALUE;
+        }
+    }
 
     @Shadow
     protected abstract void syncCurrentPlayItem();

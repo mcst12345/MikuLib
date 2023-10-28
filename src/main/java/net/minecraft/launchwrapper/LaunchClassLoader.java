@@ -2,6 +2,7 @@ package net.minecraft.launchwrapper;
 
 import miku.lib.common.core.AccessTransformer;
 import miku.lib.common.core.MikuTransformer;
+import miku.lib.common.core.ModTransformer;
 import miku.lib.common.exception.NoYouCannotBeLoaded;
 import miku.lib.common.util.ClassUtil;
 import miku.lib.common.util.MikuArrayListForTransformer;
@@ -48,10 +49,11 @@ public class LaunchClassLoader extends URLClassLoader {
     private IClassNameTransformer renameTransformer;
     private static final MikuTransformer Miku = new MikuTransformer();
     private static final AccessTransformer AT = new AccessTransformer();
+    private static final ModTransformer MT = new ModTransformer();
 
     private static boolean invalidClasses(String name) {
         return name.equals("javax.annotation.Resource") || name.equals("Config") || name.equals("javax.annotation.Nullable") ||
-                name.equals("org.slf4j.LoggerFactory") || name.equals("org.apache.log4j.Logger");
+                name.equals("org.slf4j.LoggerFactory") || name.equals("org.apache.log4j.Logger") || name.equals("javax.annotation.Nonnull");
     }
 
     public LaunchClassLoader(URL[] sources) {
@@ -172,12 +174,15 @@ public class LaunchClassLoader extends URLClassLoader {
             return cachedClasses.get(name);
         }
 
+        final String transformedName = transformName(name);
+
         for (final String exception : transformerExceptions) {
             if (name.startsWith(exception)) {
                 try {
                     byte[] clazz = getClassBytes(name);
                     if (clazz != null) {
-                        clazz = AT.transform(name, name, clazz);
+                        clazz = AT.transform(name, transformedName, clazz);
+                        clazz = MT.transform(name, transformedName, clazz);
                         final String fileName = name.replace('.', '/').concat(".class");
                         URLConnection urlConnection = findCodeSourceConnectionFor(fileName);
                         final CodeSource codeSource = urlConnection == null ? null : new CodeSource(urlConnection.getURL(), new CodeSigner[0]);
@@ -198,7 +203,7 @@ public class LaunchClassLoader extends URLClassLoader {
         }
 
         try {
-            final String transformedName = transformName(name);
+
             if (cachedClasses.containsKey(transformedName)) {
                 return cachedClasses.get(transformedName);
             }
@@ -254,6 +259,7 @@ public class LaunchClassLoader extends URLClassLoader {
 
             byte[] transformedClass = runTransformers(untransformedName, transformedName, original);
             transformedClass = AT.transform(name, transformedName, transformedClass);
+            transformedClass = MT.transform(name, transformedName, transformedClass);
             if (DEBUG_SAVE) {
                 saveTransformedClass(transformedClass, transformedName);
             }

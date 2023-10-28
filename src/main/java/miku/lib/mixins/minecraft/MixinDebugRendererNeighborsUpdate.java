@@ -37,7 +37,7 @@ public class MixinDebugRendererNeighborsUpdate {
     @Overwrite
     public void render(float partialTicks, long finishTimeNano) {
         long i = ((iMinecraft) this.minecraft).MikuWorld().getTotalWorldTime();
-        EntityPlayer entityplayer = this.minecraft.player;
+        EntityPlayer entityplayer = ((iMinecraft) this.minecraft).MikuPlayer();
         double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double) partialTicks;
         double d1 = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * (double) partialTicks;
         double d2 = entityplayer.lastTickPosZ + (entityplayer.posZ - entityplayer.lastTickPosZ) * (double) partialTicks;

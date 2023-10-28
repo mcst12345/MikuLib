@@ -53,6 +53,7 @@ import java.util.*;
 @Mixin(value = World.class)
 public abstract class MixinWorld implements iWorld, Serializable {
     private final List<Entity> toSpawn = new ArrayList<>();
+    private final List<Entity> error_entities = new ArrayList<>();
     private boolean updatingEntities;
 
     @Override
@@ -604,6 +605,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
             loadedEntityList.add(e);
         }
 
+        loadedEntityList.removeAll(error_entities);
         EntityUtil.REMOVE(loadedEntityList);
 
         if (EntityUtil.isKilling()) return;
@@ -706,10 +708,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
                 catch (Throwable throwable1)
                 {
                     throwable1.printStackTrace();
-                    if (net.minecraftforge.common.ForgeModContainer.removeErroringEntities)
-                    {
-                        removeEntity(entity2);
-                    }
+                    removeEntity(entity2);
                 }
             }
 
@@ -896,8 +895,12 @@ public abstract class MixinWorld implements iWorld, Serializable {
                     try {
                         entityIn.onUpdate();
                     } catch (Throwable e) {
-                        System.out.println("MikuWarn:Catch exception at entityIn.onUpdate();");
+                        System.out.println("MikuWarn:Catch exception at entityIn.onUpdate(),removing this entity.");
                         e.printStackTrace();
+                        if (!(entityIn instanceof EntityPlayer)) {
+                            error_entities.add(entityIn);
+                        }
+                        return;
                     }
                 }
             }

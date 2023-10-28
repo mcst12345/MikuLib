@@ -16,6 +16,7 @@ import com.gildedgames.the_aether.universal.fastcrafting.FastCraftingUtil;
 import com.gildedgames.the_aether.universal.pixelmon.PixelmonUtil;
 import miku.lib.client.api.iGuiContainer;
 import miku.lib.client.api.iGuiScreen;
+import miku.lib.client.api.iMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiButtonImage;
@@ -67,7 +68,7 @@ public abstract class MixinAetherClientEvents {
     @Overwrite
     public void onScreenOpened(GuiScreenEvent.InitGuiEvent.Post event) {
         if (event.getGui() instanceof GuiContainer) {
-            EntityPlayer player = Minecraft.getMinecraft().player;
+            EntityPlayer player = ((iMinecraft) Minecraft.getMinecraft()).MikuPlayer();
             Class<?> clazz = event.getGui().getClass();
             int guiLeft = ((iGuiContainer) event.getGui()).guiLeft();
             int guiTop = ((iGuiContainer) event.getGui()).guiTop();
@@ -97,7 +98,7 @@ public abstract class MixinAetherClientEvents {
             Minecraft.getMinecraft().displayGuiScreen(new AetherMainMenu());
         }
 
-        if (event.getGui().getClass() == GuiCustomizeSkin.class && Minecraft.getMinecraft().player != null) {
+        if (event.getGui().getClass() == GuiCustomizeSkin.class && ((iMinecraft) Minecraft.getMinecraft()).MikuPlayer() != null) {
             int i = 8;
             Iterator<GuiButton> var7 = event.getButtonList().iterator();
 
@@ -114,10 +115,10 @@ public abstract class MixinAetherClientEvents {
             event.getButtonList().add(new GuiGloveSizeButton(event.getGui().width / 2 - 155 + i % 2 * 160, event.getGui().height / 6 + 24 * (i >> 1)));
             ++i;
             event.getButtonList().add(new GuiCapeButton(event.getGui().width / 2 - 155, event.getGui().height / 6 + 24 * (i >> 1)));
-            if (AetherRankings.isRankedPlayer(Minecraft.getMinecraft().player.getUniqueID())) {
+            if (AetherRankings.isRankedPlayer(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer().getUniqueID())) {
                 ++i;
                 event.getButtonList().add(new GuiHaloButton(event.getGui().width / 2 - 155 + i % 2 * 160, event.getGui().height / 6 + 24 * (i >> 1)));
-                if (AetherRankings.isDeveloper(Minecraft.getMinecraft().player.getUniqueID())) {
+                if (AetherRankings.isDeveloper(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer().getUniqueID())) {
                     var7 = event.getButtonList().iterator();
 
                     while (var7.hasNext()) {
@@ -184,35 +185,35 @@ public abstract class MixinAetherClientEvents {
         PlayerAether player;
         boolean gloveSize;
         if (event.getButton().getClass() == GuiHaloButton.class) {
-            player = (PlayerAether) AetherAPI.getInstance().get(Minecraft.getMinecraft().player);
+            player = (PlayerAether) AetherAPI.getInstance().get(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer());
             gloveSize = !player.shouldRenderHalo;
             player.shouldRenderHalo = gloveSize;
             AetherNetworkingManager.sendToServer(new PacketPerkChanged(player.getEntity().getEntityId(), EnumAetherPerkType.Halo, player.shouldRenderHalo));
         }
 
         if (event.getButton().getClass() == GuiGlowButton.class) {
-            player = (PlayerAether) AetherAPI.getInstance().get(Minecraft.getMinecraft().player);
+            player = (PlayerAether) AetherAPI.getInstance().get(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer());
             gloveSize = !player.shouldRenderGlow;
             player.shouldRenderGlow = gloveSize;
             AetherNetworkingManager.sendToServer(new PacketPerkChanged(player.getEntity().getEntityId(), EnumAetherPerkType.Glow, player.shouldRenderGlow));
         }
 
         if (event.getButton().getClass() == GuiCapeButton.class) {
-            player = (PlayerAether) AetherAPI.getInstance().get(Minecraft.getMinecraft().player);
+            player = (PlayerAether) AetherAPI.getInstance().get(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer());
             gloveSize = !player.shouldRenderCape;
             player.shouldRenderCape = gloveSize;
             AetherNetworkingManager.sendToServer(new PacketCapeChanged(player.getEntity().getEntityId(), player.shouldRenderCape));
         }
 
         if (event.getButton().getClass() == GuiGlovesButton.class) {
-            player = (PlayerAether) AetherAPI.getInstance().get(Minecraft.getMinecraft().player);
+            player = (PlayerAether) AetherAPI.getInstance().get(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer());
             gloveSize = !player.shouldRenderGloves;
             player.shouldRenderGloves = gloveSize;
             AetherNetworkingManager.sendToServer(new PacketGlovesChanged(player.getEntity().getEntityId(), player.shouldRenderGloves));
         }
 
         if (event.getButton().getClass() == GuiGloveSizeButton.class) {
-            player = (PlayerAether) AetherAPI.getInstance().get(Minecraft.getMinecraft().player);
+            player = (PlayerAether) AetherAPI.getInstance().get(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer());
             gloveSize = !player.gloveSize;
             player.gloveSize = gloveSize;
             AetherNetworkingManager.sendToServer(new PacketGloveSizeChanged(player.getEntity().getEntityId(), player.gloveSize));
