@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class VoidWorld {
     public static final Biome VoidBiome = new VoidBiome();
     public static final int ID = -25;
-    public static final DimensionType Void = DimensionType.register("void", "new_void", ID, VoidProvider.class, (boolean) Sqlite.GetValueFromTable("void_keep_loaded", "CONFIG", 0));
+    public static final DimensionType Void = DimensionType.register("void", "new_void", ID, VoidProvider.class, Sqlite.GetBooleanFromTable("void_keep_loaded", "CONFIG"));
 
     public static void Init() {
         DimensionManager.registerDimension(ID, Void);

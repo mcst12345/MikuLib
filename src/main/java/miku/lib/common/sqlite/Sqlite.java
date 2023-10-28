@@ -64,7 +64,8 @@ public class Sqlite {
                 CreateConfigValue("rain", "RENDER_CONFIG", "true");
                 CreateConfigValue("fast", "RENDER_CONFIG", "false");
                 CreateConfigValue("particle", "RENDER_CONFIG", "true");
-                CreateConfigValue("PERFORMANCE", "PERFORMANCE", "false");
+                CreateConfigValue("disable_tutorial", "PERFORMANCE", "true");
+                CreateConfigValue("tnt_thread", "PERFORMANCE", "false");
                 System.out.println("Reading lists.");
                 GetStringsFromTable("HIDDEN_MODS", "ID", SqliteCaches.HIDDEN_MODS);
                 GetStringsFromTable("BANNED_MODS", "ID", SqliteCaches.BANNED_MODS);
@@ -104,14 +105,10 @@ public class Sqlite {
                 s = rs.getString(KEY);
                 classes.computeIfAbsent(list, k -> new ArrayList<>());
                 classes.get(list).add(s);
-                //list.add(Launch.classLoader.findClass(s));
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        } catch (NullPointerException e) {
-            System.out.println("The fuck?");
-            e.printStackTrace();
         }
     }
 

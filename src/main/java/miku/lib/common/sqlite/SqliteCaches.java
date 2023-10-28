@@ -1,5 +1,7 @@
 package miku.lib.common.sqlite;
 
+import miku.lib.common.util.timestop.TimeStopUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -17,6 +19,6 @@ public class SqliteCaches {
         Sqlite.GetClassFromTable("BANNED_MOBS", "ID", BANNED_MOBS);
         BANNED_ITEMS.clear();
         Sqlite.GetClassFromTable("BANNED_ITEMS", "ID", BANNED_ITEMS);
-
+        TimeStopUtil.time_point_mode = Integer.MIN_VALUE;
     }
 }

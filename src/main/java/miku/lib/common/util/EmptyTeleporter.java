@@ -7,6 +7,9 @@ import net.minecraftforge.common.util.ITeleporter;
 public class EmptyTeleporter implements ITeleporter {
     public static final EmptyTeleporter INSTANCE = new EmptyTeleporter();
 
+    private EmptyTeleporter() {
+    }
+
     @Override
     public void placeEntity(World world, Entity entity, float yaw) {
 

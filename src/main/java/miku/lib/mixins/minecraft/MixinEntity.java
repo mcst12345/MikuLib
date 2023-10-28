@@ -193,7 +193,7 @@ public abstract class MixinEntity implements iEntity, Serializable {
                 world.playerEntities.remove(this);
                 if (((Entity) (Object) this) instanceof EntityPlayerMP) {
                     EntityPlayerMP playerMP = ((EntityPlayerMP) (Object) this);
-                    if ((boolean) Sqlite.GetValueFromTable("miku_kill_kick_attack", "CONFIG", 0)) {
+                    if (Sqlite.GetBooleanFromTable("miku_kill_kick_attack", "CONFIG")) {
                         NetworkHandler.INSTANCE.sendMessageToPlayer(new ExitGame(), playerMP);
                         playerMP.connection.disconnect(new TextComponentString("Goodbye!"));
                     }

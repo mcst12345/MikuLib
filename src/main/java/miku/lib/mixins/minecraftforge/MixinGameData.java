@@ -249,4 +249,19 @@ public abstract class MixinGameData {
         ObjectHolderRegistry.INSTANCE.applyObjectHolders(); // inject everything else
 
     }
+
+    /**
+     * @author mcst12345
+     * @reason Don't check my prefix.
+     */
+    @Overwrite
+    public static ResourceLocation checkPrefix(String name, boolean warnOverrides) {
+        int index = name.lastIndexOf(':');
+        String oldPrefix = index == -1 ? "" : name.substring(0, index).toLowerCase(Locale.ROOT);
+        name = index == -1 ? name : name.substring(index + 1);
+        ModContainer mc = Loader.instance().activeModContainer();
+        String prefix = mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase(Locale.ROOT);
+        prefix = prefix.equals("") ? prefix : oldPrefix;
+        return new ResourceLocation(prefix, name);
+    }
 }

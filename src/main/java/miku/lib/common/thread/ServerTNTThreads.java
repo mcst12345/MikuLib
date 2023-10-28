@@ -32,9 +32,11 @@ public class ServerTNTThreads extends Thread {
                         if (!((iWorld) explosion.world).updatingEntities()) {
                             continue;
                         }
-                        explosion.doExplosionA();
-                        explosion.doExplosionB(false);
-                        unloads.add(explosion);
+                        synchronized (explosion.world) {
+                            explosion.doExplosionA();
+                            explosion.doExplosionB(false);
+                            unloads.add(explosion);
+                        }
                     }
                     lists.removeAll(unloads);
                 }

@@ -39,9 +39,11 @@ public class ClientTNTThreads extends Thread {
                         if (!((iWorld) explosion.world).updatingEntities()) {
                             continue;
                         }
-                        explosion.doExplosionA();
-                        explosion.doExplosionB(true);
-                        unloads.add(explosion);
+                        synchronized (explosion.world) {
+                            explosion.doExplosionA();
+                            explosion.doExplosionB(true);
+                            unloads.add(explosion);
+                        }
                     }
                     lists.removeAll(unloads);
                 }

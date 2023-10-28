@@ -1,16 +1,14 @@
 package miku.lib.common.util.timestop;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import miku.lib.common.api.iServer;
 import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EmptyTeleporter;
-import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FileUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -29,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TimeStopUtil {
-    private static int time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+    public static int time_point_mode = Integer.MIN_VALUE;
     private static int current_time_point = 0;
     private static boolean TimeStop = false;
     private static boolean saving;
@@ -57,7 +55,9 @@ public class TimeStopUtil {
     }
 
     public synchronized static void Record() {
-        time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+        if (time_point_mode == Integer.MIN_VALUE) {
+            time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+        }
         saving = true;
         if (time_point_mode == 0) {
             SimpleDateFormat sdf = new SimpleDateFormat();
@@ -80,7 +80,7 @@ public class TimeStopUtil {
             }
             File world;
             File save = new File("saved_time_points" + File.separator + time);
-            if (Launch.Client) {
+            if (Launch.Client && server instanceof IntegratedServer) {
                 if (folder_name == null) {
                     throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
                 }
@@ -147,7 +147,9 @@ public class TimeStopUtil {
     }
 
     public synchronized static void BackToPoint() {
-        time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+        if (time_point_mode == Integer.MIN_VALUE) {
+            time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+        }
         saving = true;
         if (time_point_mode == 0) {
             File save = new File(savedPoints.get(current_time_point));
@@ -157,7 +159,9 @@ public class TimeStopUtil {
                 return;
             }
             File world;
-            if (Launch.Client) {
+
+            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+            if (Launch.Client && server instanceof IntegratedServer) {
                 if (folder_name == null) {
                     throw new IllegalStateException("The fuck? Why is folder_name null? Aren't you on client side?");
                 }
@@ -184,20 +188,17 @@ public class TimeStopUtil {
 
             final Map<EntityPlayerMP, Integer> cache = new Object2IntOpenHashMap<>();
 
-            MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+
             for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
-                if (!EntityUtil.isProtected(player)) {
-                    player.connection.disconnect(new TextComponentString("disconnected."));
-                } else {
-                    cache.put(player, player.dimension);
-                    player.changeDimension(-114514, EmptyTeleporter.INSTANCE);
-                }
+                cache.put(player, player.dimension);
+                player.changeDimension(-114514, EmptyTeleporter.INSTANCE);
             }
 
-            ((iServer) server).reloadWorld(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
-            for (WorldServer worldServer : server.worlds) {
-                worldServer.resetUpdateEntityTick();
-            }
+            server.loadAllWorlds(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
+            //((iServer) server).reloadWorld(server.getFolderName(), server.getWorldName(), seed, worldType, generatorOptions);
+            //for (WorldServer worldServer : server.worlds) {
+            //    worldServer.resetUpdateEntityTick();
+            //}
 
 
             for (EntityPlayerMP player : server.getPlayerList().getPlayers()) {
@@ -230,7 +231,9 @@ public class TimeStopUtil {
 
     @Nullable
     public static File SwitchTimePoint() {
-        time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+        if (time_point_mode == Integer.MIN_VALUE) {
+            time_point_mode = Sqlite.GetIntFromTable("time_point_mode", "CONFIG");
+        }
         if (savedPoints.isEmpty()) return null;
         if (current_time_point + 1 < savedPoints.size() && savedPoints.get(current_time_point + 1) != null) {
             current_time_point++;

@@ -8,9 +8,11 @@ import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iNetHandlerPlayClient;
 import miku.lib.client.api.iWorldClient;
 import miku.lib.client.gui.TheGui;
+import miku.lib.client.util.EmptyTutorial;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.command.MikuInsaneMode;
 import miku.lib.common.core.MikuLib;
+import miku.lib.common.sqlite.Sqlite;
 import miku.lib.common.util.EntityUtil;
 import miku.lib.common.util.FieldUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
@@ -349,8 +351,9 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
     public static long getSystemTime() {
         return 0;
     }
+
     @Shadow
-    private static Minecraft instance;
+    public static Minecraft instance;
     @Shadow
     public GameSettings gameSettings;
 
@@ -849,7 +852,11 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
             if (this.playerController.isRidingHorse()) {
                 this.player.sendHorseInventory();
             } else {
-                this.tutorial.openInventory();
+                {
+                    if (!Sqlite.GetBooleanFromTable("disable_tutorial", "PERFORMANCE")) {
+                        this.tutorial.openInventory();
+                    }
+                }
                 this.displayGuiScreen(new GuiInventory(this.player));
             }
         }
@@ -1039,17 +1046,19 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
 
         this.MikuProfiler.startSection("gui");
 
-        if (!this.isGamePaused)
-        {
-            if(!(TimeStop && !EntityUtil.isProtected(player))){
+        if (!this.isGamePaused) {
+            if (!(TimeStop && !EntityUtil.isProtected(player))) {
                 this.ingameGUI.updateTick();
             }
         }
 
         this.MikuProfiler.endSection();
-        if (!(TimeStop && !EntityUtil.isProtected(player))) this.MikuEntityRenderer.getMouseOver(1.0F);
-        if (!(TimeStop && !EntityUtil.isProtected(player)))
-            this.tutorial.onMouseHover(this.MikuWorld, this.objectMouseOver);
+        if (!(TimeStop && !EntityUtil.isProtected(player))) {
+            this.MikuEntityRenderer.getMouseOver(1.0F);
+            if (!Sqlite.GetBooleanFromTable("disable_tutorial", "PERFORMANCE")) {
+                this.tutorial.onMouseHover(this.MikuWorld, this.objectMouseOver);
+            }
+        }
         this.MikuProfiler.startSection("gameMode");
 
         if (!this.isGamePaused && this.MikuWorld != null) {
@@ -1167,7 +1176,9 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
             if (!this.isGamePaused) {
                 if (!stop && !TimeStop) {
                     this.MikuWorld.setAllowedSpawnTypes(this.MikuWorld.getDifficulty() != EnumDifficulty.PEACEFUL, true);
-                    this.tutorial.update();
+                    if (!Sqlite.GetBooleanFromTable("disable_tutorial", "PERFORMANCE")) {
+                        this.tutorial.update();
+                    }
                 }
 
                 try {
@@ -1897,6 +1908,19 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
             }
         } else {
             return MusicTicker.MusicType.MENU;
+        }
+    }
+
+    /**
+     * @author mcst12345
+     * @reason fuck
+     */
+    @Overwrite
+    public Tutorial getTutorial() {
+        if (!Sqlite.GetBooleanFromTable("disable_tutorial", "PERFORMANCE")) {
+            return this.tutorial;
+        } else {
+            return EmptyTutorial.get(this);
         }
     }
 }
