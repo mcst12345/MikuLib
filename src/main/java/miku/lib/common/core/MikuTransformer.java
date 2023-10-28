@@ -17,6 +17,14 @@ import java.util.Objects;
 
 public class MikuTransformer implements IClassTransformer {
 
+    private static final boolean noFuck = System.getProperty("DisableMikuTransformer") != null && System.getProperty("DisableMikuTransformer").equals("true");
+
+    static {
+        if (noFuck) {
+            System.out.println("MikuInfo:MikuTransformer is disabled.");
+        }
+    }
+
     public MikuTransformer() {
     }
 
@@ -27,6 +35,9 @@ public class MikuTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        if (noFuck) {
+            return basicClass;
+        }
         if (!ClassUtil.Loaded() || basicClass == null) return basicClass;
         if (name.equals("javax.annotation.Resource") || name.equals("javax.annotation.Nullable") || name.equals("org.apache.log4j.Logger") || name.equals("optifine.OptiFineForgeTweaker"))
             return basicClass;

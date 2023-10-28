@@ -261,7 +261,9 @@ public abstract class MixinGameData {
         name = index == -1 ? name : name.substring(index + 1);
         ModContainer mc = Loader.instance().activeModContainer();
         String prefix = mc == null || (mc instanceof InjectedModContainer && ((InjectedModContainer) mc).wrappedContainer instanceof FMLContainer) ? "minecraft" : mc.getModId().toLowerCase(Locale.ROOT);
-        prefix = prefix.equals("") ? prefix : oldPrefix;
+        if (warnOverrides && !oldPrefix.equals(prefix) && oldPrefix.length() > 0) {
+            prefix = oldPrefix;
+        }
         return new ResourceLocation(prefix, name);
     }
 }
