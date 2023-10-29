@@ -4,9 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import miku.lib.common.api.iEventBus;
 import miku.lib.common.command.MikuInsaneMode;
-import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
-import miku.lib.common.util.MikuEventBus;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLLog;
@@ -23,7 +21,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,9 +45,6 @@ public class MixinEventBus implements iEventBus {
      */
     @Overwrite
     public boolean post(Event event) {
-        if (!Objects.equals(getClass(), MikuEventBus.class)) {
-            return MikuLib.MikuEventBus().post(event);
-        }
         if (EntityUtil.isKilling() || MikuInsaneMode.isMikuInsaneMode()) return false;
         if (event instanceof EntityJoinWorldEvent) {
             if (EntityUtil.isProtected(((EntityJoinWorldEvent) event).getEntity())) return false;
@@ -101,10 +95,6 @@ public class MixinEventBus implements iEventBus {
      */
     @Overwrite
     public void register(Object target) {
-        if (!Objects.equals(getClass(), MikuEventBus.class)) {
-            MikuLib.MikuEventBus().register(target);
-            return;
-        }
         if (listeners.containsKey(target)) {
             return;
         }
@@ -158,10 +148,6 @@ public class MixinEventBus implements iEventBus {
      */
     @Overwrite
     public void register(Class<?> eventType, Object target, Method method, final ModContainer owner) {
-        if (!Objects.equals(getClass(), MikuEventBus.class)) {
-            MikuLib.MikuEventBus().register(eventType, target, method, owner);
-            return;
-        }
         try {
             Constructor<?> ctr = eventType.getConstructor();
             ctr.setAccessible(true);
