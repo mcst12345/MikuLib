@@ -1,9 +1,11 @@
 package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.Ordering;
+import miku.lib.client.api.iMinecraft;
 import miku.lib.common.api.iWorld;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.effect.MikuEffect;
+import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.InventoryEffectRenderer;
@@ -30,7 +32,8 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
 
     @Inject(at=@At("TAIL"),method = "updateActivePotionEffects")
     protected void updateActivePotionEffects(CallbackInfo ci){
-        if(((iWorld)this.mc.player.world).HasEffect(this.mc.player))this.hasActivePotionEffects=true;
+        if (((iWorld) ((iMinecraft) this.mc).MikuPlayer().world).HasEffect(((iMinecraft) this.mc).MikuPlayer()))
+            this.hasActivePotionEffects = true;
     }
 
 
@@ -42,7 +45,7 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
     public void drawActivePotionEffects() {
         int i = this.guiLeft - 124;
         int j = this.guiTop;
-        Collection<PotionEffect> collection = this.mc.player.getActivePotionEffects();
+        Collection<PotionEffect> collection = ((iMinecraft) this.mc).MikuPlayer().getActivePotionEffects();
 
         if (!collection.isEmpty()) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -80,19 +83,18 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
                 {
                     s1 = s1 + " " + I18n.format("enchantment.level.3");
                 }
-                else if (potioneffect.getAmplifier() == 3)
-                {
+                else if (potioneffect.getAmplifier() == 3) {
                     s1 = s1 + " " + I18n.format("enchantment.level.4");
                 }
 
-                this.fontRenderer.drawStringWithShadow(s1, (float)(i + 10 + 18), (float)(j + 6), 16777215);
+                this.fontRenderer.drawStringWithShadow(s1, (float) (i + 10 + 18), (float) (j + 6), 16777215);
                 String s = Potion.getPotionDurationString(potioneffect, 1.0F);
-                this.fontRenderer.drawStringWithShadow(s, (float)(i + 10 + 18), (float)(j + 6 + 10), 8355711);
+                this.fontRenderer.drawStringWithShadow(s, (float) (i + 10 + 18), (float) (j + 6 + 10), 8355711);
                 j += l;
             }
         }
-        if (((iWorld) this.mc.player.world).HasEffect(this.mc.player)) {
-            for (MikuEffect effect : ((iWorld) this.mc.player.world).GetEntityEffects(this.mc.player)) {
+        if (((iWorld) ((iMinecraft) this.mc).MikuPlayer().world).HasEffect(((iMinecraft) this.mc).MikuPlayer())) {
+            for (MikuEffect effect : ((iWorld) ((iMinecraft) this.mc).MikuPlayer().world).GetEntityEffects(((iMinecraft) this.mc).MikuPlayer())) {
                 if (effect.getTEXTURE() == null) continue;
                 this.mc.getTextureManager().bindTexture(effect.getTEXTURE());
                 this.drawTexturedModalRect(i + 6, j + 7, 0, 0, 72, 18);
@@ -107,19 +109,22 @@ public abstract class MixinInventoryEffectRenderer extends GuiContainer {
      */
     @Overwrite
     public void updateActivePotionEffects() {
+        if (EntityUtil.isProtected(this.mc)) {
+            return;
+        }
         boolean hasVisibleEffect = false;
-        for (PotionEffect potioneffect : this.mc.player.getActivePotionEffects()) {
+        for (PotionEffect potioneffect : ((iMinecraft) this.mc).MikuPlayer().getActivePotionEffects()) {
             Potion potion = potioneffect.getPotion();
             if (potion.shouldRender(potioneffect)) {
                 hasVisibleEffect = true;
                 break;
             }
         }
-        if (this.mc.player.getActivePotionEffects().isEmpty() || !hasVisibleEffect) {
+        if (((iMinecraft) this.mc).MikuPlayer().getActivePotionEffects().isEmpty() || !hasVisibleEffect) {
             this.guiLeft = (this.width - this.xSize) / 2;
             this.hasActivePotionEffects = false;
         } else {
-            if (MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent(this)))
+            if (MikuLib.MikuEventBus.post(new net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent(this)))
                 this.guiLeft = (this.width - this.xSize) / 2;
             else
                 this.guiLeft = 160 + (this.width - this.xSize - 200) / 2;

@@ -126,7 +126,7 @@ public abstract class MixinChunk implements iChunk {
             k = this.entityLists.length - 1;
         }
 
-        MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityEvent.EnteringChunk(entityIn, this.x, this.z, entityIn.chunkCoordX, entityIn.chunkCoordZ));
+        MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.EntityEvent.EnteringChunk(entityIn, this.x, this.z, entityIn.chunkCoordX, entityIn.chunkCoordZ));
         entityIn.addedToChunk = true;
         entityIn.chunkCoordX = this.x;
         entityIn.chunkCoordY = k;
@@ -147,7 +147,7 @@ public abstract class MixinChunk implements iChunk {
         for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists) {
             this.world.loadEntities(com.google.common.collect.ImmutableList.copyOf(classinheritancemultimap));
         }
-        MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.ChunkEvent.Load((Chunk) (Object) this));
+        MikuLib.MikuEventBus.post(new net.minecraftforge.event.world.ChunkEvent.Load((Chunk) (Object) this));
     }
 
     /**
@@ -166,6 +166,6 @@ public abstract class MixinChunk implements iChunk {
         for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists) {
             this.world.unloadEntities(classinheritancemultimap);
         }
-        MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.ChunkEvent.Unload((Chunk) (Object) this));
+        MikuLib.MikuEventBus.post(new net.minecraftforge.event.world.ChunkEvent.Unload((Chunk) (Object) this));
     }
 }

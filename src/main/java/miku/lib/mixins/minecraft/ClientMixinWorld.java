@@ -42,7 +42,7 @@ public abstract class ClientMixinWorld {
         }
 
         if (!this.loadedEntityList.contains(entityIn)) {
-            if (!MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)))
+            if (!MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)))
                 this.loadedEntityList.add(entityIn);
         }
     }

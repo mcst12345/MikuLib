@@ -2,7 +2,6 @@ package miku.lib.mixins.minecraftforge;
 
 import miku.lib.common.api.iMinecraftServer;
 import miku.lib.common.command.MikuInsaneMode;
-import miku.lib.common.core.MikuLib;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -21,16 +20,11 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.concurrent.CountDownLatch;
 
 @Mixin(value = FMLCommonHandler.class, remap = false)
 public abstract class MixinFMLCommonHandler {
-    @Shadow
-    private EventBus eventBus;
 
     @Shadow
     private IFMLSidedHandler sidedDelegate;
@@ -41,20 +35,9 @@ public abstract class MixinFMLCommonHandler {
     @Shadow
     private volatile CountDownLatch exitLatch;
 
-    /**
-     * @author mcst12345
-     * @reason Fuck!!!
-     */
-    @Overwrite
+    @Shadow
     @Deprecated
-    public EventBus bus() {
-        return MikuLib.MikuEventBus();
-    }
-
-    @Inject(at = @At("TAIL"), method = "<init>")
-    public void init(CallbackInfo ci) {
-        this.eventBus = MikuLib.MikuEventBus();
-    }
+    public abstract EventBus bus();
 
     /**
      * @author mcst12345

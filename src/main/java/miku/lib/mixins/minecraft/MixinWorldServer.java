@@ -1,6 +1,5 @@
 package miku.lib.mixins.minecraft;
 
-import com.google.common.collect.Lists;
 import miku.lib.common.api.iChunkProviderServer;
 import miku.lib.common.api.iPlayerChunkMap;
 import miku.lib.common.api.iWorldServer;
@@ -23,7 +22,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.network.play.server.SPacketExplosion;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.server.management.PlayerChunkMap;
-import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.BlockPos;
@@ -96,9 +94,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
     @Shadow
     protected abstract BlockPos adjustPosToNearbyEntity(BlockPos pos);
 
-    @Shadow
-    protected abstract void saveLevel() throws MinecraftException;
-
+    @NotNull
     @Shadow
     public abstract ChunkProviderServer getChunkProvider();
 
@@ -230,7 +226,7 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
                     this.onEntityAdded(entity);
                 }
             } else {
-                if (this.canAddEntity(entity) && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
+                if (this.canAddEntity(entity) && !MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity, this))) {
                     this.loadedEntityList.add(entity);
                     this.onEntityAdded(entity);
                 }
@@ -342,9 +338,6 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
                 while (iterator.hasNext()) {
                     NextTickListEntry nextticklistentry1 = iterator.next();
                     iterator.remove();
-                    //Keeping here as a note for future when it may be restored.
-                    //boolean isForced = getPersistentChunks().containsKey(new ChunkPos(nextticklistentry.xCoord >> 4, nextticklistentry.zCoord >> 4));
-                    //byte b0 = isForced ? 0 : 8;
 
                     if (this.isAreaLoaded(nextticklistentry1.position.add(0, 0, 0), nextticklistentry1.position.add(0, 0, 0))) {
                         IBlockState iblockstate = this.getBlockState(nextticklistentry1.position);
@@ -473,36 +466,6 @@ public abstract class MixinWorldServer extends World implements IThreadListener,
             }
 
             this.profiler.endSection();
-        }
-    }
-
-    /**
-     * @author mcst12345
-     * @reason FUCK!!!!
-     */
-    @Overwrite
-    public void saveAllChunks(boolean all, @Nullable IProgressUpdate progressCallback) throws MinecraftException {
-        ChunkProviderServer chunkproviderserver = this.getChunkProvider();
-
-        if (chunkproviderserver.canSave()) {
-            if (progressCallback != null) {
-                progressCallback.displaySavingString("Saving level");
-            }
-
-            this.saveLevel();
-
-            if (progressCallback != null) {
-                progressCallback.displayLoadingString("Saving chunks");
-            }
-
-            chunkproviderserver.saveChunks(all);
-            MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Save(this));
-
-            for (Chunk chunk : Lists.newArrayList(chunkproviderserver.getLoadedChunks())) {
-                if (chunk != null && !this.playerChunkMap.contains(chunk.x, chunk.z)) {
-                    chunkproviderserver.queueUnload(chunk);
-                }
-            }
         }
     }
 

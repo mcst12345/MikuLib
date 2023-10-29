@@ -172,12 +172,6 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
 
     @Shadow private float landMovementFactor;
 
-    @Shadow private EntityLivingBase lastAttackedEntity;
-
-    @Shadow private int lastAttackedEntityTime;
-
-    @Shadow public int swingProgressInt;
-
     @Shadow public float swingProgress;
 
     @Shadow public float rotationYawHead;
@@ -268,7 +262,8 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      */
     @Overwrite
     public void removePotionEffect(Potion potionIn) {
-        if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, potionIn)))
+        if (EntityUtil.isProtected(this)) return;
+        if (MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, potionIn)))
             return;
         PotionEffect potioneffect = this.removeActivePotionEffect(potionIn);
 
@@ -283,13 +278,14 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      */
     @Overwrite
     public void updatePotionMetadata() {
+        if (EntityUtil.isProtected(this)) return;
         if (this.activePotionsMap.isEmpty()) {
             this.resetPotionEffectMetadata();
             this.setInvisible(false);
         } else {
             Collection<PotionEffect> collection = this.activePotionsMap.values();
             net.minecraftforge.event.entity.living.PotionColorCalculationEvent event = new net.minecraftforge.event.entity.living.PotionColorCalculationEvent((EntityLivingBase) (Object) this, PotionUtils.getPotionColorFromEffectList(collection), areAllPotionsAmbient(collection), collection);
-            MikuLib.MikuEventBus().post(event);
+            MikuLib.MikuEventBus.post(event);
             this.dataManager.set(HIDE_PARTICLES, event.areParticlesHidden());
             this.dataManager.set(POTION_EFFECTS, event.getColor());
             this.setInvisible(this.isPotionActive(MobEffects.INVISIBILITY));
@@ -386,14 +382,20 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
     @Shadow
     private long lastDamageStamp;
 
+    @Shadow
+    public abstract void fall(float distance, float damageMultiplier);
+
     /**
      * @author mcst12345
      * @reason FUCK!
      */
     @Overwrite
     public boolean isPotionApplicable(PotionEffect potioneffectIn) {
+        if (EntityUtil.isProtected(this)) {
+            return false;
+        }
         net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent event = new net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent((EntityLivingBase) (Object) this, potioneffectIn);
-        MikuLib.MikuEventBus().post(event);
+        MikuLib.MikuEventBus.post(event);
         if (event.getResult() != net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT)
             return event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
         if (this.getCreatureAttribute() == EnumCreatureAttribute.UNDEAD) {
@@ -411,12 +413,15 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      */
     @Overwrite
     public void clearActivePotions() {
+        if (EntityUtil.isProtected(this)) {
+            return;
+        }
         if (!this.world.isRemote) {
             Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
 
             while (iterator.hasNext()) {
                 PotionEffect effect = iterator.next();
-                if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, effect)))
+                if (MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, effect)))
                     continue;
 
                 this.onFinishedPotionEffect(effect);
@@ -439,7 +444,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
         if (this.isPotionApplicable(potioneffectIn)) {
             PotionEffect potioneffect = this.activePotionsMap.get(potioneffectIn.getPotion());
 
-            MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent((EntityLivingBase) (Object) this, potioneffect, potioneffectIn));
+            MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent((EntityLivingBase) (Object) this, potioneffect, potioneffectIn));
             if (potioneffect == null) {
                 this.activePotionsMap.put(potioneffectIn.getPotion(), potioneffectIn);
                 this.onNewPotionEffect(potioneffectIn);
@@ -616,7 +621,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
             this.dataManager.set(HEALTH, 0.0f);
             return;
         }
-        this.dataManager.set(HEALTH, Float.valueOf(MathHelper.clamp(health, 0.0F, this.getMaxHealth())));
+        this.dataManager.set(HEALTH, MathHelper.clamp(health, 0.0F, this.getMaxHealth()));
     }
 
     @Override
@@ -890,7 +895,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
                 if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
                     if (!ItemStack.areItemStacksEqualUsingNBTShareTag(itemstack1, itemstack))
                         ((WorldServer) this.world).getEntityTracker().sendToTracking(this, new SPacketEntityEquipment(this.getEntityId(), entityequipmentslot, itemstack1));
-                    MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent((EntityLivingBase) (Object) this, entityequipmentslot, itemstack, itemstack1));
+                    MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent((EntityLivingBase) (Object) this, entityequipmentslot, itemstack, itemstack1));
 
                     if (!itemstack.isEmpty()) {
                         this.getAttributeMap().removeAttributeModifiers(itemstack.getAttributeModifiers(entityequipmentslot));
@@ -1032,13 +1037,13 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      */
     @Overwrite(remap = false)
     public void curePotionEffects(ItemStack curativeItem) {
-        if (world.isRemote) return;
+        if (world.isRemote || EntityUtil.isProtected(this)) return;
         Iterator<PotionEffect> iterator = this.activePotionsMap.values().iterator();
 
         while (iterator.hasNext()) {
             PotionEffect effect = iterator.next();
 
-            if (effect.isCurativeItem(curativeItem) && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, effect))) {
+            if (effect.isCurativeItem(curativeItem) && !MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.living.PotionEvent.PotionRemoveEvent((EntityLivingBase) (Object) this, effect))) {
                 onFinishedPotionEffect(effect);
                 iterator.remove();
                 this.potionsNeedUpdate = true;
@@ -1052,6 +1057,9 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
      */
     @Overwrite
     public void updatePotionEffects() {
+        if (EntityUtil.isProtected(this)) {
+            return;
+        }
         Iterator<Potion> iterator = this.activePotionsMap.keySet().iterator();
 
         try {
@@ -1060,7 +1068,7 @@ public abstract class MixinEntityLivingBase extends Entity implements iEntityLiv
                 PotionEffect potioneffect = this.activePotionsMap.get(potion);
 
                 if (!potioneffect.onUpdate((EntityLivingBase) (Object) this)) {
-                    if (!this.world.isRemote && !MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.living.PotionEvent.PotionExpiryEvent((EntityLivingBase) (Object) this, potioneffect))) {
+                    if (!this.world.isRemote && !MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.living.PotionEvent.PotionExpiryEvent((EntityLivingBase) (Object) this, potioneffect))) {
                         iterator.remove();
                         this.onFinishedPotionEffect(potioneffect);
                     }

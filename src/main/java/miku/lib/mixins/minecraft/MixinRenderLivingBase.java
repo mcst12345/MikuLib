@@ -1,5 +1,6 @@
 package miku.lib.mixins.minecraft;
 
+import miku.lib.client.api.iMinecraft;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,7 @@ import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -73,7 +75,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
     public void renderModel(T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
         if (EntityUtil.isDEAD(entitylivingbaseIn)) return;
         boolean flag = this.isVisible(entitylivingbaseIn);
-        boolean flag1 = !flag && !entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().player);
+        boolean flag1 = !flag && !entitylivingbaseIn.isInvisibleToPlayer(((iMinecraft) Minecraft.getMinecraft()).MikuPlayer());
 
         if (flag || flag1) {
             if (!this.bindEntityTexture(entitylivingbaseIn)) {
@@ -162,9 +164,9 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
      * @reason FUCK!!!
      */
     @Overwrite
-    public void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(@NotNull T entity, double x, double y, double z, float entityYaw, float partialTicks) {
         if (EntityUtil.isDEAD(entity)) return;
-        if (MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<T>(entity, (RenderLivingBase<T>) (Object) this, partialTicks, x, y, z)))
+        if (MikuLib.MikuEventBus.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<>(entity, (RenderLivingBase<T>) (Object) this, partialTicks, x, y, z)))
             return;
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
@@ -272,7 +274,7 @@ public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends 
         GlStateManager.enableCull();
         GlStateManager.popMatrix();
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
-        MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.RenderLivingEvent.Post<T>(entity, (RenderLivingBase<T>) (Object) this, partialTicks, x, y, z));
+        MikuLib.MikuEventBus.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<>(entity, (RenderLivingBase<T>) (Object) this, partialTicks, x, y, z));
     }
 
     /**

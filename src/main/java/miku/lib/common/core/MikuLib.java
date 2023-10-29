@@ -61,12 +61,7 @@ public class MikuLib {
     static final boolean BSD = Platform.isFreeBSD() || Platform.isNetBSD() || Platform.isOpenBSD() || Platform.iskFreeBSD();
     static final boolean Android = Platform.isAndroid();
 
-    private static final EventBus MikuEventBus = new MikuEventBus();
-
-    public static EventBus MikuEventBus() {
-        return MikuEventBus;
-    }
-
+    public static final EventBus MikuEventBus = new MikuEventBus();
     public MikuLib() {
         boolean flag = MikuCore.isLaunchFucked();
         if (!flag) {

@@ -34,7 +34,7 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
     @Overwrite
     public void doRender(@Nonnull AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks) {
         if (EntityUtil.isDEAD(entity)) return;
-        if (MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.RenderPlayerEvent.Pre(entity, (RenderPlayer) (Object) this, partialTicks, x, y, z)))
+        if (MikuLib.MikuEventBus.post(new net.minecraftforge.client.event.RenderPlayerEvent.Pre(entity, (RenderPlayer) (Object) this, partialTicks, x, y, z)))
             return;
         if (!entity.isUser() || this.renderManager.renderViewEntity == entity) {
             double d0 = y;
@@ -48,7 +48,7 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
             super.doRender(entity, x, d0, z, entityYaw, partialTicks);
             GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
         }
-        MikuLib.MikuEventBus().post(new net.minecraftforge.client.event.RenderPlayerEvent.Post(entity, (RenderPlayer) (Object) this, partialTicks, x, y, z));
+        MikuLib.MikuEventBus.post(new net.minecraftforge.client.event.RenderPlayerEvent.Post(entity, (RenderPlayer) (Object) this, partialTicks, x, y, z));
     }
 
     @Inject(at = @At("HEAD"), method = "applyRotations(Lnet/minecraft/client/entity/AbstractClientPlayer;FFF)V", cancellable = true)

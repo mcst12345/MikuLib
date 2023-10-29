@@ -5,12 +5,10 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.common.api.iMinecraftServer;
-import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.FieldUtil;
 import miku.lib.common.util.timestop.TimeStopUtil;
 import miku.lib.server.api.iDedicatedServer;
 import net.minecraft.advancements.FunctionManager;
-import net.minecraft.command.CommandBase;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.network.NetworkSystem;
@@ -30,11 +28,8 @@ import net.minecraft.util.datafix.DataFixesManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.*;
-import net.minecraft.world.storage.ISaveFormat;
-import net.minecraft.world.storage.ISaveHandler;
-import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
@@ -171,13 +166,18 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
         return 0;
     }
 
-    @Shadow public abstract void applyServerIconToResponse(ServerStatusResponse response);
+    @Shadow
+    public abstract void applyServerIconToResponse(ServerStatusResponse response);
 
-    @Shadow private boolean serverRunning;
+    @Shadow
+    private boolean serverRunning;
 
-    @Shadow private long timeOfLastWarning;
+    @Shadow
+    private long timeOfLastWarning;
 
-    @Shadow @Final private static Logger LOGGER;
+    @Shadow
+    @Final
+    public static Logger LOGGER;
 
     @Shadow
     public WorldServer[] worlds;
@@ -193,55 +193,6 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
 
     @Shadow
     public abstract File getDataDirectory();
-
-    /**
-     * @author mcst12345
-     * @reason Fuck!!!
-     */
-    @Overwrite
-    public void stopServer() {
-        LOGGER.info("Stopping server");
-
-        if (this.getNetworkSystem() != null) {
-            this.getNetworkSystem().terminateEndpoints();
-        }
-
-        if (this.playerList != null) {
-            LOGGER.info("Saving players");
-            this.playerList.saveAllPlayerData();
-            this.playerList.removeAllPlayers();
-        }
-
-        if (this.worlds != null) {
-            LOGGER.info("Saving worlds");
-
-            for (WorldServer worldserver : this.worlds) {
-                if (worldserver != null) {
-                    worldserver.disableLevelSaving = false;
-                }
-            }
-
-            this.saveAllWorlds(false);
-
-            for (WorldServer worldserver1 : this.worlds) {
-                if (worldserver1 != null) {
-                    MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Unload(worldserver1));
-                    worldserver1.flush();
-                }
-            }
-
-            WorldServer[] tmp = worlds;
-            for (WorldServer world : tmp) {
-                net.minecraftforge.common.DimensionManager.setWorld(world.provider.getDimension(), null, (MinecraftServer) (Object) this);
-            }
-        }
-
-        if (this.usageSnooper.isSnooperRunning()) {
-            this.usageSnooper.stopSnooper();
-        }
-
-        CommandBase.setCommandListener(null); // Forge: fix MC-128561
-    }
 
     @Shadow
     private boolean serverStopped;
@@ -283,38 +234,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
     }
 
     @Shadow
-    public abstract void convertMapIfNeeded(String worldNameIn);
-
-    @Shadow
     protected abstract void setUserMessage(String message);
-
-    @Shadow
-    @Final
-    private ISaveFormat anvilConverterForAnvilFile;
-
-    @Shadow
-    public abstract void setResourcePackFromWorld(String worldNameIn, ISaveHandler saveHandlerIn);
-
-    @Shadow
-    public abstract String getFolderName();
-
-    @Shadow
-    public abstract GameType getGameType();
-
-    @Shadow
-    public abstract boolean canStructuresSpawn();
-
-    @Shadow
-    public abstract boolean isHardcore();
-
-    @Shadow
-    private boolean enableBonusChest;
-
-    @Shadow
-    public abstract boolean isSinglePlayer();
-
-    @Shadow
-    public abstract void setDifficultyForAllWorlds(EnumDifficulty difficulty);
 
     @Shadow
     public abstract EnumDifficulty getDifficulty();
@@ -351,6 +271,9 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
 
     @Shadow
     protected abstract void clearCurrentTask();
+
+    @Shadow
+    public abstract void stopServer();
 
     /**
      * @author mcst12345
@@ -438,7 +361,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
         System.out.println("Successfully fucked Minecraft Server.");
         try {
             if (this.init()) {
-                MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
+                //MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarted();
                 this.currentTime = getCurrentTimeMillis();
                 long i = 0L;
@@ -448,7 +371,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
 
                 while (this.serverRunning)
                 {
-                    MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
+                    //MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
 
                     long k = getCurrentTimeMillis();
                     long j = k - this.currentTime;
@@ -499,7 +422,7 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
 
                     Thread.sleep(Math.max(1L, 50L - i));
                     this.serverIsRunning = true;
-                    MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
+                    //MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                 }
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStopping();
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().expectServerStopped(); // has to come before finalTick to avoid race conditions
@@ -558,50 +481,6 @@ public abstract class MixinMinecraftServer implements iMinecraftServer, Serializ
                 this.systemExitNow();
             }
         }
-    }
-
-    /**
-     * @author mcst12345
-     * @reason HolyShit
-     */
-    @Overwrite
-    public void loadAllWorlds(String saveName, String worldNameIn, long seed, WorldType type, String generatorOptions) {
-        this.convertMapIfNeeded(saveName);
-        this.setUserMessage("menu.loadingLevel");
-        ISaveHandler isavehandler = this.anvilConverterForAnvilFile.getSaveLoader(saveName, true);
-        this.setResourcePackFromWorld(this.getFolderName(), isavehandler);
-        WorldInfo worldinfo = isavehandler.loadWorldInfo();
-        WorldSettings worldsettings;
-
-        if (worldinfo == null) {
-            worldsettings = new WorldSettings(seed, this.getGameType(), this.canStructuresSpawn(), this.isHardcore(), type);
-            worldsettings.setGeneratorOptions(generatorOptions);
-
-            if (this.enableBonusChest) {
-                worldsettings.enableBonusChest();
-            }
-
-            worldinfo = new WorldInfo(worldsettings, worldNameIn);
-        } else {
-            worldinfo.setWorldName(worldNameIn);
-            worldsettings = new WorldSettings(worldinfo);
-        }
-
-        WorldServer overWorld = (WorldServer) (new WorldServer((MinecraftServer) (Object) this, isavehandler, worldinfo, 0, profiler).init());
-        overWorld.initialize(worldsettings);
-        for (int dim : net.minecraftforge.common.DimensionManager.getStaticDimensionIDs()) {
-            WorldServer world = (dim == 0 ? overWorld : (WorldServer) new WorldServerMulti((MinecraftServer) (Object) this, isavehandler, dim, overWorld, profiler).init());
-            world.addEventListener(new ServerWorldEventHandler((MinecraftServer) (Object) this, world));
-
-            if (!this.isSinglePlayer()) {
-                world.getWorldInfo().setGameType(this.getGameType());
-            }
-            MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Load(world));
-        }
-
-        this.playerList.setPlayerManager(new WorldServer[]{overWorld});
-        this.setDifficultyForAllWorlds(this.getDifficulty());
-        this.initialWorldChunkLoad();
     }
 
     /**

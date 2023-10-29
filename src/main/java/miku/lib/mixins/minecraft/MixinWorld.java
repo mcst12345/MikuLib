@@ -2,7 +2,6 @@ package miku.lib.mixins.minecraft;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.Lists;
 import miku.lib.client.api.iWorldClient;
 import miku.lib.client.thread.ClientTNTThreads;
 import miku.lib.common.api.iChunk;
@@ -299,7 +298,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
     @Overwrite
     public boolean addWeatherEffect(Entity entityIn) {
         if (EntityUtil.isDEAD(entityIn)) return false;
-        if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)))
+        if (MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)))
             return false;
         this.weatherEffects.add(entityIn);
         return true;
@@ -389,13 +388,6 @@ public abstract class MixinWorld implements iWorld, Serializable {
     public abstract void updateAllPlayersSleepingFlag();
 
     @Shadow
-    public abstract List<Entity> getEntitiesWithinAABBExcludingEntity(@Nullable Entity entityIn, AxisAlignedBB bb);
-
-    @Shadow
-    protected abstract boolean getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb, boolean p_191504_3_, @Nullable List<AxisAlignedBB> outList);
-
-
-    @Shadow
     public abstract IBlockState getBlockState(BlockPos pos);
 
     @Shadow
@@ -404,38 +396,6 @@ public abstract class MixinWorld implements iWorld, Serializable {
 
     public void AddEffect(MikuEffect effect) {
         effects.add(effect);
-    }
-
-    /**
-     * @author mcst12345
-     * @reason Fuck!
-     */
-    @Overwrite
-    public List<AxisAlignedBB> getCollisionBoxes(@Nullable Entity entityIn, AxisAlignedBB aabb) {
-        List<AxisAlignedBB> list = Lists.newArrayList();
-        this.getCollisionBoxes(entityIn, aabb, false, list);
-
-        if (entityIn != null) {
-            List<Entity> list1 = this.getEntitiesWithinAABBExcludingEntity(entityIn, aabb.grow(0.25D));
-
-            for (Entity entity : list1) {
-                if (!entityIn.isRidingSameEntity(entity)) {
-                    AxisAlignedBB axisalignedbb = entity.getCollisionBoundingBox();
-
-                    if (axisalignedbb != null && axisalignedbb.intersects(aabb)) {
-                        list.add(axisalignedbb);
-                    }
-
-                    axisalignedbb = entityIn.getCollisionBox(entity);
-
-                    if (axisalignedbb != null && axisalignedbb.intersects(aabb)) {
-                        list.add(axisalignedbb);
-                    }
-                }
-            }
-        }
-        MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.GetCollisionBoxesEvent((World) (Object) this, entityIn, aabb, list));
-        return list;
     }
 
     @SuppressWarnings("unchecked")
@@ -523,7 +483,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
                 this.updateAllPlayersSleepingFlag();
             }
 
-            if (MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)) && !flag)
+            if (MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, (World) (Object) this)) && !flag)
                 return false;
 
             this.getChunk(i, j).addEntity(entityIn);
@@ -842,7 +802,7 @@ public abstract class MixinWorld implements iWorld, Serializable {
     @Overwrite
     public void loadEntities(Collection<Entity> entityCollection) {
         for (Entity entity4 : entityCollection) {
-            if (!MikuLib.MikuEventBus().post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity4, (World) (Object) this))) {
+            if (!MikuLib.MikuEventBus.post(new net.minecraftforge.event.entity.EntityJoinWorldEvent(entity4, (World) (Object) this))) {
                 if (EntityUtil.isDEAD(entity4)) continue;
                 loadedEntityList.add(entity4);
                 this.onEntityAdded(entity4);

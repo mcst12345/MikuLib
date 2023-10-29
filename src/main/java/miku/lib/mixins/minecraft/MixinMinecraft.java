@@ -1,9 +1,6 @@
 package miku.lib.mixins.minecraft;
 
-import com.mojang.authlib.AuthenticationService;
-import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import miku.lib.client.api.iMinecraft;
 import miku.lib.client.api.iNetHandlerPlayClient;
 import miku.lib.client.api.iWorldClient;
@@ -24,12 +21,10 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.advancements.GuiScreenAdvancements;
-import net.minecraft.client.gui.chat.NarratorChatListener;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.particle.ParticleManager;
@@ -42,7 +37,6 @@ import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.*;
 import net.minecraft.client.resources.data.MetadataSerializer;
@@ -51,7 +45,6 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.client.tutorial.Tutorial;
-import net.minecraft.client.util.RecipeBookClient;
 import net.minecraft.client.util.SearchTreeManager;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.Entity;
@@ -61,12 +54,9 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.profiler.Snooper;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.StatisticsManager;
-import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.*;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
@@ -77,7 +67,6 @@ import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.storage.AnvilSaveConverter;
 import net.minecraft.world.storage.ISaveFormat;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.LWJGLException;
@@ -92,11 +81,9 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.Proxy;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Queue;
-import java.util.UUID;
 import java.util.concurrent.FutureTask;
 
 import static miku.lib.common.sqlite.Sqlite.DEBUG;
@@ -801,16 +788,6 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
     @Nullable
     private Entity renderViewEntity;
 
-    @Shadow
-    public abstract void setServerData(ServerData serverDataIn);
-
-    @Shadow
-    private boolean integratedServerIsRunning;
-
-    @Shadow
-    @Final
-    private Proxy proxy;
-
     @Mutable
     @Shadow
     @Final
@@ -981,7 +958,7 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
         net.minecraftforge.client.event.GuiOpenEvent event = new net.minecraftforge.client.event.GuiOpenEvent(guiScreenIn);
 
         if (!MikuInsaneMode.isMikuInsaneMode()) {
-            if (!(guiScreenIn instanceof GuiGameOver) && !(guiScreenIn instanceof GuiMainMenu) && MikuLib.MikuEventBus().post(event))
+            if (!(guiScreenIn instanceof GuiGameOver) && !(guiScreenIn instanceof GuiMainMenu) && MikuLib.MikuEventBus.post(event))
                 return;
         }
 
@@ -1301,15 +1278,15 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
                 while (this.running)
                 {
                     try {
-                        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
-                        this.profiler = this.MikuProfiler;
-                        this.entityRenderer = this.MikuEntityRenderer;
-                        this.world = this.MikuWorld;
+                        //MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
+                        //this.profiler = this.MikuProfiler;
+                        //this.entityRenderer = this.MikuEntityRenderer;
+                        //this.world = this.MikuWorld;
                         this.runGameLoop();
-                        this.profiler = this.MikuProfiler;
-                        this.entityRenderer = this.MikuEntityRenderer;
-                        this.world = this.MikuWorld;
-                        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
+                        //this.profiler = this.MikuProfiler;
+                        //this.entityRenderer = this.MikuEntityRenderer;
+                        //this.world = this.MikuWorld;
+                        //MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
                     }
                     catch (OutOfMemoryError var10)
                     {
@@ -1694,110 +1671,6 @@ public abstract class MixinMinecraft implements iMinecraft, Serializable {
         if (this.MikuEntityRenderer != null) {
             this.MikuEntityRenderer.updateShaderGroupSize(this.displayWidth, this.displayHeight);
         }
-    }
-
-    /**
-     * @author mcst12345
-     * @reason Fuck
-     */
-    @Overwrite
-    public void loadWorld(@Nullable WorldClient worldClientIn, String loadingMessage) {
-        if (MikuWorld != null && !MikuInsaneMode.isMikuInsaneMode()) {
-            try {
-                MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.WorldEvent.Unload(world));
-            } catch (Throwable t) {
-                System.out.println("MikuWarn:Catch exception at WorldEvent.Unload");
-                t.printStackTrace();
-            }
-        }
-
-        if (worldClientIn == null) {
-            NetHandlerPlayClient nethandlerplayclient = this.getConnection();
-
-            if (nethandlerplayclient != null) {
-                nethandlerplayclient.cleanup();
-            }
-
-            if (this.integratedServer != null && this.integratedServer.isAnvilFileSet()) {
-                this.integratedServer.initiateShutdown();
-                if (loadingScreen != null && this.running) {
-                    this.loadingScreen.displayLoadingString(I18n.format("forge.client.shutdown.internal"));
-                }
-                while (!integratedServer.isServerStopped()) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException ignored) {
-                    }
-                }
-            }
-
-            this.integratedServer = null;
-            this.MikuEntityRenderer.resetData();
-            this.playerController = null;
-            NarratorChatListener.INSTANCE.clear();
-        }
-
-        this.renderViewEntity = null;
-        this.networkManager = null;
-
-        if (this.loadingScreen != null) {
-            this.loadingScreen.resetProgressAndMessage(loadingMessage);
-            this.loadingScreen.displayLoadingString("");
-        }
-
-        if (worldClientIn == null && this.MikuWorld != null) {
-            this.resourcePackRepository.clearResourcePack();
-            this.ingameGUI.resetPlayersOverlayFooterHeader();
-            this.setServerData(null);
-            this.integratedServerIsRunning = false;
-            net.minecraftforge.fml.client.FMLClientHandler.instance().handleClientWorldClosing(this.MikuWorld);
-        }
-
-        this.soundHandler.stopSounds();
-        this.world = worldClientIn;
-        this.MikuWorld = worldClientIn;
-
-        if (this.renderGlobal != null) {
-            this.renderGlobal.setWorldAndLoadRenderers(worldClientIn);
-        }
-
-        if (this.effectRenderer != null) {
-            this.effectRenderer.clearEffects(worldClientIn);
-        }
-
-        TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
-        net.minecraftforge.client.MinecraftForgeClient.clearRenderCache();
-
-        if (worldClientIn != null) {
-            if (!this.integratedServerIsRunning) {
-                AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-                MinecraftSessionService minecraftsessionservice = authenticationservice.createMinecraftSessionService();
-                GameProfileRepository gameprofilerepository = authenticationservice.createProfileRepository();
-                PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(this.gameDir, MinecraftServer.USER_CACHE_FILE.getName()));
-                TileEntitySkull.setProfileCache(playerprofilecache);
-                TileEntitySkull.setSessionService(minecraftsessionservice);
-                PlayerProfileCache.setOnlineMode(false);
-            }
-
-            if (this.MikuPlayer == null) {
-                this.MikuPlayer = this.playerController.createPlayer(worldClientIn, new StatisticsManager(), new RecipeBookClient());
-                this.playerController.flipPlayer(this.MikuPlayer);
-            }
-
-            this.MikuPlayer.preparePlayerToSpawn();
-            worldClientIn.spawnEntity(this.MikuPlayer);
-            this.MikuPlayer.movementInput = new MovementInputFromOptions(this.gameSettings);
-            this.playerController.setPlayerCapabilities(this.MikuPlayer);
-            this.renderViewEntity = this.MikuPlayer;
-        } else {
-            this.saveLoader.flushCache();
-            this.MikuPlayer = null;
-        }
-
-        this.player = this.MikuPlayer;
-
-        System.gc();
-        this.systemTime = 0L;
     }
 
     /**

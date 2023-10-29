@@ -26,7 +26,7 @@ public abstract class MixinEntityEnderman extends EntityMob {
     public boolean teleportTo(double x, double y, double z) {
         if (TimeStopUtil.isTimeStop()) return false;
         net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, x, y, z, 0);
-        if (MikuLib.MikuEventBus().post(event)) return false;
+        if (MikuLib.MikuEventBus.post(event)) return false;
         boolean flag = this.attemptTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ());
 
         if (flag) {

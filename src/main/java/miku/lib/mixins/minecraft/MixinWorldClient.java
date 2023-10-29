@@ -27,7 +27,6 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
-import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -111,7 +110,7 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
     public void doVoidFogParticles(int posX, int posY, int posZ) {
         if (TimeStopUtil.isTimeStop() || ((iWorld) this).isTimeStop()) return;
         Random random = new Random();
-        ItemStack itemstack = this.mc.player.getHeldItemMainhand();
+        ItemStack itemstack = ((iMinecraft) this.mc).MikuPlayer().getHeldItemMainhand();
         boolean flag = this.mc.playerController.getCurrentGameType() == GameType.CREATIVE && !itemstack.isEmpty() && itemstack.getItem() == Item.getItemFromBlock(Blocks.BARRIER);
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
@@ -240,9 +239,5 @@ public abstract class MixinWorldClient extends World implements iWorldClient {
     @Inject(at = @At("HEAD"), method = "removeEntityFromWorld", cancellable = true)
     public void removeEntityFromWorld(int entityID, CallbackInfoReturnable<Entity> cir) {
         if (EntityUtil.isProtected(entitiesById.lookup(entityID))) cir.setReturnValue(null);
-    }
-
-    static {
-        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
     }
 }

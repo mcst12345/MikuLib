@@ -24,7 +24,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ITeleporter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -237,11 +236,6 @@ public abstract class MixinEntity implements iEntity, Serializable {
         } catch (Throwable e) {
             return dataManager;
         }
-    }
-
-    @Inject(at = @At("HEAD"), method = "<clinit>")
-    private static void Entity(CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS = MikuLib.MikuEventBus();
     }
 
     /**

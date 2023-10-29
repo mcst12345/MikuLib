@@ -3,8 +3,6 @@ package miku.lib.mixins.minecraft;
 import miku.lib.common.core.MikuLib;
 import miku.lib.common.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketChunkData;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
 import net.minecraft.server.management.PlayerChunkMap;
 import net.minecraft.server.management.PlayerChunkMapEntry;
@@ -56,12 +54,6 @@ public abstract class MixinPlayerChunkMapEntry {
     @Shadow(remap = false)
     private Runnable loadedRunnable;
 
-    @Shadow
-    private int changes;
-
-    @Shadow
-    private int changedSectionFilter;
-
     /**
      * @author mcst12345
      * @reason Fuck!
@@ -82,7 +74,7 @@ public abstract class MixinPlayerChunkMapEntry {
                 this.sendToPlayer(player);
                 // chunk watch event - the chunk is ready
                 assert this.chunk != null;
-                MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.chunk, player));
+                MikuLib.MikuEventBus.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.chunk, player));
             }
         }
     }
@@ -113,41 +105,11 @@ public abstract class MixinPlayerChunkMapEntry {
 
             this.players.remove(player);
 
-            MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.ChunkWatchEvent.UnWatch(this.chunk, player));
+            MikuLib.MikuEventBus.post(new net.minecraftforge.event.world.ChunkWatchEvent.UnWatch(this.chunk, player));
 
             if (this.players.isEmpty()) {
                 this.playerChunkMap.removeEntry((PlayerChunkMapEntry) (Object) this);
             }
-        }
-    }
-
-    /**
-     * @author mcst12345
-     * @reason Fuck!
-     */
-    @Overwrite
-    public boolean sendToPlayers() {
-        if (this.sentToPlayers) {
-            return true;
-        } else if (this.chunk == null) {
-            return false;
-        } else if (!this.chunk.isPopulated()) {
-            return false;
-        } else {
-            this.changes = 0;
-            this.changedSectionFilter = 0;
-            this.sentToPlayers = true;
-            if (this.players.isEmpty()) return true; // Forge: fix MC-120780
-            Packet<?> packet = new SPacketChunkData(this.chunk, 65535);
-
-            for (EntityPlayerMP entityplayermp : this.players) {
-                entityplayermp.connection.sendPacket(packet);
-                this.playerChunkMap.getWorldServer().getEntityTracker().sendLeashedEntitiesInChunk(entityplayermp, this.chunk);
-                // chunk watch event - delayed to here as the chunk wasn't ready in addPlayer
-                MikuLib.MikuEventBus().post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.chunk, entityplayermp));
-            }
-
-            return true;
         }
     }
 }
